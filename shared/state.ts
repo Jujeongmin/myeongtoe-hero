@@ -1,4 +1,5 @@
 import { Big } from "./big";
+import { BUFF_KINDS, type BuffKind } from "./data/buffs";
 import { findCert } from "./data/certs";
 import { GEAR_MAX_LEVEL, GEAR_TIERS } from "./data/gear";
 import { findSuitItem } from "./data/home";
@@ -6,7 +7,7 @@ import { findPet } from "./data/pets";
 import { findRelic } from "./data/relics";
 import { findSideJob } from "./data/sideJobs";
 
-export const SAVE_VERSION = 6;
+export const SAVE_VERSION = 7;
 export const OFFLINE_CAP_SEC = 12 * 3600;
 export const OFFICE_MAX_GRADE = 17;
 // 지하주차장 passes stored at most. Re-exported by data/parking.ts.
@@ -21,6 +22,19 @@ export interface RunState {
   carrySec: number;
   farming: boolean;
   maxFloor: number;
+  // Extra gear levels bought in the gem shop for this run (gone at a job change).
+  gearBoost: number;
+}
+
+// What VX purchases left on the save: VX spent in all (VIP), the one-off and timed products, the KST
+// day the daily VX gems were last claimed, and the promotion packs bought.
+export interface VxState {
+  total: number;
+  premium: boolean;
+  passUntil: number;
+  dailyClaimed: string;
+  rookie: boolean;
+  promos: string[];
 }
 
 export interface SideJobState {
@@ -73,6 +87,15 @@ export interface GameState {
   missions: { step: number; special: string[] };
   attendance: { lastDay: string; count: number };
   nickname: string;
+  // When each timed buff ends (server ms; 0 or past = off).
+  buffs: Record<BuffKind, number>;
+  // When each ad placement was last watched (server ms).
+  ads: Record<string, number>;
+  // When the save was made (the rookie pack's 7 days count from here).
+  startedAt: number;
+  vx: VxState;
+  // The last welcome-back reward, claimable once more by an ad until `until`.
+  offlineBonus: { gold: string; tickets: number; until: number } | null;
 }
 
 export interface SaveData extends Omit<GameState, "gold"> {
@@ -152,10 +175,16 @@ const MIGRATIONS: Record<number, (save: Record<string, unknown>) => Record<strin
   },
   // v6: 자격증 became a fixed list picked one by one; the old randomly drawn ones are gone.
   5: (save) => ({ ...save, v: 6, certs: {} }),
+  // v7: buffs, ad cooldowns, VX purchases, the gem shop's gear boost.
+  6: (save) => ({
+    ...save, v: 7,
+    run: { ...obj(save.run), gearBoost: 0 },
+    buffs: {}, ads: {}, startedAt: save.lastTick, vx: {}, offlineBonus: null,
+  }),
 };
 
 export function freshRun(): RunState {
-  return { floor: 1, target: 0, carrySec: 0, farming: false, maxFloor: 1 };
+  return { floor: 1, target: 0, carrySec: 0, farming: false, maxFloor: 1, gearBoost: 0 };
 }
 
 export function newState(now: number): GameState {
@@ -186,6 +215,11 @@ export function newState(now: number): GameState {
     missions: { step: 0, special: [] },
     attendance: { lastDay: "", count: 0 },
     nickname: "",
+    buffs: { atk: 0, gold: 0, move: 0 },
+    ads: {},
+    startedAt: now,
+    vx: { total: 0, premium: false, passUntil: 0, dailyClaimed: "", rookie: false, promos: [] },
+    offlineBonus: null,
   };
 }
 
@@ -197,6 +231,8 @@ export function cloneState(s: GameState): GameState {
     pets: { ...s.pets }, relics: { ...s.relics }, suits: [...s.suits], wear: { ...s.wear }, office: { ...s.office },
     parking: { ...s.parking }, daily: { ...s.daily, claimed: [...s.daily.claimed] },
     missions: { ...s.missions, special: [...s.missions.special] }, attendance: { ...s.attendance },
+    buffs: { ...s.buffs }, ads: { ...s.ads }, vx: { ...s.vx, promos: [...s.vx.promos] },
+    offlineBonus: s.offlineBonus && { ...s.offlineBonus },
   };
 }
 
@@ -250,6 +286,8 @@ export function fromSave(raw: unknown): GameState {
   const daily = obj(data.daily);
   const missions = obj(data.missions);
   const attendance = obj(data.attendance);
+  const vx = obj(data.vx);
+  const bonus = obj(data.offlineBonus);
   return {
     v: SAVE_VERSION,
     lastTick: seconds(data.lastTick),
@@ -260,6 +298,7 @@ export function fromSave(raw: unknown): GameState {
       carrySec: seconds(run.carrySec),
       farming: run.farming === true,
       maxFloor: Math.max(floor, int(run.maxFloor, 1, 1)),
+      gearBoost: int(run.gearBoost, 0, 0),
     },
     bestFloor: int(data.bestFloor, 1, 1),
     gear: {
@@ -296,5 +335,19 @@ export function fromSave(raw: unknown): GameState {
     missions: { step: int(missions.step, 0, 0), special: strings(missions.special) },
     attendance: { lastDay: text(attendance.lastDay, 10), count: int(attendance.count, 0, 0) },
     nickname: text(data.nickname, 16),
+    buffs: Object.fromEntries(BUFF_KINDS.map((k) => [k, seconds(obj(data.buffs)[k])])) as Record<BuffKind, number>,
+    ads: Object.fromEntries(Object.entries(obj(data.ads)).filter(([, at]) => seconds(at) > 0)) as Record<string, number>,
+    startedAt: seconds(data.startedAt),
+    vx: {
+      total: int(vx.total, 0, 0),
+      premium: vx.premium === true,
+      passUntil: seconds(vx.passUntil),
+      dailyClaimed: text(vx.dailyClaimed, 10),
+      rookie: vx.rookie === true,
+      promos: strings(vx.promos),
+    },
+    offlineBonus: seconds(bonus.until) > 0 && typeof bonus.gold === "string"
+      ? { gold: gold(bonus.gold).toString(), tickets: int(bonus.tickets, 0, 0), until: seconds(bonus.until) }
+      : null,
   };
 }

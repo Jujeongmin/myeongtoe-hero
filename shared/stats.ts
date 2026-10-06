@@ -1,5 +1,6 @@
 import type { Big } from "./big";
-import { BOSS_LIMIT_SEC } from "./data/floors";
+import { BUFFS, buffActive } from "./data/buffs";
+import { BOSS_LIMIT_SEC, WALK_SEC } from "./data/floors";
 import { prestigeReward } from "./data/prestige";
 import { gearAtk } from "./data/gear";
 import { skillFactor, skillsUnlocked } from "./data/skills";
@@ -20,6 +21,8 @@ export interface Power {
   goldMult: number;
   hpMult: number;
   drainPerSec: number;
+  // Walking time between kills (halved by the 칼퇴 걸음 buff).
+  walkSec: number;
 }
 
 function skillProduct(s: GameState, kind: string): number {
@@ -29,7 +32,8 @@ function skillProduct(s: GameState, kind: string): number {
 }
 
 export function heroAtk(s: GameState): Big {
-  return gearAtk(s.gear.tier, s.gear.level).mulN(mods(s).dmgMult);
+  const buff = buffActive(s, "atk") ? BUFFS.atk.mult : 1;
+  return gearAtk(s.gear.tier, s.gear.level + s.run.gearBoost).mulN(mods(s).dmgMult * buff);
 }
 
 export function heroPower(s: GameState): Power {
@@ -47,9 +51,10 @@ export function heroPower(s: GameState): Power {
     dps,
     bossDps: dps.mulN(m.bossMult),
     bossLimitSec: BOSS_LIMIT_SEC + bossTime,
-    goldMult: skillProduct(s, "gold") * m.goldMult,
+    goldMult: skillProduct(s, "gold") * m.goldMult * (buffActive(s, "gold") ? BUFFS.gold.mult : 1),
     hpMult: m.hpMult,
     drainPerSec: m.drainPerSec,
+    walkSec: buffActive(s, "move") ? WALK_SEC / BUFFS.move.mult : WALK_SEC,
   };
 }
 

@@ -6,7 +6,7 @@ import { firstClearGems, fightSec, settle, settleBattle, settleSideJobs, targetS
 import { OFFLINE_CAP_SEC, newState } from "./state";
 import { heroDps, heroPower, type Power } from "./stats";
 
-const P = (dps: Big, extra: Partial<Power> = {}): Power => ({ dps, bossDps: dps, bossLimitSec: BOSS_LIMIT_SEC, goldMult: 1, hpMult: 1, drainPerSec: 0, ...extra });
+const P = (dps: Big, extra: Partial<Power> = {}): Power => ({ dps, bossDps: dps, bossLimitSec: BOSS_LIMIT_SEC, goldMult: 1, hpMult: 1, drainPerSec: 0, walkSec: 1, ...extra });
 
 const fresh = () => newState(0).run;
 
@@ -66,7 +66,7 @@ describe("settleBattle", () => {
 
   test("farming earns the floor-below gold and goes back up once strong enough", () => {
     const weak = Big.of(100);
-    const farming = { floor: 9, target: 0, carrySec: 0, farming: true, maxFloor: 10 };
+    const farming = { floor: 9, target: 0, carrySec: 0, farming: true, maxFloor: 10, gearBoost: 0 };
     const tpk = fightSec(9, weak) + WALK_SEC;
     const grind = settleBattle(farming, P(weak), tpk * 3 + 0.1);
     expect(grind.run.farming).toBe(true);
@@ -85,13 +85,13 @@ describe("settleBattle with Power", () => {
     expect(targetSec(10, P(dps))).toBeCloseTo(fightSec(10, dps), 9);
     expect(targetSec(10, P(dps, { bossDps: dps.mulN(2) }))).toBeCloseTo(fightSec(10, dps) / 2, 9);
     // 38 s at 100 dps: too slow for 30 s, fine for 40 s.
-    const start = { floor: 10, target: 0, carrySec: 0, farming: false, maxFloor: 10 };
+    const start = { floor: 10, target: 0, carrySec: 0, farming: false, maxFloor: 10, gearBoost: 0 };
     expect(settleBattle(start, P(dps, { bossLimitSec: 40 }), 40).run.floor).toBe(11);
   });
 
   test("gold is multiplied, and team-leader bosses pay tickets", () => {
     const strong = Big.of(1, 9);
-    const start = { floor: 9, target: 0, carrySec: 0, farming: false, maxFloor: 9 };
+    const start = { floor: 9, target: 0, carrySec: 0, farming: false, maxFloor: 9, gearBoost: 0 };
     const plain = settleBattle(start, P(strong), 11 * WALK_SEC + 0.5);
     expect(plain.run.floor).toBe(11);
     expect(plain.tickets).toBe(1);

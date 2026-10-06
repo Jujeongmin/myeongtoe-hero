@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { WALK_SEC, departmentOf, isBossFloor, targetsOn } from "../../shared/data/floors";
+import { departmentOf, isBossFloor, targetsOn } from "../../shared/data/floors";
 import { PRESTIGE_MIN_FLOOR } from "../../shared/data/prestige";
 import { formatCount } from "../../shared/format";
 import { skillsUnlocked } from "../../shared/data/skills";
@@ -37,7 +37,7 @@ export function Battle({ state, store, onOpen }: { state: GameState; store: Game
   useEffect(() => {
     const ctx = ref.current?.getContext("2d");
     if (!ctx) return;
-    const perKill = targetSec(floor, power) + WALK_SEC;
+    const perKill = targetSec(floor, power) + power.walkSec;
     const left = Number.isFinite(perKill) ? Math.max(0, 1 - carrySec / perKill) : 1;
     ctx.fillStyle = "#3d5a80";
     ctx.fillRect(0, 0, W, H * 0.65);

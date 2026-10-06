@@ -8,7 +8,7 @@ describe("state", () => {
     expect(s.v).toBe(SAVE_VERSION);
     expect(s.lastTick).toBe(1000);
     expect(s.gold.isZero()).toBe(true);
-    expect(s.run).toEqual({ floor: 1, target: 0, carrySec: 0, farming: false, maxFloor: 1 });
+    expect(s.run).toEqual({ floor: 1, target: 0, carrySec: 0, farming: false, maxFloor: 1, gearBoost: 0 });
     expect(s.gear).toEqual({ tier: 0, level: 0, confirmed: 0 });
     expect(s.sideJobs).toEqual({});
     expect(s.tickets).toBe(0);
@@ -55,7 +55,7 @@ describe("state", () => {
     save.gear = { tier: 999, level: 3 };
     save.sideJobs = { j00: { level: 2, progressSec: 1, running: true }, hacked: { level: 99, progressSec: 0, running: true } };
     const s = fromSave(save);
-    expect(s.run).toEqual({ floor: 1, target: 0, carrySec: 0, farming: false, maxFloor: 1 });
+    expect(s.run).toEqual({ floor: 1, target: 0, carrySec: 0, farming: false, maxFloor: 1, gearBoost: 0 });
     expect(Object.keys(s.sideJobs)).toEqual(["j00"]);
     expect(s.gear).toEqual({ tier: 29, level: 3, confirmed: 0 });
   });

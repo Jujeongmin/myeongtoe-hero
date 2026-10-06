@@ -1,5 +1,6 @@
 import { Big } from "./big";
-import { WALK_SEC, isBossFloor, killGold, targetHp, targetsOn } from "./data/floors";
+import { BUFF_KINDS } from "./data/buffs";
+import { isBossFloor, killGold, targetHp, targetsOn } from "./data/floors";
 import { rechargePasses } from "./data/parking";
 import { findSideJob, sideJobCycle, sideJobIncome } from "./data/sideJobs";
 import { cloneState, type GameState, type RunState, type SideJobState } from "./state";
@@ -64,7 +65,7 @@ export function settleBattle(
 
   for (let step = 0; step < MAX_STEPS; step++) {
     if (run.farming) {
-      const tpk = targetSec(run.floor, power) + WALK_SEC;
+      const tpk = targetSec(run.floor, power) + power.walkSec;
       const n = Math.floor(t / tpk);
       if (n > 0) {
         gold = gold.add(killGold(run.floor).mulN(n * power.goldMult));
@@ -77,7 +78,7 @@ export function settleBattle(
     const floor = run.floor;
     const sec = targetSec(floor, power);
     if (isBossFloor(floor) && sec > power.bossLimitSec) {
-      const spent = power.bossLimitSec + WALK_SEC;
+      const spent = power.bossLimitSec + power.walkSec;
       if (t < spent) break;
       t -= spent;
       // floor - 1 is never a boss floor (bosses sit on multiples of 5).
@@ -87,7 +88,7 @@ export function settleBattle(
       continue;
     }
 
-    const tpk = sec + WALK_SEC;
+    const tpk = sec + power.walkSec;
     if (t < tpk) break;
     t -= tpk;
     gold = gold.add(killGold(floor).mulN(power.goldMult));
@@ -127,12 +128,25 @@ export function settleSideJobs(
   return { sideJobs, gold };
 }
 
-// Everything that happens between lastTick and now (server time), at most offlineCapSec of it.
+// Everything that happens between lastTick and now (server time), at most offlineCapSec of it (the
+// latest part). The time is cut where a buff ends, so each piece runs at one power; where the cuts
+// fall depends only on the buffs, so settling in any number of calls gives the same result.
 // Returns a new state; the input is never changed.
 export function settle(state: GameState, now: number): GameState {
   if (now <= state.lastTick) return state;
-  const dt = Math.min(offlineCapSec(state), (now - state.lastTick) / 1000);
-  const next = cloneState(state);
+  let next = cloneState(state);
+  next.lastTick = Math.max(state.lastTick, now - offlineCapSec(state) * 1000);
+  while (next.lastTick < now) {
+    const ends = BUFF_KINDS.map((k) => next.buffs[k]).filter((t) => t > next.lastTick && t < now);
+    next = settleSpan(next, Math.min(now, ...ends));
+  }
+  return next;
+}
+
+// Settles lastTick to `to` at the power of lastTick (nothing changes power within the span).
+function settleSpan(start: GameState, to: number): GameState {
+  const next = cloneState(start);
+  const dt = (to - start.lastTick) / 1000;
   const m = mods(next);
   const battle = settleBattle(next.run, heroPower(next), dt);
   const jobs = settleSideJobs(next.sideJobs, dt, m.sideJobMult);
@@ -140,7 +154,7 @@ export function settle(state: GameState, now: number): GameState {
   const drops = next.ticketCarry + battle.kills * m.ticketPerKill;
   const pay = paidBySideJobPet(next, m, dt);
   next.gems += firstClearGems(next.bestFloor, best);
-  next.lastTick = now;
+  next.lastTick = to;
   next.run = battle.run;
   next.bestFloor = best;
   next.tickets += battle.tickets + Math.floor(drops);

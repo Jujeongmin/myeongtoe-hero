@@ -186,7 +186,7 @@ describe("prestige", () => {
     const after = applyIntent(at(120), { k: "prestige", mode: "plain" });
     const reward = prestigeReward(120, 0);
     expect(after.gold.isZero()).toBe(true);
-    expect(after.run).toEqual({ floor: 1, target: 0, carrySec: 0, farming: false, maxFloor: 1 });
+    expect(after.run).toEqual({ floor: 1, target: 0, carrySec: 0, farming: false, maxFloor: 1, gearBoost: 0 });
     expect(after.gear).toEqual({ tier: 0, level: 0, confirmed: 0 });
     expect(after.sideJobs).toEqual({});
     expect(after.bestFloor).toBe(120);

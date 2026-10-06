@@ -47,7 +47,7 @@ describe("pet effects", () => {
   });
 
   test("a drain speeds kills: time = 1 / (dps/hp + drain)", () => {
-    const p: Power = { dps: Big.of(1), bossDps: Big.of(1), bossLimitSec: BOSS_LIMIT_SEC, goldMult: 1, hpMult: 1, drainPerSec: 0.1 };
+    const p: Power = { dps: Big.of(1), bossDps: Big.of(1), bossLimitSec: BOSS_LIMIT_SEC, goldMult: 1, hpMult: 1, drainPerSec: 0.1, walkSec: 1 };
     // floor 1: 100 hp at 1 dps → 1 / (0.01 + 0.1)
     expect(targetSec(1, p)).toBeCloseTo(1 / 0.11, 9);
   });
