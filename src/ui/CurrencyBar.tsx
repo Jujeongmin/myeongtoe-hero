@@ -6,10 +6,10 @@ import { Icon } from "./Icon";
 export function CurrencyBar({ state }: { state: GameState }) {
   return (
     <div className="currency">
-      <span><Icon name="gold" size={16} /> {formatBig(state.gold)}</span>
-      <span><Icon name="ticket" size={16} /> {formatCount(state.tickets)}</span>
-      <span><Icon name="gem" size={16} /> {state.gems}</span>
-      <span><Icon name="coupon" size={16} /> {state.coupons}</span>
+      <span><Icon name="gold" /> {formatBig(state.gold)}</span>
+      <span><Icon name="ticket" /> {formatCount(state.tickets)}</span>
+      <span><Icon name="gem" /> {state.gems}</span>
+      <span><Icon name="coupon" /> {state.coupons}</span>
     </div>
   );
 }
