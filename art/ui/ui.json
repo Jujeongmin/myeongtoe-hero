@@ -1,0 +1,177 @@
+{
+ "scale": "draw at an integer scale with image-rendering: pixelated",
+ "nineSlice": {
+  "row_panel": {
+   "file": "row_panel.png",
+   "size": [
+    96,
+    32
+   ],
+   "slice": {
+    "top": 6,
+    "right": 6,
+    "bottom": 6,
+    "left": 6
+   },
+   "css": "border-image: url(row_panel.png) 6 fill / calc(6px * var(--px)) repeat;",
+   "use": "list row background; stretch to ~360x80",
+   "centerRepeat": "repeat"
+  },
+  "icon_box": {
+   "file": "icon_box.png",
+   "size": [
+    36,
+    36
+   ],
+   "slice": {
+    "top": 12,
+    "right": 12,
+    "bottom": 12,
+    "left": 12
+   },
+   "css": "border-image: url(icon_box.png) 12 fill / calc(12px * var(--px)) repeat;",
+   "use": "square well for an item icon (~40x40)",
+   "centerRepeat": "repeat"
+  },
+  "button_gold": {
+   "file": "button_gold.png",
+   "size": [
+    72,
+    40
+   ],
+   "slice": {
+    "top": 6,
+    "right": 6,
+    "bottom": 6,
+    "left": 6
+   },
+   "css": "border-image: url(button_gold.png) 6 fill / calc(6px * var(--px)) repeat;",
+   "use": "normal action button",
+   "centerRepeat": "repeat"
+  },
+  "button_gold_hot": {
+   "file": "button_gold_hot.png",
+   "size": [
+    72,
+    40
+   ],
+   "slice": {
+    "top": 6,
+    "right": 6,
+    "bottom": 6,
+    "left": 6
+   },
+   "css": "border-image: url(button_gold_hot.png) 6 fill / calc(6px * var(--px)) repeat;",
+   "use": "highlighted action button (e.g. 입장하기)",
+   "centerRepeat": "repeat"
+  },
+  "button_disabled": {
+   "file": "button_disabled.png",
+   "size": [
+    72,
+    40
+   ],
+   "slice": {
+    "top": 6,
+    "right": 6,
+    "bottom": 6,
+    "left": 6
+   },
+   "css": "border-image: url(button_disabled.png) 6 fill / calc(6px * var(--px)) repeat;",
+   "use": "disabled button",
+   "centerRepeat": "repeat"
+  },
+  "nav_tile": {
+   "file": "nav_tile.png",
+   "size": [
+    56,
+    56
+   ],
+   "slice": {
+    "top": 13,
+    "right": 13,
+    "bottom": 13,
+    "left": 13
+   },
+   "css": "border-image: url(nav_tile.png) 13 fill / calc(13px * var(--px)) repeat;",
+   "use": "bottom-menu tile",
+   "centerRepeat": "repeat"
+  },
+  "nav_tile_on": {
+   "file": "nav_tile_on.png",
+   "size": [
+    52,
+    52
+   ],
+   "slice": {
+    "top": 14,
+    "right": 14,
+    "bottom": 14,
+    "left": 14
+   },
+   "css": "border-image: url(nav_tile_on.png) 14 fill / calc(14px * var(--px)) repeat;",
+   "use": "bottom-menu tile, selected",
+   "centerRepeat": "repeat"
+  },
+  "mission_panel": {
+   "file": "mission_panel.png",
+   "size": [
+    48,
+    48
+   ],
+   "slice": {
+    "top": 14,
+    "right": 14,
+    "bottom": 14,
+    "left": 14
+   },
+   "css": "border-image: url(mission_panel.png) 14 fill / calc(14px * var(--px)) repeat;",
+   "use": "mission card panel",
+   "centerRepeat": "repeat"
+  }
+ },
+ "threeSlice": {
+  "hp_bar": {
+   "files": {
+    "frame": "hp_bar_frame.png",
+    "fill": "hp_bar_fill.png",
+    "empty": "hp_bar_empty.png"
+   },
+   "size": [
+    24,
+    5
+   ],
+   "slice": {
+    "left": 3,
+    "right": 3
+   },
+   "draw": "empty (full width) -> fill (clip width to value) -> frame on top; stretch the middle column horizontally"
+  },
+  "progress_bar": {
+   "files": {
+    "frame": "progress_bar_frame.png",
+    "fill": "progress_bar_fill.png",
+    "empty": "progress_bar_empty.png"
+   },
+   "size": [
+    80,
+    6
+   ],
+   "slice": {
+    "left": 3,
+    "right": 3
+   },
+   "draw": "empty (full width) -> fill (clip width to value) -> frame on top; stretch the middle column horizontally"
+  }
+ },
+ "fixed": {
+  "menu_button": {
+   "file": "menu_button.png",
+   "size": [
+    32,
+    32
+   ],
+   "use": "top-right 메뉴 toggle, crimson + gold"
+  }
+ }
+}

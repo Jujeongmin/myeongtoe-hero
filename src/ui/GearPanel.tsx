@@ -85,9 +85,7 @@ function ConfirmPanel({ state, tier, onClose, onConfirm }: {
     <div className="modal-back" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h3>구매확정</h3>
-        <p><b>{GEAR_TIERS[tier].name}</b>을(를) 확정할까요?</p>
-        <p className="sub">확정한 장비는 이직해도 사라지지 않아요. 이직하면 마지막으로 확정한 장비를 Lv{GEAR_MAX_LEVEL}로 들고 시작해요.</p>
-        <p className="sub">확정은 1번 장비부터 순서대로만 할 수 있어요.</p>
+        <p>확정한 장비는 이직해도 사라지지 않아요</p>
         <p><Amount icon="gem" value={cost.gems} /> <Amount icon="gold" value={formatBig(cost.gold)} /></p>
         <button className="gold" disabled={!afford} onClick={onConfirm}>{afford ? "확정하기" : "재화가 부족해요"}</button>
         <button onClick={onClose}>닫기</button>
