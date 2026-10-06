@@ -1,0 +1,27 @@
+{
+  "name": "myeongtoe-hero",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "server:install": "npm --prefix server install",
+    "server:test": "npm --prefix server test",
+    "server:typecheck": "npm --prefix server run typecheck"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^6.1.2",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.3",
+    "vitest": "^3.2.7"
+  }
+}
