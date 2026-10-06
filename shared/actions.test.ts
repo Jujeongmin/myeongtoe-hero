@@ -163,7 +163,7 @@ describe("prestige", () => {
     return s;
   }
 
-  test("not before floor 80", () => {
+  test("not before floor 100 (the original's rebirth floor)", () => {
     expect(codeOf(at(PRESTIGE_MIN_FLOOR - 1), { k: "prestige", boosted: false })).toBe("locked");
   });
 
@@ -190,7 +190,7 @@ describe("prestige", () => {
   });
 
   test("reward grows with the floor", () => {
-    expect(prestigeReward(80, 0)).toEqual({ tickets: 2, gems: 4 });
+    expect(prestigeReward(100, 0)).toEqual({ tickets: 2, gems: 5 });
     expect(prestigeReward(200, 0).tickets).toBeGreaterThan(prestigeReward(100, 0).tickets);
     expect(prestigeReward(200, 0.5).tickets).toBe(Math.floor(prestigeReward(200, 0).tickets * 1.5));
   });
