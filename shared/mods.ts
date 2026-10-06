@@ -1,10 +1,11 @@
 import { certBonuses } from "./data/certs";
+import { apartmentDamage, findSuitItem, suitSetWorn } from "./data/home";
 import { awakenStage, petsUnlocked } from "./data/pets";
 import { relicsUnlocked } from "./data/relics";
 import type { GameState } from "./state";
 
-// Every permanent effect in one place: certificates, relics, pets (and later the apartment, suits
-// and office gear). heroPower, settle and the offline cap read only this. Random effects (최대리's
+// Every permanent effect in one place: certificates, relics, the apartment, suits, office gear and
+// pets. heroPower, settle and the offline cap read only this. Random effects (최대리's
 // 0~30%, 공주임's buff, 오사원's drops) count as their expected values.
 export interface Mods {
   dmgMult: number;
@@ -53,8 +54,29 @@ export function mods(s: GameState): Mods {
     ticketPerKill: 0,
   };
   applyRelics(s, m);
+  applyHome(s, m);
   applyPets(s, m);
   return m;
+}
+
+function applyHome(s: GameState, m: Mods): void {
+  m.dmgMult *= apartmentDamage(s.apartment + 2 * relicLevel(s, "r_fan"));
+
+  // Worn suits only (what Park is seen wearing is what counts): +5% × set number per part.
+  let parts = 0;
+  for (const id of Object.values(s.wear)) parts += findSuitItem(id)?.set ?? 0;
+  m.dmgMult *= 1 + 0.05 * parts;
+  if (suitSetWorn(s.wear, 1)) m.goldMult *= 1.2;
+  if (suitSetWorn(s.wear, 2)) m.aspdMult *= 1.1;
+  if (suitSetWorn(s.wear, 3)) m.bossMult *= 1.3;
+  if (suitSetWorn(s.wear, 4)) m.sideJobMult *= 1.5;
+  if (suitSetWorn(s.wear, 5)) m.dmgMult *= 1.5;
+  if (suitSetWorn(s.wear, 6)) m.goldMult *= 2;
+
+  m.dmgMult *= 1 + 0.15 * (s.office.keyboard - 1);
+  m.critDmgAdd += 0.05 * (s.office.mouse - 1);
+  m.bossMult *= 1 + 0.1 * (s.office.chair - 1);
+  m.goldMult *= 1 + 0.1 * (s.office.monitor - 1);
 }
 
 // 금배지 looks at the current floor, so within one settle it counts from the floor the settle starts
