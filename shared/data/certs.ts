@@ -76,12 +76,13 @@ export interface Bonuses {
   offlineSec: number;
 }
 
-export function certBonuses(certs: Record<string, number>): Bonuses {
+// `tier3Mult` strengthens tier-3 certificates (the 파스 relic).
+export function certBonuses(certs: Record<string, number>, tier3Mult = 1): Bonuses {
   const b: Bonuses = { atk: 0, gold: 0, boss: 0, sideJob: 0, aspd: 0, critDmg: 0, prestige: 0, offlineSec: 0 };
   for (const [id, level] of Object.entries(certs)) {
     const def = findCert(id);
     if (!def) continue;
-    const add = def.perLevel * level;
+    const add = def.perLevel * level * (def.tier === 3 ? tier3Mult : 1);
     if (def.kind === "offline") b.offlineSec += add;
     else b[def.kind] += add;
   }

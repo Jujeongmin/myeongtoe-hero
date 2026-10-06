@@ -6,7 +6,7 @@ import { firstClearGems, fightSec, settle, settleBattle, settleSideJobs, targetS
 import { OFFLINE_CAP_SEC, newState } from "./state";
 import { heroDps, heroPower, type Power } from "./stats";
 
-const P = (dps: Big, extra: Partial<Power> = {}): Power => ({ dps, bossDps: dps, bossLimitSec: BOSS_LIMIT_SEC, goldMult: 1, ...extra });
+const P = (dps: Big, extra: Partial<Power> = {}): Power => ({ dps, bossDps: dps, bossLimitSec: BOSS_LIMIT_SEC, goldMult: 1, hpMult: 1, drainPerSec: 0, ...extra });
 
 const fresh = () => newState(0).run;
 

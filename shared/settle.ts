@@ -2,7 +2,8 @@ import { Big } from "./big";
 import { WALK_SEC, isBossFloor, killGold, targetHp, targetsOn } from "./data/floors";
 import { findSideJob, sideJobCycle, sideJobIncome } from "./data/sideJobs";
 import { cloneState, type GameState, type RunState, type SideJobState } from "./state";
-import { heroPower, offlineCapSec, sideJobMult, type Power } from "./stats";
+import { mods, type Mods } from "./mods";
+import { heroPower, offlineCapSec, type Power } from "./stats";
 
 // Enough for 12 offline hours at one kill a second, with room to spare; only a broken table loops.
 const MAX_STEPS = 200_000;
@@ -19,8 +20,13 @@ export function fightSec(floor: number, dps: Big): number {
   return targetHp(floor).div(dps).toNumber();
 }
 
+// Seconds to bring down this floor's monster: its health (after cuts) against the dps, plus any
+// drain of a share of its health a second (홍과장): 1 / (dps / hp + drain).
 export function targetSec(floor: number, power: Power): number {
-  return fightSec(floor, isBossFloor(floor) ? power.bossDps : power.dps);
+  const hp = targetHp(floor).mulN(power.hpMult);
+  const dps = isBossFloor(floor) ? power.bossDps : power.dps;
+  const rate = (hp.isZero() ? 0 : dps.div(hp).toNumber()) + power.drainPerSec;
+  return rate > 0 ? 1 / rate : Number.POSITIVE_INFINITY;
 }
 
 function bossTickets(floor: number): number {
@@ -40,10 +46,13 @@ export function firstClearGems(oldBest: number, newBest: number): number {
 // Plays `dt` seconds of the tower at a fixed power. No frames, no randomness: the same answer on the
 // server and on every client, and splitting the time any way gives the same result (time left over
 // is carried in run.carrySec). The screen's fight only animates what this decides.
-export function settleBattle(start: RunState, power: Power, dt: number): { run: RunState; gold: Big; tickets: number } {
+export function settleBattle(
+  start: RunState, power: Power, dt: number,
+): { run: RunState; gold: Big; tickets: number; kills: number } {
   const run = { ...start };
   let gold = Big.ZERO;
   let tickets = 0;
+  let kills = 0;
   let t = run.carrySec + dt;
 
   if (run.farming && targetSec(run.floor + 1, power) <= power.bossLimitSec) {
@@ -55,10 +64,11 @@ export function settleBattle(start: RunState, power: Power, dt: number): { run: 
   for (let step = 0; step < MAX_STEPS; step++) {
     if (run.farming) {
       const tpk = targetSec(run.floor, power) + WALK_SEC;
-      const kills = Math.floor(t / tpk);
-      if (kills > 0) {
-        gold = gold.add(killGold(run.floor).mulN(kills * power.goldMult));
-        t = Math.max(0, t - kills * tpk);
+      const n = Math.floor(t / tpk);
+      if (n > 0) {
+        gold = gold.add(killGold(run.floor).mulN(n * power.goldMult));
+        t = Math.max(0, t - n * tpk);
+        kills += n;
       }
       break;
     }
@@ -80,6 +90,7 @@ export function settleBattle(start: RunState, power: Power, dt: number): { run: 
     if (t < tpk) break;
     t -= tpk;
     gold = gold.add(killGold(floor).mulN(power.goldMult));
+    kills += 1;
     run.target += 1;
     if (run.target >= targetsOn(floor)) {
       tickets += bossTickets(floor);
@@ -90,7 +101,7 @@ export function settleBattle(start: RunState, power: Power, dt: number): { run: 
   }
 
   run.carrySec = t;
-  return { run, gold, tickets };
+  return { run, gold, tickets, kills };
 }
 
 export function settleSideJobs(
@@ -127,15 +138,33 @@ export function settle(state: GameState, now: number): GameState {
   if (now <= state.lastTick) return state;
   const dt = Math.min(offlineCapSec(state), (now - state.lastTick) / 1000);
   const next = cloneState(state);
+  const m = mods(next);
   const battle = settleBattle(next.run, heroPower(next), dt);
-  const jobs = settleSideJobs(next.sideJobs, dt, next.flags.sideJobAuto, sideJobMult(next));
+  const jobs = settleSideJobs(next.sideJobs, dt, next.flags.sideJobAuto, m.sideJobMult);
   const best = Math.max(next.bestFloor, battle.run.maxFloor);
+  const drops = next.ticketCarry + battle.kills * m.ticketPerKill;
+  const pay = paidBySideJobPet(next, m, dt);
   next.gems += firstClearGems(next.bestFloor, best);
   next.lastTick = now;
   next.run = battle.run;
   next.bestFloor = best;
-  next.tickets += battle.tickets;
+  next.tickets += battle.tickets + Math.floor(drops);
+  next.ticketCarry = drops - Math.floor(drops);
   next.sideJobs = jobs.sideJobs;
-  next.gold = next.gold.add(battle.gold).add(jobs.gold);
+  next.gold = next.gold.add(battle.gold).add(jobs.gold).add(pay);
   return next;
+}
+
+// 박주임: the dearest owned side job's income, once every sideJobPaySec seconds (counted
+// continuously, so splitting the time changes nothing).
+function paidBySideJobPet(s: GameState, m: Mods, dt: number): Big {
+  if (m.sideJobPaySec <= 0) return Big.ZERO;
+  let best = Big.ZERO;
+  for (const [id, own] of Object.entries(s.sideJobs)) {
+    const job = findSideJob(id);
+    if (!job || own.level === 0) continue;
+    const income = sideJobIncome(job, own.level);
+    if (income.cmp(best) > 0) best = income;
+  }
+  return best.mulN((dt / m.sideJobPaySec) * m.sideJobPayMult * m.sideJobMult);
 }
