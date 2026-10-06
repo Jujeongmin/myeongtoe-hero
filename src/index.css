@@ -3,7 +3,6 @@ html, body, #root { height: 100%; background: #120f20; color: #fff; font-family:
 button { font: inherit; cursor: pointer; }
 
 .phone { max-width: 480px; height: 100dvh; margin: 0 auto; display: flex; flex-direction: column; background: #1b1a2e; }
-.loading { display: grid; place-items: center; height: 100%; }
 
 .topbar { display: flex; justify-content: space-between; padding: 8px 12px; background: #2b2440; font-weight: 700; }
 
@@ -26,3 +25,7 @@ button { font: inherit; cursor: pointer; }
 .bar i { display: block; height: 100%; background: #e9c46a; }
 
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); padding: 8px 14px; border-radius: 16px; }
+
+.screen { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; height: 100%; padding: 24px; text-align: center; }
+.screen small { color: #b8b3d6; }
+.screen button { padding: 8px 16px; border: none; border-radius: 6px; background: #2a9d8f; color: #fff; font-weight: 700; }

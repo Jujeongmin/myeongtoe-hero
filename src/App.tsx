@@ -28,7 +28,7 @@ export default function App() {
     return () => clearInterval(id);
   }, [store]);
 
-  if (!state) return <div className="loading">출근 중…</div>;
+  if (!state) return <div className="screen">출근 중…</div>;
 
   return (
     <div className="phone">
