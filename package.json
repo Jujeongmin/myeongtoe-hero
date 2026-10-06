@@ -10,7 +10,8 @@
     "test": "vitest run",
     "server:install": "npm --prefix server install",
     "server:test": "npm --prefix server test",
-    "server:typecheck": "npm --prefix server run typecheck"
+    "server:typecheck": "npm --prefix server run typecheck",
+    "vx-sheet": "vite-node tools/vx-sheet.ts"
   },
   "dependencies": {
     "@agent8/gameserver": "^2.0.1",
