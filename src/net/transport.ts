@@ -22,3 +22,8 @@ export class LocalTransport implements Transport {
     return result;
   }
 }
+
+// While there is no connection: every sync fails, so the store keeps the intents queued.
+export const OFFLINE: Transport = {
+  sync: () => Promise.reject(new Error("offline")),
+};

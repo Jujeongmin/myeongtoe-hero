@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import type { Intent } from "../../shared/actions";
 import type { SyncResult } from "../../shared/sync";
-import { LocalTransport, type Transport } from "../net/transport";
+import { LocalTransport, OFFLINE, type Transport } from "../net/transport";
 import { GameStore } from "./store";
 
 function memory(): Pick<Storage, "getItem" | "setItem"> {
@@ -72,6 +72,18 @@ describe("GameStore", () => {
     await expect(store.flush()).rejects.toThrow("offline");
     expect(store.view()!.gear.level).toBe(1); // still predicted
     fail = false;
+    await store.flush();
+    expect(store.view()!.gear.level).toBe(1);
+  });
+
+  test("switching transport sends the queued intents over the new one", async () => {
+    const { store, transport, advance } = setup();
+    await store.flush();
+    advance(60_000);
+    store.setTransport(OFFLINE);
+    store.do({ k: "levelGear" });
+    await expect(store.flush()).rejects.toThrow("offline");
+    store.setTransport(transport);
     await store.flush();
     expect(store.view()!.gear.level).toBe(1);
   });

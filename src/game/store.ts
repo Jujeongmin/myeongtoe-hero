@@ -20,6 +20,11 @@ export class GameStore {
 
   constructor(private transport: Transport, private readonly clock: () => number = Date.now) {}
 
+  // The way to the server changed (connected, dropped, reconnected). Queued intents stay queued.
+  setTransport(transport: Transport): void {
+    this.transport = transport;
+  }
+
   serverNow(): number {
     return this.clock() + this.offset;
   }
