@@ -1,10 +1,14 @@
 import { Big } from "./big";
 import { CERTS, certBonuses, certDrawCost, certLevelCost, certTierOpen, findCert } from "./data/certs";
 import { GEAR_MAX_LEVEL, GEAR_TIERS, gearLevelCost, gearPrice } from "./data/gear";
+import { OFFICE_PARTS, apartmentCost, findSuitItem, officeUpgradeCost, type OfficePart } from "./data/home";
+import { PET_BOX_COUPONS, findPet, petLevelCost, petsUnlocked } from "./data/pets";
 import { BOOSTED_PRESTIGE_GEMS, PRESTIGE_MIN_FLOOR, prestigeReward } from "./data/prestige";
+import { findRelic, relicLevelCost } from "./data/relics";
 import { findSideJob, sideJobCost } from "./data/sideJobs";
+import { petLevel, relicLevel } from "./mods";
 import { nextRandom } from "./rng";
-import { cloneState, freshRun, type GameState } from "./state";
+import { OFFICE_MAX_GRADE, cloneState, freshRun, type GameState } from "./state";
 
 // A player's request the rules turned down. `code` goes back to the client as is (ui/text.ts has the
 // words for it).
@@ -22,7 +26,14 @@ export type Intent =
   | { k: "restartSideJob"; id: string }
   | { k: "buyCert" }
   | { k: "levelCert"; id: string }
-  | { k: "prestige"; boosted: boolean };
+  | { k: "prestige"; boosted: boolean }
+  | { k: "levelPet"; id: string }
+  | { k: "petBox" }
+  | { k: "levelRelic"; id: string }
+  | { k: "expandApartment" }
+  | { k: "buySuit"; id: string }
+  | { k: "wearSuit"; id: string }
+  | { k: "upgradeOffice"; part: OfficePart };
 
 // Untrusted input (from the network) to an Intent, or null for anything else.
 export function readIntent(raw: unknown): Intent | null {
@@ -41,6 +52,16 @@ export function readIntent(raw: unknown): Intent | null {
       return typeof r.id === "string" && r.id.length <= 32 ? { k: "levelCert", id: r.id } : null;
     case "prestige":
       return typeof r.boosted === "boolean" ? { k: "prestige", boosted: r.boosted } : null;
+    case "petBox":
+    case "expandApartment":
+      return { k: r.k };
+    case "levelPet":
+    case "levelRelic":
+    case "buySuit":
+    case "wearSuit":
+      return typeof r.id === "string" && r.id.length <= 32 ? { k: r.k, id: r.id } : null;
+    case "upgradeOffice":
+      return OFFICE_PARTS.some((p) => p.key === r.part) ? { k: "upgradeOffice", part: r.part as OfficePart } : null;
     default:
       return null;
   }
@@ -54,6 +75,11 @@ function spend(s: GameState, cost: Big): void {
 function spendTickets(s: GameState, n: number): void {
   if (s.tickets < n) throw new RuleError("not_enough_tickets");
   s.tickets -= n;
+}
+
+function spendCoupons(s: GameState, n: number): void {
+  if (s.coupons < n) throw new RuleError("not_enough_coupons");
+  s.coupons -= n;
 }
 
 function spendGems(s: GameState, n: number): void {
@@ -128,6 +154,61 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       s.gear = { tier: 0, level: 0 };
       s.sideJobs = {};
       s.prestiges += 1;
+      return s;
+    }
+    case "levelPet": {
+      const pet = findPet(intent.id);
+      if (!pet) throw new RuleError("unknown");
+      if (s.bestFloor < pet.unlockFloor) throw new RuleError("locked");
+      const level = petLevel(s, pet.id);
+      spendGems(s, petLevelCost(level));
+      s.pets[pet.id] = level + 1;
+      return s;
+    }
+    case "petBox": {
+      const pool = petsUnlocked(s.bestFloor);
+      if (pool.length === 0) throw new RuleError("locked");
+      spendCoupons(s, PET_BOX_COUPONS);
+      const draw = nextRandom(s.rngSeed);
+      s.rngSeed = draw.seed;
+      const pet = pool[Math.floor(draw.value * pool.length)];
+      s.pets[pet.id] = petLevel(s, pet.id) + 1;
+      return s;
+    }
+    case "levelRelic": {
+      const relic = findRelic(intent.id);
+      if (!relic) throw new RuleError("unknown");
+      if (s.bestFloor < relic.unlockFloor) throw new RuleError("locked");
+      const level = relicLevel(s, relic.id);
+      spendGems(s, relicLevelCost(level));
+      s.relics[relic.id] = level + 1;
+      return s;
+    }
+    case "expandApartment": {
+      spendGems(s, apartmentCost(s.apartment));
+      s.apartment += 1;
+      return s;
+    }
+    case "buySuit": {
+      const item = findSuitItem(intent.id);
+      if (!item) throw new RuleError("unknown");
+      if (s.suits.includes(item.id)) throw new RuleError("owned");
+      spendCoupons(s, item.price);
+      s.suits = [...s.suits, item.id];
+      if (!s.wear[item.part]) s.wear = { ...s.wear, [item.part]: item.id };
+      return s;
+    }
+    case "wearSuit": {
+      const item = findSuitItem(intent.id);
+      if (!item || !s.suits.includes(item.id)) throw new RuleError("not_owned");
+      s.wear = { ...s.wear, [item.part]: item.id };
+      return s;
+    }
+    case "upgradeOffice": {
+      const grade = s.office[intent.part];
+      if (grade >= OFFICE_MAX_GRADE) throw new RuleError("max");
+      spendCoupons(s, officeUpgradeCost(grade));
+      s.office = { ...s.office, [intent.part]: grade + 1 };
       return s;
     }
   }

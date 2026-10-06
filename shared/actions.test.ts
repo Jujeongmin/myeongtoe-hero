@@ -3,7 +3,10 @@ import { applyIntent, readIntent, RuleError, type Intent } from "./actions";
 import { Big } from "./big";
 import { CERTS, certDrawCost, certLevelCost } from "./data/certs";
 import { GEAR_MAX_LEVEL, GEAR_TIERS, gearAtk, gearLevelCost, gearPrice } from "./data/gear";
+import { SUIT_ITEMS, apartmentCost, officeUpgradeCost } from "./data/home";
+import { PET_BOX_COUPONS, petLevelCost } from "./data/pets";
 import { BOOSTED_PRESTIGE_GEMS, PRESTIGE_MIN_FLOOR, prestigeReward } from "./data/prestige";
+import { relicLevelCost } from "./data/relics";
 import { SIDE_JOBS, sideJobCost } from "./data/sideJobs";
 import { newState, type GameState } from "./state";
 
@@ -30,6 +33,10 @@ describe("readIntent", () => {
     expect(readIntent("buyGear")).toBeNull();
     expect(readIntent(null)).toBeNull();
     expect(readIntent({ k: "levelStat", id: "atk" })).toBeNull();
+    expect(readIntent({ k: "upgradeOffice", part: "chair" })).toEqual({ k: "upgradeOffice", part: "chair" });
+    expect(readIntent({ k: "upgradeOffice", part: "desk" })).toBeNull();
+    expect(readIntent({ k: "petBox" })).toEqual({ k: "petBox" });
+    expect(readIntent({ k: "wearSuit", id: "s1_tie" })).toEqual({ k: "wearSuit", id: "s1_tie" });
     expect(readIntent({ k: "buyCert" })).toEqual({ k: "buyCert" });
     expect(readIntent({ k: "prestige", boosted: true })).toEqual({ k: "prestige", boosted: true });
     expect(readIntent({ k: "prestige" })).toBeNull();
@@ -186,5 +193,79 @@ describe("prestige", () => {
     expect(prestigeReward(80, 0)).toEqual({ tickets: 2, gems: 4 });
     expect(prestigeReward(200, 0).tickets).toBeGreaterThan(prestigeReward(100, 0).tickets);
     expect(prestigeReward(200, 0.5).tickets).toBe(Math.floor(prestigeReward(200, 0).tickets * 1.5));
+  });
+});
+
+describe("permanent growth", () => {
+  const base = (extra: Partial<GameState> = {}): GameState => ({ ...rich(), gems: 10_000, coupons: 10_000, ...extra });
+
+  test("pets: level with gems once joined", () => {
+    expect(codeOf(base(), { k: "levelPet", id: "p_intern" })).toBe("locked");
+    const after = applyIntent(base({ bestFloor: 100 }), { k: "levelPet", id: "p_intern" });
+    expect(after.pets.p_intern).toBe(2);
+    expect(after.gems).toBe(10_000 - petLevelCost(1));
+    expect(codeOf(base(), { k: "levelPet", id: "p_nope" })).toBe("unknown");
+  });
+
+  test("the pet box levels a random joined pet, the same one the server picks", () => {
+    expect(codeOf(base(), { k: "petBox" })).toBe("locked");
+    const s = base({ bestFloor: 600 });
+    const a = applyIntent(s, { k: "petBox" });
+    const b = applyIntent(s, { k: "petBox" });
+    expect(a.pets).toEqual(b.pets);
+    expect(Object.values(a.pets)).toEqual([2]);
+    expect(a.coupons).toBe(10_000 - PET_BOX_COUPONS);
+    expect(codeOf({ ...s, coupons: 0 }, { k: "petBox" })).toBe("not_enough_coupons");
+  });
+
+  test("relics: level with gems once arrived", () => {
+    expect(codeOf(base(), { k: "levelRelic", id: "r_badge" })).toBe("locked");
+    const after = applyIntent(base({ bestFloor: 1000 }), { k: "levelRelic", id: "r_badge" });
+    expect(after.relics.r_badge).toBe(2);
+    expect(after.gems).toBe(10_000 - relicLevelCost(1));
+  });
+
+  test("apartment: one pyeong for gems", () => {
+    const after = applyIntent(base(), { k: "expandApartment" });
+    expect(after.apartment).toBe(1);
+    expect(after.gems).toBe(10_000 - apartmentCost(0));
+  });
+
+  test("suits: buy each part once, worn at once if that part was bare", () => {
+    const item = SUIT_ITEMS[0];
+    const after = applyIntent(base(), { k: "buySuit", id: item.id });
+    expect(after.suits).toEqual([item.id]);
+    expect(after.coupons).toBe(10_000 - item.price);
+    expect(after.wear[item.part]).toBe(item.id);
+    expect(codeOf(after, { k: "buySuit", id: item.id })).toBe("owned");
+    expect(codeOf(base(), { k: "buySuit", id: "s9_hat" })).toBe("unknown");
+  });
+
+  test("suits: wear an owned part, swapping what was on", () => {
+    const a = SUIT_ITEMS.find((i) => i.set === 1 && i.part === "tie")!;
+    const b = SUIT_ITEMS.find((i) => i.set === 2 && i.part === "tie")!;
+    const s = base({ suits: [a.id, b.id], wear: { tie: a.id } });
+    expect(applyIntent(s, { k: "wearSuit", id: b.id }).wear).toEqual({ tie: b.id });
+    expect(codeOf(base(), { k: "wearSuit", id: b.id })).toBe("not_owned");
+    const bought = applyIntent(base({ suits: [a.id], wear: { tie: a.id } }), { k: "buySuit", id: b.id });
+    expect(bought.wear).toEqual({ tie: a.id });
+  });
+
+  test("office: upgrade a grade with coupons, up to 17", () => {
+    const after = applyIntent(base(), { k: "upgradeOffice", part: "chair" });
+    expect(after.office.chair).toBe(2);
+    expect(after.coupons).toBe(10_000 - officeUpgradeCost(1));
+    expect(codeOf(base({ office: { keyboard: 17, mouse: 1, chair: 1, monitor: 1 } }), { k: "upgradeOffice", part: "keyboard" })).toBe("max");
+  });
+
+  test("a job change keeps all of it", () => {
+    const s = base({ bestFloor: 1000, apartment: 3, suits: [SUIT_ITEMS[0].id], wear: { hair: SUIT_ITEMS[0].id }, pets: { p_intern: 4 }, relics: { r_badge: 2 } });
+    s.run = { ...s.run, floor: 100, maxFloor: 100 };
+    const after = applyIntent(s, { k: "prestige", boosted: false });
+    expect(after.apartment).toBe(3);
+    expect(after.suits).toEqual([SUIT_ITEMS[0].id]);
+    expect(after.wear).toEqual({ hair: SUIT_ITEMS[0].id });
+    expect(after.pets).toEqual({ p_intern: 4 });
+    expect(after.relics).toEqual({ r_badge: 2 });
   });
 });

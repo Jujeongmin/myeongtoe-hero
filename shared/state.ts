@@ -1,6 +1,9 @@
 import { Big } from "./big";
 import { findCert } from "./data/certs";
 import { GEAR_MAX_LEVEL, GEAR_TIERS } from "./data/gear";
+import { findSuitItem } from "./data/home";
+import { findPet } from "./data/pets";
+import { findRelic } from "./data/relics";
 import { findSideJob } from "./data/sideJobs";
 
 export const SAVE_VERSION = 3;
@@ -149,12 +152,11 @@ export function toSave(s: GameState): SaveData {
   return { ...c, gold: c.gold.toString() };
 }
 
-// Levels keyed by id, kept when the key looks like one of ours (`p_`, `r_`) and the level is ≥ 1.
-// (Task 6 checks the ids against the tables.)
-function levels(x: unknown, prefix: string): Record<string, number> {
+// Levels keyed by id, kept for ids the table knows and levels ≥ 1.
+function levels(x: unknown, known: (id: string) => unknown): Record<string, number> {
   const out: Record<string, number> = {};
   for (const [id, lv] of Object.entries(obj(x))) {
-    if (id.startsWith(prefix) && id.length <= 32 && int(lv, 1, 0) >= 1) out[id] = lv as number;
+    if (known(id) && int(lv, 1, 0) >= 1) out[id] = lv as number;
   }
   return out;
 }
@@ -183,7 +185,7 @@ export function fromSave(raw: unknown): GameState {
   const grade = (x: unknown) => Math.min(OFFICE_MAX_GRADE, int(x, 1, 1));
   const office = obj(data.office);
   const suits = Array.isArray(data.suits)
-    ? [...new Set(data.suits.filter((x): x is string => typeof x === "string" && x.startsWith("s") && x.length <= 32))]
+    ? [...new Set(data.suits.filter((x): x is string => typeof x === "string" && findSuitItem(x) !== undefined))]
     : [];
   const wear: Record<string, string> = {};
   for (const [part, id] of Object.entries(obj(data.wear))) {
@@ -213,8 +215,8 @@ export function fromSave(raw: unknown): GameState {
     prestiges: int(data.prestiges, 0, 0),
     coupons: int(data.coupons, 0, 0),
     ticketCarry: typeof carry === "number" && carry >= 0 && carry < 1 ? carry : 0,
-    pets: levels(data.pets, "p_"),
-    relics: levels(data.relics, "r_"),
+    pets: levels(data.pets, findPet),
+    relics: levels(data.relics, findRelic),
     apartment: int(data.apartment, 0, 0),
     suits,
     wear,
