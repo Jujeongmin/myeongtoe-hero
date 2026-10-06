@@ -96,7 +96,17 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
   return (
     <div className="phone">
       <StatusBanner connection={connection} guest={guest} />
-      <Battle state={state} store={store} onOpen={setSheet} />
+      <Battle
+        state={state}
+        store={store}
+        onOpen={setSheet}
+        onGo={(place) => {
+          if ("tab" in place) {
+            setSheet(null);
+            setTab(place.tab);
+          } else setSheet(place.sheet);
+        }}
+      />
       <CurrencyBar state={state} />
       <main className="list">
         {tab === "sideJobs" && <SideJobPanel state={state} store={store} />}

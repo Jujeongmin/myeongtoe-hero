@@ -1,18 +1,17 @@
 import { useState } from "react";
-import { ATTENDANCE_REWARDS, SPECIAL_MISSIONS, STEP_MISSIONS, rewardText } from "../../shared/data/missions";
+import { ATTENDANCE_REWARDS, SPECIAL_MISSIONS, rewardText } from "../../shared/data/missions";
 import type { GameState } from "../../shared/state";
 import { kstDay } from "../../shared/time";
 import type { GameStore } from "../game/store";
 
-type Tab = "step" | "special" | "attendance";
+type Tab = "special" | "attendance";
 const TABS: { id: Tab; label: string }[] = [
-  { id: "step", label: "단계 미션" },
   { id: "special", label: "특수 임무" },
   { id: "attendance", label: "출석" },
 ];
 
 export function MissionSheet({ state, store }: { state: GameState; store: GameStore }) {
-  const [tab, setTab] = useState<Tab>("step");
+  const [tab, setTab] = useState<Tab>("special");
   return (
     <>
       <div className="tabs">
@@ -20,30 +19,8 @@ export function MissionSheet({ state, store }: { state: GameState; store: GameSt
           <button key={t.id} className={t.id === tab ? "on" : ""} onClick={() => setTab(t.id)}>{t.label}</button>
         ))}
       </div>
-      {tab === "step" && <Steps state={state} store={store} />}
       {tab === "special" && <Specials state={state} store={store} />}
       {tab === "attendance" && <Attendance state={state} store={store} />}
-    </>
-  );
-}
-
-function Steps({ state, store }: { state: GameState; store: GameStore }) {
-  const step = state.missions.step;
-  return (
-    <>
-      {STEP_MISSIONS.map((m, i) => (
-        <div key={m.id} className={`row${i === step ? " current" : i > step ? " far" : ""}`}>
-          <div className="grow">
-            {i + 1}단계 · {m.text}
-            <div className="sub">{rewardText(m.reward)}</div>
-          </div>
-          {i < step ? (
-            <button disabled>완료</button>
-          ) : (
-            <button disabled={i !== step || !m.done(state)} onClick={() => store.do({ k: "claimStep" })}>받기</button>
-          )}
-        </div>
-      ))}
     </>
   );
 }
