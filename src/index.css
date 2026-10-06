@@ -36,3 +36,9 @@ button { font: inherit; cursor: pointer; }
 .tier { font-size: 10px; padding: 1px 4px; border-radius: 3px; background: #4a4370; }
 .tier.t2 { background: #2a6f97; }
 .tier.t3 { background: #9d4edd; }
+.boss-timer { margin-top: 4px; color: #ffd166; font-weight: 700; }
+.skills { position: absolute; bottom: 6px; left: 6px; display: flex; gap: 4px; }
+.skills span { font-size: 10px; padding: 2px 5px; border-radius: 3px; background: rgba(0, 0, 0, 0.55); }
+.modal-back { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); display: grid; place-items: center; z-index: 10; }
+.modal { width: min(320px, 86vw); background: #2b2440; border: 1px solid #4a4370; border-radius: 10px; padding: 18px; text-align: center; display: flex; flex-direction: column; gap: 6px; }
+.modal button { margin-top: 8px; padding: 10px; border: none; border-radius: 6px; background: #2a9d8f; color: #fff; font-weight: 700; }

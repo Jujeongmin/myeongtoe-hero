@@ -9,6 +9,7 @@ import { Verse8Transport } from "./net/verse8Transport";
 import { Battle } from "./ui/Battle";
 import { CertPanel } from "./ui/CertPanel";
 import { GearPanel } from "./ui/GearPanel";
+import { OfflinePopup } from "./ui/OfflinePopup";
 import { PrestigePanel } from "./ui/PrestigePanel";
 import { SideJobPanel } from "./ui/SideJobPanel";
 import { StatPanel } from "./ui/StatPanel";
@@ -106,6 +107,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
         {tab === "certs" && <CertPanel state={state} store={store} />}
         {tab === "prestige" && <PrestigePanel state={state} store={store} />}
       </main>
+      <OfflinePopup store={store} />
       <Toast store={store} />
     </div>
   );
