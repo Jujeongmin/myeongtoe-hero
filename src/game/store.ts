@@ -1,6 +1,7 @@
 import { applyIntent, RuleError, type Intent } from "../../shared/actions";
 import { settle } from "../../shared/settle";
 import { fromSave, type GameState } from "../../shared/state";
+import type { OfflineReport } from "../../shared/sync";
 import type { Transport } from "../net/transport";
 
 // The client's copy of the game: the last state the server confirmed, plus what the player has done
@@ -10,6 +11,8 @@ export class GameStore {
   static readonly HEARTBEAT_MS = 10_000;
 
   error: { code: string; at: number } | null = null;
+  // What the last sync said happened while the player was away, until the popup is closed.
+  offline: OfflineReport | null = null;
   private confirmed: GameState | null = null;
   private pending: Intent[] = [];
   private inFlight: Intent[] = [];
@@ -72,6 +75,7 @@ export class GameStore {
     try {
       const result = await this.transport.sync(this.inFlight);
       this.confirmed = fromSave(result.save);
+      if (result.offline) this.offline = result.offline;
       this.offset = result.now - this.clock();
       this.lastSyncAt = this.clock();
       this.inFlight = [];
@@ -83,6 +87,11 @@ export class GameStore {
       this.busy = false;
       this.emit();
     }
+  }
+
+  dismissOffline(): void {
+    this.offline = null;
+    this.emit();
   }
 
   subscribe(fn: () => void): () => void {

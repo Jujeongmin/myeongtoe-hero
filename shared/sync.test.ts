@@ -46,4 +46,15 @@ describe("syncSave", () => {
   test("a corrupt save is an error, never silently replaced", () => {
     expect(() => syncSave({ v: 1, gold: 5 }, [], 0)).toThrow("bad_save");
   });
+  test("reports what happened while away, from a minute on", () => {
+    const save = toSave(newState(0));
+    expect(syncSave(save, [], 30_000).offline).toBeNull();
+    const r = syncSave(save, [], 600_000);
+    expect(r.offline).not.toBeNull();
+    expect(r.offline!.seconds).toBeCloseTo(600, 6);
+    expect(r.offline!.floorFrom).toBe(1);
+    expect(r.offline!.floorTo).toBe(r.save.run.floor);
+    expect(r.offline!.gold).toBe(r.save.gold);
+    expect(syncSave(undefined, [], 600_000).offline).toBeNull();
+  });
 });

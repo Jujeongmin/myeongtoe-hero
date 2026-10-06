@@ -95,6 +95,16 @@ describe("GameStore", () => {
     expect(store.synced()).toBe(true);
   });
 
+  test("keeps the away report until dismissed", async () => {
+    const { store, advance } = setup();
+    await store.flush();
+    advance(600_000);
+    await store.flush();
+    expect(store.offline?.seconds).toBeCloseTo(600, 6);
+    store.dismissOffline();
+    expect(store.offline).toBeNull();
+  });
+
   test("LocalTransport keeps the save between stores", async () => {
     const storage = memory();
     const a = new GameStore(new LocalTransport(storage, () => 0), () => 0);
