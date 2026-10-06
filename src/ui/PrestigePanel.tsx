@@ -26,7 +26,7 @@ export function PrestigePanel({ state, store }: { state: GameState; store: GameS
       <div className="row">
         <div className="grow">
           <b>이직</b> (지금까지 {state.prestiges}번)
-          <div className="sub">층, 골드, 업무 장비, 부업, 강화가 초기화돼요. 자격증, 응시권, 보석, 스킬은 남아요.</div>
+          <div className="sub">층, 골드, 업무 장비, 부업이 초기화돼요. 자격증, 동료, 기념품, 정장, 아파트, 사무용품, 응시권, 보석, 상품권, 스킬은 남아요.</div>
         </div>
       </div>
       <div className="row">

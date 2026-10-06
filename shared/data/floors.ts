@@ -41,3 +41,10 @@ export function targetHp(floor: number): Big {
 export function killGold(floor: number): Big {
   return scaled(GOLD_BASE, GOLD_GROWTH, floor);
 }
+
+export const DEPARTMENTS = ["총무팀", "영업팀", "법무팀", "개발팀", "재무팀", "임원실"] as const;
+
+// The department theme (background and monster set, step 7) for a floor: a new one every 100 floors.
+export function departmentOf(floor: number): string {
+  return DEPARTMENTS[Math.floor((floor - 1) / 100) % DEPARTMENTS.length];
+}

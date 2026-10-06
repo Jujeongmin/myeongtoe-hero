@@ -7,6 +7,8 @@ const ERRORS: Record<string, string> = {
   unknown: "알 수 없는 항목이에요",
   not_enough_tickets: "응시권이 부족해요",
   not_enough_gems: "보석이 부족해요",
+  not_enough_coupons: "상품권이 부족해요",
+  owned: "이미 가지고 있어요",
 };
 
 export function errorText(code: string): string {

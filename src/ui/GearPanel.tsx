@@ -1,36 +1,47 @@
 import { GEAR_MAX_LEVEL, GEAR_TIERS, gearAtk, gearLevelCost, gearPrice } from "../../shared/data/gear";
 import { formatBig } from "../../shared/format";
 import type { GameState } from "../../shared/state";
-import { heroAtk } from "../../shared/stats";
 import type { GameStore } from "../game/store";
 
+// Every tier listed, like the original's weapon list: the ones behind owned, the current one to level
+// up to 5, the next one to buy once the current is at 5, the rest waiting.
 export function GearPanel({ state, store }: { state: GameState; store: GameStore }) {
-  const { tier, level } = state.gear;
-  const levelCost = gearLevelCost(tier, level);
-  const next = tier + 1 < GEAR_TIERS.length ? tier + 1 : null;
-  const maxed = level >= GEAR_MAX_LEVEL;
+  const { tier: current, level } = state.gear;
   return (
     <>
-      <div className="row">
-        <div className="grow">
-          <b>{GEAR_TIERS[tier].name}</b> Lv{level}/{GEAR_MAX_LEVEL}
-          <div className="sub">공격력 {formatBig(heroAtk(state))}</div>
-        </div>
-        <button disabled={maxed || state.gold.lt(levelCost)} onClick={() => store.do({ k: "levelGear" })}>
-          {maxed ? "최대" : <>레벨업<br />{formatBig(levelCost)}</>}
-        </button>
-      </div>
-      {next !== null && (
-        <div className="row">
-          <div className="grow">
-            다음 장비 <b>{GEAR_TIERS[next].name}</b>
-            <div className="sub">공격력 {formatBig(gearAtk(next, 0))}{!maxed && " · Lv5 달성 시 구매"}</div>
+      {GEAR_TIERS.map((g, tier) => {
+        const shownLevel = tier < current ? GEAR_MAX_LEVEL : tier === current ? level : 0;
+        const atk = gearAtk(tier, shownLevel);
+        let button;
+        if (tier < current) {
+          button = <button disabled>보유</button>;
+        } else if (tier === current) {
+          const cost = gearLevelCost(tier, level);
+          const maxed = level >= GEAR_MAX_LEVEL;
+          button = (
+            <button disabled={maxed || state.gold.lt(cost)} onClick={() => store.do({ k: "levelGear" })}>
+              {maxed ? "최대" : <>+1<br />{formatBig(cost)}</>}
+            </button>
+          );
+        } else {
+          const price = gearPrice(tier);
+          const canBuy = tier === current + 1 && level >= GEAR_MAX_LEVEL;
+          button = (
+            <button disabled={!canBuy || state.gold.lt(price)} onClick={() => store.do({ k: "buyGear" })}>
+              구매<br />{formatBig(price)}
+            </button>
+          );
+        }
+        return (
+          <div key={g.id} className={`row${tier === current ? " current" : tier > current + 1 ? " far" : ""}`}>
+            <div className="grow">
+              <b>{tier + 1}. {g.name}</b>
+              <div className="sub">LV.{shownLevel}/{GEAR_MAX_LEVEL} · ATK {formatBig(atk)}</div>
+            </div>
+            {button}
           </div>
-          <button disabled={!maxed || state.gold.lt(gearPrice(next))} onClick={() => store.do({ k: "buyGear" })}>
-            구매<br />{formatBig(gearPrice(next))}
-          </button>
-        </div>
-      )}
+        );
+      })}
     </>
   );
 }

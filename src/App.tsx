@@ -6,25 +6,25 @@ import { connectionOf, shouldPlayLocally, type Connection } from "./net/connecti
 import { loginState } from "./net/login";
 import { LocalTransport, OFFLINE } from "./net/transport";
 import { Verse8Transport } from "./net/verse8Transport";
-import { Battle } from "./ui/Battle";
+import { Battle, type SheetId } from "./ui/Battle";
+import { BottomNav, type NavTab } from "./ui/BottomNav";
 import { CertPanel } from "./ui/CertPanel";
+import { CurrencyBar } from "./ui/CurrencyBar";
 import { GearPanel } from "./ui/GearPanel";
+import { ApartmentPanel, OfficePanel, RelicPanel, SuitPanel } from "./ui/HomePanels";
 import { OfflinePopup } from "./ui/OfflinePopup";
+import { PetPanel } from "./ui/PetPanel";
 import { PrestigePanel } from "./ui/PrestigePanel";
+import { Sheet } from "./ui/Sheet";
 import { SideJobPanel } from "./ui/SideJobPanel";
 import { StatusBanner } from "./ui/StatusBanner";
 import { Toast } from "./ui/Toast";
-import { TopBar } from "./ui/TopBar";
 
 const SYNC_MS = 1500;
 
-type Tab = "gear" | "sideJobs" | "certs" | "prestige";
-const TABS: { id: Tab; label: string }[] = [
-  { id: "gear", label: "장비" },
-  { id: "sideJobs", label: "부업" },
-  { id: "certs", label: "자격증" },
-  { id: "prestige", label: "이직" },
-];
+const SHEET_TITLES: Record<SheetId, string> = {
+  prestige: "이직", suits: "정장", apartment: "아파트", relics: "퇴직 기념품", office: "사무용품",
+};
 
 // Playing against the in-page server (no Verse8 project, or ?local in development).
 export function LocalApp() {
@@ -65,7 +65,8 @@ export function OnlineApp() {
 
 function Game({ store, connection, guest }: { store: GameStore; connection: Connection; guest: boolean }) {
   const state = useGameView(store);
-  const [tab, setTab] = useState<Tab>("gear");
+  const [tab, setTab] = useState<NavTab>("gear");
+  const [sheet, setSheet] = useState<SheetId | null>(null);
 
   useEffect(() => {
     const tick = () => void store.flush().catch(() => undefined);
@@ -88,22 +89,25 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
 
   return (
     <div className="phone">
-      <TopBar state={state} />
       <StatusBanner connection={connection} guest={guest} />
-      <Battle state={state} />
-      <nav className="tabs">
-        {TABS.map((t) => (
-          <button key={t.id} className={t.id === tab ? "tab on" : "tab"} onClick={() => setTab(t.id)}>
-            {t.label}
-          </button>
-        ))}
-      </nav>
+      <Battle state={state} onOpen={setSheet} />
+      <CurrencyBar state={state} />
       <main className="list">
-        {tab === "gear" && <GearPanel state={state} store={store} />}
         {tab === "sideJobs" && <SideJobPanel state={state} store={store} />}
+        {tab === "gear" && <GearPanel state={state} store={store} />}
+        {tab === "pets" && <PetPanel state={state} store={store} />}
         {tab === "certs" && <CertPanel state={state} store={store} />}
-        {tab === "prestige" && <PrestigePanel state={state} store={store} />}
       </main>
+      <BottomNav state={state} tab={tab} onPick={setTab} />
+      {sheet && (
+        <Sheet title={SHEET_TITLES[sheet]} onClose={() => setSheet(null)}>
+          {sheet === "prestige" && <PrestigePanel state={state} store={store} />}
+          {sheet === "suits" && <SuitPanel state={state} store={store} />}
+          {sheet === "apartment" && <ApartmentPanel state={state} store={store} />}
+          {sheet === "relics" && <RelicPanel state={state} store={store} />}
+          {sheet === "office" && <OfficePanel state={state} store={store} />}
+        </Sheet>
+      )}
       <OfflinePopup store={store} />
       <Toast store={store} />
     </div>

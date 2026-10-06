@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { GOLD_GROWTH, HP_GROWTH, bossMult, isBossFloor, killGold, targetHp, targetsOn } from "./floors";
+import { GOLD_GROWTH, HP_GROWTH, bossMult, departmentOf, isBossFloor, killGold, targetHp, targetsOn } from "./floors";
 import { GEAR_TIERS, gearAtk, gearLevelCost, gearPrice } from "./gear";
 import { SIDE_JOBS, findSideJob, sideJobCost, sideJobCycle, sideJobIncome } from "./sideJobs";
 
@@ -19,6 +19,13 @@ describe("floors", () => {
     expect(targetHp(10).div(normal).toNumber()).toBeCloseTo(10, 9);
     const gold = killGold(9).mulN(GOLD_GROWTH);
     expect(killGold(10).div(gold).toNumber()).toBeCloseTo(10, 9);
+  });
+
+  test("a department every 100 floors, cycling through six", () => {
+    expect(departmentOf(1)).toBe("총무팀");
+    expect(departmentOf(100)).toBe("총무팀");
+    expect(departmentOf(101)).toBe("영업팀");
+    expect(departmentOf(601)).toBe("총무팀");
   });
 
   test("health outgrows gold, so every run hits a wall", () => {
