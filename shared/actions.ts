@@ -2,6 +2,7 @@ import { Big } from "./big";
 import { CERTS, certBonuses, certDrawCost, certLevelCost, certTierOpen, findCert } from "./data/certs";
 import { GEAR_MAX_LEVEL, GEAR_TIERS, gearLevelCost, gearPrice } from "./data/gear";
 import { OFFICE_PARTS, apartmentCost, findSuitItem, officeUpgradeCost, type OfficePart } from "./data/home";
+import { dailyQuestReward, findDailyQuest } from "./data/dailyQuests";
 import { runParking } from "./data/parking";
 import { dailyOf } from "./daily";
 import { PET_BOX_COUPONS, findPet, petLevelCost, petsUnlocked } from "./data/pets";
@@ -37,7 +38,8 @@ export type Intent =
   | { k: "buySuit"; id: string }
   | { k: "wearSuit"; id: string }
   | { k: "upgradeOffice"; part: OfficePart }
-  | { k: "enterParking" };
+  | { k: "enterParking" }
+  | { k: "claimDaily"; id: string };
 
 // Untrusted input (from the network) to an Intent, or null for anything else.
 export function readIntent(raw: unknown): Intent | null {
@@ -64,6 +66,7 @@ export function readIntent(raw: unknown): Intent | null {
     case "levelRelic":
     case "buySuit":
     case "wearSuit":
+    case "claimDaily":
       return typeof r.id === "string" && r.id.length <= 32 ? { k: r.k, id: r.id } : null;
     case "upgradeOffice":
       return OFFICE_PARTS.some((p) => p.key === r.part) ? { k: "upgradeOffice", part: r.part as OfficePart } : null;
@@ -216,6 +219,17 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       s.parking = { ...s.parking, passes: s.parking.passes - 1, best: Math.max(s.parking.best, run.depth) };
       s.tickets += run.tickets;
       s.daily = { ...today, claimed: [...today.claimed], entries: today.entries + 1, bestDepth: Math.max(today.bestDepth, run.depth) };
+      return s;
+    }
+    case "claimDaily": {
+      const quest = findDailyQuest(intent.id);
+      if (!quest) throw new RuleError("unknown");
+      const today = dailyOf(s);
+      if (today.claimed.includes(quest.id)) throw new RuleError("claimed");
+      const value = quest.kind === "entries" ? today.entries : today.bestDepth;
+      if (value < quest.goal) throw new RuleError("not_done");
+      s.coupons += dailyQuestReward(quest, s.lastTick);
+      s.daily = { ...today, claimed: [...today.claimed, quest.id] };
       return s;
     }
     case "upgradeOffice": {
