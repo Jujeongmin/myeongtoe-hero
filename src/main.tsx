@@ -6,6 +6,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { GameServerProvider } from "@agent8/gameserver";
 import { LocalApp, OnlineApp } from "./App";
+import "./fonts.css";
 import "./index.css";
 import { wantsOnline } from "./net/connection";
 import { ErrorBoundary } from "./ui/ErrorBoundary";

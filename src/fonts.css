@@ -1,0 +1,21 @@
+/* Galmuri by Lee Minseo (quiple), SIL Open Font License 1.1 — the Korean pixel font the UI uses.
+   Only the three faces the game draws with, so the build ships three files instead of the whole
+   family. */
+@font-face {
+  font-family: Galmuri11;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../node_modules/galmuri/dist/Galmuri11.woff2") format("woff2");
+}
+@font-face {
+  font-family: Galmuri11;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../node_modules/galmuri/dist/Galmuri11-Bold.woff2") format("woff2");
+}
+@font-face {
+  font-family: Galmuri9;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../node_modules/galmuri/dist/Galmuri9.woff2") format("woff2");
+}
