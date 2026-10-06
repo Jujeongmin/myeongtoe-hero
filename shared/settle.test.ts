@@ -107,24 +107,17 @@ describe("settleSideJobs", () => {
   const cycle = sideJobCycle(job, 2);
   const income = sideJobIncome(job, 2);
 
-  test("without automation a job pays once and stops", () => {
-    const jobs = { [job.id]: { level: 2, progressSec: 0, running: true } };
-    const { sideJobs, gold } = settleSideJobs(jobs, cycle * 3.5, false);
-    expect(gold.div(income).toNumber()).toBeCloseTo(1, 9);
-    expect(sideJobs[job.id]).toEqual({ level: 2, progressSec: 0, running: false });
-  });
-
-  test("with automation it pays every cycle and carries the rest", () => {
-    const jobs = { [job.id]: { level: 2, progressSec: 0, running: true } };
-    const { sideJobs, gold } = settleSideJobs(jobs, cycle * 3.5, true);
+  test("a job pays every cycle on its own and carries the rest", () => {
+    const jobs = { [job.id]: { level: 2, progressSec: 0, running: false } };
+    const { sideJobs, gold } = settleSideJobs(jobs, cycle * 3.5);
     expect(gold.div(income).toNumber()).toBeCloseTo(3, 9);
     expect(sideJobs[job.id].progressSec).toBeCloseTo(cycle * 0.5, 6);
     expect(sideJobs[job.id].running).toBe(true);
   });
 
-  test("a stopped or unbought job earns nothing", () => {
-    const jobs = { [job.id]: { level: 2, progressSec: 0, running: false }, [SIDE_JOBS[1].id]: { level: 0, progressSec: 0, running: true } };
-    expect(settleSideJobs(jobs, 1e6, false).gold.isZero()).toBe(true);
+  test("an unbought job earns nothing", () => {
+    const jobs = { [SIDE_JOBS[1].id]: { level: 0, progressSec: 0, running: true } };
+    expect(settleSideJobs(jobs, 1e6).gold.isZero()).toBe(true);
   });
 });
 

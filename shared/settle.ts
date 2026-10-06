@@ -105,30 +105,24 @@ export function settleBattle(
   return { run, gold, tickets, kills };
 }
 
+// Every owned side job pays once per cycle and starts over on its own, the time left over carried.
 export function settleSideJobs(
-  jobs: Record<string, SideJobState>, dt: number, auto: boolean, incomeMult = 1,
+  jobs: Record<string, SideJobState>, dt: number, incomeMult = 1,
 ): { sideJobs: Record<string, SideJobState>; gold: Big } {
   let gold = Big.ZERO;
   const sideJobs: Record<string, SideJobState> = {};
   for (const [id, own] of Object.entries(jobs)) {
     const job = findSideJob(id);
-    if (!job || own.level === 0 || !own.running) {
+    if (!job || own.level === 0) {
       sideJobs[id] = { ...own };
       continue;
     }
     const cycle = sideJobCycle(job, own.level);
     const income = sideJobIncome(job, own.level).mulN(incomeMult);
     const p = own.progressSec + dt;
-    if (auto) {
-      const paid = Math.floor(p / cycle);
-      if (paid > 0) gold = gold.add(income.mulN(paid));
-      sideJobs[id] = { ...own, progressSec: Math.max(0, p - paid * cycle) };
-    } else if (p >= cycle) {
-      gold = gold.add(income);
-      sideJobs[id] = { ...own, progressSec: 0, running: false };
-    } else {
-      sideJobs[id] = { ...own, progressSec: p };
-    }
+    const paid = Math.floor(p / cycle);
+    if (paid > 0) gold = gold.add(income.mulN(paid));
+    sideJobs[id] = { ...own, running: true, progressSec: Math.max(0, p - paid * cycle) };
   }
   return { sideJobs, gold };
 }
@@ -141,7 +135,7 @@ export function settle(state: GameState, now: number): GameState {
   const next = cloneState(state);
   const m = mods(next);
   const battle = settleBattle(next.run, heroPower(next), dt);
-  const jobs = settleSideJobs(next.sideJobs, dt, next.flags.sideJobAuto, m.sideJobMult);
+  const jobs = settleSideJobs(next.sideJobs, dt, m.sideJobMult);
   const best = Math.max(next.bestFloor, battle.run.maxFloor);
   const drops = next.ticketCarry + battle.kills * m.ticketPerKill;
   const pay = paidBySideJobPet(next, m, dt);

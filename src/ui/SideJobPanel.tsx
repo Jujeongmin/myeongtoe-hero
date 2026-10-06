@@ -19,8 +19,7 @@ export function SideJobPanel({ state, store }: { state: GameState; store: GameSt
         const level = own?.level ?? 0;
         const cost = sideJobCost(job, level);
         const cycle = sideJobCycle(job, level);
-        const stopped = own !== undefined && level > 0 && !own.running;
-        const progress = stopped ? 1 : own?.running ? own.progressSec / cycle : 0;
+        const progress = level > 0 && own ? own.progressSec / cycle : 0;
         return (
           <div key={job.id} className="row">
             <div className="grow">
@@ -32,9 +31,6 @@ export function SideJobPanel({ state, store }: { state: GameState; store: GameSt
                 <i style={{ width: `${Math.min(1, progress) * 100}%` }} />
               </div>
             </div>
-            {stopped && !state.flags.sideJobAuto && (
-              <button onClick={() => store.do({ k: "restartSideJob", id: job.id })}>재가동</button>
-            )}
             <button disabled={state.gold.lt(cost)} onClick={() => store.do({ k: "levelSideJob", id: job.id })}>
               {level === 0 ? "시작" : "레벨업"}<br />{formatBig(cost)}
             </button>

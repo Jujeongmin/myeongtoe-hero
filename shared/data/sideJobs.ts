@@ -1,7 +1,7 @@
 import { Big } from "../big";
 
-// 부업 (the original's quests): each pays its income once per cycle. Without the 부업 자동화 purchase
-// a job stops after paying and waits for a tap to run again. Reset by a job change (이직).
+// 부업: each pays its income once per cycle and starts over on its own. Levels raise the income and
+// shorten the cycle. Reset by a job change (이직).
 export interface SideJob {
   id: string;
   name: string;

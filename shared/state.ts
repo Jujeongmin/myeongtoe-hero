@@ -46,7 +46,6 @@ export interface GameState {
   // Work gear: the tier in hand, its level (max 5), and how many tiers are 구매확정-ed (kept through job changes).
   gear: { tier: number; level: number; confirmed: number };
   sideJobs: Record<string, SideJobState>;
-  flags: { sideJobAuto: boolean };
   // Fields for content not built yet (raids, stocks, … — design §7.5): kept as found.
   reserved: Record<string, unknown>;
   tickets: number;
@@ -166,7 +165,6 @@ export function newState(now: number): GameState {
     bestFloor: 1,
     gear: { tier: 0, level: 0, confirmed: 0 },
     sideJobs: {},
-    flags: { sideJobAuto: false },
     reserved: {},
     tickets: 0,
     gems: 0,
@@ -193,7 +191,7 @@ export function cloneState(s: GameState): GameState {
   const sideJobs: Record<string, SideJobState> = {};
   for (const [id, job] of Object.entries(s.sideJobs)) sideJobs[id] = { ...job };
   return {
-    ...s, run: { ...s.run }, gear: { ...s.gear }, sideJobs, flags: { ...s.flags }, certs: { ...s.certs },
+    ...s, run: { ...s.run }, gear: { ...s.gear }, sideJobs, certs: { ...s.certs },
     pets: { ...s.pets }, relics: { ...s.relics }, suits: [...s.suits], wear: { ...s.wear }, office: { ...s.office },
     parking: { ...s.parking }, daily: { ...s.daily, claimed: [...s.daily.claimed] },
     missions: { ...s.missions, special: [...s.missions.special] }, attendance: { ...s.attendance },
@@ -267,7 +265,6 @@ export function fromSave(raw: unknown): GameState {
       confirmed: Math.min(int(gear.confirmed, 0, 0), GEAR_TIERS.length),
     },
     sideJobs,
-    flags: { sideJobAuto: obj(data.flags).sideJobAuto === true },
     reserved: obj(data.reserved),
     tickets: int(data.tickets, 0, 0),
     gems: int(data.gems, 0, 0),

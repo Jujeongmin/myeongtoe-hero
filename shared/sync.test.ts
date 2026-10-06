@@ -23,8 +23,8 @@ describe("syncSave", () => {
 
   test("reports bad and refused intents by index and keeps going", () => {
     const save = toSave({ ...newState(0), gold: Big.of(1, 200) });
-    const r = syncSave(save, [{ k: "hack" }, { k: "restartSideJob", id: "j00" }, { k: "levelGear" }], 0);
-    expect(r.rejected).toEqual([{ index: 0, code: "bad_intent" }, { index: 1, code: "not_owned" }]);
+    const r = syncSave(save, [{ k: "hack" }, { k: "levelRelic", id: "r_badge" }, { k: "levelGear" }], 0);
+    expect(r.rejected).toEqual([{ index: 0, code: "bad_intent" }, { index: 1, code: "locked" }]);
     expect(r.save.gear.level).toBe(1);
   });
 

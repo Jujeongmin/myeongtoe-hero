@@ -29,6 +29,7 @@ describe("readIntent", () => {
     expect(readIntent({ k: "buyGear" })).toEqual({ k: "buyGear" });
     expect(readIntent({ k: "levelSideJob", id: "j00" })).toEqual({ k: "levelSideJob", id: "j00" });
     expect(readIntent({ k: "levelSideJob" })).toBeNull();
+    expect(readIntent({ k: "restartSideJob", id: "j00" })).toBeNull();
     expect(readIntent({ k: "giveGold", n: 1e9 })).toBeNull();
     expect(readIntent("buyGear")).toBeNull();
     expect(readIntent(null)).toBeNull();
@@ -101,14 +102,6 @@ describe("side jobs", () => {
     expect(codeOf(rich(), { k: "levelSideJob", id: "nope" })).toBe("unknown");
   });
 
-  test("restarting needs an owned, stopped job", () => {
-    const s = rich();
-    expect(codeOf(s, { k: "restartSideJob", id: first.id })).toBe("not_owned");
-    s.sideJobs[first.id] = { level: 1, progressSec: 0, running: true };
-    expect(codeOf(s, { k: "restartSideJob", id: first.id })).toBe("running");
-    s.sideJobs[first.id] = { level: 1, progressSec: 0, running: false };
-    expect(applyIntent(s, { k: "restartSideJob", id: first.id }).sideJobs[first.id].running).toBe(true);
-  });
 });
 
 describe("certificates", () => {

@@ -16,10 +16,10 @@ describe("sync", () => {
     server.connect({ account: "test-b" });
     const rich = toSave({ ...newState(Date.now()), gold: Big.of(1, 100) });
     await $global.updateUserState("test-b", { save: rich });
-    const r = await server.sync([{ k: "levelGear" }, { k: "restartSideJob", id: "j00" }]);
+    const r = await server.sync([{ k: "levelGear" }, { k: "levelRelic", id: "r_badge" }]);
     expect(r.save.gear.level).toBe(1);
     expect(r.rejected[0].index).toBe(1);
-    expect(r.rejected[0].code).toBe("not_owned");
+    expect(r.rejected[0].code).toBe("locked");
     expect((await $global.getUserState("test-b")).save.gear.level).toBe(1);
   });
 

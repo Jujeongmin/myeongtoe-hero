@@ -29,7 +29,6 @@ export type Intent =
   | { k: "buyGear" }
   | { k: "levelGear" }
   | { k: "levelSideJob"; id: string }
-  | { k: "restartSideJob"; id: string }
   | { k: "buyCert" }
   | { k: "levelCert"; id: string }
   | { k: "prestige"; boosted: boolean }
@@ -56,7 +55,6 @@ export function readIntent(raw: unknown): Intent | null {
     case "levelGear":
       return { k: r.k };
     case "levelSideJob":
-    case "restartSideJob":
       return typeof r.id === "string" && r.id.length <= 32 ? { k: r.k, id: r.id } : null;
     case "buyCert":
       return { k: "buyCert" };
@@ -138,13 +136,6 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       s.sideJobs[job.id] = own.level === 0
         ? { level: 1, progressSec: 0, running: true }
         : { ...own, level: own.level + 1 };
-      return s;
-    }
-    case "restartSideJob": {
-      const own = s.sideJobs[intent.id];
-      if (!own || own.level === 0) throw new RuleError("not_owned");
-      if (own.running) throw new RuleError("running");
-      s.sideJobs[intent.id] = { ...own, running: true, progressSec: 0 };
       return s;
     }
     case "buyCert": {
