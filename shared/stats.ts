@@ -1,9 +1,10 @@
 import type { Big } from "./big";
+import { certBonuses } from "./data/certs";
 import { BOSS_LIMIT_SEC } from "./data/floors";
 import { gearAtk } from "./data/gear";
 import { skillFactor, skillsUnlocked } from "./data/skills";
 import { STAT_ASPD_PER_LEVEL, STAT_ATK_PER_LEVEL, STAT_CRITDMG_PER_LEVEL, STAT_CRIT_PER_LEVEL } from "./data/stats";
-import type { GameState } from "./state";
+import { OFFLINE_CAP_SEC, type GameState } from "./state";
 
 // Park's base hits (the original's knight: 2 a second, 5% crit for +50%).
 export const HERO_ASPD = 2;
@@ -26,18 +27,33 @@ function skillProduct(s: GameState, kind: string): number {
 }
 
 export function heroAtk(s: GameState): Big {
-  return gearAtk(s.gear.tier, s.gear.level).mulN(1 + STAT_ATK_PER_LEVEL * s.stats.atk);
+  const b = certBonuses(s.certs);
+  return gearAtk(s.gear.tier, s.gear.level).mulN((1 + STAT_ATK_PER_LEVEL * s.stats.atk) * (1 + b.atk));
 }
 
 export function heroPower(s: GameState): Power {
-  const aspd = HERO_ASPD * (1 + STAT_ASPD_PER_LEVEL * s.stats.aspd) * skillProduct(s, "aspd");
+  const b = certBonuses(s.certs);
+  const aspd = HERO_ASPD * (1 + STAT_ASPD_PER_LEVEL * s.stats.aspd) * (1 + b.aspd) * skillProduct(s, "aspd");
   const crit = Math.min(1, HERO_CRIT_CHANCE + STAT_CRIT_PER_LEVEL * s.stats.crit);
-  const critBonus = HERO_CRIT_BONUS + STAT_CRITDMG_PER_LEVEL * s.stats.critDmg;
+  const critBonus = HERO_CRIT_BONUS + STAT_CRITDMG_PER_LEVEL * s.stats.critDmg + b.critDmg;
   const dps = heroAtk(s).mulN(aspd * (1 + crit * critBonus) * skillProduct(s, "damage"));
   const bossTime = skillsUnlocked(s.bestFloor)
     .filter((k) => k.kind === "bossTime")
     .reduce((sum, k) => sum + k.value, 0);
-  return { dps, bossDps: dps, bossLimitSec: BOSS_LIMIT_SEC + bossTime, goldMult: skillProduct(s, "gold") };
+  return {
+    dps,
+    bossDps: dps.mulN(1 + b.boss),
+    bossLimitSec: BOSS_LIMIT_SEC + bossTime,
+    goldMult: skillProduct(s, "gold") * (1 + b.gold),
+  };
+}
+
+export function offlineCapSec(s: GameState): number {
+  return OFFLINE_CAP_SEC + certBonuses(s.certs).offlineSec;
+}
+
+export function sideJobMult(s: GameState): number {
+  return 1 + certBonuses(s.certs).sideJob;
 }
 
 export function heroDps(s: GameState): Big {

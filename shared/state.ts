@@ -1,4 +1,5 @@
 import { Big } from "./big";
+import { findCert } from "./data/certs";
 import { GEAR_TIERS } from "./data/gear";
 import { findSideJob } from "./data/sideJobs";
 
@@ -119,11 +120,6 @@ function int(x: unknown, min: number, fallback: number): number {
   return typeof x === "number" && Number.isInteger(x) && x >= min ? x : fallback;
 }
 
-// Replaced in Task 4 by the certificate table's own lookup.
-function isCertId(id: string): boolean {
-  return /^c\d{2}$/.test(id) && Number(id.slice(1)) < 40;
-}
-
 function seconds(x: unknown): number {
   return typeof x === "number" && Number.isFinite(x) && x >= 0 ? x : 0;
 }
@@ -157,7 +153,7 @@ export function fromSave(raw: unknown): GameState {
   const stats = obj(data.stats);
   const certs: Record<string, number> = {};
   for (const [id, level] of Object.entries(obj(data.certs))) {
-    if (isCertId(id) && int(level, 1, 0) >= 1) certs[id] = level as number;
+    if (findCert(id) && int(level, 1, 0) >= 1) certs[id] = level as number;
   }
   return {
     v: SAVE_VERSION,

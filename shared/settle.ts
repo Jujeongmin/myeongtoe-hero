@@ -1,8 +1,8 @@
 import { Big } from "./big";
 import { WALK_SEC, isBossFloor, killGold, targetHp, targetsOn } from "./data/floors";
 import { findSideJob, sideJobCycle, sideJobIncome } from "./data/sideJobs";
-import { OFFLINE_CAP_SEC, cloneState, type GameState, type RunState, type SideJobState } from "./state";
-import { heroPower, type Power } from "./stats";
+import { cloneState, type GameState, type RunState, type SideJobState } from "./state";
+import { heroPower, offlineCapSec, sideJobMult, type Power } from "./stats";
 
 // Enough for 12 offline hours at one kill a second, with room to spare; only a broken table loops.
 const MAX_STEPS = 200_000;
@@ -121,14 +121,14 @@ export function settleSideJobs(
   return { sideJobs, gold };
 }
 
-// Everything that happens between lastTick and now (server time), at most OFFLINE_CAP_SEC of it.
+// Everything that happens between lastTick and now (server time), at most offlineCapSec of it.
 // Returns a new state; the input is never changed.
 export function settle(state: GameState, now: number): GameState {
   if (now <= state.lastTick) return state;
-  const dt = Math.min(OFFLINE_CAP_SEC, (now - state.lastTick) / 1000);
+  const dt = Math.min(offlineCapSec(state), (now - state.lastTick) / 1000);
   const next = cloneState(state);
   const battle = settleBattle(next.run, heroPower(next), dt);
-  const jobs = settleSideJobs(next.sideJobs, dt, next.flags.sideJobAuto);
+  const jobs = settleSideJobs(next.sideJobs, dt, next.flags.sideJobAuto, sideJobMult(next));
   const best = Math.max(next.bestFloor, battle.run.maxFloor);
   next.gems += firstClearGems(next.bestFloor, best);
   next.lastTick = now;
