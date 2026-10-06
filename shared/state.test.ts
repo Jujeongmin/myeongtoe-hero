@@ -11,6 +11,12 @@ describe("state", () => {
     expect(s.run).toEqual({ floor: 1, target: 0, carrySec: 0, farming: false, maxFloor: 1 });
     expect(s.gear).toEqual({ tier: 0, level: 0 });
     expect(s.sideJobs).toEqual({});
+    expect(s.tickets).toBe(0);
+    expect(s.gems).toBe(0);
+    expect(s.stats).toEqual({ atk: 0, crit: 0, critDmg: 0, aspd: 0 });
+    expect(s.certs).toEqual({});
+    expect(s.prestiges).toBe(0);
+    expect(Number.isInteger(s.rngSeed)).toBe(true);
   });
 
   test("round-trips through a save, keeping reserved fields", () => {
@@ -49,5 +55,25 @@ describe("state", () => {
     b.sideJobs.j00.level = 5;
     expect(a.run.floor).toBe(1);
     expect(a.sideJobs.j00.level).toBe(1);
+  });
+  test("a version 1 save migrates with empty new fields", () => {
+    const v1 = {
+      v: 1, lastTick: 5, gold: "1.5e3", bestFloor: 12,
+      run: { floor: 12, target: 3, carrySec: 0.5, farming: false, maxFloor: 12 },
+      gear: { tier: 2, level: 4 }, sideJobs: { j00: { level: 1, progressSec: 0, running: true } },
+      flags: { sideJobAuto: false }, reserved: {},
+    };
+    const s = fromSave(v1);
+    expect(s.v).toBe(SAVE_VERSION);
+    expect(s.gear).toEqual({ tier: 2, level: 4 });
+    expect(s.tickets).toBe(0);
+    expect(s.stats).toEqual({ atk: 0, crit: 0, critDmg: 0, aspd: 0 });
+    expect(s.certs).toEqual({});
+  });
+
+  test("unknown certificates and bad levels are dropped", () => {
+    const save = toSave(newState(0)) as unknown as Record<string, unknown>;
+    save.certs = { c00: 3, c01: 0, fake: 9, c02: 1.5 };
+    expect(fromSave(save).certs).toEqual({ c00: 3 });
   });
 });
