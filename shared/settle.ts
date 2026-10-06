@@ -1,30 +1,52 @@
 import { Big } from "./big";
-import { BOSS_LIMIT_SEC, WALK_SEC, isBossFloor, killGold, targetHp, targetsOn } from "./data/floors";
+import { WALK_SEC, isBossFloor, killGold, targetHp, targetsOn } from "./data/floors";
 import { findSideJob, sideJobCycle, sideJobIncome } from "./data/sideJobs";
 import { OFFLINE_CAP_SEC, cloneState, type GameState, type RunState, type SideJobState } from "./state";
-import { heroDps } from "./stats";
+import { heroPower, type Power } from "./stats";
 
 // Enough for 12 offline hours at one kill a second, with room to spare; only a broken table loops.
 const MAX_STEPS = 200_000;
+
+// Tickets (응시권) for each team-leader / executive boss beaten, every run.
+export const BOSS_TICKETS_10 = 1;
+export const BOSS_TICKETS_100 = 5;
+// Gems (보석) the first time ever the best floor passes a 10th / 100th floor.
+export const FIRST_CLEAR_GEMS_10 = 5;
+export const FIRST_CLEAR_GEMS_100 = 50;
 
 export function fightSec(floor: number, dps: Big): number {
   if (dps.isZero()) return Number.POSITIVE_INFINITY;
   return targetHp(floor).div(dps).toNumber();
 }
 
-function bossBeatable(floor: number, dps: Big): boolean {
-  return fightSec(floor, dps) <= BOSS_LIMIT_SEC;
+export function targetSec(floor: number, power: Power): number {
+  return fightSec(floor, isBossFloor(floor) ? power.bossDps : power.dps);
 }
 
-// Plays `dt` seconds of the tower at a fixed `dps`. No frames, no randomness: the same answer on the
+function bossTickets(floor: number): number {
+  if (floor % 100 === 0) return BOSS_TICKETS_100;
+  if (floor % 10 === 0) return BOSS_TICKETS_10;
+  return 0;
+}
+
+export function firstClearGems(oldBest: number, newBest: number): number {
+  let gems = 0;
+  for (let f = Math.ceil(oldBest / 10) * 10; f < newBest; f += 10) {
+    gems += f % 100 === 0 ? FIRST_CLEAR_GEMS_100 : FIRST_CLEAR_GEMS_10;
+  }
+  return gems;
+}
+
+// Plays `dt` seconds of the tower at a fixed power. No frames, no randomness: the same answer on the
 // server and on every client, and splitting the time any way gives the same result (time left over
 // is carried in run.carrySec). The screen's fight only animates what this decides.
-export function settleBattle(start: RunState, dps: Big, dt: number): { run: RunState; gold: Big } {
+export function settleBattle(start: RunState, power: Power, dt: number): { run: RunState; gold: Big; tickets: number } {
   const run = { ...start };
   let gold = Big.ZERO;
+  let tickets = 0;
   let t = run.carrySec + dt;
 
-  if (run.farming && bossBeatable(run.floor + 1, dps)) {
+  if (run.farming && targetSec(run.floor + 1, power) <= power.bossLimitSec) {
     run.farming = false;
     run.floor += 1;
     run.target = 0;
@@ -32,19 +54,19 @@ export function settleBattle(start: RunState, dps: Big, dt: number): { run: RunS
 
   for (let step = 0; step < MAX_STEPS; step++) {
     if (run.farming) {
-      const tpk = fightSec(run.floor, dps) + WALK_SEC;
+      const tpk = targetSec(run.floor, power) + WALK_SEC;
       const kills = Math.floor(t / tpk);
       if (kills > 0) {
-        gold = gold.add(killGold(run.floor).mulN(kills));
+        gold = gold.add(killGold(run.floor).mulN(kills * power.goldMult));
         t = Math.max(0, t - kills * tpk);
       }
       break;
     }
 
     const floor = run.floor;
-    const sec = fightSec(floor, dps);
-    if (isBossFloor(floor) && sec > BOSS_LIMIT_SEC) {
-      const spent = BOSS_LIMIT_SEC + WALK_SEC;
+    const sec = targetSec(floor, power);
+    if (isBossFloor(floor) && sec > power.bossLimitSec) {
+      const spent = power.bossLimitSec + WALK_SEC;
       if (t < spent) break;
       t -= spent;
       // floor - 1 is never a boss floor (bosses sit on multiples of 5).
@@ -57,9 +79,10 @@ export function settleBattle(start: RunState, dps: Big, dt: number): { run: RunS
     const tpk = sec + WALK_SEC;
     if (t < tpk) break;
     t -= tpk;
-    gold = gold.add(killGold(floor));
+    gold = gold.add(killGold(floor).mulN(power.goldMult));
     run.target += 1;
     if (run.target >= targetsOn(floor)) {
+      tickets += bossTickets(floor);
       run.floor += 1;
       run.target = 0;
       run.maxFloor = Math.max(run.maxFloor, run.floor);
@@ -67,11 +90,11 @@ export function settleBattle(start: RunState, dps: Big, dt: number): { run: RunS
   }
 
   run.carrySec = t;
-  return { run, gold };
+  return { run, gold, tickets };
 }
 
 export function settleSideJobs(
-  jobs: Record<string, SideJobState>, dt: number, auto: boolean,
+  jobs: Record<string, SideJobState>, dt: number, auto: boolean, incomeMult = 1,
 ): { sideJobs: Record<string, SideJobState>; gold: Big } {
   let gold = Big.ZERO;
   const sideJobs: Record<string, SideJobState> = {};
@@ -82,7 +105,7 @@ export function settleSideJobs(
       continue;
     }
     const cycle = sideJobCycle(job, own.level);
-    const income = sideJobIncome(job, own.level);
+    const income = sideJobIncome(job, own.level).mulN(incomeMult);
     const p = own.progressSec + dt;
     if (auto) {
       const paid = Math.floor(p / cycle);
@@ -104,11 +127,14 @@ export function settle(state: GameState, now: number): GameState {
   if (now <= state.lastTick) return state;
   const dt = Math.min(OFFLINE_CAP_SEC, (now - state.lastTick) / 1000);
   const next = cloneState(state);
-  const battle = settleBattle(next.run, heroDps(next), dt);
+  const battle = settleBattle(next.run, heroPower(next), dt);
   const jobs = settleSideJobs(next.sideJobs, dt, next.flags.sideJobAuto);
+  const best = Math.max(next.bestFloor, battle.run.maxFloor);
+  next.gems += firstClearGems(next.bestFloor, best);
   next.lastTick = now;
   next.run = battle.run;
-  next.bestFloor = Math.max(next.bestFloor, battle.run.maxFloor);
+  next.bestFloor = best;
+  next.tickets += battle.tickets;
   next.sideJobs = jobs.sideJobs;
   next.gold = next.gold.add(battle.gold).add(jobs.gold);
   return next;

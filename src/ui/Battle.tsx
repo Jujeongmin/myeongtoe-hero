@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import { WALK_SEC, isBossFloor, targetsOn } from "../../shared/data/floors";
-import { fightSec } from "../../shared/settle";
+import { targetSec } from "../../shared/settle";
 import type { GameState } from "../../shared/state";
-import { heroDps } from "../../shared/stats";
+import { heroPower } from "../../shared/stats";
 
 // Gray-box stand-in for the step 7 sprite renderer: low-res canvas, scaled up crisp.
 const W = 160;
@@ -15,7 +15,7 @@ export function Battle({ state }: { state: GameState }) {
   useEffect(() => {
     const ctx = ref.current?.getContext("2d");
     if (!ctx) return;
-    const perKill = fightSec(floor, heroDps(state)) + WALK_SEC;
+    const perKill = targetSec(floor, heroPower(state)) + WALK_SEC;
     const left = Number.isFinite(perKill) ? Math.max(0, 1 - carrySec / perKill) : 1;
     ctx.fillStyle = "#3d5a80";
     ctx.fillRect(0, 0, W, H * 0.65);
