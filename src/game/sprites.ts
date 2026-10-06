@@ -64,14 +64,12 @@ export interface GearSprite {
   angle: number;
 }
 
-// The item drawn for a gear tier (the pre-shrunk copy for bulky ones).
+// The item drawn for a gear tier, at its full size: oversized office items in Park's hand are part
+// of the joke (the pre-shrunk copies in art/parts/gear/scaled are not used).
 export function gearSprite(tier: number): GearSprite | undefined {
-  const item = (gearJson.items as unknown as { id: number; file: string; grip: Point; angle: number; scaledFile?: string; scaledGrip?: Point }[])
+  const item = (gearJson.items as unknown as { id: number; file: string; grip: Point; angle: number }[])
     .find((i) => i.id === tier);
-  if (!item) return undefined;
-  return item.scaledFile && item.scaledGrip
-    ? { file: `parts/gear/${item.scaledFile}`, grip: item.scaledGrip, angle: item.angle }
-    : { file: `parts/gear/${item.file}`, grip: item.grip, angle: item.angle };
+  return item && { file: `parts/gear/${item.file}`, grip: item.grip, angle: item.angle };
 }
 
 export const SHINE = {
