@@ -11,10 +11,14 @@ import { BottomNav, type NavTab } from "./ui/BottomNav";
 import { CertPanel } from "./ui/CertPanel";
 import { CurrencyBar } from "./ui/CurrencyBar";
 import { GearPanel } from "./ui/GearPanel";
+import { MissionSheet } from "./ui/MissionSheet";
+import { ParkingPanel } from "./ui/ParkingPanel";
 import { ApartmentPanel, OfficePanel, RelicPanel, SuitPanel } from "./ui/HomePanels";
 import { OfflinePopup } from "./ui/OfflinePopup";
 import { PetPanel } from "./ui/PetPanel";
 import { PrestigePanel } from "./ui/PrestigePanel";
+import { RankingSheet } from "./ui/RankingSheet";
+import { ScreenLock, SettingsPanel } from "./ui/ScreenLock";
 import { Sheet } from "./ui/Sheet";
 import { SideJobPanel } from "./ui/SideJobPanel";
 import { StatusBanner } from "./ui/StatusBanner";
@@ -24,6 +28,7 @@ const SYNC_MS = 1500;
 
 const SHEET_TITLES: Record<SheetId, string> = {
   prestige: "이직", suits: "정장", apartment: "아파트", relics: "퇴직 기념품", office: "사무용품",
+  missions: "미션", ranking: "랭킹", settings: "설정",
 };
 
 // Playing against the in-page server (no Verse8 project, or ?local in development).
@@ -67,6 +72,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
   const state = useGameView(store);
   const [tab, setTab] = useState<NavTab>("gear");
   const [sheet, setSheet] = useState<SheetId | null>(null);
+  const [locked, setLocked] = useState(false);
 
   useEffect(() => {
     const tick = () => void store.flush().catch(() => undefined);
@@ -90,13 +96,14 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
   return (
     <div className="phone">
       <StatusBanner connection={connection} guest={guest} />
-      <Battle state={state} onOpen={setSheet} />
+      <Battle state={state} store={store} onOpen={setSheet} />
       <CurrencyBar state={state} />
       <main className="list">
         {tab === "sideJobs" && <SideJobPanel state={state} store={store} />}
         {tab === "gear" && <GearPanel state={state} store={store} />}
         {tab === "pets" && <PetPanel state={state} store={store} />}
         {tab === "certs" && <CertPanel state={state} store={store} />}
+        {tab === "dungeon" && <ParkingPanel state={state} store={store} />}
       </main>
       <BottomNav state={state} tab={tab} onPick={setTab} />
       {sheet && (
@@ -106,10 +113,21 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
           {sheet === "apartment" && <ApartmentPanel state={state} store={store} />}
           {sheet === "relics" && <RelicPanel state={state} store={store} />}
           {sheet === "office" && <OfficePanel state={state} store={store} />}
+          {sheet === "missions" && <MissionSheet state={state} store={store} />}
+          {sheet === "ranking" && <RankingSheet state={state} store={store} />}
+          {sheet === "settings" && (
+            <SettingsPanel
+              onLock={() => {
+                setSheet(null);
+                setLocked(true);
+              }}
+            />
+          )}
         </Sheet>
       )}
       <OfflinePopup store={store} />
       <Toast store={store} />
+      {locked && <ScreenLock state={state} onClose={() => setLocked(false)} />}
     </div>
   );
 }

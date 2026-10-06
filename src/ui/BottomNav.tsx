@@ -9,7 +9,7 @@ const ITEMS: { id: NavTab; icon: string; label: string; open: (s: GameState) => 
   { id: "pets", icon: "🧑‍💼", label: "동료", open: (s) => s.bestFloor >= 100, hint: "100층" },
   { id: "certs", icon: "📜", label: "자격증", open: (s) => s.bestFloor >= 11, hint: "11층" },
   { id: "shop", icon: "🛒", label: "상점", open: () => false, hint: "준비 중" },
-  { id: "dungeon", icon: "🅿", label: "던전", open: () => false, hint: "준비 중" },
+  { id: "dungeon", icon: "🅿", label: "던전", open: (s) => s.bestFloor >= 5, hint: "5층" },
 ];
 
 export function BottomNav({ state, tab, onPick }: { state: GameState; tab: NavTab; onPick: (t: NavTab) => void }) {

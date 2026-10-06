@@ -6,12 +6,14 @@ import { skillsUnlocked } from "../../shared/data/skills";
 import { targetSec } from "../../shared/settle";
 import type { GameState } from "../../shared/state";
 import { heroPower, jobChangeReward } from "../../shared/stats";
+import type { GameStore } from "../game/store";
+import { MissionCard } from "./MissionCard";
 
-export type SheetId = "prestige" | "suits" | "apartment" | "relics" | "office";
+export type SheetId = "prestige" | "suits" | "apartment" | "relics" | "office" | "missions" | "ranking" | "settings";
 
 // Gray-box stand-in for the step 7 sprite renderer: low-res canvas, scaled up crisp. The layout
-// puts title and floor bar on top, the job-change button bottom
-// left, the side icons on the right.
+// puts title and floor bar on top, ranking and settings top left, the side icons on the right, the
+// job-change button bottom left and the step mission bottom right.
 const W = 160;
 const H = 96;
 
@@ -22,7 +24,7 @@ const SIDE: { id: SheetId; icon: string; label: string }[] = [
   { id: "office", icon: "🖥", label: "사무용품" },
 ];
 
-export function Battle({ state, onOpen }: { state: GameState; onOpen: (id: SheetId) => void }) {
+export function Battle({ state, store, onOpen }: { state: GameState; store: GameStore; onOpen: (id: SheetId) => void }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const { floor, target, carrySec, farming, maxFloor } = state.run;
   const power = heroPower(state);
@@ -62,6 +64,10 @@ export function Battle({ state, onOpen }: { state: GameState; onOpen: (id: Sheet
         </div>
         {boss && <div className="boss-timer">⏱ 보스 {bossLeft}초</div>}
       </header>
+      <div className="top-icons">
+        <button onClick={() => onOpen("ranking")} aria-label="랭킹">🏆</button>
+        <button onClick={() => onOpen("settings")} aria-label="설정">⚙</button>
+      </div>
       <div className="side-icons">
         {SIDE.map((s) => (
           <button key={s.id} onClick={() => onOpen(s.id)}>
@@ -74,6 +80,7 @@ export function Battle({ state, onOpen }: { state: GameState; onOpen: (id: Sheet
         이직
         <small>{ready ? `📝 +${formatCount(reward.tickets)}` : `${PRESTIGE_MIN_FLOOR}층부터`}</small>
       </button>
+      <MissionCard state={state} store={store} onOpen={() => onOpen("missions")} />
       {skills.length > 0 && (
         <div className="skills">
           {skills.map((s) => (

@@ -28,7 +28,7 @@ export const STEP_MISSIONS: readonly MissionDef[] = [
   { id: "s04", text: "업무 장비 [3. 스테이플러] 구매", done: (s) => s.gear.tier >= 2, reward: { gems: 25 } },
   { id: "s05", text: "5층 도달", done: (s) => s.bestFloor >= 5, reward: { gems: 30 } },
   { id: "s06", text: "10층 팀장 처치", done: (s) => s.bestFloor >= 11, reward: { gems: 30, tickets: 2 } },
-  { id: "s07", text: "자격증 시험 응시", done: (s) => owned(s.certs) >= 1, reward: { gems: 35 } },
+  { id: "s07", text: "자격증 취득", done: (s) => owned(s.certs) >= 1, reward: { gems: 35 } },
   { id: "s08", text: "지하주차장 입장", done: (s) => s.parking.best > 0, reward: { gems: 35, coupons: 30 } },
   { id: "s09", text: "30층 도달", done: (s) => s.bestFloor >= 30, reward: { gems: 40 } },
   { id: "s10", text: "부업 3개 시작", done: (s) => jobsStarted(s) >= 3, reward: { gems: 40 } },
