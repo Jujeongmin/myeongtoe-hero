@@ -13,8 +13,7 @@ import {
 // The battle scene in the screen's real (device) pixels, every picture drawn at a whole number of
 // them per art pixel so it stays crisp. The department background is scaled up until it covers
 // the whole scene (bottom-aligned, floor where its picture has it); Park and the monsters are
-// drawn small, like a classic pixel game: about half the size a 44 px body at 17% of the screen's
-// width would be.
+// drawn small, like a classic pixel game: Park's 44 px body about 12% of the screen's width.
 //
 // It only shows what settle decided. The time into the current kill (run.carrySec, moved on
 // smoothly between the store's updates) says whether Park is walking to the next monster or
@@ -22,7 +21,7 @@ import {
 // the swing's impact frame, knocks the monster's health down one step and shows its damage, and
 // the last one kills it.
 const BODY_PX = 44;
-const BODY_SHARE = 0.17;
+const BODY_SHARE = 0.12;
 const BG_H = 96;
 const BG_FLOOR = 82;
 const WALK_PX_PER_SEC = 48;
@@ -70,9 +69,8 @@ export function BattleCanvas({ state }: { state: GameState }) {
       const cw = Math.max(1, parent?.clientWidth ?? 320);
       const ch = Math.max(1, parent?.clientHeight ?? 200);
       const dpr = window.devicePixelRatio || 1;
-      const bgDevice = ((cw * BODY_SHARE) / BODY_PX) * dpr;
-      // Device pixels per art pixel: actors at about half the background's.
-      const scale = Math.max(1, Math.round(bgDevice / 2));
+      // Device pixels per art pixel for Park and the monsters.
+      const scale = Math.max(1, Math.round(((cw * BODY_SHARE) / BODY_PX) * dpr));
       const w = Math.round((cw * dpr) / scale);
       const h = Math.round((ch * dpr) / scale);
       if (el.width !== w || el.height !== h) {
