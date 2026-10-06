@@ -3,6 +3,7 @@ import { CERTS, certBonuses, certDrawCost, certLevelCost, certTierOpen, findCert
 import { GEAR_MAX_LEVEL, GEAR_TIERS, gearLevelCost, gearPrice } from "./data/gear";
 import { OFFICE_PARTS, apartmentCost, findSuitItem, officeUpgradeCost, type OfficePart } from "./data/home";
 import { dailyQuestReward, findDailyQuest } from "./data/dailyQuests";
+import { ATTENDANCE_REWARDS, STEP_MISSIONS, findSpecialMission, type Reward } from "./data/missions";
 import { runParking } from "./data/parking";
 import { dailyOf } from "./daily";
 import { PET_BOX_COUPONS, findPet, petLevelCost, petsUnlocked } from "./data/pets";
@@ -12,6 +13,7 @@ import { findSideJob, sideJobCost } from "./data/sideJobs";
 import { petLevel, relicLevel } from "./mods";
 import { nextRandom } from "./rng";
 import { heroPower } from "./stats";
+import { kstDay } from "./time";
 import { OFFICE_MAX_GRADE, cloneState, freshRun, type GameState } from "./state";
 
 // A player's request the rules turned down. `code` goes back to the client as is (ui/text.ts has the
@@ -39,7 +41,10 @@ export type Intent =
   | { k: "wearSuit"; id: string }
   | { k: "upgradeOffice"; part: OfficePart }
   | { k: "enterParking" }
-  | { k: "claimDaily"; id: string };
+  | { k: "claimDaily"; id: string }
+  | { k: "claimStep" }
+  | { k: "claimSpecial"; id: string }
+  | { k: "claimAttendance" };
 
 // Untrusted input (from the network) to an Intent, or null for anything else.
 export function readIntent(raw: unknown): Intent | null {
@@ -61,12 +66,15 @@ export function readIntent(raw: unknown): Intent | null {
     case "petBox":
     case "expandApartment":
     case "enterParking":
+    case "claimStep":
+    case "claimAttendance":
       return { k: r.k };
     case "levelPet":
     case "levelRelic":
     case "buySuit":
     case "wearSuit":
     case "claimDaily":
+    case "claimSpecial":
       return typeof r.id === "string" && r.id.length <= 32 ? { k: r.k, id: r.id } : null;
     case "upgradeOffice":
       return OFFICE_PARTS.some((p) => p.key === r.part) ? { k: "upgradeOffice", part: r.part as OfficePart } : null;
@@ -88,6 +96,12 @@ function spendTickets(s: GameState, n: number): void {
 function spendCoupons(s: GameState, n: number): void {
   if (s.coupons < n) throw new RuleError("not_enough_coupons");
   s.coupons -= n;
+}
+
+function grant(s: GameState, r: Reward): void {
+  s.gems += r.gems ?? 0;
+  s.tickets += r.tickets ?? 0;
+  s.coupons += r.coupons ?? 0;
 }
 
 function spendGems(s: GameState, n: number): void {
@@ -230,6 +244,30 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       if (value < quest.goal) throw new RuleError("not_done");
       s.coupons += dailyQuestReward(quest, s.lastTick);
       s.daily = { ...today, claimed: [...today.claimed, quest.id] };
+      return s;
+    }
+    case "claimStep": {
+      const step = STEP_MISSIONS[s.missions.step];
+      if (!step) throw new RuleError("max");
+      if (!step.done(s)) throw new RuleError("not_done");
+      grant(s, step.reward);
+      s.missions = { ...s.missions, step: s.missions.step + 1 };
+      return s;
+    }
+    case "claimSpecial": {
+      const mission = findSpecialMission(intent.id);
+      if (!mission) throw new RuleError("unknown");
+      if (s.missions.special.includes(mission.id)) throw new RuleError("claimed");
+      if (!mission.done(s)) throw new RuleError("not_done");
+      grant(s, mission.reward);
+      s.missions = { ...s.missions, special: [...s.missions.special, mission.id] };
+      return s;
+    }
+    case "claimAttendance": {
+      const today = kstDay(s.lastTick);
+      if (s.attendance.lastDay === today) throw new RuleError("claimed");
+      grant(s, ATTENDANCE_REWARDS[s.attendance.count % ATTENDANCE_REWARDS.length]);
+      s.attendance = { lastDay: today, count: s.attendance.count + 1 };
       return s;
     }
     case "upgradeOffice": {
