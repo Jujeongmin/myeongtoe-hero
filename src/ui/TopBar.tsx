@@ -5,6 +5,8 @@ export function TopBar({ state }: { state: GameState }) {
   return (
     <header className="topbar">
       <span>💰 {formatBig(state.gold)}</span>
+      <span>📝 {state.tickets}</span>
+      <span>💎 {state.gems}</span>
       <span>최고 {state.bestFloor}층</span>
     </header>
   );

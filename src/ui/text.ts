@@ -5,6 +5,8 @@ const ERRORS: Record<string, string> = {
   running: "이미 일하는 중이에요",
   not_owned: "아직 시작하지 않은 부업이에요",
   unknown: "알 수 없는 항목이에요",
+  not_enough_tickets: "응시권이 부족해요",
+  not_enough_gems: "보석이 부족해요",
 };
 
 export function errorText(code: string): string {

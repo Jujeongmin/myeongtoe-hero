@@ -4,14 +4,14 @@ button { font: inherit; cursor: pointer; }
 
 .phone { max-width: 480px; height: 100dvh; margin: 0 auto; display: flex; flex-direction: column; background: #1b1a2e; }
 
-.topbar { display: flex; justify-content: space-between; padding: 8px 12px; background: #2b2440; font-weight: 700; }
+.topbar { display: flex; justify-content: space-between; gap: 8px; padding: 8px 12px; background: #2b2440; font-weight: 700; font-size: 13px; }
 
 .battle { position: relative; height: 40%; flex: none; background: #000; }
 .battle canvas { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; display: block; }
 .battle .floor { position: absolute; top: 18%; left: 0; right: 0; text-align: center; font-size: 13px; text-shadow: 1px 1px 0 #000; }
 
 .tabs { display: flex; background: #2b2440; }
-.tab { flex: 1; padding: 10px 0; background: none; border: none; color: #fff; font-size: 15px; }
+.tab { flex: 1; padding: 10px 0; background: none; border: none; color: #fff; font-size: 14px; }
 .tab.on { background: #e9c46a; color: #000; font-weight: 700; }
 
 .list { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
@@ -31,3 +31,8 @@ button { font: inherit; cursor: pointer; }
 .screen button { padding: 8px 16px; border: none; border-radius: 6px; background: #2a9d8f; color: #fff; font-weight: 700; }
 .banner { padding: 6px 12px; font-size: 12px; background: #3a3358; color: #e9e4ff; text-align: center; }
 .banner.warn { background: #8a3b12; color: #fff; }
+.row button.wide { flex: 1; padding: 10px; font-size: 13px; }
+.row button.gold { background: #b8860b; }
+.tier { font-size: 10px; padding: 1px 4px; border-radius: 3px; background: #4a4370; }
+.tier.t2 { background: #2a6f97; }
+.tier.t3 { background: #9d4edd; }

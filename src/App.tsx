@@ -7,18 +7,24 @@ import { loginState } from "./net/login";
 import { LocalTransport, OFFLINE } from "./net/transport";
 import { Verse8Transport } from "./net/verse8Transport";
 import { Battle } from "./ui/Battle";
+import { CertPanel } from "./ui/CertPanel";
 import { GearPanel } from "./ui/GearPanel";
+import { PrestigePanel } from "./ui/PrestigePanel";
 import { SideJobPanel } from "./ui/SideJobPanel";
+import { StatPanel } from "./ui/StatPanel";
 import { StatusBanner } from "./ui/StatusBanner";
 import { Toast } from "./ui/Toast";
 import { TopBar } from "./ui/TopBar";
 
 const SYNC_MS = 1500;
 
-type Tab = "gear" | "sideJobs";
+type Tab = "gear" | "sideJobs" | "stats" | "certs" | "prestige";
 const TABS: { id: Tab; label: string }[] = [
   { id: "gear", label: "장비" },
   { id: "sideJobs", label: "부업" },
+  { id: "stats", label: "강화" },
+  { id: "certs", label: "자격증" },
+  { id: "prestige", label: "이직" },
 ];
 
 // Playing against the in-page server (no Verse8 project, or ?local in development).
@@ -94,7 +100,11 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
         ))}
       </nav>
       <main className="list">
-        {tab === "gear" ? <GearPanel state={state} store={store} /> : <SideJobPanel state={state} store={store} />}
+        {tab === "gear" && <GearPanel state={state} store={store} />}
+        {tab === "sideJobs" && <SideJobPanel state={state} store={store} />}
+        {tab === "stats" && <StatPanel state={state} store={store} />}
+        {tab === "certs" && <CertPanel state={state} store={store} />}
+        {tab === "prestige" && <PrestigePanel state={state} store={store} />}
       </main>
       <Toast store={store} />
     </div>
