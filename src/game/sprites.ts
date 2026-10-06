@@ -1,6 +1,7 @@
 import anchorsJson from "../../art/park/anchors.json";
 import shineJson from "../../art/park/fx/head_shine.json";
 import gearJson from "../../art/parts/gear/gear.json";
+import monstersJson from "../../art/monsters/monsters.json";
 import partsJson from "../../art/parts/suits/parts.json";
 import artVersions from "virtual:art-versions";
 
@@ -15,6 +16,7 @@ const URLS = import.meta.glob(
     "../../art/parts/gear/scaled/*.png",
     "../../art/backgrounds/*.png",
     "../../art/icons/*.png",
+    "../../art/monsters/*.png",
   ],
   { eager: true, query: "?url", import: "default" },
 ) as Record<string, string>;
@@ -108,4 +110,56 @@ export function image(path: string): HTMLImageElement | null {
     images.set(path, img);
   }
   return img.complete && img.naturalWidth > 0 ? img : null;
+}
+
+// ---- monsters ----
+
+export type MonsterAnim = "idle" | "hurt" | "death";
+
+export interface MonsterSprite {
+  id: string;
+  name: string;
+  size: number;
+  baseline: number;
+  hover: number;
+  hpBar: Point;
+  anims: Record<MonsterAnim, { file: string; frames: number; ms: number }>;
+}
+
+interface MonsterJson {
+  id: string;
+  name: string;
+  frameWidth: number;
+  feetBaselineY: number;
+  hoverPx: number;
+  hpBarAnchor: Point;
+  animations: Record<MonsterAnim, { file: string; frameCount: number; frameDurationMs: number }>;
+}
+
+const MONSTERS = monstersJson.monsters as unknown as Record<string, MonsterJson>;
+const DEPARTMENTS = monstersJson.departments as unknown as {
+  name: string; normal: string[]; spareNormal: string[]; teamLeader: string; executive: string;
+}[];
+
+function monsterSprite(id: string): MonsterSprite | undefined {
+  const m = MONSTERS[id];
+  if (!m) return undefined;
+  const anim = (k: MonsterAnim) => ({
+    file: `monsters/${m.animations[k].file}`, frames: m.animations[k].frameCount, ms: m.animations[k].frameDurationMs,
+  });
+  return {
+    id: m.id, name: m.name, size: m.frameWidth, baseline: m.feetBaselineY, hover: m.hoverPx, hpBar: m.hpBarAnchor,
+    anims: { idle: anim("idle"), hurt: anim("hurt"), death: anim("death") },
+  };
+}
+
+// The monster standing at this floor's `target`-th place: the department's executive on every
+// 100th floor, its team leader on the other boss floors, otherwise one of its normal ones (picked by
+// floor and place, so the same spot always shows the same monster).
+export function monsterFor(department: string, floor: number, target: number, boss: boolean): MonsterSprite | undefined {
+  const d = DEPARTMENTS.find((x) => x.name === department) ?? DEPARTMENTS[0];
+  if (!d) return undefined;
+  if (boss) return monsterSprite(floor % 100 === 0 ? d.executive : d.teamLeader);
+  const pool = [...d.normal, ...d.spareNormal];
+  return monsterSprite(pool[(floor * 7 + target * 3) % pool.length]);
 }

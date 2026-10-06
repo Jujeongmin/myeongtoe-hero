@@ -1,0 +1,1539 @@
+{
+ "coordinateSystem": "pixels in each frame's own canvas, origin top-left, y down",
+ "facing": "west (left), toward Park",
+ "floorRule": "department changes every 100 floors in this order; team leader on floors that are multiples of 10 and 5 (not 100); executive on every 100th floor",
+ "departments": [
+  {
+   "id": "general_affairs",
+   "name": "총무팀",
+   "background": "bg_general_affairs.png",
+   "normal": [
+    "paper_slime",
+    "stapler_bat",
+    "clip_rat"
+   ],
+   "spareNormal": [
+    "sticky_moth"
+   ],
+   "teamLeader": "copier_golem",
+   "executive": "cardigan_ogre"
+  },
+  {
+   "id": "sales",
+   "name": "영업팀",
+   "background": "bg_sales.png",
+   "normal": [
+    "necktie_snake",
+    "sales_goblin",
+    "phone_imp"
+   ],
+   "spareNormal": [
+    "card_pixie"
+   ],
+   "teamLeader": "megaphone_orc",
+   "executive": "golf_minotaur"
+  },
+  {
+   "id": "legal",
+   "name": "법무팀",
+   "background": "bg_legal.png",
+   "normal": [
+    "contract_ghost",
+    "stamp_crab",
+    "lawbook_mimic"
+   ],
+   "spareNormal": [
+    "redtape_worm"
+   ],
+   "teamLeader": "scale_gargoyle",
+   "executive": "judge_lich"
+  },
+  {
+   "id": "dev",
+   "name": "개발팀",
+   "background": "bg_dev.png",
+   "normal": [
+    "bug_beetle",
+    "keyboard_mimic",
+    "overtime_ghost"
+   ],
+   "spareNormal": [
+    "cable_spider"
+   ],
+   "teamLeader": "server_golem",
+   "executive": "legacy_hydra"
+  },
+  {
+   "id": "finance",
+   "name": "재무팀",
+   "background": "bg_finance.png",
+   "normal": [
+    "coin_slime",
+    "calc_crab",
+    "receipt_mummy"
+   ],
+   "spareNormal": [
+    "piggy_boar"
+   ],
+   "teamLeader": "safe_mimic",
+   "executive": "gold_dragon"
+  },
+  {
+   "id": "executive",
+   "name": "임원실",
+   "background": "bg_executive.png",
+   "normal": [
+    "board_mimic",
+    "coffee_golem",
+    "card_bat"
+   ],
+   "spareNormal": [
+    "golfball_wisp"
+   ],
+   "teamLeader": "pen_demon",
+   "executive": "chairman_demon_king"
+  }
+ ],
+ "monsters": {
+  "paper_slime": {
+   "id": "paper_slime",
+   "name": "서류 슬라임",
+   "department": "general_affairs",
+   "departmentName": "총무팀",
+   "background": "bg_general_affairs.png",
+   "role": "normal",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 25,
+   "bodyWidth": 46,
+   "hpBarAnchor": [
+    32,
+    27
+   ],
+   "animations": {
+    "idle": {
+     "file": "paper_slime_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "paper_slime_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "paper_slime_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "stapler_bat": {
+   "id": "stapler_bat",
+   "name": "스테이플러 박쥐",
+   "department": "general_affairs",
+   "departmentName": "총무팀",
+   "background": "bg_general_affairs.png",
+   "role": "normal",
+   "spare": false,
+   "flying": true,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 6,
+   "bodyHeight": 28,
+   "bodyWidth": 46,
+   "hpBarAnchor": [
+    32,
+    17
+   ],
+   "animations": {
+    "idle": {
+     "file": "stapler_bat_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "stapler_bat_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "stapler_bat_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "clip_rat": {
+   "id": "clip_rat",
+   "name": "클립 쥐",
+   "department": "general_affairs",
+   "departmentName": "총무팀",
+   "background": "bg_general_affairs.png",
+   "role": "normal",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 34,
+   "bodyWidth": 46,
+   "hpBarAnchor": [
+    32,
+    18
+   ],
+   "animations": {
+    "idle": {
+     "file": "clip_rat_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "clip_rat_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "clip_rat_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "copier_golem": {
+   "id": "copier_golem",
+   "name": "복합기 골렘",
+   "department": "general_affairs",
+   "departmentName": "총무팀",
+   "background": "bg_general_affairs.png",
+   "role": "teamLeader",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 52,
+   "bodyWidth": 54,
+   "hpBarAnchor": [
+    32,
+    0
+   ],
+   "animations": {
+    "idle": {
+     "file": "copier_golem_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "copier_golem_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "copier_golem_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "cardigan_ogre": {
+   "id": "cardigan_ogre",
+   "name": "총무 상무 오우거",
+   "department": "general_affairs",
+   "departmentName": "총무팀",
+   "background": "bg_general_affairs.png",
+   "role": "executive",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 80,
+   "frameHeight": 80,
+   "feetBaselineY": 72,
+   "hoverPx": 0,
+   "bodyHeight": 68,
+   "bodyWidth": 76,
+   "hpBarAnchor": [
+    40,
+    0
+   ],
+   "animations": {
+    "idle": {
+     "file": "cardigan_ogre_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "cardigan_ogre_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "cardigan_ogre_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "sticky_moth": {
+   "id": "sticky_moth",
+   "name": "포스트잇 나방",
+   "department": "general_affairs",
+   "departmentName": "총무팀",
+   "background": "bg_general_affairs.png",
+   "role": "normal",
+   "spare": true,
+   "flying": true,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 6,
+   "bodyHeight": 34,
+   "bodyWidth": 36,
+   "hpBarAnchor": [
+    32,
+    11
+   ],
+   "animations": {
+    "idle": {
+     "file": "sticky_moth_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "sticky_moth_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "sticky_moth_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "necktie_snake": {
+   "id": "necktie_snake",
+   "name": "넥타이 뱀",
+   "department": "sales",
+   "departmentName": "영업팀",
+   "background": "bg_sales.png",
+   "role": "normal",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 34,
+   "bodyWidth": 38,
+   "hpBarAnchor": [
+    32,
+    18
+   ],
+   "animations": {
+    "idle": {
+     "file": "necktie_snake_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "necktie_snake_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "necktie_snake_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "sales_goblin": {
+   "id": "sales_goblin",
+   "name": "영업 고블린",
+   "department": "sales",
+   "departmentName": "영업팀",
+   "background": "bg_sales.png",
+   "role": "normal",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 34,
+   "bodyWidth": 39,
+   "hpBarAnchor": [
+    31,
+    18
+   ],
+   "animations": {
+    "idle": {
+     "file": "sales_goblin_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "sales_goblin_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "sales_goblin_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "phone_imp": {
+   "id": "phone_imp",
+   "name": "전화 임프",
+   "department": "sales",
+   "departmentName": "영업팀",
+   "background": "bg_sales.png",
+   "role": "normal",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 34,
+   "bodyWidth": 40,
+   "hpBarAnchor": [
+    32,
+    18
+   ],
+   "animations": {
+    "idle": {
+     "file": "phone_imp_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "phone_imp_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "phone_imp_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "megaphone_orc": {
+   "id": "megaphone_orc",
+   "name": "실적왕 오크",
+   "department": "sales",
+   "departmentName": "영업팀",
+   "background": "bg_sales.png",
+   "role": "teamLeader",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 45,
+   "bodyWidth": 60,
+   "hpBarAnchor": [
+    32,
+    7
+   ],
+   "animations": {
+    "idle": {
+     "file": "megaphone_orc_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "megaphone_orc_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "megaphone_orc_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "golf_minotaur": {
+   "id": "golf_minotaur",
+   "name": "영업 상무 미노타우로스",
+   "department": "sales",
+   "departmentName": "영업팀",
+   "background": "bg_sales.png",
+   "role": "executive",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 80,
+   "frameHeight": 80,
+   "feetBaselineY": 72,
+   "hoverPx": 0,
+   "bodyHeight": 68,
+   "bodyWidth": 68,
+   "hpBarAnchor": [
+    40,
+    0
+   ],
+   "animations": {
+    "idle": {
+     "file": "golf_minotaur_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "golf_minotaur_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "golf_minotaur_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "card_pixie": {
+   "id": "card_pixie",
+   "name": "명함 요정",
+   "department": "sales",
+   "departmentName": "영업팀",
+   "background": "bg_sales.png",
+   "role": "normal",
+   "spare": true,
+   "flying": true,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 6,
+   "bodyHeight": 34,
+   "bodyWidth": 36,
+   "hpBarAnchor": [
+    32,
+    11
+   ],
+   "animations": {
+    "idle": {
+     "file": "card_pixie_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "card_pixie_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "card_pixie_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "contract_ghost": {
+   "id": "contract_ghost",
+   "name": "계약서 유령",
+   "department": "legal",
+   "departmentName": "법무팀",
+   "background": "bg_legal.png",
+   "role": "normal",
+   "spare": false,
+   "flying": true,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 6,
+   "bodyHeight": 34,
+   "bodyWidth": 39,
+   "hpBarAnchor": [
+    31,
+    11
+   ],
+   "animations": {
+    "idle": {
+     "file": "contract_ghost_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "contract_ghost_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "contract_ghost_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "stamp_crab": {
+   "id": "stamp_crab",
+   "name": "인감 크랩",
+   "department": "legal",
+   "departmentName": "법무팀",
+   "background": "bg_legal.png",
+   "role": "normal",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 34,
+   "bodyWidth": 46,
+   "hpBarAnchor": [
+    32,
+    18
+   ],
+   "animations": {
+    "idle": {
+     "file": "stamp_crab_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "stamp_crab_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "stamp_crab_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "lawbook_mimic": {
+   "id": "lawbook_mimic",
+   "name": "법전 미믹",
+   "department": "legal",
+   "departmentName": "법무팀",
+   "background": "bg_legal.png",
+   "role": "normal",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 34,
+   "bodyWidth": 42,
+   "hpBarAnchor": [
+    32,
+    18
+   ],
+   "animations": {
+    "idle": {
+     "file": "lawbook_mimic_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "lawbook_mimic_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "lawbook_mimic_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "scale_gargoyle": {
+   "id": "scale_gargoyle",
+   "name": "저울 가고일",
+   "department": "legal",
+   "departmentName": "법무팀",
+   "background": "bg_legal.png",
+   "role": "teamLeader",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 52,
+   "bodyWidth": 52,
+   "hpBarAnchor": [
+    32,
+    0
+   ],
+   "animations": {
+    "idle": {
+     "file": "scale_gargoyle_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "scale_gargoyle_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "scale_gargoyle_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "judge_lich": {
+   "id": "judge_lich",
+   "name": "법무 상무 리치",
+   "department": "legal",
+   "departmentName": "법무팀",
+   "background": "bg_legal.png",
+   "role": "executive",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 80,
+   "frameHeight": 80,
+   "feetBaselineY": 72,
+   "hoverPx": 0,
+   "bodyHeight": 58,
+   "bodyWidth": 76,
+   "hpBarAnchor": [
+    40,
+    10
+   ],
+   "animations": {
+    "idle": {
+     "file": "judge_lich_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "judge_lich_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "judge_lich_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "redtape_worm": {
+   "id": "redtape_worm",
+   "name": "레드테이프 웜",
+   "department": "legal",
+   "departmentName": "법무팀",
+   "background": "bg_legal.png",
+   "role": "normal",
+   "spare": true,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 34,
+   "bodyWidth": 41,
+   "hpBarAnchor": [
+    31,
+    18
+   ],
+   "animations": {
+    "idle": {
+     "file": "redtape_worm_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "redtape_worm_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "redtape_worm_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "bug_beetle": {
+   "id": "bug_beetle",
+   "name": "버그 딱정벌레",
+   "department": "dev",
+   "departmentName": "개발팀",
+   "background": "bg_dev.png",
+   "role": "normal",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 34,
+   "bodyWidth": 43,
+   "hpBarAnchor": [
+    31,
+    18
+   ],
+   "animations": {
+    "idle": {
+     "file": "bug_beetle_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "bug_beetle_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "bug_beetle_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "keyboard_mimic": {
+   "id": "keyboard_mimic",
+   "name": "키보드 미믹",
+   "department": "dev",
+   "departmentName": "개발팀",
+   "background": "bg_dev.png",
+   "role": "normal",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 32,
+   "bodyWidth": 46,
+   "hpBarAnchor": [
+    32,
+    20
+   ],
+   "animations": {
+    "idle": {
+     "file": "keyboard_mimic_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "keyboard_mimic_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "keyboard_mimic_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "overtime_ghost": {
+   "id": "overtime_ghost",
+   "name": "야근 유령",
+   "department": "dev",
+   "departmentName": "개발팀",
+   "background": "bg_dev.png",
+   "role": "normal",
+   "spare": false,
+   "flying": true,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 6,
+   "bodyHeight": 34,
+   "bodyWidth": 41,
+   "hpBarAnchor": [
+    31,
+    11
+   ],
+   "animations": {
+    "idle": {
+     "file": "overtime_ghost_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "overtime_ghost_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "overtime_ghost_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "server_golem": {
+   "id": "server_golem",
+   "name": "서버랙 골렘",
+   "department": "dev",
+   "departmentName": "개발팀",
+   "background": "bg_dev.png",
+   "role": "teamLeader",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 52,
+   "bodyWidth": 54,
+   "hpBarAnchor": [
+    32,
+    0
+   ],
+   "animations": {
+    "idle": {
+     "file": "server_golem_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "server_golem_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "server_golem_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "legacy_hydra": {
+   "id": "legacy_hydra",
+   "name": "개발 상무 레거시 히드라",
+   "department": "dev",
+   "departmentName": "개발팀",
+   "background": "bg_dev.png",
+   "role": "executive",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 80,
+   "frameHeight": 80,
+   "feetBaselineY": 72,
+   "hoverPx": 0,
+   "bodyHeight": 60,
+   "bodyWidth": 76,
+   "hpBarAnchor": [
+    40,
+    8
+   ],
+   "animations": {
+    "idle": {
+     "file": "legacy_hydra_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "legacy_hydra_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "legacy_hydra_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "cable_spider": {
+   "id": "cable_spider",
+   "name": "케이블 거미",
+   "department": "dev",
+   "departmentName": "개발팀",
+   "background": "bg_dev.png",
+   "role": "normal",
+   "spare": true,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 34,
+   "bodyWidth": 40,
+   "hpBarAnchor": [
+    32,
+    18
+   ],
+   "animations": {
+    "idle": {
+     "file": "cable_spider_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "cable_spider_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "cable_spider_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "coin_slime": {
+   "id": "coin_slime",
+   "name": "동전 슬라임",
+   "department": "finance",
+   "departmentName": "재무팀",
+   "background": "bg_finance.png",
+   "role": "normal",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 34,
+   "bodyWidth": 43,
+   "hpBarAnchor": [
+    31,
+    18
+   ],
+   "animations": {
+    "idle": {
+     "file": "coin_slime_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "coin_slime_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "coin_slime_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "calc_crab": {
+   "id": "calc_crab",
+   "name": "계산기 크랩",
+   "department": "finance",
+   "departmentName": "재무팀",
+   "background": "bg_finance.png",
+   "role": "normal",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 31,
+   "bodyWidth": 46,
+   "hpBarAnchor": [
+    32,
+    21
+   ],
+   "animations": {
+    "idle": {
+     "file": "calc_crab_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "calc_crab_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "calc_crab_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "receipt_mummy": {
+   "id": "receipt_mummy",
+   "name": "영수증 미라",
+   "department": "finance",
+   "departmentName": "재무팀",
+   "background": "bg_finance.png",
+   "role": "normal",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 34,
+   "bodyWidth": 41,
+   "hpBarAnchor": [
+    31,
+    18
+   ],
+   "animations": {
+    "idle": {
+     "file": "receipt_mummy_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "receipt_mummy_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "receipt_mummy_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "safe_mimic": {
+   "id": "safe_mimic",
+   "name": "금고 미믹",
+   "department": "finance",
+   "departmentName": "재무팀",
+   "background": "bg_finance.png",
+   "role": "teamLeader",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 52,
+   "bodyWidth": 54,
+   "hpBarAnchor": [
+    32,
+    0
+   ],
+   "animations": {
+    "idle": {
+     "file": "safe_mimic_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "safe_mimic_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "safe_mimic_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "gold_dragon": {
+   "id": "gold_dragon",
+   "name": "재무 상무 황금 드래곤",
+   "department": "finance",
+   "departmentName": "재무팀",
+   "background": "bg_finance.png",
+   "role": "executive",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 80,
+   "frameHeight": 80,
+   "feetBaselineY": 72,
+   "hoverPx": 0,
+   "bodyHeight": 66,
+   "bodyWidth": 76,
+   "hpBarAnchor": [
+    40,
+    2
+   ],
+   "animations": {
+    "idle": {
+     "file": "gold_dragon_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "gold_dragon_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "gold_dragon_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "piggy_boar": {
+   "id": "piggy_boar",
+   "name": "저금통 멧돼지",
+   "department": "finance",
+   "departmentName": "재무팀",
+   "background": "bg_finance.png",
+   "role": "normal",
+   "spare": true,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 34,
+   "bodyWidth": 42,
+   "hpBarAnchor": [
+    32,
+    18
+   ],
+   "animations": {
+    "idle": {
+     "file": "piggy_boar_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "piggy_boar_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "piggy_boar_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "board_mimic": {
+   "id": "board_mimic",
+   "name": "결재판 미믹",
+   "department": "executive",
+   "departmentName": "임원실",
+   "background": "bg_executive.png",
+   "role": "normal",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 34,
+   "bodyWidth": 31,
+   "hpBarAnchor": [
+    31,
+    18
+   ],
+   "animations": {
+    "idle": {
+     "file": "board_mimic_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "board_mimic_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "board_mimic_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "coffee_golem": {
+   "id": "coffee_golem",
+   "name": "커피 골렘",
+   "department": "executive",
+   "departmentName": "임원실",
+   "background": "bg_executive.png",
+   "role": "normal",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 34,
+   "bodyWidth": 31,
+   "hpBarAnchor": [
+    31,
+    18
+   ],
+   "animations": {
+    "idle": {
+     "file": "coffee_golem_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "coffee_golem_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "coffee_golem_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "card_bat": {
+   "id": "card_bat",
+   "name": "법인카드 박쥐",
+   "department": "executive",
+   "departmentName": "임원실",
+   "background": "bg_executive.png",
+   "role": "normal",
+   "spare": false,
+   "flying": true,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 6,
+   "bodyHeight": 33,
+   "bodyWidth": 46,
+   "hpBarAnchor": [
+    32,
+    12
+   ],
+   "animations": {
+    "idle": {
+     "file": "card_bat_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "card_bat_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "card_bat_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "pen_demon": {
+   "id": "pen_demon",
+   "name": "전무 데몬",
+   "department": "executive",
+   "departmentName": "임원실",
+   "background": "bg_executive.png",
+   "role": "teamLeader",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 50,
+   "bodyWidth": 60,
+   "hpBarAnchor": [
+    32,
+    2
+   ],
+   "animations": {
+    "idle": {
+     "file": "pen_demon_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "pen_demon_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "pen_demon_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "chairman_demon_king": {
+   "id": "chairman_demon_king",
+   "name": "회장님 마왕",
+   "department": "executive",
+   "departmentName": "임원실",
+   "background": "bg_executive.png",
+   "role": "executive",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 80,
+   "frameHeight": 80,
+   "feetBaselineY": 72,
+   "hoverPx": 0,
+   "bodyHeight": 68,
+   "bodyWidth": 72,
+   "hpBarAnchor": [
+    40,
+    0
+   ],
+   "animations": {
+    "idle": {
+     "file": "chairman_demon_king_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "chairman_demon_king_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "chairman_demon_king_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "golfball_wisp": {
+   "id": "golfball_wisp",
+   "name": "골프공 도깨비불",
+   "department": "executive",
+   "departmentName": "임원실",
+   "background": "bg_executive.png",
+   "role": "normal",
+   "spare": true,
+   "flying": true,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 6,
+   "bodyHeight": 34,
+   "bodyWidth": 36,
+   "hpBarAnchor": [
+    32,
+    11
+   ],
+   "animations": {
+    "idle": {
+     "file": "golfball_wisp_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "golfball_wisp_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "golfball_wisp_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  }
+ }
+}
