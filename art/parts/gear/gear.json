@@ -1,0 +1,694 @@
+{
+ "coordinateSystem": "pixels in the item's own PNG, origin top-left, y down",
+ "angleConvention": "'angle' = direction the item's far end points as drawn (screen degrees: 0 right, -90 up, 90 down). Draw rotated by (anchors.handAngle - angle) about 'grip', grip placed on the frame's hand anchor. Items with hang=true dangle from the grip; a runtime may skip rotation for them.",
+ "items": [
+  {
+   "id": 0,
+   "file": "g00.png",
+   "name": "볼펜",
+   "size": [
+    6,
+    24
+   ],
+   "grip": [
+    2,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 1
+  },
+  {
+   "id": 1,
+   "file": "g01.png",
+   "name": "형광펜",
+   "size": [
+    8,
+    24
+   ],
+   "grip": [
+    3,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 1
+  },
+  {
+   "id": 2,
+   "file": "g02.png",
+   "name": "스테이플러",
+   "size": [
+    15,
+    24
+   ],
+   "grip": [
+    6,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g02.png",
+   "scaledSize": [
+    8,
+    13
+   ],
+   "scaledGrip": [
+    3,
+    12
+   ]
+  },
+  {
+   "id": 3,
+   "file": "g03.png",
+   "name": "계산기",
+   "size": [
+    16,
+    24
+   ],
+   "grip": [
+    6,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g03.png",
+   "scaledSize": [
+    9,
+    13
+   ],
+   "scaledGrip": [
+    3,
+    12
+   ]
+  },
+  {
+   "id": 4,
+   "file": "g04.png",
+   "name": "결재판",
+   "size": [
+    17,
+    24
+   ],
+   "grip": [
+    6,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g04.png",
+   "scaledSize": [
+    9,
+    13
+   ],
+   "scaledGrip": [
+    3,
+    12
+   ]
+  },
+  {
+   "id": 5,
+   "file": "g05.png",
+   "name": "서류가방",
+   "size": [
+    23,
+    24
+   ],
+   "grip": [
+    8,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g05.png",
+   "scaledSize": [
+    12,
+    13
+   ],
+   "scaledGrip": [
+    4,
+    12
+   ]
+  },
+  {
+   "id": 6,
+   "file": "g06.png",
+   "name": "사원증 목걸이",
+   "size": [
+    9,
+    24
+   ],
+   "grip": [
+    4,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 1
+  },
+  {
+   "id": 7,
+   "file": "g07.png",
+   "name": "탁상 달력",
+   "size": [
+    24,
+    20
+   ],
+   "grip": [
+    10,
+    18
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g07.png",
+   "scaledSize": [
+    13,
+    11
+   ],
+   "scaledGrip": [
+    5,
+    10
+   ]
+  },
+  {
+   "id": 8,
+   "file": "g08.png",
+   "name": "머그컵",
+   "size": [
+    24,
+    23
+   ],
+   "grip": [
+    8,
+    21
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g08.png",
+   "scaledSize": [
+    13,
+    12
+   ],
+   "scaledGrip": [
+    4,
+    11
+   ]
+  },
+  {
+   "id": 9,
+   "file": "g09.png",
+   "name": "유선 전화기",
+   "size": [
+    15,
+    24
+   ],
+   "grip": [
+    3,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g09.png",
+   "scaledSize": [
+    8,
+    13
+   ],
+   "scaledGrip": [
+    2,
+    12
+   ]
+  },
+  {
+   "id": 10,
+   "file": "g10.png",
+   "name": "팩스",
+   "size": [
+    24,
+    21
+   ],
+   "grip": [
+    12,
+    19
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g10.png",
+   "scaledSize": [
+    13,
+    11
+   ],
+   "scaledGrip": [
+    7,
+    10
+   ]
+  },
+  {
+   "id": 11,
+   "file": "g11.png",
+   "name": "복합기 토너",
+   "size": [
+    10,
+    24
+   ],
+   "grip": [
+    4,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 1
+  },
+  {
+   "id": 12,
+   "file": "g12.png",
+   "name": "무선 마우스",
+   "size": [
+    16,
+    24
+   ],
+   "grip": [
+    8,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g12.png",
+   "scaledSize": [
+    9,
+    13
+   ],
+   "scaledGrip": [
+    4,
+    12
+   ]
+  },
+  {
+   "id": 13,
+   "file": "g13.png",
+   "name": "기계식 키보드",
+   "size": [
+    12,
+    24
+   ],
+   "grip": [
+    6,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 1
+  },
+  {
+   "id": 14,
+   "file": "g14.png",
+   "name": "듀얼 모니터",
+   "size": [
+    24,
+    13
+   ],
+   "grip": [
+    11,
+    11
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g14.png",
+   "scaledSize": [
+    13,
+    7
+   ],
+   "scaledGrip": [
+    6,
+    6
+   ]
+  },
+  {
+   "id": 15,
+   "file": "g15.png",
+   "name": "회전의자",
+   "size": [
+    17,
+    24
+   ],
+   "grip": [
+    8,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g15.png",
+   "scaledSize": [
+    9,
+    13
+   ],
+   "scaledGrip": [
+    4,
+    12
+   ]
+  },
+  {
+   "id": 16,
+   "file": "g16.png",
+   "name": "스탠딩 책상",
+   "size": [
+    18,
+    24
+   ],
+   "grip": [
+    10,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g16.png",
+   "scaledSize": [
+    10,
+    13
+   ],
+   "scaledGrip": [
+    5,
+    12
+   ]
+  },
+  {
+   "id": 17,
+   "file": "g17.png",
+   "name": "화이트보드",
+   "size": [
+    20,
+    24
+   ],
+   "grip": [
+    8,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g17.png",
+   "scaledSize": [
+    11,
+    13
+   ],
+   "scaledGrip": [
+    4,
+    12
+   ]
+  },
+  {
+   "id": 18,
+   "file": "g18.png",
+   "name": "빔프로젝터",
+   "size": [
+    19,
+    24
+   ],
+   "grip": [
+    8,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g18.png",
+   "scaledSize": [
+    10,
+    13
+   ],
+   "scaledGrip": [
+    4,
+    12
+   ]
+  },
+  {
+   "id": 19,
+   "file": "g19.png",
+   "name": "태블릿",
+   "size": [
+    16,
+    24
+   ],
+   "grip": [
+    6,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g19.png",
+   "scaledSize": [
+    9,
+    13
+   ],
+   "scaledGrip": [
+    3,
+    12
+   ]
+  },
+  {
+   "id": 20,
+   "file": "g20.png",
+   "name": "사내 메신저",
+   "size": [
+    18,
+    24
+   ],
+   "grip": [
+    8,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g20.png",
+   "scaledSize": [
+    10,
+    13
+   ],
+   "scaledGrip": [
+    4,
+    12
+   ]
+  },
+  {
+   "id": 21,
+   "file": "g21.png",
+   "name": "법인 휴대폰",
+   "size": [
+    15,
+    24
+   ],
+   "grip": [
+    6,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g21.png",
+   "scaledSize": [
+    8,
+    13
+   ],
+   "scaledGrip": [
+    3,
+    12
+   ]
+  },
+  {
+   "id": 22,
+   "file": "g22.png",
+   "name": "결재 도장",
+   "size": [
+    16,
+    24
+   ],
+   "grip": [
+    7,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g22.png",
+   "scaledSize": [
+    9,
+    13
+   ],
+   "scaledGrip": [
+    4,
+    12
+   ]
+  },
+  {
+   "id": 23,
+   "file": "g23.png",
+   "name": "금장 만년필",
+   "size": [
+    12,
+    24
+   ],
+   "grip": [
+    5,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 1
+  },
+  {
+   "id": 24,
+   "file": "g24.png",
+   "name": "명함 케이스",
+   "size": [
+    20,
+    23
+   ],
+   "grip": [
+    12,
+    21
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.565,
+   "scaledFile": "scaled/g24.png",
+   "scaledSize": [
+    11,
+    13
+   ],
+   "scaledGrip": [
+    7,
+    12
+   ]
+  },
+  {
+   "id": 25,
+   "file": "g25.png",
+   "name": "골프 퍼터",
+   "size": [
+    14,
+    24
+   ],
+   "grip": [
+    4,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 1
+  },
+  {
+   "id": 26,
+   "file": "g26.png",
+   "name": "임원 다이어리",
+   "size": [
+    22,
+    24
+   ],
+   "grip": [
+    10,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g26.png",
+   "scaledSize": [
+    12,
+    13
+   ],
+   "scaledGrip": [
+    5,
+    12
+   ]
+  },
+  {
+   "id": 27,
+   "file": "g27.png",
+   "name": "법인카드",
+   "size": [
+    21,
+    24
+   ],
+   "grip": [
+    9,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g27.png",
+   "scaledSize": [
+    11,
+    13
+   ],
+   "scaledGrip": [
+    5,
+    12
+   ]
+  },
+  {
+   "id": 28,
+   "file": "g28.png",
+   "name": "회장님 결재판",
+   "size": [
+    21,
+    24
+   ],
+   "grip": [
+    10,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g28.png",
+   "scaledSize": [
+    11,
+    13
+   ],
+   "scaledGrip": [
+    5,
+    12
+   ]
+  },
+  {
+   "id": 29,
+   "file": "g29.png",
+   "name": "법인 노트북",
+   "size": [
+    24,
+    18
+   ],
+   "grip": [
+    12,
+    16
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g29.png",
+   "scaledSize": [
+    13,
+    10
+   ],
+   "scaledGrip": [
+    7,
+    9
+   ]
+  }
+ ],
+ "scaleNote": "scale = draw size multiplier so bulky items stay within ~30% of Park's 44px body height (max 13px). A pre-scaled pixel-clean copy is in scaledFile with scaledGrip; prefer it over scaling at runtime. Long, thin items keep scale 1."
+}

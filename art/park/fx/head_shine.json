@@ -1,0 +1,93 @@
+{
+ "file": "head_shine.png",
+ "frameWidth": 11,
+ "frameHeight": 11,
+ "frameCount": 6,
+ "fps": 12,
+ "loop": false,
+ "repeatEveryMs": 2000,
+ "center": [
+  5,
+  5
+ ],
+ "anchor": "head",
+ "offset": [
+  5,
+  2
+ ],
+ "perFrameOffset": {
+  "idle": [
+   [
+    5,
+    2
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    3,
+    2
+   ]
+  ],
+  "walk": [
+   [
+    5,
+    2
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    5,
+    2
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    5,
+    2
+   ]
+  ],
+  "attack": [
+   [
+    5,
+    2
+   ],
+   [
+    5,
+    2
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    5,
+    2
+   ],
+   [
+    3,
+    2
+   ]
+  ]
+ },
+ "howToDraw": "Each frame of Park: star centre goes at head anchor + offset (or perFrameOffset[anim][frame] for the exact scalp highlight). Draw the shine cell at (head.x + off.x - center.x, head.y + off.y - center.y), above the body and below everything else. Play the 6 frames at 12 fps, then wait (repeatEveryMs) and play again.",
+ "visibility": "Only when the helmet slot is empty. Any helmet covers the scalp, so hide the shine while a helmet is worn.",
+ "layer": "after body, before boots/armor/accessory/gear/gloves/helmet"
+}

@@ -1,0 +1,896 @@
+{
+ "frameWidth": 64,
+ "frameHeight": 64,
+ "sets": {
+  "1": "수습 용사",
+  "2": "영업왕",
+  "3": "야근 흑기사",
+  "4": "주말 등산 레인저",
+  "5": "임원 성기사",
+  "6": "회장님 황금 갑주"
+ },
+ "slots": [
+  "helmet",
+  "armor",
+  "cape",
+  "gloves",
+  "boots",
+  "accessory"
+ ],
+ "layerOrder": [
+  "cape",
+  "body",
+  "boots",
+  "armor",
+  "accessory",
+  "gear",
+  "gloves",
+  "helmet"
+ ],
+ "parts": {
+  "s1_helmet": {
+   "file": "s1_helmet.png",
+   "set": 1,
+   "setName": "수습 용사",
+   "slot": "helmet",
+   "anchor": "head",
+   "offset": [
+    -28,
+    -13
+   ],
+   "layer": 7,
+   "behindBody": false,
+   "bbox": [
+    15,
+    12,
+    44,
+    27
+   ],
+   "strips": {
+    "idle": "strips/s1_helmet_idle.png",
+    "walk": "strips/s1_helmet_walk.png",
+    "attack": "strips/s1_helmet_attack.png"
+   }
+  },
+  "s1_armor": {
+   "file": "s1_armor.png",
+   "set": 1,
+   "setName": "수습 용사",
+   "slot": "armor",
+   "anchor": "torso",
+   "offset": [
+    -30,
+    -41
+   ],
+   "layer": 3,
+   "behindBody": false,
+   "bbox": [
+    25,
+    35,
+    39,
+    47
+   ],
+   "strips": {
+    "idle": "strips/s1_armor_idle.png",
+    "walk": "strips/s1_armor_walk.png",
+    "attack": "strips/s1_armor_attack.png"
+   }
+  },
+  "s1_cape": {
+   "file": "s1_cape.png",
+   "set": 1,
+   "setName": "수습 용사",
+   "slot": "cape",
+   "anchor": "neck",
+   "offset": [
+    -33,
+    -39
+   ],
+   "layer": 0,
+   "behindBody": true,
+   "bbox": [
+    21,
+    34,
+    30,
+    44
+   ],
+   "strips": {
+    "idle": "strips/s1_cape_idle.png",
+    "walk": "strips/s1_cape_walk.png",
+    "attack": "strips/s1_cape_attack.png"
+   }
+  },
+  "s1_gloves": {
+   "file": "s1_gloves.png",
+   "set": 1,
+   "setName": "수습 용사",
+   "slot": "gloves",
+   "anchor": "hand",
+   "offset": [
+    -30,
+    -48
+   ],
+   "layer": 6,
+   "behindBody": false,
+   "bbox": [
+    28,
+    45,
+    33,
+    51
+   ],
+   "strips": {
+    "idle": "strips/s1_gloves_idle.png",
+    "walk": "strips/s1_gloves_walk.png",
+    "attack": "strips/s1_gloves_attack.png"
+   }
+  },
+  "s1_boots": {
+   "file": "s1_boots.png",
+   "set": 1,
+   "setName": "수습 용사",
+   "slot": "boots",
+   "anchor": "feet",
+   "offset": [
+    -30,
+    -56
+   ],
+   "layer": 2,
+   "behindBody": false,
+   "bbox": [
+    27,
+    54,
+    34,
+    57
+   ],
+   "strips": {
+    "idle": "strips/s1_boots_idle.png",
+    "walk": "strips/s1_boots_walk.png",
+    "attack": "strips/s1_boots_attack.png"
+   }
+  },
+  "s1_accessory": {
+   "file": "s1_accessory.png",
+   "set": 1,
+   "setName": "수습 용사",
+   "slot": "accessory",
+   "anchor": "neck",
+   "offset": [
+    -33,
+    -39
+   ],
+   "layer": 4,
+   "behindBody": false,
+   "bbox": [
+    27,
+    39,
+    32,
+    49
+   ],
+   "strips": {
+    "idle": "strips/s1_accessory_idle.png",
+    "walk": "strips/s1_accessory_walk.png",
+    "attack": "strips/s1_accessory_attack.png"
+   }
+  },
+  "s2_helmet": {
+   "file": "s2_helmet.png",
+   "set": 2,
+   "setName": "영업왕",
+   "slot": "helmet",
+   "anchor": "head",
+   "offset": [
+    -28,
+    -13
+   ],
+   "layer": 7,
+   "behindBody": false,
+   "bbox": [
+    15,
+    8,
+    41,
+    31
+   ],
+   "strips": {
+    "idle": "strips/s2_helmet_idle.png",
+    "walk": "strips/s2_helmet_walk.png",
+    "attack": "strips/s2_helmet_attack.png"
+   }
+  },
+  "s2_armor": {
+   "file": "s2_armor.png",
+   "set": 2,
+   "setName": "영업왕",
+   "slot": "armor",
+   "anchor": "torso",
+   "offset": [
+    -30,
+    -41
+   ],
+   "layer": 3,
+   "behindBody": false,
+   "bbox": [
+    24,
+    34,
+    40,
+    48
+   ],
+   "strips": {
+    "idle": "strips/s2_armor_idle.png",
+    "walk": "strips/s2_armor_walk.png",
+    "attack": "strips/s2_armor_attack.png"
+   }
+  },
+  "s2_cape": {
+   "file": "s2_cape.png",
+   "set": 2,
+   "setName": "영업왕",
+   "slot": "cape",
+   "anchor": "neck",
+   "offset": [
+    -33,
+    -39
+   ],
+   "layer": 0,
+   "behindBody": true,
+   "bbox": [
+    18,
+    34,
+    31,
+    49
+   ],
+   "strips": {
+    "idle": "strips/s2_cape_idle.png",
+    "walk": "strips/s2_cape_walk.png",
+    "attack": "strips/s2_cape_attack.png"
+   }
+  },
+  "s2_gloves": {
+   "file": "s2_gloves.png",
+   "set": 2,
+   "setName": "영업왕",
+   "slot": "gloves",
+   "anchor": "hand",
+   "offset": [
+    -30,
+    -48
+   ],
+   "layer": 6,
+   "behindBody": false,
+   "bbox": [
+    28,
+    44,
+    33,
+    51
+   ],
+   "strips": {
+    "idle": "strips/s2_gloves_idle.png",
+    "walk": "strips/s2_gloves_walk.png",
+    "attack": "strips/s2_gloves_attack.png"
+   }
+  },
+  "s2_boots": {
+   "file": "s2_boots.png",
+   "set": 2,
+   "setName": "영업왕",
+   "slot": "boots",
+   "anchor": "feet",
+   "offset": [
+    -30,
+    -56
+   ],
+   "layer": 2,
+   "behindBody": false,
+   "bbox": [
+    26,
+    52,
+    35,
+    57
+   ],
+   "strips": {
+    "idle": "strips/s2_boots_idle.png",
+    "walk": "strips/s2_boots_walk.png",
+    "attack": "strips/s2_boots_attack.png"
+   }
+  },
+  "s2_accessory": {
+   "file": "s2_accessory.png",
+   "set": 2,
+   "setName": "영업왕",
+   "slot": "accessory",
+   "anchor": "neck",
+   "offset": [
+    -33,
+    -39
+   ],
+   "layer": 4,
+   "behindBody": false,
+   "bbox": [
+    33,
+    39,
+    37,
+    45
+   ],
+   "strips": {
+    "idle": "strips/s2_accessory_idle.png",
+    "walk": "strips/s2_accessory_walk.png",
+    "attack": "strips/s2_accessory_attack.png"
+   }
+  },
+  "s3_helmet": {
+   "file": "s3_helmet.png",
+   "set": 3,
+   "setName": "야근 흑기사",
+   "slot": "helmet",
+   "anchor": "head",
+   "offset": [
+    -28,
+    -13
+   ],
+   "layer": 7,
+   "behindBody": false,
+   "bbox": [
+    15,
+    8,
+    42,
+    36
+   ],
+   "strips": {
+    "idle": "strips/s3_helmet_idle.png",
+    "walk": "strips/s3_helmet_walk.png",
+    "attack": "strips/s3_helmet_attack.png"
+   }
+  },
+  "s3_armor": {
+   "file": "s3_armor.png",
+   "set": 3,
+   "setName": "야근 흑기사",
+   "slot": "armor",
+   "anchor": "torso",
+   "offset": [
+    -30,
+    -41
+   ],
+   "layer": 3,
+   "behindBody": false,
+   "bbox": [
+    23,
+    29,
+    40,
+    48
+   ],
+   "strips": {
+    "idle": "strips/s3_armor_idle.png",
+    "walk": "strips/s3_armor_walk.png",
+    "attack": "strips/s3_armor_attack.png"
+   }
+  },
+  "s3_cape": {
+   "file": "s3_cape.png",
+   "set": 3,
+   "setName": "야근 흑기사",
+   "slot": "cape",
+   "anchor": "neck",
+   "offset": [
+    -33,
+    -39
+   ],
+   "layer": 0,
+   "behindBody": true,
+   "bbox": [
+    16,
+    34,
+    32,
+    54
+   ],
+   "strips": {
+    "idle": "strips/s3_cape_idle.png",
+    "walk": "strips/s3_cape_walk.png",
+    "attack": "strips/s3_cape_attack.png"
+   }
+  },
+  "s3_gloves": {
+   "file": "s3_gloves.png",
+   "set": 3,
+   "setName": "야근 흑기사",
+   "slot": "gloves",
+   "anchor": "hand",
+   "offset": [
+    -30,
+    -48
+   ],
+   "layer": 6,
+   "behindBody": false,
+   "bbox": [
+    28,
+    43,
+    33,
+    51
+   ],
+   "strips": {
+    "idle": "strips/s3_gloves_idle.png",
+    "walk": "strips/s3_gloves_walk.png",
+    "attack": "strips/s3_gloves_attack.png"
+   }
+  },
+  "s3_boots": {
+   "file": "s3_boots.png",
+   "set": 3,
+   "setName": "야근 흑기사",
+   "slot": "boots",
+   "anchor": "feet",
+   "offset": [
+    -30,
+    -56
+   ],
+   "layer": 2,
+   "behindBody": false,
+   "bbox": [
+    26,
+    50,
+    36,
+    57
+   ],
+   "strips": {
+    "idle": "strips/s3_boots_idle.png",
+    "walk": "strips/s3_boots_walk.png",
+    "attack": "strips/s3_boots_attack.png"
+   }
+  },
+  "s3_accessory": {
+   "file": "s3_accessory.png",
+   "set": 3,
+   "setName": "야근 흑기사",
+   "slot": "accessory",
+   "anchor": "torso",
+   "offset": [
+    -30,
+    -41
+   ],
+   "layer": 4,
+   "behindBody": false,
+   "bbox": [
+    24,
+    41,
+    32,
+    49
+   ],
+   "strips": {
+    "idle": "strips/s3_accessory_idle.png",
+    "walk": "strips/s3_accessory_walk.png",
+    "attack": "strips/s3_accessory_attack.png"
+   }
+  },
+  "s4_helmet": {
+   "file": "s4_helmet.png",
+   "set": 4,
+   "setName": "주말 등산 레인저",
+   "slot": "helmet",
+   "anchor": "head",
+   "offset": [
+    -28,
+    -13
+   ],
+   "layer": 7,
+   "behindBody": false,
+   "bbox": [
+    9,
+    12,
+    40,
+    38
+   ],
+   "strips": {
+    "idle": "strips/s4_helmet_idle.png",
+    "walk": "strips/s4_helmet_walk.png",
+    "attack": "strips/s4_helmet_attack.png"
+   }
+  },
+  "s4_armor": {
+   "file": "s4_armor.png",
+   "set": 4,
+   "setName": "주말 등산 레인저",
+   "slot": "armor",
+   "anchor": "torso",
+   "offset": [
+    -30,
+    -41
+   ],
+   "layer": 3,
+   "behindBody": false,
+   "bbox": [
+    25,
+    35,
+    39,
+    47
+   ],
+   "strips": {
+    "idle": "strips/s4_armor_idle.png",
+    "walk": "strips/s4_armor_walk.png",
+    "attack": "strips/s4_armor_attack.png"
+   }
+  },
+  "s4_cape": {
+   "file": "s4_cape.png",
+   "set": 4,
+   "setName": "주말 등산 레인저",
+   "slot": "cape",
+   "anchor": "neck",
+   "offset": [
+    -33,
+    -39
+   ],
+   "layer": 0,
+   "behindBody": true,
+   "bbox": [
+    18,
+    34,
+    31,
+    50
+   ],
+   "strips": {
+    "idle": "strips/s4_cape_idle.png",
+    "walk": "strips/s4_cape_walk.png",
+    "attack": "strips/s4_cape_attack.png"
+   }
+  },
+  "s4_gloves": {
+   "file": "s4_gloves.png",
+   "set": 4,
+   "setName": "주말 등산 레인저",
+   "slot": "gloves",
+   "anchor": "hand",
+   "offset": [
+    -30,
+    -48
+   ],
+   "layer": 6,
+   "behindBody": false,
+   "bbox": [
+    28,
+    45,
+    33,
+    51
+   ],
+   "strips": {
+    "idle": "strips/s4_gloves_idle.png",
+    "walk": "strips/s4_gloves_walk.png",
+    "attack": "strips/s4_gloves_attack.png"
+   }
+  },
+  "s4_boots": {
+   "file": "s4_boots.png",
+   "set": 4,
+   "setName": "주말 등산 레인저",
+   "slot": "boots",
+   "anchor": "feet",
+   "offset": [
+    -30,
+    -56
+   ],
+   "layer": 2,
+   "behindBody": false,
+   "bbox": [
+    27,
+    51,
+    34,
+    57
+   ],
+   "strips": {
+    "idle": "strips/s4_boots_idle.png",
+    "walk": "strips/s4_boots_walk.png",
+    "attack": "strips/s4_boots_attack.png"
+   }
+  },
+  "s4_accessory": {
+   "file": "s4_accessory.png",
+   "set": 4,
+   "setName": "주말 등산 레인저",
+   "slot": "accessory",
+   "anchor": "torso",
+   "offset": [
+    -30,
+    -41
+   ],
+   "layer": 4,
+   "behindBody": false,
+   "bbox": [
+    26,
+    38,
+    35,
+    49
+   ],
+   "strips": {
+    "idle": "strips/s4_accessory_idle.png",
+    "walk": "strips/s4_accessory_walk.png",
+    "attack": "strips/s4_accessory_attack.png"
+   }
+  },
+  "s5_helmet": {
+   "file": "s5_helmet.png",
+   "set": 5,
+   "setName": "임원 성기사",
+   "slot": "helmet",
+   "anchor": "head",
+   "offset": [
+    -28,
+    -13
+   ],
+   "layer": 7,
+   "behindBody": false,
+   "bbox": [
+    15,
+    6,
+    41,
+    30
+   ],
+   "strips": {
+    "idle": "strips/s5_helmet_idle.png",
+    "walk": "strips/s5_helmet_walk.png",
+    "attack": "strips/s5_helmet_attack.png"
+   }
+  },
+  "s5_armor": {
+   "file": "s5_armor.png",
+   "set": 5,
+   "setName": "임원 성기사",
+   "slot": "armor",
+   "anchor": "torso",
+   "offset": [
+    -30,
+    -41
+   ],
+   "layer": 3,
+   "behindBody": false,
+   "bbox": [
+    23,
+    33,
+    40,
+    52
+   ],
+   "strips": {
+    "idle": "strips/s5_armor_idle.png",
+    "walk": "strips/s5_armor_walk.png",
+    "attack": "strips/s5_armor_attack.png"
+   }
+  },
+  "s5_cape": {
+   "file": "s5_cape.png",
+   "set": 5,
+   "setName": "임원 성기사",
+   "slot": "cape",
+   "anchor": "neck",
+   "offset": [
+    -33,
+    -39
+   ],
+   "layer": 0,
+   "behindBody": true,
+   "bbox": [
+    17,
+    34,
+    31,
+    54
+   ],
+   "strips": {
+    "idle": "strips/s5_cape_idle.png",
+    "walk": "strips/s5_cape_walk.png",
+    "attack": "strips/s5_cape_attack.png"
+   }
+  },
+  "s5_gloves": {
+   "file": "s5_gloves.png",
+   "set": 5,
+   "setName": "임원 성기사",
+   "slot": "gloves",
+   "anchor": "hand",
+   "offset": [
+    -30,
+    -48
+   ],
+   "layer": 6,
+   "behindBody": false,
+   "bbox": [
+    28,
+    44,
+    33,
+    51
+   ],
+   "strips": {
+    "idle": "strips/s5_gloves_idle.png",
+    "walk": "strips/s5_gloves_walk.png",
+    "attack": "strips/s5_gloves_attack.png"
+   }
+  },
+  "s5_boots": {
+   "file": "s5_boots.png",
+   "set": 5,
+   "setName": "임원 성기사",
+   "slot": "boots",
+   "anchor": "feet",
+   "offset": [
+    -30,
+    -56
+   ],
+   "layer": 2,
+   "behindBody": false,
+   "bbox": [
+    26,
+    50,
+    35,
+    57
+   ],
+   "strips": {
+    "idle": "strips/s5_boots_idle.png",
+    "walk": "strips/s5_boots_walk.png",
+    "attack": "strips/s5_boots_attack.png"
+   }
+  },
+  "s5_accessory": {
+   "file": "s5_accessory.png",
+   "set": 5,
+   "setName": "임원 성기사",
+   "slot": "accessory",
+   "anchor": "neck",
+   "offset": [
+    -33,
+    -39
+   ],
+   "layer": 4,
+   "behindBody": false,
+   "bbox": [
+    29,
+    39,
+    34,
+    48
+   ],
+   "strips": {
+    "idle": "strips/s5_accessory_idle.png",
+    "walk": "strips/s5_accessory_walk.png",
+    "attack": "strips/s5_accessory_attack.png"
+   }
+  },
+  "s6_helmet": {
+   "file": "s6_helmet.png",
+   "set": 6,
+   "setName": "회장님 황금 갑주",
+   "slot": "helmet",
+   "anchor": "head",
+   "offset": [
+    -28,
+    -13
+   ],
+   "layer": 7,
+   "behindBody": false,
+   "bbox": [
+    15,
+    8,
+    42,
+    30
+   ],
+   "strips": {
+    "idle": "strips/s6_helmet_idle.png",
+    "walk": "strips/s6_helmet_walk.png",
+    "attack": "strips/s6_helmet_attack.png"
+   }
+  },
+  "s6_armor": {
+   "file": "s6_armor.png",
+   "set": 6,
+   "setName": "회장님 황금 갑주",
+   "slot": "armor",
+   "anchor": "torso",
+   "offset": [
+    -30,
+    -41
+   ],
+   "layer": 3,
+   "behindBody": false,
+   "bbox": [
+    22,
+    32,
+    40,
+    50
+   ],
+   "strips": {
+    "idle": "strips/s6_armor_idle.png",
+    "walk": "strips/s6_armor_walk.png",
+    "attack": "strips/s6_armor_attack.png"
+   }
+  },
+  "s6_cape": {
+   "file": "s6_cape.png",
+   "set": 6,
+   "setName": "회장님 황금 갑주",
+   "slot": "cape",
+   "anchor": "neck",
+   "offset": [
+    -33,
+    -39
+   ],
+   "layer": 0,
+   "behindBody": true,
+   "bbox": [
+    13,
+    33,
+    34,
+    56
+   ],
+   "strips": {
+    "idle": "strips/s6_cape_idle.png",
+    "walk": "strips/s6_cape_walk.png",
+    "attack": "strips/s6_cape_attack.png"
+   }
+  },
+  "s6_gloves": {
+   "file": "s6_gloves.png",
+   "set": 6,
+   "setName": "회장님 황금 갑주",
+   "slot": "gloves",
+   "anchor": "hand",
+   "offset": [
+    -30,
+    -48
+   ],
+   "layer": 6,
+   "behindBody": false,
+   "bbox": [
+    28,
+    44,
+    33,
+    51
+   ],
+   "strips": {
+    "idle": "strips/s6_gloves_idle.png",
+    "walk": "strips/s6_gloves_walk.png",
+    "attack": "strips/s6_gloves_attack.png"
+   }
+  },
+  "s6_boots": {
+   "file": "s6_boots.png",
+   "set": 6,
+   "setName": "회장님 황금 갑주",
+   "slot": "boots",
+   "anchor": "feet",
+   "offset": [
+    -30,
+    -56
+   ],
+   "layer": 2,
+   "behindBody": false,
+   "bbox": [
+    26,
+    50,
+    35,
+    57
+   ],
+   "strips": {
+    "idle": "strips/s6_boots_idle.png",
+    "walk": "strips/s6_boots_walk.png",
+    "attack": "strips/s6_boots_attack.png"
+   }
+  },
+  "s6_accessory": {
+   "file": "s6_accessory.png",
+   "set": 6,
+   "setName": "회장님 황금 갑주",
+   "slot": "accessory",
+   "anchor": "neck",
+   "offset": [
+    -33,
+    -39
+   ],
+   "layer": 4,
+   "behindBody": false,
+   "bbox": [
+    28,
+    39,
+    35,
+    49
+   ],
+   "strips": {
+    "idle": "strips/s6_accessory_idle.png",
+    "walk": "strips/s6_accessory_walk.png",
+    "attack": "strips/s6_accessory_attack.png"
+   }
+  }
+ }
+}

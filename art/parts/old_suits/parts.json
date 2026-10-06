@@ -1,0 +1,816 @@
+{
+ "frameWidth": 68,
+ "frameHeight": 68,
+ "parts": {
+  "s1_hair": {
+   "file": "s1_hair.png",
+   "set": 1,
+   "part": "hair",
+   "anchor": "head",
+   "offset": [
+    -36,
+    -5
+   ],
+   "layer": 6,
+   "bbox": [
+    25,
+    4,
+    44,
+    29
+   ],
+   "strips": {
+    "idle": "strips/s1_hair_idle.png",
+    "walk": "strips/s1_hair_walk.png",
+    "attack": "strips/s1_hair_attack.png"
+   }
+  },
+  "s1_suit": {
+   "file": "s1_suit.png",
+   "set": 1,
+   "part": "suit",
+   "anchor": "torso",
+   "offset": [
+    -33,
+    -35
+   ],
+   "layer": 1,
+   "bbox": [
+    28,
+    29,
+    39,
+    55
+   ],
+   "strips": {
+    "idle": "strips/s1_suit_idle.png",
+    "walk": "strips/s1_suit_walk.png",
+    "attack": "strips/s1_suit_attack.png"
+   }
+  },
+  "s1_coat": {
+   "file": "s1_coat.png",
+   "set": 1,
+   "part": "coat",
+   "anchor": "torso",
+   "offset": [
+    -33,
+    -35
+   ],
+   "layer": 3,
+   "bbox": [
+    27,
+    29,
+    40,
+    49
+   ],
+   "strips": {
+    "idle": "strips/s1_coat_idle.png",
+    "walk": "strips/s1_coat_walk.png",
+    "attack": "strips/s1_coat_attack.png"
+   }
+  },
+  "s1_gloves": {
+   "file": "s1_gloves.png",
+   "set": 1,
+   "part": "gloves",
+   "anchor": "hand",
+   "offset": [
+    -33,
+    -45
+   ],
+   "layer": 5,
+   "bbox": [
+    30,
+    38,
+    36,
+    48
+   ],
+   "strips": {
+    "idle": "strips/s1_gloves_idle.png",
+    "walk": "strips/s1_gloves_walk.png",
+    "attack": "strips/s1_gloves_attack.png"
+   }
+  },
+  "s1_shoes": {
+   "file": "s1_shoes.png",
+   "set": 1,
+   "part": "shoes",
+   "anchor": "feet",
+   "offset": [
+    -34,
+    -58
+   ],
+   "layer": 2,
+   "bbox": [
+    29,
+    55,
+    39,
+    59
+   ],
+   "strips": {
+    "idle": "strips/s1_shoes_idle.png",
+    "walk": "strips/s1_shoes_walk.png",
+    "attack": "strips/s1_shoes_attack.png"
+   }
+  },
+  "s1_tie": {
+   "file": "s1_tie.png",
+   "set": 1,
+   "part": "tie",
+   "anchor": "neck",
+   "offset": [
+    -35,
+    -29
+   ],
+   "layer": 4,
+   "bbox": [
+    34,
+    30,
+    36,
+    41
+   ],
+   "strips": {
+    "idle": "strips/s1_tie_idle.png",
+    "walk": "strips/s1_tie_walk.png",
+    "attack": "strips/s1_tie_attack.png"
+   }
+  },
+  "s2_hair": {
+   "file": "s2_hair.png",
+   "set": 2,
+   "part": "hair",
+   "anchor": "head",
+   "offset": [
+    -36,
+    -5
+   ],
+   "layer": 6,
+   "bbox": [
+    25,
+    3,
+    46,
+    29
+   ],
+   "strips": {
+    "idle": "strips/s2_hair_idle.png",
+    "walk": "strips/s2_hair_walk.png",
+    "attack": "strips/s2_hair_attack.png"
+   }
+  },
+  "s2_suit": {
+   "file": "s2_suit.png",
+   "set": 2,
+   "part": "suit",
+   "anchor": "torso",
+   "offset": [
+    -33,
+    -35
+   ],
+   "layer": 1,
+   "bbox": [
+    28,
+    29,
+    39,
+    55
+   ],
+   "strips": {
+    "idle": "strips/s2_suit_idle.png",
+    "walk": "strips/s2_suit_walk.png",
+    "attack": "strips/s2_suit_attack.png"
+   }
+  },
+  "s2_coat": {
+   "file": "s2_coat.png",
+   "set": 2,
+   "part": "coat",
+   "anchor": "torso",
+   "offset": [
+    -33,
+    -35
+   ],
+   "layer": 3,
+   "bbox": [
+    27,
+    29,
+    40,
+    49
+   ],
+   "strips": {
+    "idle": "strips/s2_coat_idle.png",
+    "walk": "strips/s2_coat_walk.png",
+    "attack": "strips/s2_coat_attack.png"
+   }
+  },
+  "s2_gloves": {
+   "file": "s2_gloves.png",
+   "set": 2,
+   "part": "gloves",
+   "anchor": "hand",
+   "offset": [
+    -33,
+    -45
+   ],
+   "layer": 5,
+   "bbox": [
+    30,
+    38,
+    36,
+    48
+   ],
+   "strips": {
+    "idle": "strips/s2_gloves_idle.png",
+    "walk": "strips/s2_gloves_walk.png",
+    "attack": "strips/s2_gloves_attack.png"
+   }
+  },
+  "s2_shoes": {
+   "file": "s2_shoes.png",
+   "set": 2,
+   "part": "shoes",
+   "anchor": "feet",
+   "offset": [
+    -34,
+    -58
+   ],
+   "layer": 2,
+   "bbox": [
+    29,
+    55,
+    39,
+    59
+   ],
+   "strips": {
+    "idle": "strips/s2_shoes_idle.png",
+    "walk": "strips/s2_shoes_walk.png",
+    "attack": "strips/s2_shoes_attack.png"
+   }
+  },
+  "s2_tie": {
+   "file": "s2_tie.png",
+   "set": 2,
+   "part": "tie",
+   "anchor": "neck",
+   "offset": [
+    -35,
+    -29
+   ],
+   "layer": 4,
+   "bbox": [
+    34,
+    30,
+    36,
+    41
+   ],
+   "strips": {
+    "idle": "strips/s2_tie_idle.png",
+    "walk": "strips/s2_tie_walk.png",
+    "attack": "strips/s2_tie_attack.png"
+   }
+  },
+  "s3_hair": {
+   "file": "s3_hair.png",
+   "set": 3,
+   "part": "hair",
+   "anchor": "head",
+   "offset": [
+    -36,
+    -5
+   ],
+   "layer": 6,
+   "bbox": [
+    27,
+    4,
+    50,
+    11
+   ],
+   "strips": {
+    "idle": "strips/s3_hair_idle.png",
+    "walk": "strips/s3_hair_walk.png",
+    "attack": "strips/s3_hair_attack.png"
+   }
+  },
+  "s3_suit": {
+   "file": "s3_suit.png",
+   "set": 3,
+   "part": "suit",
+   "anchor": "torso",
+   "offset": [
+    -33,
+    -35
+   ],
+   "layer": 1,
+   "bbox": [
+    28,
+    29,
+    39,
+    55
+   ],
+   "strips": {
+    "idle": "strips/s3_suit_idle.png",
+    "walk": "strips/s3_suit_walk.png",
+    "attack": "strips/s3_suit_attack.png"
+   }
+  },
+  "s3_coat": {
+   "file": "s3_coat.png",
+   "set": 3,
+   "part": "coat",
+   "anchor": "torso",
+   "offset": [
+    -33,
+    -35
+   ],
+   "layer": 3,
+   "bbox": [
+    27,
+    29,
+    40,
+    49
+   ],
+   "strips": {
+    "idle": "strips/s3_coat_idle.png",
+    "walk": "strips/s3_coat_walk.png",
+    "attack": "strips/s3_coat_attack.png"
+   }
+  },
+  "s3_gloves": {
+   "file": "s3_gloves.png",
+   "set": 3,
+   "part": "gloves",
+   "anchor": "hand",
+   "offset": [
+    -33,
+    -45
+   ],
+   "layer": 5,
+   "bbox": [
+    30,
+    38,
+    36,
+    48
+   ],
+   "strips": {
+    "idle": "strips/s3_gloves_idle.png",
+    "walk": "strips/s3_gloves_walk.png",
+    "attack": "strips/s3_gloves_attack.png"
+   }
+  },
+  "s3_shoes": {
+   "file": "s3_shoes.png",
+   "set": 3,
+   "part": "shoes",
+   "anchor": "feet",
+   "offset": [
+    -34,
+    -58
+   ],
+   "layer": 2,
+   "bbox": [
+    29,
+    55,
+    39,
+    59
+   ],
+   "strips": {
+    "idle": "strips/s3_shoes_idle.png",
+    "walk": "strips/s3_shoes_walk.png",
+    "attack": "strips/s3_shoes_attack.png"
+   }
+  },
+  "s3_tie": {
+   "file": "s3_tie.png",
+   "set": 3,
+   "part": "tie",
+   "anchor": "neck",
+   "offset": [
+    -35,
+    -29
+   ],
+   "layer": 4,
+   "bbox": [
+    33,
+    30,
+    36,
+    34
+   ],
+   "strips": {
+    "idle": "strips/s3_tie_idle.png",
+    "walk": "strips/s3_tie_walk.png",
+    "attack": "strips/s3_tie_attack.png"
+   }
+  },
+  "s4_hair": {
+   "file": "s4_hair.png",
+   "set": 4,
+   "part": "hair",
+   "anchor": "head",
+   "offset": [
+    -36,
+    -5
+   ],
+   "layer": 6,
+   "bbox": [
+    23,
+    4,
+    49,
+    13
+   ],
+   "strips": {
+    "idle": "strips/s4_hair_idle.png",
+    "walk": "strips/s4_hair_walk.png",
+    "attack": "strips/s4_hair_attack.png"
+   }
+  },
+  "s4_suit": {
+   "file": "s4_suit.png",
+   "set": 4,
+   "part": "suit",
+   "anchor": "torso",
+   "offset": [
+    -33,
+    -35
+   ],
+   "layer": 1,
+   "bbox": [
+    28,
+    29,
+    39,
+    55
+   ],
+   "strips": {
+    "idle": "strips/s4_suit_idle.png",
+    "walk": "strips/s4_suit_walk.png",
+    "attack": "strips/s4_suit_attack.png"
+   }
+  },
+  "s4_coat": {
+   "file": "s4_coat.png",
+   "set": 4,
+   "part": "coat",
+   "anchor": "torso",
+   "offset": [
+    -33,
+    -35
+   ],
+   "layer": 3,
+   "bbox": [
+    27,
+    29,
+    40,
+    49
+   ],
+   "strips": {
+    "idle": "strips/s4_coat_idle.png",
+    "walk": "strips/s4_coat_walk.png",
+    "attack": "strips/s4_coat_attack.png"
+   }
+  },
+  "s4_gloves": {
+   "file": "s4_gloves.png",
+   "set": 4,
+   "part": "gloves",
+   "anchor": "hand",
+   "offset": [
+    -33,
+    -45
+   ],
+   "layer": 5,
+   "bbox": [
+    30,
+    38,
+    36,
+    48
+   ],
+   "strips": {
+    "idle": "strips/s4_gloves_idle.png",
+    "walk": "strips/s4_gloves_walk.png",
+    "attack": "strips/s4_gloves_attack.png"
+   }
+  },
+  "s4_shoes": {
+   "file": "s4_shoes.png",
+   "set": 4,
+   "part": "shoes",
+   "anchor": "feet",
+   "offset": [
+    -34,
+    -58
+   ],
+   "layer": 2,
+   "bbox": [
+    29,
+    52,
+    39,
+    59
+   ],
+   "strips": {
+    "idle": "strips/s4_shoes_idle.png",
+    "walk": "strips/s4_shoes_walk.png",
+    "attack": "strips/s4_shoes_attack.png"
+   }
+  },
+  "s4_tie": {
+   "file": "s4_tie.png",
+   "set": 4,
+   "part": "tie",
+   "anchor": "neck",
+   "offset": [
+    -35,
+    -29
+   ],
+   "layer": 4,
+   "bbox": [
+    31,
+    30,
+    37,
+    34
+   ],
+   "strips": {
+    "idle": "strips/s4_tie_idle.png",
+    "walk": "strips/s4_tie_walk.png",
+    "attack": "strips/s4_tie_attack.png"
+   }
+  },
+  "s5_hair": {
+   "file": "s5_hair.png",
+   "set": 5,
+   "part": "hair",
+   "anchor": "head",
+   "offset": [
+    -36,
+    -5
+   ],
+   "layer": 6,
+   "bbox": [
+    25,
+    4,
+    44,
+    29
+   ],
+   "strips": {
+    "idle": "strips/s5_hair_idle.png",
+    "walk": "strips/s5_hair_walk.png",
+    "attack": "strips/s5_hair_attack.png"
+   }
+  },
+  "s5_suit": {
+   "file": "s5_suit.png",
+   "set": 5,
+   "part": "suit",
+   "anchor": "torso",
+   "offset": [
+    -33,
+    -35
+   ],
+   "layer": 1,
+   "bbox": [
+    28,
+    29,
+    39,
+    55
+   ],
+   "strips": {
+    "idle": "strips/s5_suit_idle.png",
+    "walk": "strips/s5_suit_walk.png",
+    "attack": "strips/s5_suit_attack.png"
+   }
+  },
+  "s5_coat": {
+   "file": "s5_coat.png",
+   "set": 5,
+   "part": "coat",
+   "anchor": "torso",
+   "offset": [
+    -33,
+    -35
+   ],
+   "layer": 3,
+   "bbox": [
+    27,
+    29,
+    40,
+    49
+   ],
+   "strips": {
+    "idle": "strips/s5_coat_idle.png",
+    "walk": "strips/s5_coat_walk.png",
+    "attack": "strips/s5_coat_attack.png"
+   }
+  },
+  "s5_gloves": {
+   "file": "s5_gloves.png",
+   "set": 5,
+   "part": "gloves",
+   "anchor": "hand",
+   "offset": [
+    -33,
+    -45
+   ],
+   "layer": 5,
+   "bbox": [
+    30,
+    38,
+    36,
+    48
+   ],
+   "strips": {
+    "idle": "strips/s5_gloves_idle.png",
+    "walk": "strips/s5_gloves_walk.png",
+    "attack": "strips/s5_gloves_attack.png"
+   }
+  },
+  "s5_shoes": {
+   "file": "s5_shoes.png",
+   "set": 5,
+   "part": "shoes",
+   "anchor": "feet",
+   "offset": [
+    -34,
+    -58
+   ],
+   "layer": 2,
+   "bbox": [
+    29,
+    55,
+    39,
+    59
+   ],
+   "strips": {
+    "idle": "strips/s5_shoes_idle.png",
+    "walk": "strips/s5_shoes_walk.png",
+    "attack": "strips/s5_shoes_attack.png"
+   }
+  },
+  "s5_tie": {
+   "file": "s5_tie.png",
+   "set": 5,
+   "part": "tie",
+   "anchor": "neck",
+   "offset": [
+    -35,
+    -29
+   ],
+   "layer": 4,
+   "bbox": [
+    34,
+    30,
+    36,
+    41
+   ],
+   "strips": {
+    "idle": "strips/s5_tie_idle.png",
+    "walk": "strips/s5_tie_walk.png",
+    "attack": "strips/s5_tie_attack.png"
+   }
+  },
+  "s6_hair": {
+   "file": "s6_hair.png",
+   "set": 6,
+   "part": "hair",
+   "anchor": "head",
+   "offset": [
+    -36,
+    -5
+   ],
+   "layer": 6,
+   "bbox": [
+    25,
+    3,
+    46,
+    29
+   ],
+   "strips": {
+    "idle": "strips/s6_hair_idle.png",
+    "walk": "strips/s6_hair_walk.png",
+    "attack": "strips/s6_hair_attack.png"
+   }
+  },
+  "s6_suit": {
+   "file": "s6_suit.png",
+   "set": 6,
+   "part": "suit",
+   "anchor": "torso",
+   "offset": [
+    -33,
+    -35
+   ],
+   "layer": 1,
+   "bbox": [
+    28,
+    29,
+    39,
+    55
+   ],
+   "strips": {
+    "idle": "strips/s6_suit_idle.png",
+    "walk": "strips/s6_suit_walk.png",
+    "attack": "strips/s6_suit_attack.png"
+   }
+  },
+  "s6_coat": {
+   "file": "s6_coat.png",
+   "set": 6,
+   "part": "coat",
+   "anchor": "torso",
+   "offset": [
+    -33,
+    -35
+   ],
+   "layer": 3,
+   "bbox": [
+    27,
+    29,
+    40,
+    49
+   ],
+   "strips": {
+    "idle": "strips/s6_coat_idle.png",
+    "walk": "strips/s6_coat_walk.png",
+    "attack": "strips/s6_coat_attack.png"
+   }
+  },
+  "s6_gloves": {
+   "file": "s6_gloves.png",
+   "set": 6,
+   "part": "gloves",
+   "anchor": "hand",
+   "offset": [
+    -33,
+    -45
+   ],
+   "layer": 5,
+   "bbox": [
+    30,
+    38,
+    36,
+    48
+   ],
+   "strips": {
+    "idle": "strips/s6_gloves_idle.png",
+    "walk": "strips/s6_gloves_walk.png",
+    "attack": "strips/s6_gloves_attack.png"
+   }
+  },
+  "s6_shoes": {
+   "file": "s6_shoes.png",
+   "set": 6,
+   "part": "shoes",
+   "anchor": "feet",
+   "offset": [
+    -34,
+    -58
+   ],
+   "layer": 2,
+   "bbox": [
+    29,
+    55,
+    39,
+    59
+   ],
+   "strips": {
+    "idle": "strips/s6_shoes_idle.png",
+    "walk": "strips/s6_shoes_walk.png",
+    "attack": "strips/s6_shoes_attack.png"
+   }
+  },
+  "s6_tie": {
+   "file": "s6_tie.png",
+   "set": 6,
+   "part": "tie",
+   "anchor": "neck",
+   "offset": [
+    -35,
+    -29
+   ],
+   "layer": 4,
+   "bbox": [
+    34,
+    30,
+    36,
+    41
+   ],
+   "strips": {
+    "idle": "strips/s6_tie_idle.png",
+    "walk": "strips/s6_tie_walk.png",
+    "attack": "strips/s6_tie_attack.png"
+   }
+  }
+ },
+ "sets": {
+  "1": "신입",
+  "2": "영업왕",
+  "3": "골프 접대",
+  "4": "주말 등산",
+  "5": "임원",
+  "6": "회장님"
+ },
+ "layerOrder": [
+  "body",
+  "suit",
+  "shoes",
+  "coat",
+  "tie",
+  "gear",
+  "gloves",
+  "hair"
+ ]
+}

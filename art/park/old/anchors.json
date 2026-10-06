@@ -1,0 +1,441 @@
+{
+ "coordinateSystem": "pixel coords inside each frame's own canvas; origin top-left; x right, y down; a coordinate names the pixel cell (x,y)",
+ "angleConvention": "degrees, screen space: 0 = pointing right (+x, the facing direction), -90 = straight up, 90 = straight down, +-180 = backward",
+ "facing": "east (right)",
+ "frameWidth": 68,
+ "frameHeight": 68,
+ "animations": {
+  "idle": {
+   "frames": [
+    {
+     "head": [
+      36,
+      5
+     ],
+     "neck": [
+      35,
+      29
+     ],
+     "torso": [
+      33,
+      35
+     ],
+     "hand": [
+      33,
+      45
+     ],
+     "handAngle": -30,
+     "feet": [
+      34,
+      58
+     ],
+     "file": "idle_0.png"
+    },
+    {
+     "head": [
+      34,
+      5
+     ],
+     "neck": [
+      35,
+      29
+     ],
+     "torso": [
+      33,
+      35
+     ],
+     "hand": [
+      34,
+      44
+     ],
+     "handAngle": -35,
+     "feet": [
+      34,
+      58
+     ],
+     "file": "idle_1.png"
+    },
+    {
+     "head": [
+      34,
+      4
+     ],
+     "neck": [
+      35,
+      28
+     ],
+     "torso": [
+      34,
+      34
+     ],
+     "hand": [
+      33,
+      44
+     ],
+     "handAngle": -26,
+     "feet": [
+      34,
+      58
+     ],
+     "file": "idle_2.png"
+    },
+    {
+     "head": [
+      34,
+      4
+     ],
+     "neck": [
+      35,
+      28
+     ],
+     "torso": [
+      34,
+      34
+     ],
+     "hand": [
+      33,
+      44
+     ],
+     "handAngle": -26,
+     "feet": [
+      34,
+      58
+     ],
+     "file": "idle_3.png"
+    }
+   ],
+   "frameCount": 4,
+   "frameDurationMs": 250,
+   "loop": true,
+   "strip": "idle_strip.png"
+  },
+  "walk": {
+   "frames": [
+    {
+     "head": [
+      34,
+      5
+     ],
+     "neck": [
+      35,
+      28
+     ],
+     "torso": [
+      34,
+      34
+     ],
+     "hand": [
+      36,
+      45
+     ],
+     "handAngle": -38,
+     "feet": [
+      33,
+      58
+     ],
+     "file": "walk_0.png"
+    },
+    {
+     "head": [
+      33,
+      5
+     ],
+     "neck": [
+      34,
+      28
+     ],
+     "torso": [
+      33,
+      34
+     ],
+     "hand": [
+      39,
+      44
+     ],
+     "handAngle": -55,
+     "feet": [
+      28,
+      58
+     ],
+     "file": "walk_1.png"
+    },
+    {
+     "head": [
+      32,
+      5
+     ],
+     "neck": [
+      34,
+      28
+     ],
+     "torso": [
+      33,
+      33
+     ],
+     "hand": [
+      36,
+      43
+     ],
+     "handAngle": -44,
+     "feet": [
+      26,
+      58
+     ],
+     "file": "walk_2.png"
+    },
+    {
+     "head": [
+      34,
+      4
+     ],
+     "neck": [
+      34,
+      27
+     ],
+     "torso": [
+      34,
+      34
+     ],
+     "hand": [
+      34,
+      44
+     ],
+     "handAngle": -30,
+     "feet": [
+      34,
+      57
+     ],
+     "file": "walk_3.png"
+    },
+    {
+     "head": [
+      34,
+      4
+     ],
+     "neck": [
+      35,
+      27
+     ],
+     "torso": [
+      33,
+      34
+     ],
+     "hand": [
+      39,
+      41
+     ],
+     "handAngle": -59,
+     "feet": [
+      35,
+      57
+     ],
+     "file": "walk_4.png"
+    },
+    {
+     "head": [
+      33,
+      4
+     ],
+     "neck": [
+      34,
+      28
+     ],
+     "torso": [
+      34,
+      35
+     ],
+     "hand": [
+      33,
+      44
+     ],
+     "handAngle": -26,
+     "feet": [
+      34,
+      57
+     ],
+     "file": "walk_5.png"
+    }
+   ],
+   "frameCount": 6,
+   "frameDurationMs": 110,
+   "loop": true,
+   "strip": "walk_strip.png"
+  },
+  "attack": {
+   "frames": [
+    {
+     "head": [
+      34,
+      5
+     ],
+     "neck": [
+      35,
+      29
+     ],
+     "torso": [
+      34,
+      35
+     ],
+     "hand": [
+      34,
+      44
+     ],
+     "handAngle": -30,
+     "feet": [
+      34,
+      58
+     ],
+     "file": "attack_0.png"
+    },
+    {
+     "head": [
+      34,
+      5
+     ],
+     "neck": [
+      35,
+      29
+     ],
+     "torso": [
+      32,
+      35
+     ],
+     "hand": [
+      38,
+      42
+     ],
+     "handAngle": -61,
+     "feet": [
+      34,
+      58
+     ],
+     "file": "attack_1.png"
+    },
+    {
+     "head": [
+      32,
+      4
+     ],
+     "neck": [
+      35,
+      28
+     ],
+     "torso": [
+      34,
+      33
+     ],
+     "hand": [
+      35,
+      41
+     ],
+     "handAngle": -36,
+     "feet": [
+      34,
+      58
+     ],
+     "file": "attack_2.png"
+    },
+    {
+     "head": [
+      36,
+      7
+     ],
+     "neck": [
+      37,
+      30
+     ],
+     "torso": [
+      33,
+      37
+     ],
+     "hand": [
+      26,
+      41
+     ],
+     "handAngle": 11,
+     "feet": [
+      34,
+      58
+     ],
+     "file": "attack_3.png"
+    },
+    {
+     "head": [
+      40,
+      11
+     ],
+     "neck": [
+      34,
+      32
+     ],
+     "torso": [
+      33,
+      39
+     ],
+     "hand": [
+      49,
+      42
+     ],
+     "handAngle": -96,
+     "feet": [
+      34,
+      58
+     ],
+     "file": "attack_4.png"
+    },
+    {
+     "head": [
+      39,
+      9
+     ],
+     "neck": [
+      35,
+      30
+     ],
+     "torso": [
+      34,
+      35
+     ],
+     "hand": [
+      44,
+      41
+     ],
+     "handAngle": -81,
+     "feet": [
+      34,
+      58
+     ],
+     "file": "attack_5.png"
+    },
+    {
+     "head": [
+      38,
+      7
+     ],
+     "neck": [
+      38,
+      30
+     ],
+     "torso": [
+      34,
+      38
+     ],
+     "hand": [
+      47,
+      40
+     ],
+     "handAngle": -92,
+     "feet": [
+      34,
+      58
+     ],
+     "file": "attack_6.png"
+    }
+   ],
+   "frameCount": 7,
+   "frameDurationMs": 80,
+   "loop": false,
+   "strip": "attack_strip.png"
+  }
+ }
+}
