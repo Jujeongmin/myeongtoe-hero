@@ -20,6 +20,10 @@ button { font: inherit; cursor: pointer; }
 img, canvas { image-rendering: pixelated; }
 b, strong { font-weight: normal; color: #fff3c4; }
 
+/* No browser scrollbars anywhere: lists still scroll by touch and wheel. */
+* { scrollbar-width: none; -ms-overflow-style: none; }
+*::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
 .small { font-size: 12px; }
 .big { font-size: 24px; }
 
