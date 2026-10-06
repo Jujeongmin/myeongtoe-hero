@@ -1,9 +1,8 @@
-// 집 (home) content. 아파트 is the original's 원작 타워 (보석, damage ×2 every 10). 정장 (costumes)
-// are the original's costumes: the same six slots (투구, 갑옷, 망토, 장갑, 신발, 장신구), fantasy hero
-// gear with an office joke in each set, bought with 상품권, one worn per slot, a bonus for a fully
-// worn set.
-// 사무용품 is the original's 마왕성 gear: four parts owned from the start, upgraded with 상품권 from
-// grade 1 to 17 (1 → 2 costs 200, as the original's coins did). No draws anywhere.
+// 집 (home) content. 아파트: 보석 for pyeong, damage ×2 every 10. 정장 (costumes): six slots (투구,
+// 갑옷, 망토, 장갑, 신발, 장신구), fantasy hero gear with an office joke in each set, bought with
+// 상품권, one worn per slot, a bonus for a fully worn set.
+// 사무용품: four parts owned from the start, upgraded with 상품권 from grade 1 to 17 (1 → 2 costs
+// 200). No draws anywhere.
 export function apartmentCost(pyeong: number): number {
   return Math.ceil(10 * 1.1 ** pyeong);
 }

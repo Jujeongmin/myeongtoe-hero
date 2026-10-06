@@ -1,4 +1,4 @@
-// 자격증 (the original's treasures): drawn at random with 응시권 from those not yet owned, then
+// 자격증: drawn at random with 응시권 from those not yet owned, then
 // levelled with 응시권. Kept across job changes. Each tier is stronger per level but dearer still,
 // so value per ticket falls tier by tier.
 export type CertKind = "atk" | "gold" | "boss" | "sideJob" | "aspd" | "critDmg" | "prestige" | "offline";

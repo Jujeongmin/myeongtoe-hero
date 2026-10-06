@@ -1,7 +1,6 @@
 import type { GameState, SaveData } from "./state";
 
-// Rankings, as in the original: by best floor, and by deepest parking run (the original's 지하감옥
-// board). Each account has one row, kept by the server whenever its record goes up.
+// Rankings: by best floor, and by deepest parking run. Each account has one row, kept by the server whenever its record goes up.
 export type Board = "floor" | "depth";
 export const RANKING_SIZE = 50;
 

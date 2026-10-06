@@ -10,7 +10,7 @@ import { heroPower } from "../../shared/stats";
 export type SheetId = "prestige" | "suits" | "apartment" | "relics" | "office";
 
 // Gray-box stand-in for the step 7 sprite renderer: low-res canvas, scaled up crisp. The layout
-// follows the original's battle screen: title and floor bar on top, the job-change button bottom
+// puts title and floor bar on top, the job-change button bottom
 // left, the side icons on the right.
 const W = 160;
 const H = 96;

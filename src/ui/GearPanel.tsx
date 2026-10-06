@@ -3,7 +3,7 @@ import { formatBig } from "../../shared/format";
 import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
 
-// Every tier listed, like the original's weapon list: the ones behind owned, the current one to level
+// Every tier listed: the ones behind owned, the current one to level
 // up to 5, the next one to buy once the current is at 5, the rest waiting.
 export function GearPanel({ state, store }: { state: GameState; store: GameStore }) {
   const { tier: current, level } = state.gear;

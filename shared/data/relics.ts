@@ -1,4 +1,4 @@
-// 퇴직 기념품 (the original's ancient relics): each arrives on its own at its floor and levels with
+// 퇴직 기념품: each arrives on its own at its floor and levels with
 // 보석. 7000층's (mining power) waits for the stock-market content.
 export interface RelicDef {
   id: string;

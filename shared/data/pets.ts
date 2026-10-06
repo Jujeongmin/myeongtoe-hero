@@ -1,7 +1,6 @@
-// 동료 (the original's pets): each joins on its own once the best floor reaches it, works passively,
-// levels with 보석, and awakens every 2000 floors (up to 10 stages). The 동료 상자 (the original's
-// pet box) gives a random joined one a level for 상품권. The original's mining pet (뚜더지) comes
-// with the stock-market content later.
+// 동료: each joins on its own once the best floor reaches it, works passively, levels with 보석, and
+// awakens every 2000 floors (up to 10 stages). The 동료 상자 gives a random joined one a level for
+// 상품권. An eighth, for the stock-market content, comes with it later.
 export interface PetDef {
   id: string;
   name: string;

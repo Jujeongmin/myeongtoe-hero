@@ -132,7 +132,7 @@ describe("state", () => {
     expect(s.missions.special).toEqual(["f500"]);
     expect(s.nickname).toBe("");
   });
-  test("a version 4 save's office-suit parts become the original's costume slots", () => {
+  test("a version 4 save's office-suit parts become the costume slots", () => {
     const v4 = { ...toSave(newState(0)), v: 4, suits: ["s1_hair", "s2_tie", "s3_coat"], wear: { hair: "s1_hair", tie: "s2_tie" } } as Record<string, unknown>;
     const s = fromSave(v4);
     expect(s.suits).toEqual(["s1_helmet", "s2_accessory", "s3_cape"]);

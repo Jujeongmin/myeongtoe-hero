@@ -9,7 +9,7 @@ import { findSideJob } from "./data/sideJobs";
 export const SAVE_VERSION = 5;
 export const OFFLINE_CAP_SEC = 12 * 3600;
 export const OFFICE_MAX_GRADE = 17;
-// 지하주차장 passes stored at most (the original dungeon's 16). Re-exported by data/parking.ts.
+// 지하주차장 passes stored at most. Re-exported by data/parking.ts.
 export const PARK_PASS_MAX = 16;
 
 // Where Park is in the tower this run. `target` counts monsters killed on the floor; `carrySec` is
@@ -29,7 +29,7 @@ export interface SideJobState {
   running: boolean;
 }
 
-// 사무용품 (the original's 마왕성 gear) grades, 1..OFFICE_MAX_GRADE.
+// 사무용품 grades, 1..OFFICE_MAX_GRADE.
 export interface OfficeGrades {
   keyboard: number;
   mouse: number;
@@ -113,7 +113,7 @@ const MIGRATIONS: Record<number, (save: Record<string, unknown>) => Record<strin
   // v2: currencies, stats, certificates, the draw seed and the job-change count.
   1: (save) => ({ ...save, v: 2, tickets: 0, gems: 0, stats: {}, certs: {}, rngSeed: 0, prestiges: 0 }),
   // v3: permanent growth (pets, relics, apartment, suits, office) and coupons. Gear above level 5
-  // comes down to 5 (the original's weapon rule); gold stat upgrades are gone.
+  // comes down to 5 (the gear level cap); gold stat upgrades are gone.
   2: (save) => {
     const { stats: _gone, ...rest } = save;
     const gear = obj(save.gear);
@@ -132,7 +132,7 @@ const MIGRATIONS: Record<number, (save: Record<string, unknown>) => Record<strin
     attendance: { lastDay: "", count: 0 },
     nickname: "",
   }),
-  // v5: costume slots renamed to the original's (투구, 갑옷, 망토, 장갑, 신발, 장신구) for the fantasy
+  // v5: costume slots renamed (투구, 갑옷, 망토, 장갑, 신발, 장신구) for the fantasy
   // look; 구매확정 count on the gear.
   4: (save) => {
     const rename: Record<string, string> = { hair: "helmet", suit: "armor", coat: "cape", gloves: "gloves", shoes: "boots", tie: "accessory" };

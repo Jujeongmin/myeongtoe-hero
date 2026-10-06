@@ -63,13 +63,13 @@ describe("gear", () => {
   });
 });
 
-describe("the original's weapon rules", () => {
-  test("levels stop at 5, and the next tier opens only then (원작 무기 규칙)", () => {
+describe("gear rules", () => {
+  test("levels stop at 5, and the next tier opens only then", () => {
     expect(codeOf({ ...rich(), gear: { tier: 0, level: GEAR_MAX_LEVEL, confirmed: 0 } }, { k: "levelGear" })).toBe("max");
     expect(codeOf({ ...rich(), gear: { tier: 0, level: GEAR_MAX_LEVEL - 1, confirmed: 0 } }, { k: "buyGear" })).toBe("locked");
   });
 
-  test("the original's weapon numbers: ATK 50 ×3, price 600 ×6", () => {
+  test("gear numbers: ATK 50 ×3, price 600 ×6", () => {
     expect(gearAtk(0, 0).toNumber()).toBeCloseTo(50, 9);
     expect(gearAtk(1, 0).toNumber()).toBeCloseTo(150, 9);
     expect(gearPrice(1).toNumber()).toBeCloseTo(600, 6);
@@ -157,7 +157,7 @@ describe("prestige", () => {
     return s;
   }
 
-  test("not before floor 100 (the original's rebirth floor)", () => {
+  test("not before floor 100", () => {
     expect(codeOf(at(PRESTIGE_MIN_FLOOR - 1), { k: "prestige", boosted: false })).toBe("locked");
   });
 
@@ -264,7 +264,7 @@ describe("permanent growth", () => {
   });
 });
 
-describe("구매확정 (the original's purchase confirmation)", () => {
+describe("구매확정 (confirming gear)", () => {
   const rich2 = (gear: { tier: number; level: number; confirmed: number }) => ({ ...rich(), gems: 10_000, gear });
 
   test("a weapon at Lv5 can be confirmed for gold and gems", () => {

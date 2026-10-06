@@ -1,6 +1,6 @@
 import { Big } from "../big";
 
-// 업무 장비 (the original's weapons): bought tier by tier with gold, each tier levelled up. Reset by
+// 업무 장비: bought tier by tier with gold, each tier levelled up. Reset by
 // a job change (이직).
 export interface GearTier {
   id: string;
@@ -15,8 +15,8 @@ const NAMES = [
 
 export const GEAR_TIERS: readonly GearTier[] = NAMES.map((name, i) => ({ id: `g${String(i).padStart(2, "0")}`, name }));
 
-// 원작 무기처럼: each tier levels up to 5, and only a tier at 5 lets the next one be bought. The
-// numbers follow the original's weapon list (나뭇가지 ATK 50, then ×3; 600 gold for the second, then ×6).
+// Each tier levels up to 5, and only a tier at 5 lets the next one be bought. ATK starts at 50 and
+// triples per tier; the second tier costs 600 gold and each next one six times more.
 export const GEAR_MAX_LEVEL = 5;
 export const GEAR_ATK_BASE = 50;
 export const GEAR_ATK_GROWTH = 3;
@@ -36,7 +36,7 @@ export function gearPrice(tier: number): Big {
   return tier === 0 ? Big.ZERO : Big.pow(GEAR_PRICE_GROWTH, tier).mulN(GEAR_PRICE_BASE);
 }
 
-// 구매확정 (the original's purchase confirmation): a tier at Lv5 confirmed for gold and gems is kept
+// 구매확정: a tier at Lv5 confirmed for gold and gems is kept
 // through job changes. Tiers are confirmed in order only.
 export function gearConfirmCost(tier: number): { gold: Big; gems: number } {
   const gold = tier + 1 < GEAR_TIERS.length ? gearPrice(tier + 1) : gearPrice(tier).mulN(GEAR_PRICE_GROWTH);

@@ -24,7 +24,7 @@ function code(s: GameState, intent: Intent): string {
 }
 
 describe("daily parking quests", () => {
-  test("worth 315 coupons a day in all, like the original's 315 coins", () => {
+  test("worth 315 coupons a day in all", () => {
     expect(DAILY_QUESTS.reduce((sum, q) => sum + q.coupons, 0)).toBe(315);
     expect(new Set(DAILY_QUESTS.map((q) => q.id)).size).toBe(DAILY_QUESTS.length);
     expect(readIntent({ k: "claimDaily", id: "e1" })).toEqual({ k: "claimDaily", id: "e1" });

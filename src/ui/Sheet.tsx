@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-// A panel over the game (the original opens costumes and the like this way).
+// A panel over the game, for costumes, the apartment and the like.
 export function Sheet({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
   return (
     <div className="modal-back" onClick={onClose}>

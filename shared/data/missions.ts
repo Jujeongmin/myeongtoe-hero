@@ -1,7 +1,7 @@
 import type { GameState } from "../state";
 import { awakenStage } from "./pets";
 
-// The original's missions: 단계 미션 (one guided step at a time, shown on the battle screen —
+// Missions: 단계 미션 (one guided step at a time, shown on the battle screen —
 // "4단계 미션: 무기 [3.쇠꼬챙이] 구매"), 특수 임무 (one-off goals), and 7-day attendance. Checks read
 // the save only; lifetime values (best floor, job changes, collections) wherever possible.
 export interface Reward {

@@ -16,7 +16,7 @@ function code(s: GameState, intent: Intent): string {
   }
 }
 
-describe("step missions (the original's guided missions)", () => {
+describe("step missions", () => {
   test("20 steps, done one at a time, in order", () => {
     expect(STEP_MISSIONS).toHaveLength(20);
     const s = newState(NOW);
@@ -35,7 +35,7 @@ describe("step missions (the original's guided missions)", () => {
   });
 });
 
-describe("special missions (the original's 특수 임무)", () => {
+describe("special missions (특수 임무)", () => {
   test("pay once each when reached", () => {
     const m = SPECIAL_MISSIONS.find((x) => x.id === "f500")!;
     const s = newState(NOW);

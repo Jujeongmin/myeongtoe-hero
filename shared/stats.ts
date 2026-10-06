@@ -5,7 +5,7 @@ import { skillFactor, skillsUnlocked } from "./data/skills";
 import { mods } from "./mods";
 import { OFFLINE_CAP_SEC, type GameState } from "./state";
 
-// Park's base hits (the original's knight: 2 a second, 5% crit for +50%).
+// Park's base hits: 2 a second, 5% crit for +50%.
 export const HERO_ASPD = 2;
 export const HERO_CRIT_CHANCE = 0.05;
 export const HERO_CRIT_BONUS = 0.5;

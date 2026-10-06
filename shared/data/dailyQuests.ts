@@ -1,8 +1,7 @@
 import { isSaturday } from "../time";
 
-// 지하주차장 일일 퀘스트 (the original's 지하감옥 daily quests): goals on today's number of entries
-// and today's deepest run, paying 상품권 (the original's 마왕의 코인) — 315 a day in all, as in the
-// original — and double on Saturdays (the original's Saturday bonus).
+// 지하주차장 일일 퀘스트: goals on today's number of entries and today's deepest run, paying 상품권 —
+// 315 a day in all — and double on Saturdays.
 export interface DailyQuest {
   id: string;
   kind: "entries" | "depth";

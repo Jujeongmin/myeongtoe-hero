@@ -16,7 +16,7 @@ describe("apartment", () => {
 });
 
 describe("suits", () => {
-  test("the original's six costume slots", () => {
+  test("six costume slots", () => {
     expect([...new Set(SUIT_ITEMS.map((i) => i.part))]).toEqual(["helmet", "armor", "cape", "gloves", "boots", "accessory"]);
   });
 
@@ -43,7 +43,7 @@ describe("suits", () => {
 });
 
 describe("office", () => {
-  test("grade 1 → 2 costs 200 coupons, like the original's 200 coins", () => {
+  test("grade 1 → 2 costs 200 coupons", () => {
     expect(officeUpgradeCost(1)).toBe(200);
     expect(officeUpgradeCost(2)).toBeGreaterThan(200);
   });

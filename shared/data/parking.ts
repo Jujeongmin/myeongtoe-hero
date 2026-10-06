@@ -2,9 +2,9 @@ import { Big } from "../big";
 import { PARK_PASS_MAX, type GameState } from "../state";
 import type { Power } from "../stats";
 
-// 지하주차장 (the original's 지하감옥): a 30-second run down one meter per monster, a chest every
+// 지하주차장: a 30-second run down one meter per monster, a chest every
 // 20 m paying 응시권 (exponentially more the deeper), entered with passes that recharge one per
-// 15 minutes up to 16 (the original's fatigue system). First-pass numbers; tuned in step 8.
+// 15 minutes up to 16. First-pass numbers; tuned in step 8.
 export { PARK_PASS_MAX };
 export const PARK_RECHARGE_SEC = 900;
 export const PARK_RUN_SEC = 30;

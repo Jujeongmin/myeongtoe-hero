@@ -1,4 +1,4 @@
-// 이직 (the original's rebirth): from floor 100 as in the original, trade the run for 응시권 and 보석 by how high it got.
+// 이직: from floor 100, trade the run for 응시권 and 보석 by how high it got.
 export const PRESTIGE_MIN_FLOOR = 100;
 export const BOOSTED_PRESTIGE_GEMS = 1000;
 

@@ -1,4 +1,4 @@
-/* Pixel look, like the original: the pixel font Mulmaru (Galmuri11 for glyphs it lacks; see
+/* Pixel look: the pixel font Mulmaru (Galmuri11 for glyphs it lacks; see
    fonts.css) at 12px only (24px when doubled), one weight, no synthetic bold, no font smoothing,
    square bevelled panels instead of rounded ones, 1px hard text shadows. Never use other font
    sizes or font-weight: a pixel font off its grid turns blurry. */

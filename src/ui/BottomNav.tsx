@@ -2,7 +2,7 @@ import type { GameState } from "../../shared/state";
 
 export type NavTab = "sideJobs" | "gear" | "pets" | "certs" | "shop" | "dungeon";
 
-// The original's bottom menu (퀘스트, 무기, 펫, 보물, 상점, 던전), locked until it opens.
+// The bottom menu, each item locked until it opens.
 const ITEMS: { id: NavTab; icon: string; label: string; open: (s: GameState) => boolean; hint: string }[] = [
   { id: "sideJobs", icon: "📋", label: "부업", open: () => true, hint: "" },
   { id: "gear", icon: "🖊", label: "장비", open: () => true, hint: "" },
