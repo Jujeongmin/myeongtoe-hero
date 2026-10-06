@@ -13,7 +13,7 @@ import {
 // The battle scene in the screen's real (device) pixels, every picture drawn at a whole number of
 // them per art pixel so it stays crisp. The department background is scaled up until it covers
 // the whole scene (bottom-aligned, floor where its picture has it); Park and the monsters are
-// drawn at Park's 44 px body about 18% of the screen's width.
+// drawn at Park's 44 px body about 15% of the screen's width.
 //
 // It only shows what settle decided. The time into the current kill (run.carrySec, moved on
 // smoothly between the store's updates) says whether Park is walking to the next monster or
@@ -21,7 +21,7 @@ import {
 // the swing's impact frame, knocks the monster's health down one step and shows its damage, and
 // the last one kills it.
 const BODY_PX = 44;
-const BODY_SHARE = 0.18;
+const BODY_SHARE = 0.15;
 const BG_H = 96;
 const BG_FLOOR = 82;
 const WALK_PX_PER_SEC = 48;
