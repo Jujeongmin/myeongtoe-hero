@@ -88,6 +88,13 @@ describe("GameStore", () => {
     expect(store.view()!.gear.level).toBe(1);
   });
 
+  test("knows whether it has heard from the server yet", async () => {
+    const { store } = setup();
+    expect(store.synced()).toBe(false);
+    await store.flush();
+    expect(store.synced()).toBe(true);
+  });
+
   test("LocalTransport keeps the save between stores", async () => {
     const storage = memory();
     const a = new GameStore(new LocalTransport(storage, () => 0), () => 0);

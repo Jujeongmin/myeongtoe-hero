@@ -25,6 +25,11 @@ export class GameStore {
     this.transport = transport;
   }
 
+  // Whether any sync has come back yet.
+  synced(): boolean {
+    return this.confirmed !== null;
+  }
+
   serverNow(): number {
     return this.clock() + this.offset;
   }

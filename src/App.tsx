@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useGameServer } from "@agent8/gameserver";
 import { GameStore } from "./game/store";
 import { useGameView } from "./game/useGameView";
-import { connectionOf, type Connection } from "./net/connection";
+import { connectionOf, shouldPlayLocally, type Connection } from "./net/connection";
 import { loginState } from "./net/login";
 import { LocalTransport, OFFLINE } from "./net/transport";
 import { Verse8Transport } from "./net/verse8Transport";
@@ -28,16 +28,34 @@ export function LocalApp() {
 }
 
 // Playing against the Verse8 game server. The store outlives connection drops: while there is no
-// connection its syncs fail and the player's taps stay queued, then go out once it is back.
+// connection its syncs fail and the player's taps stay queued, then go out once it is back. A
+// development build that never reaches the server switches to the in-page one for the session
+// (see shouldPlayLocally).
 export function OnlineApp() {
   const { server, connected, connectionStatus } = useGameServer();
   const store = useMemo(() => new GameStore(OFFLINE), []);
   const guest = useMemo(() => loginState() === "guest", []);
-  useEffect(() => {
-    store.setTransport(connected ? new Verse8Transport(server) : OFFLINE);
-  }, [store, server, connected]);
+  const [startedAt] = useState(() => Date.now());
+  const [fallback, setFallback] = useState(false);
   const connection = connectionOf({ online: true, connected, phase: connectionStatus?.phase });
-  return <Game store={store} connection={connection} guest={guest} />;
+
+  useEffect(() => {
+    if (fallback) return;
+    const check = () => {
+      const waitedMs = Date.now() - startedAt;
+      if (shouldPlayLocally({ dev: import.meta.env.DEV, connection, synced: store.synced(), waitedMs })) setFallback(true);
+    };
+    check();
+    const id = setInterval(check, 1000);
+    return () => clearInterval(id);
+  }, [fallback, connection, store, startedAt]);
+
+  useEffect(() => {
+    if (fallback) store.setTransport(new LocalTransport(window.localStorage));
+    else store.setTransport(connected ? new Verse8Transport(server) : OFFLINE);
+  }, [store, server, connected, fallback]);
+
+  return <Game store={store} connection={fallback ? "fallback" : connection} guest={guest && !fallback} />;
 }
 
 function Game({ store, connection, guest }: { store: GameStore; connection: Connection; guest: boolean }) {

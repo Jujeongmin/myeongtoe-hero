@@ -1,6 +1,9 @@
 import type { Connection } from "../net/connection";
 
 export function StatusBanner({ connection, guest }: { connection: Connection; guest: boolean }) {
+  if (connection === "fallback") {
+    return <div className="banner warn">서버 연결 실패 · 로컬 테스트 모드 (이 브라우저에만 저장)</div>;
+  }
   if (connection === "trying" || connection === "failed") {
     return <div className="banner warn">연결이 끊겼어요. 다시 연결하는 중…</div>;
   }

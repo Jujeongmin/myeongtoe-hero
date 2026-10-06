@@ -32,6 +32,10 @@
 - 게이트웨이는 `https://gs-gateway.verse8.io`다.
 - 콘솔에 `[GS] connect rejected: Failed to load verse …-preview: a platform error, not a problem in server.js`와 `Route failed (409): recovering`이 나오면, 미리보기 서버가 아직 올라오지 않은 것이다(2026-10-06 첫 푸시 직후 확인). 에디터를 열어 새 코드를 받게 한 뒤 다시 시도한다.
 
+## 서버 없이 테스트 (개발 빌드 폴백)
+
+에디터 미리보기는 개발 서버(`vite dev`)로 돈다. 그래서 `-preview` 서버가 망가지면 게임이 안 뜬다. 개발 빌드는 서버에 한 번도 연결하지 못한 채 SDK가 포기하거나 10초가 지나면, 그 세션 동안 브라우저 안 로컬 서버로 실행한다(`src/net/connection.ts`의 `shouldPlayLocally`). 화면 위에 "서버 연결 실패 · 로컬 테스트 모드" 배너가 뜬다. **배포 빌드는 폴백하지 않는다.** 진짜 유저의 세이브는 서버만 판정한다.
+
 ## 로컬에서 Verse8 없이 하기
 
 `.env`가 있으면 개발 서버도 Verse8 미리보기 서버에 붙는다. 서버 없이 브라우저 안의 로컬 서버로 하려면 주소 끝에 `?local`을 붙인다(`http://localhost:5180/?local`). 개발 빌드에서만 동작한다. 개발 서버 포트는 5180이다(5173은 grove hunters가 쓴다).
