@@ -1,4 +1,5 @@
 import { applyIntent, RuleError, type Intent } from "../../shared/actions";
+import type { Board, RankingView } from "../../shared/ranking";
 import { settle } from "../../shared/settle";
 import { fromSave, type GameState } from "../../shared/state";
 import type { OfflineReport } from "../../shared/sync";
@@ -92,6 +93,17 @@ export class GameStore {
   dismissOffline(): void {
     this.offline = null;
     this.emit();
+  }
+
+  ranking(board: Board): Promise<RankingView> {
+    return this.transport.ranking(board);
+  }
+
+  // The new name is saved by the server; sync at once so the screen shows it.
+  async setNickname(name: string): Promise<void> {
+    await this.transport.setNickname(name);
+    this.lastSyncAt = Number.NEGATIVE_INFINITY;
+    await this.flush();
   }
 
   subscribe(fn: () => void): () => void {

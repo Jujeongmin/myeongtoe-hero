@@ -1,0 +1,39 @@
+import type { GameState, SaveData } from "./state";
+
+// Rankings, as in the original: by best floor, and by deepest parking run (the original's 지하감옥
+// board). Each account has one row, kept by the server whenever its record goes up.
+export type Board = "floor" | "depth";
+export const RANKING_SIZE = 50;
+
+export interface RankRow {
+  account: string;
+  nickname: string;
+  floor: number;
+  depth: number;
+}
+
+export interface RankingView {
+  board: Board;
+  rows: RankRow[];
+  mine: RankRow | null;
+}
+
+const NICKNAME = /^[가-힣a-zA-Z0-9]{2,8}$/;
+
+export function readNickname(raw: unknown): string | null {
+  if (typeof raw !== "string") return null;
+  const name = raw.trim();
+  return NICKNAME.test(name) ? name : null;
+}
+
+export function readBoard(raw: unknown): Board | null {
+  return raw === "floor" || raw === "depth" ? raw : null;
+}
+
+export function displayName(row: RankRow): string {
+  return row.nickname || `직원 ${row.account.slice(-4)}`;
+}
+
+export function rankRowOf(account: string, s: Pick<GameState | SaveData, "nickname" | "bestFloor" | "parking">): RankRow {
+  return { account, nickname: s.nickname, floor: s.bestFloor, depth: s.parking.best };
+}

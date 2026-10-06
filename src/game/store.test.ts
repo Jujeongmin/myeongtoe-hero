@@ -48,6 +48,7 @@ describe("GameStore", () => {
     const calls: Intent[][] = [];
     const inner = setup();
     const counting: Transport = {
+      ...OFFLINE,
       sync: (intents) => {
         calls.push(intents);
         return inner.transport.sync(intents);
@@ -66,6 +67,7 @@ describe("GameStore", () => {
     store.do({ k: "levelGear" });
     let fail = true;
     const flaky: Transport = {
+      ...OFFLINE,
       sync: (intents): Promise<SyncResult> => (fail ? Promise.reject(new Error("offline")) : transport.sync(intents)),
     };
     (store as unknown as { transport: Transport }).transport = flaky;
@@ -103,6 +105,17 @@ describe("GameStore", () => {
     expect(store.offline?.seconds).toBeCloseTo(600, 6);
     store.dismissOffline();
     expect(store.offline).toBeNull();
+  });
+
+  test("local play: the ranking is just me, and a nickname is checked and saved", async () => {
+    const { store } = setup();
+    await store.flush();
+    await expect(store.setNickname("<b>")).rejects.toThrow("bad_nickname");
+    await store.setNickname(" 박부장 ");
+    expect(store.view()!.nickname).toBe("박부장");
+    const board = await store.ranking("floor");
+    expect(board.rows).toHaveLength(1);
+    expect(board.mine?.nickname).toBe("박부장");
   });
 
   test("LocalTransport keeps the save between stores", async () => {

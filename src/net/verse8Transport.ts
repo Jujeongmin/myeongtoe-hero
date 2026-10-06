@@ -1,4 +1,5 @@
 import type { Intent } from "../../shared/actions";
+import type { Board, RankingView } from "../../shared/ranking";
 import type { SyncResult } from "../../shared/sync";
 import type { Transport } from "./transport";
 
@@ -39,5 +40,17 @@ export class Verse8Transport implements Transport {
     const reply = await withTimeout(this.server.remoteFunction("sync", [intents]), this.timeoutMs);
     if (!isSyncResult(reply)) throw new Error("bad_reply");
     return reply;
+  }
+
+  async ranking(board: Board): Promise<RankingView> {
+    const reply = (await withTimeout(this.server.remoteFunction("ranking", [board]), this.timeoutMs)) as RankingView | null;
+    if (!reply || !Array.isArray(reply.rows)) throw new Error("bad_reply");
+    return reply;
+  }
+
+  async setNickname(name: string): Promise<{ nickname: string }> {
+    const reply = (await withTimeout(this.server.remoteFunction("setNickname", [name]), this.timeoutMs)) as { nickname?: unknown } | null;
+    if (!reply || typeof reply.nickname !== "string") throw new Error("bad_reply");
+    return { nickname: reply.nickname };
   }
 }
