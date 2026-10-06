@@ -30,9 +30,9 @@ describe("syncSave", () => {
 
   test("drops intents past the per-sync limit", () => {
     const save = toSave({ ...newState(0), gold: Big.of(1, 200) });
-    const many = Array.from({ length: MAX_INTENTS_PER_SYNC + 2 }, () => ({ k: "levelGear" }));
+    const many = Array.from({ length: MAX_INTENTS_PER_SYNC + 2 }, () => ({ k: "levelSideJob", id: "j00" }));
     const r = syncSave(save, many, 0);
-    expect(r.save.gear.level).toBe(MAX_INTENTS_PER_SYNC);
+    expect(r.save.sideJobs.j00.level).toBe(MAX_INTENTS_PER_SYNC);
     expect(r.rejected).toEqual([
       { index: MAX_INTENTS_PER_SYNC, code: "too_many" },
       { index: MAX_INTENTS_PER_SYNC + 1, code: "too_many" },

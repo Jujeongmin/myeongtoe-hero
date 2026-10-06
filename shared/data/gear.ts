@@ -15,11 +15,14 @@ const NAMES = [
 
 export const GEAR_TIERS: readonly GearTier[] = NAMES.map((name, i) => ({ id: `g${String(i).padStart(2, "0")}`, name }));
 
-export const GEAR_ATK_BASE = 10;
-export const GEAR_ATK_GROWTH = 6;
+// 원작 무기처럼: each tier levels up to 5, and only a tier at 5 lets the next one be bought. The
+// numbers follow the original's weapon list (나뭇가지 ATK 50, then ×3; 600 gold for the second, then ×6).
+export const GEAR_MAX_LEVEL = 5;
+export const GEAR_ATK_BASE = 50;
+export const GEAR_ATK_GROWTH = 3;
 export const GEAR_LEVEL_ATK = 0.15;
-export const GEAR_PRICE_BASE = 50;
-export const GEAR_PRICE_GROWTH = 9;
+export const GEAR_PRICE_BASE = 100;
+export const GEAR_PRICE_GROWTH = 6;
 export const GEAR_LEVEL_COST_BASE = 10;
 export const GEAR_LEVEL_COST_TIER_GROWTH = 7;
 export const GEAR_LEVEL_COST_GROWTH = 1.09;

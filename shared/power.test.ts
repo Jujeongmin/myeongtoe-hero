@@ -1,17 +1,8 @@
 import { describe, expect, test } from "vitest";
 import { BOSS_LIMIT_SEC } from "./data/floors";
 import { SKILLS, skillFactor, skillsUnlocked } from "./data/skills";
-import { STATS, findStat, statCost } from "./data/stats";
 import { newState } from "./state";
 import { heroDps, heroPower } from "./stats";
-
-describe("stats data", () => {
-  test("four stats, costs rising", () => {
-    expect(STATS.map((s) => s.id)).toEqual(["atk", "crit", "critDmg", "aspd"]);
-    for (const s of STATS) expect(statCost(s, 5).cmp(statCost(s, 4))).toBe(1);
-    expect(findStat("nope")).toBeUndefined();
-  });
-});
 
 describe("skills data", () => {
   test("unlock by best floor, in order", () => {
@@ -28,21 +19,11 @@ describe("skills data", () => {
 describe("heroPower", () => {
   test("a fresh Park: the pen alone", () => {
     const p = heroPower(newState(0));
-    expect(p.dps.toNumber()).toBeCloseTo(10 * 2 * 1.025, 9);
+    expect(p.dps.toNumber()).toBeCloseTo(50 * 2 * 1.025, 9);
     expect(p.bossDps.toNumber()).toBeCloseTo(p.dps.toNumber(), 9);
     expect(p.bossLimitSec).toBe(BOSS_LIMIT_SEC);
     expect(p.goldMult).toBe(1);
     expect(heroDps(newState(0)).toNumber()).toBeCloseTo(p.dps.toNumber(), 9);
-  });
-
-  test("stats raise damage", () => {
-    const base = heroPower(newState(0)).dps.toNumber();
-    const s = newState(0);
-    s.stats.atk = 10;
-    expect(heroPower(s).dps.toNumber()).toBeCloseTo(base * 2, 9);
-    const fast = newState(0);
-    fast.stats.aspd = 50;
-    expect(heroPower(fast).dps.toNumber()).toBeCloseTo(base * 2, 9);
   });
 
   test("unlocked skills add their averages and boss time", () => {

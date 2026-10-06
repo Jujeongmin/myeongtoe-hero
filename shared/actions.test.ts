@@ -2,10 +2,9 @@ import { describe, expect, test } from "vitest";
 import { applyIntent, readIntent, RuleError, type Intent } from "./actions";
 import { Big } from "./big";
 import { CERTS, certDrawCost, certLevelCost } from "./data/certs";
-import { GEAR_TIERS, gearLevelCost, gearPrice } from "./data/gear";
+import { GEAR_MAX_LEVEL, GEAR_TIERS, gearAtk, gearLevelCost, gearPrice } from "./data/gear";
 import { BOOSTED_PRESTIGE_GEMS, PRESTIGE_MIN_FLOOR, prestigeReward } from "./data/prestige";
 import { SIDE_JOBS, sideJobCost } from "./data/sideJobs";
-import { STATS, statCost } from "./data/stats";
 import { newState, type GameState } from "./state";
 
 function rich(gold = Big.of(1, 300)): GameState {
@@ -30,8 +29,7 @@ describe("readIntent", () => {
     expect(readIntent({ k: "giveGold", n: 1e9 })).toBeNull();
     expect(readIntent("buyGear")).toBeNull();
     expect(readIntent(null)).toBeNull();
-    expect(readIntent({ k: "levelStat", id: "crit" })).toEqual({ k: "levelStat", id: "crit" });
-    expect(readIntent({ k: "levelStat", id: "hp" })).toBeNull();
+    expect(readIntent({ k: "levelStat", id: "atk" })).toBeNull();
     expect(readIntent({ k: "buyCert" })).toEqual({ k: "buyCert" });
     expect(readIntent({ k: "prestige", boosted: true })).toEqual({ k: "prestige", boosted: true });
     expect(readIntent({ k: "prestige" })).toBeNull();
@@ -48,11 +46,25 @@ describe("gear", () => {
   });
 
   test("buying the next tier resets the level", () => {
-    const s = { ...rich(), gear: { tier: 0, level: 7 } };
+    const s = { ...rich(), gear: { tier: 0, level: GEAR_MAX_LEVEL } };
     const after = applyIntent(s, { k: "buyGear" });
     expect(after.gear).toEqual({ tier: 1, level: 0 });
-    expect(codeOf(rich(gearPrice(1).mulN(0.5)), { k: "buyGear" })).toBe("not_enough_gold");
-    expect(codeOf({ ...rich(), gear: { tier: GEAR_TIERS.length - 1, level: 0 } }, { k: "buyGear" })).toBe("max");
+    expect(codeOf({ ...rich(gearPrice(1).mulN(0.5)), gear: { tier: 0, level: GEAR_MAX_LEVEL } }, { k: "buyGear" })).toBe("not_enough_gold");
+    expect(codeOf({ ...rich(), gear: { tier: GEAR_TIERS.length - 1, level: GEAR_MAX_LEVEL } }, { k: "buyGear" })).toBe("max");
+  });
+});
+
+describe("the original's weapon rules", () => {
+  test("levels stop at 5, and the next tier opens only then (원작 무기 규칙)", () => {
+    expect(codeOf({ ...rich(), gear: { tier: 0, level: GEAR_MAX_LEVEL } }, { k: "levelGear" })).toBe("max");
+    expect(codeOf({ ...rich(), gear: { tier: 0, level: GEAR_MAX_LEVEL - 1 } }, { k: "buyGear" })).toBe("locked");
+  });
+
+  test("the original's weapon numbers: ATK 50 ×3, price 600 ×6", () => {
+    expect(gearAtk(0, 0).toNumber()).toBeCloseTo(50, 9);
+    expect(gearAtk(1, 0).toNumber()).toBeCloseTo(150, 9);
+    expect(gearPrice(1).toNumber()).toBeCloseTo(600, 6);
+    expect(gearPrice(2).toNumber()).toBeCloseTo(3600, 6);
   });
 });
 
@@ -88,16 +100,6 @@ describe("side jobs", () => {
     expect(codeOf(s, { k: "restartSideJob", id: first.id })).toBe("running");
     s.sideJobs[first.id] = { level: 1, progressSec: 0, running: false };
     expect(applyIntent(s, { k: "restartSideJob", id: first.id }).sideJobs[first.id].running).toBe(true);
-  });
-});
-
-describe("stats", () => {
-  test("levelling a stat spends gold, up to its cap", () => {
-    const crit = STATS.find((x) => x.id === "crit")!;
-    const after = applyIntent(rich(), { k: "levelStat", id: "crit" });
-    expect(after.stats.crit).toBe(1);
-    expect(codeOf({ ...rich(), stats: { atk: 0, crit: crit.max, critDmg: 0, aspd: 0 } }, { k: "levelStat", id: "crit" })).toBe("max");
-    expect(codeOf(rich(statCost(crit, 0).mulN(0.5)), { k: "levelStat", id: "crit" })).toBe("not_enough_gold");
   });
 });
 
@@ -147,7 +149,6 @@ describe("prestige", () => {
     s.run = { ...s.run, floor, maxFloor: floor };
     s.bestFloor = floor;
     s.gear = { tier: 4, level: 9 };
-    s.stats = { atk: 3, crit: 2, critDmg: 1, aspd: 1 };
     s.sideJobs = { j00: { level: 5, progressSec: 0, running: true } };
     s.certs = { c00: 2 };
     s.tickets = 7;
@@ -166,7 +167,6 @@ describe("prestige", () => {
     expect(after.run).toEqual({ floor: 1, target: 0, carrySec: 0, farming: false, maxFloor: 1 });
     expect(after.gear).toEqual({ tier: 0, level: 0 });
     expect(after.sideJobs).toEqual({});
-    expect(after.stats).toEqual({ atk: 0, crit: 0, critDmg: 0, aspd: 0 });
     expect(after.bestFloor).toBe(120);
     expect(after.certs).toEqual({ c00: 2 });
     expect(after.tickets).toBe(7 + reward.tickets);

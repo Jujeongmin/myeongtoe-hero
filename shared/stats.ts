@@ -3,7 +3,6 @@ import { certBonuses } from "./data/certs";
 import { BOSS_LIMIT_SEC } from "./data/floors";
 import { gearAtk } from "./data/gear";
 import { skillFactor, skillsUnlocked } from "./data/skills";
-import { STAT_ASPD_PER_LEVEL, STAT_ATK_PER_LEVEL, STAT_CRITDMG_PER_LEVEL, STAT_CRIT_PER_LEVEL } from "./data/stats";
 import { OFFLINE_CAP_SEC, type GameState } from "./state";
 
 // Park's base hits (the original's knight: 2 a second, 5% crit for +50%).
@@ -28,14 +27,14 @@ function skillProduct(s: GameState, kind: string): number {
 
 export function heroAtk(s: GameState): Big {
   const b = certBonuses(s.certs);
-  return gearAtk(s.gear.tier, s.gear.level).mulN((1 + STAT_ATK_PER_LEVEL * s.stats.atk) * (1 + b.atk));
+  return gearAtk(s.gear.tier, s.gear.level).mulN(1 + b.atk);
 }
 
 export function heroPower(s: GameState): Power {
   const b = certBonuses(s.certs);
-  const aspd = HERO_ASPD * (1 + STAT_ASPD_PER_LEVEL * s.stats.aspd) * (1 + b.aspd) * skillProduct(s, "aspd");
-  const crit = Math.min(1, HERO_CRIT_CHANCE + STAT_CRIT_PER_LEVEL * s.stats.crit);
-  const critBonus = HERO_CRIT_BONUS + STAT_CRITDMG_PER_LEVEL * s.stats.critDmg + b.critDmg;
+  const aspd = HERO_ASPD * (1 + b.aspd) * skillProduct(s, "aspd");
+  const crit = HERO_CRIT_CHANCE;
+  const critBonus = HERO_CRIT_BONUS + b.critDmg;
   const dps = heroAtk(s).mulN(aspd * (1 + crit * critBonus) * skillProduct(s, "damage"));
   const bossTime = skillsUnlocked(s.bestFloor)
     .filter((k) => k.kind === "bossTime")

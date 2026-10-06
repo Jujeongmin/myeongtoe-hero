@@ -12,14 +12,14 @@ const fresh = () => newState(0).run;
 
 describe("heroDps", () => {
   test("the ballpoint pen: 10 attack × 2 hits a second × expected crit", () => {
-    expect(heroDps(newState(0)).toNumber()).toBeCloseTo(10 * 2 * 1.025, 9);
+    expect(heroDps(newState(0)).toNumber()).toBeCloseTo(50 * 2 * 1.025, 9);
   });
 });
 
 describe("settleBattle", () => {
   test("kills a monster when enough time has passed, keeping the rest", () => {
-    const dps = Big.of(20);
-    const tpk = fightSec(1, dps) + WALK_SEC; // 20 hp / 20 dps + 1 s walk = 2 s
+    const dps = Big.of(100);
+    const tpk = fightSec(1, dps) + WALK_SEC; // 100 hp / 100 dps + 1 s walk = 2 s
     expect(tpk).toBeCloseTo(2, 9);
     const { run, gold } = settleBattle(fresh(), P(dps), 5);
     expect(run.target).toBe(2);
@@ -35,7 +35,7 @@ describe("settleBattle", () => {
   });
 
   test("one long settle equals many short ones", () => {
-    const dps = Big.of(37);
+    const dps = Big.of(185);
     const once = settleBattle(fresh(), P(dps), 600);
     let run = fresh();
     let gold = Big.ZERO;
@@ -52,8 +52,8 @@ describe("settleBattle", () => {
   });
 
   test("a boss that takes over 30 s sends Park to farm the floor below", () => {
-    // Floor 10 boss: 20 × 1.16^9 × 10 ≈ 761 hp; at 20 dps that is 38 s.
-    const dps = Big.of(20);
+    // Floor 10 boss: 100 × 1.16^9 × 10 ≈ 3803 hp; at 100 dps that is 38 s.
+    const dps = Big.of(100);
     expect(fightSec(10, dps)).toBeGreaterThan(BOSS_LIMIT_SEC);
     const start = { ...fresh(), floor: 10, maxFloor: 10 };
     const { run, gold } = settleBattle(start, P(dps), BOSS_LIMIT_SEC + WALK_SEC + 0.5);
@@ -65,7 +65,7 @@ describe("settleBattle", () => {
   });
 
   test("farming earns the floor-below gold and goes back up once strong enough", () => {
-    const weak = Big.of(20);
+    const weak = Big.of(100);
     const farming = { floor: 9, target: 0, carrySec: 0, farming: true, maxFloor: 10 };
     const tpk = fightSec(9, weak) + WALK_SEC;
     const grind = settleBattle(farming, P(weak), tpk * 3 + 0.1);
@@ -81,10 +81,10 @@ describe("settleBattle", () => {
 
 describe("settleBattle with Power", () => {
   test("a boss is fought with the boss dps and the boss time limit", () => {
-    const dps = Big.of(20);
+    const dps = Big.of(100);
     expect(targetSec(10, P(dps))).toBeCloseTo(fightSec(10, dps), 9);
     expect(targetSec(10, P(dps, { bossDps: dps.mulN(2) }))).toBeCloseTo(fightSec(10, dps) / 2, 9);
-    // 38 s at 20 dps: too slow for 30 s, fine for 40 s.
+    // 38 s at 100 dps: too slow for 30 s, fine for 40 s.
     const start = { floor: 10, target: 0, carrySec: 0, farming: false, maxFloor: 10 };
     expect(settleBattle(start, P(dps, { bossLimitSec: 40 }), 40).run.floor).toBe(11);
   });

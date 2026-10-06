@@ -6,7 +6,8 @@ import { Big } from "../big";
 export const MONSTERS_PER_FLOOR = 10;
 export const WALK_SEC = 1;
 export const BOSS_LIMIT_SEC = 30;
-export const HP_BASE = 20;
+// ×5 along with the gear's base attack (50, the original's 나뭇가지), so early pacing stays the same.
+export const HP_BASE = 100;
 export const HP_GROWTH = 1.16;
 export const GOLD_BASE = 2;
 export const GOLD_GROWTH = 1.13;

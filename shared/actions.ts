@@ -1,9 +1,8 @@
 import { Big } from "./big";
 import { CERTS, certBonuses, certDrawCost, certLevelCost, certTierOpen, findCert } from "./data/certs";
-import { GEAR_TIERS, gearLevelCost, gearPrice } from "./data/gear";
+import { GEAR_MAX_LEVEL, GEAR_TIERS, gearLevelCost, gearPrice } from "./data/gear";
 import { BOOSTED_PRESTIGE_GEMS, PRESTIGE_MIN_FLOOR, prestigeReward } from "./data/prestige";
 import { findSideJob, sideJobCost } from "./data/sideJobs";
-import { findStat, statCost, type StatId } from "./data/stats";
 import { nextRandom } from "./rng";
 import { cloneState, freshRun, type GameState } from "./state";
 
@@ -21,7 +20,6 @@ export type Intent =
   | { k: "levelGear" }
   | { k: "levelSideJob"; id: string }
   | { k: "restartSideJob"; id: string }
-  | { k: "levelStat"; id: StatId }
   | { k: "buyCert" }
   | { k: "levelCert"; id: string }
   | { k: "prestige"; boosted: boolean };
@@ -39,10 +37,6 @@ export function readIntent(raw: unknown): Intent | null {
       return typeof r.id === "string" && r.id.length <= 32 ? { k: r.k, id: r.id } : null;
     case "buyCert":
       return { k: "buyCert" };
-    case "levelStat": {
-      const def = typeof r.id === "string" ? findStat(r.id) : undefined;
-      return def ? { k: "levelStat", id: def.id } : null;
-    }
     case "levelCert":
       return typeof r.id === "string" && r.id.length <= 32 ? { k: "levelCert", id: r.id } : null;
     case "prestige":
@@ -72,6 +66,7 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
   const s = cloneState(state);
   switch (intent.k) {
     case "levelGear": {
+      if (s.gear.level >= GEAR_MAX_LEVEL) throw new RuleError("max");
       spend(s, gearLevelCost(s.gear.tier, s.gear.level));
       s.gear.level += 1;
       return s;
@@ -79,6 +74,7 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
     case "buyGear": {
       const next = s.gear.tier + 1;
       if (next >= GEAR_TIERS.length) throw new RuleError("max");
+      if (s.gear.level < GEAR_MAX_LEVEL) throw new RuleError("locked");
       spend(s, gearPrice(next));
       s.gear = { tier: next, level: 0 };
       return s;
@@ -99,14 +95,6 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       if (!own || own.level === 0) throw new RuleError("not_owned");
       if (own.running) throw new RuleError("running");
       s.sideJobs[intent.id] = { ...own, running: true, progressSec: 0 };
-      return s;
-    }
-    case "levelStat": {
-      const def = findStat(intent.id)!;
-      const level = s.stats[def.id];
-      if (level >= def.max) throw new RuleError("max");
-      spend(s, statCost(def, level));
-      s.stats = { ...s.stats, [def.id]: level + 1 };
       return s;
     }
     case "buyCert": {
@@ -139,7 +127,6 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       s.run = freshRun();
       s.gear = { tier: 0, level: 0 };
       s.sideJobs = {};
-      s.stats = { atk: 0, crit: 0, critDmg: 0, aspd: 0 };
       s.prestiges += 1;
       return s;
     }
