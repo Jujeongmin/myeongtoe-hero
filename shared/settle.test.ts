@@ -175,7 +175,7 @@ describe("firstClearGems", () => {
     expect(after.bestFloor).toBe(10);
     expect(after.gems).toBe(0);
     const s = newState(0);
-    s.gear = { tier: 5, level: 0 };
+    s.gear = { tier: 5, level: 0, confirmed: 0 };
     expect(settle(s, 600_000).gems).toBeGreaterThan(0);
   });
 });

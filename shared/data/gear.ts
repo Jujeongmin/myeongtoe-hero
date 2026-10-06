@@ -36,6 +36,13 @@ export function gearPrice(tier: number): Big {
   return tier === 0 ? Big.ZERO : Big.pow(GEAR_PRICE_GROWTH, tier).mulN(GEAR_PRICE_BASE);
 }
 
+// 구매확정 (the original's purchase confirmation): a tier at Lv5 confirmed for gold and gems is kept
+// through job changes. Tiers are confirmed in order only.
+export function gearConfirmCost(tier: number): { gold: Big; gems: number } {
+  const gold = tier + 1 < GEAR_TIERS.length ? gearPrice(tier + 1) : gearPrice(tier).mulN(GEAR_PRICE_GROWTH);
+  return { gold, gems: 10 * (tier + 1) };
+}
+
 // The cost of going from `level` to `level + 1` on this tier.
 export function gearLevelCost(tier: number, level: number): Big {
   return Big.pow(GEAR_LEVEL_COST_TIER_GROWTH, tier).mulN(GEAR_LEVEL_COST_BASE).mul(Big.pow(GEAR_LEVEL_COST_GROWTH, level));

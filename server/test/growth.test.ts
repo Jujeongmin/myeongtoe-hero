@@ -18,8 +18,8 @@ describe("permanent growth on the server", () => {
     const s = newState(Date.now());
     s.coupons = 100;
     await $global.updateUserState("test-g3", { save: toSave(s) });
-    const r = await server.sync([{ k: "buySuit", id: "s1_tie" }]);
-    expect(r.save.wear.tie).toBe("s1_tie");
+    const r = await server.sync([{ k: "buySuit", id: "s1_accessory" }]);
+    expect(r.save.wear.accessory).toBe("s1_accessory");
   });
 
   test("a version 2 save with gear above 5 comes down to 5", async (server) => {

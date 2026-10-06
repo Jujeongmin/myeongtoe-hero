@@ -54,7 +54,7 @@ describe("pet effects", () => {
 
   test("막내 오사원's ticket drops carry fractions across settles", () => {
     const s = at(1100);
-    s.gear = { tier: 10, level: 0 };
+    s.gear = { tier: 10, level: 0, confirmed: 0 };
     const once = settle(s, 3_600_000);
     let split = s;
     for (let t = 60_000; t <= 3_600_000; t += 60_000) split = settle(split, t);

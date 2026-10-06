@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { applyIntent, readIntent, RuleError, type Intent } from "./actions";
 import { Big } from "./big";
 import { CERTS, certDrawCost, certLevelCost } from "./data/certs";
-import { GEAR_MAX_LEVEL, GEAR_TIERS, gearAtk, gearLevelCost, gearPrice } from "./data/gear";
+import { GEAR_MAX_LEVEL, GEAR_TIERS, gearAtk, gearConfirmCost, gearLevelCost, gearPrice } from "./data/gear";
 import { SUIT_ITEMS, apartmentCost, officeUpgradeCost } from "./data/home";
 import { PET_BOX_COUPONS, petLevelCost } from "./data/pets";
 import { BOOSTED_PRESTIGE_GEMS, PRESTIGE_MIN_FLOOR, prestigeReward } from "./data/prestige";
@@ -36,7 +36,8 @@ describe("readIntent", () => {
     expect(readIntent({ k: "upgradeOffice", part: "chair" })).toEqual({ k: "upgradeOffice", part: "chair" });
     expect(readIntent({ k: "upgradeOffice", part: "desk" })).toBeNull();
     expect(readIntent({ k: "petBox" })).toEqual({ k: "petBox" });
-    expect(readIntent({ k: "wearSuit", id: "s1_tie" })).toEqual({ k: "wearSuit", id: "s1_tie" });
+    expect(readIntent({ k: "wearSuit", id: "s1_accessory" })).toEqual({ k: "wearSuit", id: "s1_accessory" });
+    expect(readIntent({ k: "confirmGear" })).toEqual({ k: "confirmGear" });
     expect(readIntent({ k: "buyCert" })).toEqual({ k: "buyCert" });
     expect(readIntent({ k: "prestige", boosted: true })).toEqual({ k: "prestige", boosted: true });
     expect(readIntent({ k: "prestige" })).toBeNull();
@@ -53,18 +54,18 @@ describe("gear", () => {
   });
 
   test("buying the next tier resets the level", () => {
-    const s = { ...rich(), gear: { tier: 0, level: GEAR_MAX_LEVEL } };
+    const s = { ...rich(), gear: { tier: 0, level: GEAR_MAX_LEVEL, confirmed: 0 } };
     const after = applyIntent(s, { k: "buyGear" });
-    expect(after.gear).toEqual({ tier: 1, level: 0 });
-    expect(codeOf({ ...rich(gearPrice(1).mulN(0.5)), gear: { tier: 0, level: GEAR_MAX_LEVEL } }, { k: "buyGear" })).toBe("not_enough_gold");
-    expect(codeOf({ ...rich(), gear: { tier: GEAR_TIERS.length - 1, level: GEAR_MAX_LEVEL } }, { k: "buyGear" })).toBe("max");
+    expect(after.gear).toEqual({ tier: 1, level: 0, confirmed: 0 });
+    expect(codeOf({ ...rich(gearPrice(1).mulN(0.5)), gear: { tier: 0, level: GEAR_MAX_LEVEL, confirmed: 0 } }, { k: "buyGear" })).toBe("not_enough_gold");
+    expect(codeOf({ ...rich(), gear: { tier: GEAR_TIERS.length - 1, level: GEAR_MAX_LEVEL, confirmed: 0 } }, { k: "buyGear" })).toBe("max");
   });
 });
 
 describe("the original's weapon rules", () => {
   test("levels stop at 5, and the next tier opens only then (원작 무기 규칙)", () => {
-    expect(codeOf({ ...rich(), gear: { tier: 0, level: GEAR_MAX_LEVEL } }, { k: "levelGear" })).toBe("max");
-    expect(codeOf({ ...rich(), gear: { tier: 0, level: GEAR_MAX_LEVEL - 1 } }, { k: "buyGear" })).toBe("locked");
+    expect(codeOf({ ...rich(), gear: { tier: 0, level: GEAR_MAX_LEVEL, confirmed: 0 } }, { k: "levelGear" })).toBe("max");
+    expect(codeOf({ ...rich(), gear: { tier: 0, level: GEAR_MAX_LEVEL - 1, confirmed: 0 } }, { k: "buyGear" })).toBe("locked");
   });
 
   test("the original's weapon numbers: ATK 50 ×3, price 600 ×6", () => {
@@ -155,7 +156,7 @@ describe("prestige", () => {
     const s = rich();
     s.run = { ...s.run, floor, maxFloor: floor };
     s.bestFloor = floor;
-    s.gear = { tier: 4, level: 9 };
+    s.gear = { tier: 4, level: 5, confirmed: 0 };
     s.sideJobs = { j00: { level: 5, progressSec: 0, running: true } };
     s.certs = { c00: 2 };
     s.tickets = 7;
@@ -172,7 +173,7 @@ describe("prestige", () => {
     const reward = prestigeReward(120, 0);
     expect(after.gold.isZero()).toBe(true);
     expect(after.run).toEqual({ floor: 1, target: 0, carrySec: 0, farming: false, maxFloor: 1 });
-    expect(after.gear).toEqual({ tier: 0, level: 0 });
+    expect(after.gear).toEqual({ tier: 0, level: 0, confirmed: 0 });
     expect(after.sideJobs).toEqual({});
     expect(after.bestFloor).toBe(120);
     expect(after.certs).toEqual({ c00: 2 });
@@ -242,13 +243,13 @@ describe("permanent growth", () => {
   });
 
   test("suits: wear an owned part, swapping what was on", () => {
-    const a = SUIT_ITEMS.find((i) => i.set === 1 && i.part === "tie")!;
-    const b = SUIT_ITEMS.find((i) => i.set === 2 && i.part === "tie")!;
-    const s = base({ suits: [a.id, b.id], wear: { tie: a.id } });
-    expect(applyIntent(s, { k: "wearSuit", id: b.id }).wear).toEqual({ tie: b.id });
+    const a = SUIT_ITEMS.find((i) => i.set === 1 && i.part === "accessory")!;
+    const b = SUIT_ITEMS.find((i) => i.set === 2 && i.part === "accessory")!;
+    const s = base({ suits: [a.id, b.id], wear: { accessory: a.id } });
+    expect(applyIntent(s, { k: "wearSuit", id: b.id }).wear).toEqual({ accessory: b.id });
     expect(codeOf(base(), { k: "wearSuit", id: b.id })).toBe("not_owned");
-    const bought = applyIntent(base({ suits: [a.id], wear: { tie: a.id } }), { k: "buySuit", id: b.id });
-    expect(bought.wear).toEqual({ tie: a.id });
+    const bought = applyIntent(base({ suits: [a.id], wear: { accessory: a.id } }), { k: "buySuit", id: b.id });
+    expect(bought.wear).toEqual({ accessory: a.id });
   });
 
   test("office: upgrade a grade with coupons, up to 17", () => {
@@ -259,13 +260,45 @@ describe("permanent growth", () => {
   });
 
   test("a job change keeps all of it", () => {
-    const s = base({ bestFloor: 1000, apartment: 3, suits: [SUIT_ITEMS[0].id], wear: { hair: SUIT_ITEMS[0].id }, pets: { p_intern: 4 }, relics: { r_badge: 2 } });
+    const s = base({ bestFloor: 1000, apartment: 3, suits: [SUIT_ITEMS[0].id], wear: { helmet: SUIT_ITEMS[0].id }, pets: { p_intern: 4 }, relics: { r_badge: 2 } });
     s.run = { ...s.run, floor: 100, maxFloor: 100 };
     const after = applyIntent(s, { k: "prestige", boosted: false });
     expect(after.apartment).toBe(3);
     expect(after.suits).toEqual([SUIT_ITEMS[0].id]);
-    expect(after.wear).toEqual({ hair: SUIT_ITEMS[0].id });
+    expect(after.wear).toEqual({ helmet: SUIT_ITEMS[0].id });
     expect(after.pets).toEqual({ p_intern: 4 });
     expect(after.relics).toEqual({ r_badge: 2 });
+  });
+});
+
+describe("구매확정 (the original's purchase confirmation)", () => {
+  const rich2 = (gear: { tier: number; level: number; confirmed: number }) => ({ ...rich(), gems: 10_000, gear });
+
+  test("a weapon at Lv5 can be confirmed for gold and gems", () => {
+    const s = rich2({ tier: 0, level: GEAR_MAX_LEVEL, confirmed: 0 });
+    const cost = gearConfirmCost(0);
+    const after = applyIntent(s, { k: "confirmGear" });
+    expect(after.gear.confirmed).toBe(1);
+    expect(after.gems).toBe(10_000 - cost.gems);
+    expect(after.gold.toNumber()).toBeCloseTo(s.gold.sub(cost.gold).toNumber(), 0);
+    expect(codeOf(rich2({ tier: 0, level: GEAR_MAX_LEVEL - 1, confirmed: 0 }), { k: "confirmGear" })).toBe("not_done");
+  });
+
+  test("only in order: the next one to confirm is always the lowest unconfirmed", () => {
+    const s = rich2({ tier: 3, level: 2, confirmed: 1 });
+    const after = applyIntent(s, { k: "confirmGear" });
+    expect(after.gear.confirmed).toBe(2);
+    expect(codeOf(rich2({ tier: 1, level: 2, confirmed: 1 }), { k: "confirmGear" })).toBe("not_done");
+    expect(codeOf({ ...rich2({ tier: 0, level: 5, confirmed: 0 }), gems: 0 }, { k: "confirmGear" })).toBe("not_enough_gems");
+    expect(codeOf(rich2({ tier: GEAR_TIERS.length - 1, level: 5, confirmed: GEAR_TIERS.length }), { k: "confirmGear" })).toBe("max");
+  });
+
+  test("a job change keeps confirmed weapons: the last one at Lv5, ready to buy the next", () => {
+    const s = rich2({ tier: 4, level: 3, confirmed: 3 });
+    s.run = { ...s.run, floor: 120, maxFloor: 120 };
+    expect(applyIntent(s, { k: "prestige", boosted: false }).gear).toEqual({ tier: 2, level: GEAR_MAX_LEVEL, confirmed: 3 });
+    const none = rich2({ tier: 4, level: 3, confirmed: 0 });
+    none.run = { ...none.run, floor: 120, maxFloor: 120 };
+    expect(applyIntent(none, { k: "prestige", boosted: false }).gear).toEqual({ tier: 0, level: 0, confirmed: 0 });
   });
 });

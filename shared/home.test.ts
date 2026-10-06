@@ -16,6 +16,10 @@ describe("apartment", () => {
 });
 
 describe("suits", () => {
+  test("the original's six costume slots", () => {
+    expect([...new Set(SUIT_ITEMS.map((i) => i.part))]).toEqual(["helmet", "armor", "cape", "gloves", "boots", "accessory"]);
+  });
+
   test("6 sets × 6 parts, dearer by set", () => {
     expect(SUIT_ITEMS).toHaveLength(36);
     expect(new Set(SUIT_ITEMS.map((i) => i.id)).size).toBe(36);

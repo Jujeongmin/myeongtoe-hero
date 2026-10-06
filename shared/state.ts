@@ -6,7 +6,7 @@ import { findPet } from "./data/pets";
 import { findRelic } from "./data/relics";
 import { findSideJob } from "./data/sideJobs";
 
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 export const OFFLINE_CAP_SEC = 12 * 3600;
 export const OFFICE_MAX_GRADE = 17;
 // 지하주차장 passes stored at most (the original dungeon's 16). Re-exported by data/parking.ts.
@@ -43,7 +43,8 @@ export interface GameState {
   gold: Big;
   run: RunState;
   bestFloor: number;
-  gear: { tier: number; level: number };
+  // Work gear: the tier in hand, its level (max 5), and how many tiers are 구매확정-ed (kept through job changes).
+  gear: { tier: number; level: number; confirmed: number };
   sideJobs: Record<string, SideJobState>;
   flags: { sideJobAuto: boolean };
   // Fields for content not built yet (raids, stocks, … — design §7.5): kept as found.
@@ -132,6 +133,24 @@ const MIGRATIONS: Record<number, (save: Record<string, unknown>) => Record<strin
     attendance: { lastDay: "", count: 0 },
     nickname: "",
   }),
+  // v5: costume slots renamed to the original's (투구, 갑옷, 망토, 장갑, 신발, 장신구) for the fantasy
+  // look; 구매확정 count on the gear.
+  4: (save) => {
+    const rename: Record<string, string> = { hair: "helmet", suit: "armor", coat: "cape", gloves: "gloves", shoes: "boots", tie: "accessory" };
+    const renamed = (id: unknown) => {
+      if (typeof id !== "string") return id;
+      const m = /^(s\d+)_(\w+)$/.exec(id);
+      return m && rename[m[2]] ? `${m[1]}_${rename[m[2]]}` : id;
+    };
+    const wear: Record<string, unknown> = {};
+    for (const [part, id] of Object.entries(obj(save.wear))) wear[rename[part] ?? part] = renamed(id);
+    return {
+      ...save, v: 5,
+      suits: Array.isArray(save.suits) ? save.suits.map(renamed) : [],
+      wear,
+      gear: { ...obj(save.gear), confirmed: 0 },
+    };
+  },
 };
 
 export function freshRun(): RunState {
@@ -145,7 +164,7 @@ export function newState(now: number): GameState {
     gold: Big.ZERO,
     run: freshRun(),
     bestFloor: 1,
-    gear: { tier: 0, level: 0 },
+    gear: { tier: 0, level: 0, confirmed: 0 },
     sideJobs: {},
     flags: { sideJobAuto: false },
     reserved: {},
@@ -242,7 +261,11 @@ export function fromSave(raw: unknown): GameState {
       maxFloor: Math.max(floor, int(run.maxFloor, 1, 1)),
     },
     bestFloor: int(data.bestFloor, 1, 1),
-    gear: { tier: Math.min(int(gear.tier, 0, 0), GEAR_TIERS.length - 1), level: Math.min(int(gear.level, 0, 0), GEAR_MAX_LEVEL) },
+    gear: {
+      tier: Math.min(int(gear.tier, 0, 0), GEAR_TIERS.length - 1),
+      level: Math.min(int(gear.level, 0, 0), GEAR_MAX_LEVEL),
+      confirmed: Math.min(int(gear.confirmed, 0, 0), GEAR_TIERS.length),
+    },
     sideJobs,
     flags: { sideJobAuto: obj(data.flags).sideJobAuto === true },
     reserved: obj(data.reserved),

@@ -1,5 +1,7 @@
-// 집 (home) content. 아파트 is the original's 원작 타워 (보석, damage ×2 every 10). 정장 is the
-// original's costumes: six parts, bought with 상품권, one worn per part, a bonus for a fully worn set.
+// 집 (home) content. 아파트 is the original's 원작 타워 (보석, damage ×2 every 10). 정장 (costumes)
+// are the original's costumes: the same six slots (투구, 갑옷, 망토, 장갑, 신발, 장신구), fantasy hero
+// gear with an office joke in each set, bought with 상품권, one worn per slot, a bonus for a fully
+// worn set.
 // 사무용품 is the original's 마왕성 gear: four parts owned from the start, upgraded with 상품권 from
 // grade 1 to 17 (1 → 2 costs 200, as the original's coins did). No draws anywhere.
 export function apartmentCost(pyeong: number): number {
@@ -11,21 +13,21 @@ export function apartmentDamage(pyeong: number): number {
 }
 
 export const SUIT_PARTS = [
-  { key: "hair", name: "가발" },
-  { key: "suit", name: "정장" },
-  { key: "coat", name: "코트" },
+  { key: "helmet", name: "투구" },
+  { key: "armor", name: "갑옷" },
+  { key: "cape", name: "망토" },
   { key: "gloves", name: "장갑" },
-  { key: "shoes", name: "구두" },
-  { key: "tie", name: "넥타이" },
+  { key: "boots", name: "신발" },
+  { key: "accessory", name: "장신구" },
 ] as const;
 
 export const SUIT_SETS = [
-  { set: 1, name: "신입", bonus: "골드 +20%" },
+  { set: 1, name: "수습 용사", bonus: "골드 +20%" },
   { set: 2, name: "영업왕", bonus: "공격 속도 +10%" },
-  { set: 3, name: "골프 접대", bonus: "보스 데미지 +30%" },
-  { set: 4, name: "주말 등산", bonus: "부업 수입 +50%" },
-  { set: 5, name: "임원", bonus: "데미지 +50%" },
-  { set: 6, name: "회장님", bonus: "골드 +100%" },
+  { set: 3, name: "야근 흑기사", bonus: "보스 데미지 +30%" },
+  { set: 4, name: "주말 등산 레인저", bonus: "부업 수입 +50%" },
+  { set: 5, name: "임원 성기사", bonus: "데미지 +50%" },
+  { set: 6, name: "회장님 황금", bonus: "골드 +100%" },
 ] as const;
 
 export interface SuitItem {

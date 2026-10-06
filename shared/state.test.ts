@@ -9,7 +9,7 @@ describe("state", () => {
     expect(s.lastTick).toBe(1000);
     expect(s.gold.isZero()).toBe(true);
     expect(s.run).toEqual({ floor: 1, target: 0, carrySec: 0, farming: false, maxFloor: 1 });
-    expect(s.gear).toEqual({ tier: 0, level: 0 });
+    expect(s.gear).toEqual({ tier: 0, level: 0, confirmed: 0 });
     expect(s.sideJobs).toEqual({});
     expect(s.tickets).toBe(0);
     expect(s.gems).toBe(0);
@@ -57,7 +57,7 @@ describe("state", () => {
     const s = fromSave(save);
     expect(s.run).toEqual({ floor: 1, target: 0, carrySec: 0, farming: false, maxFloor: 1 });
     expect(Object.keys(s.sideJobs)).toEqual(["j00"]);
-    expect(s.gear).toEqual({ tier: 29, level: 3 });
+    expect(s.gear).toEqual({ tier: 29, level: 3, confirmed: 0 });
   });
 
   test("a clone shares nothing mutable with the original", () => {
@@ -78,7 +78,7 @@ describe("state", () => {
     };
     const s = fromSave(v1);
     expect(s.v).toBe(SAVE_VERSION);
-    expect(s.gear).toEqual({ tier: 2, level: 4 });
+    expect(s.gear).toEqual({ tier: 2, level: 4, confirmed: 0 });
     expect(s.tickets).toBe(0);
     expect(s.certs).toEqual({});
   });
@@ -89,7 +89,7 @@ describe("state", () => {
     v2.stats = { atk: 3, crit: 0, critDmg: 0, aspd: 0 };
     const s = fromSave(v2);
     expect(s.v).toBe(SAVE_VERSION);
-    expect(s.gear).toEqual({ tier: 3, level: 5 });
+    expect(s.gear).toEqual({ tier: 3, level: 5, confirmed: 0 });
     expect(s.office).toEqual({ keyboard: 1, mouse: 1, chair: 1, monitor: 1 });
     expect(s.suits).toEqual([]);
     expect("stats" in s).toBe(false);
@@ -98,12 +98,12 @@ describe("state", () => {
   test("office grades stay within 1..17, suits are unique, only owned parts are worn", () => {
     const save = toSave(newState(0)) as unknown as Record<string, unknown>;
     save.office = { keyboard: 40, mouse: 0, chair: 3, monitor: "x" };
-    save.suits = ["s1_hair", "s1_hair", 5, "s2_suit"];
-    save.wear = { hair: "s1_hair", suit: "s3_suit", tie: "s1_hair" };
+    save.suits = ["s1_helmet", "s1_helmet", 5, "s2_armor"];
+    save.wear = { helmet: "s1_helmet", armor: "s3_armor", accessory: "s1_helmet" };
     const s = fromSave(save);
     expect(s.office).toEqual({ keyboard: 17, mouse: 1, chair: 3, monitor: 1 });
-    expect(s.suits).toEqual(["s1_hair", "s2_suit"]);
-    expect(s.wear).toEqual({ hair: "s1_hair" });
+    expect(s.suits).toEqual(["s1_helmet", "s2_armor"]);
+    expect(s.wear).toEqual({ helmet: "s1_helmet" });
   });
 
   test("unknown certificates and bad levels are dropped", () => {
@@ -131,5 +131,11 @@ describe("state", () => {
     expect(s.daily.claimed).toEqual(["e1"]);
     expect(s.missions.special).toEqual(["f500"]);
     expect(s.nickname).toBe("");
+  });
+  test("a version 4 save's office-suit parts become the original's costume slots", () => {
+    const v4 = { ...toSave(newState(0)), v: 4, suits: ["s1_hair", "s2_tie", "s3_coat"], wear: { hair: "s1_hair", tie: "s2_tie" } } as Record<string, unknown>;
+    const s = fromSave(v4);
+    expect(s.suits).toEqual(["s1_helmet", "s2_accessory", "s3_cape"]);
+    expect(s.wear).toEqual({ helmet: "s1_helmet", accessory: "s2_accessory" });
   });
 });

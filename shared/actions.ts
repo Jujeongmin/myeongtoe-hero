@@ -1,6 +1,6 @@
 import { Big } from "./big";
 import { CERTS, certBonuses, certDrawCost, certLevelCost, certTierOpen, findCert } from "./data/certs";
-import { GEAR_MAX_LEVEL, GEAR_TIERS, gearLevelCost, gearPrice } from "./data/gear";
+import { GEAR_MAX_LEVEL, GEAR_TIERS, gearConfirmCost, gearLevelCost, gearPrice } from "./data/gear";
 import { OFFICE_PARTS, apartmentCost, findSuitItem, officeUpgradeCost, type OfficePart } from "./data/home";
 import { dailyQuestReward, findDailyQuest } from "./data/dailyQuests";
 import { ATTENDANCE_REWARDS, STEP_MISSIONS, findSpecialMission, type Reward } from "./data/missions";
@@ -44,7 +44,8 @@ export type Intent =
   | { k: "claimDaily"; id: string }
   | { k: "claimStep" }
   | { k: "claimSpecial"; id: string }
-  | { k: "claimAttendance" };
+  | { k: "claimAttendance" }
+  | { k: "confirmGear" };
 
 // Untrusted input (from the network) to an Intent, or null for anything else.
 export function readIntent(raw: unknown): Intent | null {
@@ -68,6 +69,7 @@ export function readIntent(raw: unknown): Intent | null {
     case "enterParking":
     case "claimStep":
     case "claimAttendance":
+    case "confirmGear":
       return { k: r.k };
     case "levelPet":
     case "levelRelic":
@@ -124,7 +126,7 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       if (next >= GEAR_TIERS.length) throw new RuleError("max");
       if (s.gear.level < GEAR_MAX_LEVEL) throw new RuleError("locked");
       spend(s, gearPrice(next));
-      s.gear = { tier: next, level: 0 };
+      s.gear = { tier: next, level: 0, confirmed: s.gear.confirmed };
       return s;
     }
     case "levelSideJob": {
@@ -173,7 +175,10 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       s.gems += reward.gems * mult;
       s.gold = Big.ZERO;
       s.run = freshRun();
-      s.gear = { tier: 0, level: 0 };
+      // 구매확정-ed tiers stay: the last of them in hand at Lv5, so the next can be bought at once.
+      s.gear = s.gear.confirmed > 0
+        ? { tier: s.gear.confirmed - 1, level: GEAR_MAX_LEVEL, confirmed: s.gear.confirmed }
+        : { tier: 0, level: 0, confirmed: 0 };
       s.sideJobs = {};
       s.prestiges += 1;
       return s;
@@ -244,6 +249,17 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       if (value < quest.goal) throw new RuleError("not_done");
       s.coupons += dailyQuestReward(quest, s.lastTick);
       s.daily = { ...today, claimed: [...today.claimed, quest.id] };
+      return s;
+    }
+    case "confirmGear": {
+      const t = s.gear.confirmed;
+      if (t >= GEAR_TIERS.length) throw new RuleError("max");
+      const reached = s.gear.tier > t || (s.gear.tier === t && s.gear.level >= GEAR_MAX_LEVEL);
+      if (!reached) throw new RuleError("not_done");
+      const cost = gearConfirmCost(t);
+      spendGems(s, cost.gems);
+      spend(s, cost.gold);
+      s.gear = { ...s.gear, confirmed: t + 1 };
       return s;
     }
     case "claimStep": {
