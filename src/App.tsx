@@ -1,10 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
+import { useGameServer } from "@agent8/gameserver";
 import { GameStore } from "./game/store";
 import { useGameView } from "./game/useGameView";
-import { LocalTransport } from "./net/transport";
+import { connectionOf, type Connection } from "./net/connection";
+import { loginState } from "./net/login";
+import { LocalTransport, OFFLINE } from "./net/transport";
+import { Verse8Transport } from "./net/verse8Transport";
 import { Battle } from "./ui/Battle";
 import { GearPanel } from "./ui/GearPanel";
 import { SideJobPanel } from "./ui/SideJobPanel";
+import { StatusBanner } from "./ui/StatusBanner";
 import { Toast } from "./ui/Toast";
 import { TopBar } from "./ui/TopBar";
 
@@ -16,8 +21,26 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "sideJobs", label: "부업" },
 ];
 
-export default function App() {
+// Playing against the in-page server (no Verse8 project, or ?local in development).
+export function LocalApp() {
   const store = useMemo(() => new GameStore(new LocalTransport(window.localStorage)), []);
+  return <Game store={store} connection="local" guest={false} />;
+}
+
+// Playing against the Verse8 game server. The store outlives connection drops: while there is no
+// connection its syncs fail and the player's taps stay queued, then go out once it is back.
+export function OnlineApp() {
+  const { server, connected, connectionStatus } = useGameServer();
+  const store = useMemo(() => new GameStore(OFFLINE), []);
+  const guest = useMemo(() => loginState() === "guest", []);
+  useEffect(() => {
+    store.setTransport(connected ? new Verse8Transport(server) : OFFLINE);
+  }, [store, server, connected]);
+  const connection = connectionOf({ online: true, connected, phase: connectionStatus?.phase });
+  return <Game store={store} connection={connection} guest={guest} />;
+}
+
+function Game({ store, connection, guest }: { store: GameStore; connection: Connection; guest: boolean }) {
   const state = useGameView(store);
   const [tab, setTab] = useState<Tab>("gear");
 
@@ -28,11 +51,22 @@ export default function App() {
     return () => clearInterval(id);
   }, [store]);
 
-  if (!state) return <div className="screen">출근 중…</div>;
+  if (!state) {
+    if (connection === "failed") {
+      return (
+        <div className="screen">
+          <p>서버에 연결하지 못했어요</p>
+          <button onClick={() => window.location.reload()}>다시 시도</button>
+        </div>
+      );
+    }
+    return <div className="screen">{connection === "trying" ? "서버에 연결하는 중…" : "출근 중…"}</div>;
+  }
 
   return (
     <div className="phone">
       <TopBar state={state} />
+      <StatusBanner connection={connection} guest={guest} />
       <Battle state={state} />
       <nav className="tabs">
         {TABS.map((t) => (

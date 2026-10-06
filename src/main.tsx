@@ -4,14 +4,24 @@ import "./storageFallback";
 
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App";
+import { GameServerProvider } from "@agent8/gameserver";
+import { LocalApp, OnlineApp } from "./App";
 import "./index.css";
+import { wantsOnline } from "./net/connection";
 import { ErrorBoundary } from "./ui/ErrorBoundary";
+
+const online = wantsOnline(import.meta.env.VITE_AGENT8_VERSE, window.location.search, import.meta.env.DEV);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ErrorBoundary>
-      <App />
+      {online ? (
+        <GameServerProvider>
+          <OnlineApp />
+        </GameServerProvider>
+      ) : (
+        <LocalApp />
+      )}
     </ErrorBoundary>
   </StrictMode>,
 );

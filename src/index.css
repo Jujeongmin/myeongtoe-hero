@@ -29,3 +29,5 @@ button { font: inherit; cursor: pointer; }
 .screen { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; height: 100%; padding: 24px; text-align: center; }
 .screen small { color: #b8b3d6; }
 .screen button { padding: 8px 16px; border: none; border-radius: 6px; background: #2a9d8f; color: #fff; font-weight: 700; }
+.banner { padding: 6px 12px; font-size: 12px; background: #3a3358; color: #e9e4ff; text-align: center; }
+.banner.warn { background: #8a3b12; color: #fff; }
