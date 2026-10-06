@@ -255,7 +255,7 @@ VIP는 편의 위주로 둔다. 순수 전투 스탯 차이는 작게 유지해�
 - 비용: 상품권 또는 보석. 1회 / 10회(1회분 할인)
 - 천장: 80회 안에 전설 등급이 확정된다. 천장 카운터는 종류별로 따로 서버에 저장한다.
 - 난수는 서버에서만 뽑는다.
-- 확률표는 데이터 파일(`data/gacha.json`) 하나에서 관리한다. 게임 안 확률 공개 팝업과 스토어 설명이 같은 파일을 참조한다.
+- 확률표는 데이터 파일(`shared/data/gacha.ts`) 하나에서 관리한다. 게임 안 확률 공개 팝업과 스토어 설명이 같은 파일을 참조한다.
 
 ### 6.6 VX 대시보드 등록 시트 (결과물)
 
@@ -268,7 +268,7 @@ VX 대시보드 등록은 사용자가 직접 한다. 개발 측은 아래 정�
 - 유형 (1회 구매 / 반복 구매 / 구독)
 - 상품 이미지 1장 (Codex로 생성, 정사각형 PNG)
 
-이 시트는 `tools/`의 생성 스크립트가 `data/shop.json`을 읽어서 만든다. 게임 데이터와 등록 정보가 어긋나지 않게 하기 위해서다.
+이 시트는 `tools/`의 생성 스크립트가 `shared/data/shop.ts`를 읽어서 만든다. 게임 데이터와 등록 정보가 어긋나지 않게 하기 위해서다.
 
 ---
 
@@ -276,18 +276,19 @@ VX 대시보드 등록은 사용자가 직접 한다. 개발 측은 아래 정�
 
 ### 7.1 스택과 폴더
 
-- 클라이언트: Vite + React + TypeScript + Tailwind
+- 클라이언트: Vite + React + TypeScript. 스타일은 일반 CSS 파일(`src/index.css`)이다. Verse8 템플릿의 PostCSS 설정이 빌드를 깨서 Tailwind는 쓰지 않는다.
 - 전투 화면: Canvas2D 렌더러 1개. 도트 정수배 스케일, 스프라이트 애니메이션, 데미지 숫자, 말풍선을 담당한다.
 - 서버: `@agent8/gameserver-node` (TypeScript)
-- 큰 수: `break_infinity.js` (Decimal). 클라이언트와 서버 양쪽에서 쓴다.
+- 큰 수: 자체 구현 `shared/big.ts`. 서버가 플랫폼에서 빌드될 때 외부 패키지를 찾는다는 보장이 없어서 의존성을 두지 않는다.
 
 ```
-client/   Vite + React + TS + Tailwind
+index.html, src/   클라이언트 (Verse8 템플릿 구조: 루트 index.html + src/main.tsx)
   ui/       탭, 리스트, 상점, 팝업
-  battle/   Canvas2D 전투 렌더러 (연출 전용)
-  net/      Verse8 브리지: 서버 호출, 광고, VX 결제
-shared/   순수 TS: 공식, Decimal 래퍼, settle, 타입 (클라·서버 공용)
-data/     밸런스 테이블 JSON
+  ui/Battle 전투 렌더러 (연출 전용)
+  net/      서버 전송(Transport), 광고, VX 결제
+  game/     GameStore (예측과 동기화)
+shared/   순수 TS: big, format, settle, actions, sync, state (클라·서버 공용)
+shared/data/  밸런스 테이블 (TS 상수)
 server/   gameserver-node 액션 핸들러
 tools/    밸런스 시뮬레이터, 에셋 파이프라인, VX 등록 시트 생성
 ```
