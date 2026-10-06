@@ -1,8 +1,9 @@
 import { describe, expect, test } from "vitest";
 import { Big } from "./big";
 import { BOSS_LIMIT_SEC, WALK_SEC, killGold, targetHp } from "./data/floors";
-import { fightSec, settleBattle } from "./settle";
-import { newState } from "./state";
+import { SIDE_JOBS, sideJobCycle, sideJobIncome } from "./data/sideJobs";
+import { fightSec, settle, settleBattle, settleSideJobs } from "./settle";
+import { OFFLINE_CAP_SEC, newState } from "./state";
 import { heroDps } from "./stats";
 
 const fresh = () => newState(0).run;
@@ -73,5 +74,64 @@ describe("settleBattle", () => {
     const back = settleBattle(farming, strong, 0);
     expect(back.run.farming).toBe(false);
     expect(back.run.floor).toBe(10);
+  });
+});
+
+describe("settleSideJobs", () => {
+  const job = SIDE_JOBS[0];
+  const cycle = sideJobCycle(job, 2);
+  const income = sideJobIncome(job, 2);
+
+  test("without automation a job pays once and stops", () => {
+    const jobs = { [job.id]: { level: 2, progressSec: 0, running: true } };
+    const { sideJobs, gold } = settleSideJobs(jobs, cycle * 3.5, false);
+    expect(gold.div(income).toNumber()).toBeCloseTo(1, 9);
+    expect(sideJobs[job.id]).toEqual({ level: 2, progressSec: 0, running: false });
+  });
+
+  test("with automation it pays every cycle and carries the rest", () => {
+    const jobs = { [job.id]: { level: 2, progressSec: 0, running: true } };
+    const { sideJobs, gold } = settleSideJobs(jobs, cycle * 3.5, true);
+    expect(gold.div(income).toNumber()).toBeCloseTo(3, 9);
+    expect(sideJobs[job.id].progressSec).toBeCloseTo(cycle * 0.5, 6);
+    expect(sideJobs[job.id].running).toBe(true);
+  });
+
+  test("a stopped or unbought job earns nothing", () => {
+    const jobs = { [job.id]: { level: 2, progressSec: 0, running: false }, [SIDE_JOBS[1].id]: { level: 0, progressSec: 0, running: true } };
+    expect(settleSideJobs(jobs, 1e6, false).gold.isZero()).toBe(true);
+  });
+});
+
+describe("settle", () => {
+  test("advances the clock and adds battle and side job gold", () => {
+    const s = newState(0);
+    s.sideJobs[SIDE_JOBS[0].id] = { level: 1, progressSec: 0, running: true };
+    const after = settle(s, 60_000);
+    expect(after.lastTick).toBe(60_000);
+    const battleOnly = settleBattle(s.run, heroDps(s), 60).gold;
+    expect(after.gold.cmp(battleOnly)).toBe(1);
+    expect(after.bestFloor).toBe(after.run.maxFloor);
+    expect(s.lastTick).toBe(0); // the input is untouched
+  });
+
+  test("caps offline time at 12 hours", () => {
+    const s = newState(0);
+    const capped = settle(s, OFFLINE_CAP_SEC * 1000);
+    const beyond = settle(s, OFFLINE_CAP_SEC * 4000);
+    expect(beyond.run).toEqual(capped.run);
+    expect(beyond.gold.cmp(capped.gold)).toBe(0);
+  });
+
+  test("ignores a clock that went backwards", () => {
+    const s = newState(10_000);
+    expect(settle(s, 5_000)).toBe(s);
+  });
+
+  test("a fresh Park gets stuck under the floor-10 boss", () => {
+    const after = settle(newState(0), 3_600_000);
+    expect(after.run.farming).toBe(true);
+    expect(after.run.floor).toBe(9);
+    expect(after.bestFloor).toBe(10);
   });
 });

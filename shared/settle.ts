@@ -1,6 +1,8 @@
 import { Big } from "./big";
 import { BOSS_LIMIT_SEC, WALK_SEC, isBossFloor, killGold, targetHp, targetsOn } from "./data/floors";
-import type { RunState } from "./state";
+import { findSideJob, sideJobCycle, sideJobIncome } from "./data/sideJobs";
+import { OFFLINE_CAP_SEC, cloneState, type GameState, type RunState, type SideJobState } from "./state";
+import { heroDps } from "./stats";
 
 // Enough for 12 offline hours at one kill a second, with room to spare; only a broken table loops.
 const MAX_STEPS = 200_000;
@@ -66,4 +68,48 @@ export function settleBattle(start: RunState, dps: Big, dt: number): { run: RunS
 
   run.carrySec = t;
   return { run, gold };
+}
+
+export function settleSideJobs(
+  jobs: Record<string, SideJobState>, dt: number, auto: boolean,
+): { sideJobs: Record<string, SideJobState>; gold: Big } {
+  let gold = Big.ZERO;
+  const sideJobs: Record<string, SideJobState> = {};
+  for (const [id, own] of Object.entries(jobs)) {
+    const job = findSideJob(id);
+    if (!job || own.level === 0 || !own.running) {
+      sideJobs[id] = { ...own };
+      continue;
+    }
+    const cycle = sideJobCycle(job, own.level);
+    const income = sideJobIncome(job, own.level);
+    const p = own.progressSec + dt;
+    if (auto) {
+      const paid = Math.floor(p / cycle);
+      if (paid > 0) gold = gold.add(income.mulN(paid));
+      sideJobs[id] = { ...own, progressSec: Math.max(0, p - paid * cycle) };
+    } else if (p >= cycle) {
+      gold = gold.add(income);
+      sideJobs[id] = { ...own, progressSec: 0, running: false };
+    } else {
+      sideJobs[id] = { ...own, progressSec: p };
+    }
+  }
+  return { sideJobs, gold };
+}
+
+// Everything that happens between lastTick and now (server time), at most OFFLINE_CAP_SEC of it.
+// Returns a new state; the input is never changed.
+export function settle(state: GameState, now: number): GameState {
+  if (now <= state.lastTick) return state;
+  const dt = Math.min(OFFLINE_CAP_SEC, (now - state.lastTick) / 1000);
+  const next = cloneState(state);
+  const battle = settleBattle(next.run, heroDps(next), dt);
+  const jobs = settleSideJobs(next.sideJobs, dt, next.flags.sideJobAuto);
+  next.lastTick = now;
+  next.run = battle.run;
+  next.bestFloor = Math.max(next.bestFloor, battle.run.maxFloor);
+  next.sideJobs = jobs.sideJobs;
+  next.gold = next.gold.add(battle.gold).add(jobs.gold);
+  return next;
 }
