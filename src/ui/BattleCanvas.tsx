@@ -10,9 +10,11 @@ import {
   type Anim, type MonsterSprite,
 } from "../game/sprites";
 
-// The battle scene at its native pixel size, scaled up crisp by CSS. The scale is set so Park's body
-// (44 px) stands about 17% of the screen's width tall, with the floor 73% of the way down; the
-// 96 px department background sits on that floor, its top row stretched up as ceiling.
+// The battle scene in the screen's real (device) pixels, every picture drawn at a whole number of
+// them per art pixel so it stays crisp. The department background is scaled up until it covers
+// the whole scene (bottom-aligned, floor where its picture has it); Park and the monsters are
+// drawn small, like a classic pixel game: about half the size a 44 px body at 17% of the screen's
+// width would be.
 //
 // It only shows what settle decided. The time into the current kill (run.carrySec, moved on
 // smoothly between the store's updates) says whether Park is walking to the next monster or
@@ -21,7 +23,7 @@ import {
 // the last one kills it.
 const BODY_PX = 44;
 const BODY_SHARE = 0.17;
-const FLOOR_SHARE = 0.73;
+const BG_H = 96;
 const BG_FLOOR = 82;
 const WALK_PX_PER_SEC = 48;
 // A swing is never drawn faster than this, however fast Park hits.
@@ -67,14 +69,17 @@ export function BattleCanvas({ state }: { state: GameState }) {
       const parent = el.parentElement;
       const cw = Math.max(1, parent?.clientWidth ?? 320);
       const ch = Math.max(1, parent?.clientHeight ?? 200);
-      const scale = Math.max(1, (cw * BODY_SHARE) / BODY_PX);
-      const w = Math.round(cw / scale);
-      const h = Math.round(ch / scale);
+      const dpr = window.devicePixelRatio || 1;
+      const bgDevice = ((cw * BODY_SHARE) / BODY_PX) * dpr;
+      // Device pixels per art pixel: actors at about half the background's.
+      const scale = Math.max(1, Math.round(bgDevice / 2));
+      const w = Math.round((cw * dpr) / scale);
+      const h = Math.round((ch * dpr) / scale);
       if (el.width !== w || el.height !== h) {
         el.width = w;
         el.height = h;
       }
-      scroll = draw(ctx, w, h, snap.current, now, dt, scroll, sim, (text, x, y, crit) => {
+      scroll = draw(ctx, w, h, Math.max(1, Math.ceil(h / BG_H)), snap.current, now, dt, scroll, sim, (text, x, y, crit) => {
         popDamage(layer.current, text, (x * cw) / w, (y * ch) / h, crit);
       });
       raf = requestAnimationFrame(loop);
@@ -104,7 +109,7 @@ function popDamage(layer: HTMLDivElement | null, text: string, x: number, y: num
 }
 
 function draw(
-  ctx: CanvasRenderingContext2D, w: number, h: number, { state, at }: Snapshot, now: number, dt: number, scroll: number,
+  ctx: CanvasRenderingContext2D, w: number, h: number, bgScale: number, { state, at }: Snapshot, now: number, dt: number, scroll: number,
   sim: Sim, pop: (text: string, x: number, y: number, crit: boolean) => void,
 ): number {
   ctx.imageSmoothingEnabled = false;
@@ -118,7 +123,7 @@ function draw(
   const t = fighting ? elapsed - kills * perKill : 0;
   const walking = t < power.walkSec || !Number.isFinite(fight);
   const nextScroll = walking ? scroll + (WALK_PX_PER_SEC * dt) / power.walkSec : scroll;
-  const floorY = Math.round(h * FLOOR_SHARE);
+  const floorY = h - (BG_H - BG_FLOOR) * bgScale;
   const department = departmentOf(floor);
   const boss = isBossFloor(floor) && !farming;
   const parkX = Math.round(w * 0.38) - 34;
@@ -137,13 +142,12 @@ function draw(
   ctx.clearRect(0, 0, w, h);
   const bg = image(backgroundFile(department));
   if (bg) {
-    const top = floorY - BG_FLOOR;
-    const off = Math.floor(nextScroll) % bg.width;
-    for (let x = -off; x < w; x += bg.width) {
-      if (top > 0) ctx.drawImage(bg, 0, 0, bg.width, 1, x, 0, bg.width, top);
-      ctx.drawImage(bg, x, top);
-      const below = top + bg.height;
-      if (below < h) ctx.drawImage(bg, 0, bg.height - 1, bg.width, 1, x, below, bg.width, h - below);
+    const bw = bg.width * bgScale;
+    const bh = bg.height * bgScale;
+    const top = h - bh;
+    const off = Math.floor(nextScroll) % bw;
+    for (let x = -off; x < w; x += bw) {
+      ctx.drawImage(bg, 0, 0, bg.width, bg.height, x, top, bw, bh);
     }
   }
 
