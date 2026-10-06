@@ -266,212 +266,153 @@
    "frames": [
     {
      "head": [
-      28,
-      13
+      30,
+      12
      ],
      "neck": [
-      33,
-      39
-     ],
-     "torso": [
-      30,
+      35,
       41
      ],
-     "feet": [
-      30,
-      56
+     "torso": [
+      32,
+      41
      ],
      "hand": [
-      32,
-      47
+      29,
+      49
      ],
      "handAngle": -40,
-     "file": "attack_0.png",
-     "gearAboveHelmet": false
-    },
-    {
-     "head": [
-      27,
-      13
-     ],
-     "neck": [
-      32,
-      39
-     ],
-     "torso": [
-      29,
-      41
-     ],
      "feet": [
       30,
       56
      ],
-     "hand": [
-      22,
-      42
-     ],
-     "handAngle": -150,
-     "file": "attack_1.png",
-     "gearAboveHelmet": true
-    },
-    {
-     "head": [
-      27,
-      13
-     ],
-     "neck": [
-      32,
-      39
-     ],
-     "torso": [
-      29,
-      41
-     ],
-     "feet": [
-      30,
-      56
-     ],
-     "hand": [
-      26,
-      34
-     ],
-     "handAngle": -120,
-     "file": "attack_2.png",
-     "gearAboveHelmet": true
+     "file": "attack_0.png"
     },
     {
      "head": [
       28,
-      13
+      12
      ],
      "neck": [
-      33,
-      39
-     ],
-     "torso": [
-      30,
-      41
-     ],
-     "feet": [
-      30,
-      56
-     ],
-     "hand": [
-      34,
-      34
-     ],
-     "handAngle": -60,
-     "file": "attack_3.png",
-     "gearAboveHelmet": true
-    },
-    {
-     "head": [
-      30,
-      13
-     ],
-     "neck": [
-      35,
-      39
+      36,
+      40
      ],
      "torso": [
       32,
       41
      ],
+     "hand": [
+      24,
+      10
+     ],
+     "handAngle": -125,
      "feet": [
       30,
       56
      ],
-     "hand": [
-      39,
+     "file": "attack_1.png"
+    },
+    {
+     "head": [
+      34,
+      13
+     ],
+     "neck": [
+      35,
+      43
+     ],
+     "torso": [
+      34,
       42
      ],
-     "handAngle": 30,
-     "file": "attack_4.png",
-     "gearAboveHelmet": false
+     "hand": [
+      45,
+      44
+     ],
+     "handAngle": 5,
+     "feet": [
+      30,
+      56
+     ],
+     "file": "attack_2.png"
     },
     {
      "head": [
-      30,
-      13
+      34,
+      14
      ],
      "neck": [
       35,
-      39
+      43
      ],
      "torso": [
-      32,
-      41
-     ],
-     "feet": [
-      30,
-      56
-     ],
-     "hand": [
-      36,
-      46
-     ],
-     "handAngle": 60,
-     "file": "attack_5.png",
-     "gearAboveHelmet": false
-    },
-    {
-     "head": [
-      29,
-      13
-     ],
-     "neck": [
       34,
-      39
-     ],
-     "torso": [
-      31,
-      41
-     ],
-     "feet": [
-      30,
-      56
+      42
      ],
      "hand": [
-      36,
+      45,
       44
      ],
      "handAngle": 20,
-     "file": "attack_6.png",
-     "gearAboveHelmet": false
-    },
-    {
-     "head": [
-      28,
-      13
-     ],
-     "neck": [
-      33,
-      39
-     ],
-     "torso": [
-      30,
-      41
-     ],
      "feet": [
       30,
       56
      ],
+     "file": "attack_3.png"
+    },
+    {
+     "head": [
+      32,
+      13
+     ],
+     "neck": [
+      35,
+      42
+     ],
+     "torso": [
+      35,
+      42
+     ],
      "hand": [
+      45,
+      42
+     ],
+     "handAngle": 10,
+     "feet": [
+      30,
+      56
+     ],
+     "file": "attack_4.png"
+    },
+    {
+     "head": [
+      32,
+      12
+     ],
+     "neck": [
+      35,
+      41
+     ],
+     "torso": [
       33,
-      46
+      42
+     ],
+     "hand": [
+      42,
+      43
      ],
      "handAngle": -30,
-     "file": "attack_7.png",
-     "gearAboveHelmet": false
+     "feet": [
+      30,
+      56
+     ],
+     "file": "attack_5.png"
     }
    ],
-   "frameCount": 8,
-   "frameDurationMs": 70,
+   "frameCount": 6,
+   "frameDurationMs": 90,
    "loop": false,
-   "strip": "attack_strip.png",
-   "impactFrame": 4,
-   "gearAboveHelmetNote": "On frames with gearAboveHelmet=true the near arm passes in front of the head: draw gear and gloves after the helmet on those frames.",
-   "note": "near (viewer-side) hand holds the item in every frame; arm swings over the head into a forward-down slash"
+   "strip": "attack_strip.png"
   }
  }
 }

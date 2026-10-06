@@ -1,5 +1,6 @@
 import { departmentOf, isBossFloor, targetsOn } from "../../shared/data/floors";
 import { PRESTIGE_MIN_FLOOR } from "../../shared/data/prestige";
+import { useState } from "react";
 import { formatCount } from "../../shared/format";
 import { skillsUnlocked } from "../../shared/data/skills";
 import type { GameState } from "../../shared/state";
@@ -14,8 +15,8 @@ import { CurrencyBar } from "./CurrencyBar";
 export type SheetId = "prestige" | "suits" | "apartment" | "relics" | "office" | "missions" | "ranking" | "settings";
 
 // The battle scene (BattleCanvas) with the screen's controls over it: title and floor bar on top,
-// missions, ranking and settings top left, the side icons on the right, the job-change button
-// bottom left and the step mission bottom right.
+// missions, ranking and settings top left, a 메뉴 button top right that opens the side icons, the
+// job-change button bottom left and the step mission bottom right.
 const SIDE: { id: SheetId; icon: string; label: string }[] = [
   { id: "suits", icon: "side_suits", label: "정장" },
   { id: "apartment", icon: "side_apartment", label: "아파트" },
@@ -26,6 +27,7 @@ const SIDE: { id: SheetId; icon: string; label: string }[] = [
 export function Battle({ state, store, onOpen, onGo }: {
   state: GameState; store: GameStore; onOpen: (id: SheetId) => void; onGo: (p: MissionPlace) => void;
 }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const { floor, target, carrySec, farming, maxFloor } = state.run;
   const power = heroPower(state);
   const boss = isBossFloor(floor) && !farming;
@@ -52,13 +54,24 @@ export function Battle({ state, store, onOpen, onGo }: {
         <button onClick={() => onOpen("ranking")} aria-label="랭킹">랭킹</button>
         <button onClick={() => onOpen("settings")} aria-label="설정">설정</button>
       </div>
-      <div className="side-icons">
-        {SIDE.map((s) => (
-          <button key={s.id} onClick={() => onOpen(s.id)}>
-            <Icon name={s.icon} />
-            {s.label}
-          </button>
-        ))}
+      <div className="side-menu">
+        <button className={`menu-btn${menuOpen ? " on" : ""}`} onClick={() => setMenuOpen(!menuOpen)}>메뉴</button>
+        {menuOpen && (
+          <div className="side-icons">
+            {SIDE.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => {
+                  setMenuOpen(false);
+                  onOpen(s.id);
+                }}
+              >
+                <Icon name={s.icon} />
+                {s.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
       <button className="prestige-btn" onClick={() => onOpen("prestige")}>
         이직

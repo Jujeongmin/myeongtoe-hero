@@ -108,7 +108,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
       />
       <main className="list">
         {tab === "sideJobs" && <SideJobPanel state={state} store={store} />}
-        {tab === "gear" && <GearPanel state={state} store={store} />}
+        {tab === "gear" && <GearPanel state={state} store={store} onSuits={() => setSheet("suits")} />}
         {tab === "pets" && <PetPanel state={state} store={store} />}
         {tab === "certs" && <CertPanel state={state} store={store} />}
         {tab === "dungeon" && <ParkingPanel state={state} store={store} />}

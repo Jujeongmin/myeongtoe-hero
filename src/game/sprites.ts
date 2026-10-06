@@ -37,6 +37,8 @@ export interface Frame {
   hand: Point;
   handAngle: number;
   feet: Point;
+  // The swinging arm passes in front of the head: the item and gloves go over the helmet.
+  gearAboveHelmet?: boolean;
 }
 
 export const FRAME = 64;
@@ -44,11 +46,16 @@ export const BASELINE_Y = anchorsJson.baselineY;
 export const ANIMS: Record<Anim, { frames: Frame[]; ms: number; loop: boolean }> = {
   idle: { frames: anchorsJson.animations.idle.frames as unknown as Frame[], ms: 250, loop: true },
   walk: { frames: anchorsJson.animations.walk.frames as unknown as Frame[], ms: 110, loop: true },
-  attack: { frames: anchorsJson.animations.attack.frames as unknown as Frame[], ms: 90, loop: false },
+  attack: { frames: anchorsJson.animations.attack.frames as unknown as Frame[], ms: anchorsJson.animations.attack.frameDurationMs ?? 70, loop: false },
 };
+
+// The attack frame where the item meets the monster.
+export const ATTACK_IMPACT_FRAME: number = (anchorsJson.animations.attack as { impactFrame?: number }).impactFrame ?? 4;
 
 // Costume layers bottom to top; "body" is Park himself, "gear" the item in his hand.
 export const LAYERS = partsJson.layerOrder as readonly string[];
+// The same with the item and gloves moved over the helmet (frames with gearAboveHelmet).
+export const LAYERS_ARM_FRONT: readonly string[] = [...LAYERS.filter((l) => l !== "gear" && l !== "gloves"), "gear", "gloves"];
 
 export interface GearSprite {
   file: string;

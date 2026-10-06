@@ -6,7 +6,7 @@ import { targetSec } from "../../shared/settle";
 import type { GameState } from "../../shared/state";
 import { HERO_CRIT_CHANCE, heroPower } from "../../shared/stats";
 import {
-  ANIMS, BASELINE_Y, FRAME, LAYERS, SHINE, backgroundFile, gearSprite, image, monsterFor, parkStrip, partStrip,
+  ANIMS, ATTACK_IMPACT_FRAME, BASELINE_Y, FRAME, LAYERS, LAYERS_ARM_FRONT, SHINE, backgroundFile, gearSprite, image, monsterFor, parkStrip, partStrip,
   type Anim, type MonsterSprite,
 } from "../game/sprites";
 
@@ -26,8 +26,8 @@ const BG_FLOOR = 82;
 const WALK_PX_PER_SEC = 48;
 // A swing is never drawn faster than this, however fast Park hits.
 const MIN_SWING_SEC = 0.24;
-// The swing frame where the item meets the monster (as a share of the swing).
-const IMPACT_AT = 0.55;
+// Where in the swing the item meets the monster (the middle of the impact frame).
+const IMPACT_AT = (ATTACK_IMPACT_FRAME + 0.5) / ANIMS.attack.frames.length;
 const HURT_MS = 180;
 
 interface Snapshot {
@@ -210,7 +210,7 @@ function drawMonster(ctx: CanvasRenderingContext2D, m: MonsterSprite, anim: "idl
 function drawPark(ctx: CanvasRenderingContext2D, state: GameState, anim: Anim, fi: number, x: number, y: number, now: number): void {
   const frame = ANIMS[anim].frames[fi];
   const worn = state.wear;
-  for (const layer of LAYERS) {
+  for (const layer of frame.gearAboveHelmet ? LAYERS_ARM_FRONT : LAYERS) {
     if (layer === "body") {
       const body = image(parkStrip(anim));
       if (body) ctx.drawImage(body, fi * FRAME, 0, FRAME, FRAME, x, y, FRAME, FRAME);

@@ -4,17 +4,26 @@ import { gearLevelCostFor, gearPriceFor } from "../../shared/prices";
 import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
 import { Amount } from "./Amount";
+import { Icon } from "./Icon";
 
-// Every tier listed: the ones behind owned, the current one to level
+// 정장 first (the way in to the costume panel), then every tier listed: the ones behind owned, the current one to level
 // up to 5, the next one to buy once the current is at 5, the rest waiting. 구매확정 on top: the
 // next tier to confirm (in order), once it has reached Lv5.
-export function GearPanel({ state, store }: { state: GameState; store: GameStore }) {
+export function GearPanel({ state, store, onSuits }: { state: GameState; store: GameStore; onSuits: () => void }) {
   const { tier: current, level, confirmed } = state.gear;
   const next = confirmed;
   const reached = next < GEAR_TIERS.length && (current > next || (current === next && level >= GEAR_MAX_LEVEL));
   const confirmCost = next < GEAR_TIERS.length ? gearConfirmCost(next) : null;
   return (
     <>
+      <div className="row">
+        <span className="icon-box"><Icon name="side_suits" /></span>
+        <div className="grow">
+          <b>정장</b>
+          <div className="sub">투구부터 장신구까지 갈아입으러 가요</div>
+        </div>
+        <button className="hot" onClick={onSuits}>입장하기</button>
+      </div>
       <div className="row">
         <div className="grow">
           <b>구매확정</b> {confirmed}/{GEAR_TIERS.length}
