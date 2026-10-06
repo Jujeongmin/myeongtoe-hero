@@ -1,13 +1,14 @@
-/* Pixel look, like the original: the Korean pixel font Galmuri (OFL) at the sizes it is drawn for —
-   Galmuri11 at 12px (24px when doubled), Galmuri9 at 10px — no font smoothing, square bevelled
-   panels instead of rounded ones, 1px hard text shadows. Never use other font sizes: a pixel font
-   between its sizes turns blurry. */
+/* Pixel look, like the original: the pixel font Mulmaru (Galmuri11 for glyphs it lacks; see
+   fonts.css) at 12px only (24px when doubled), one weight, no synthetic bold, no font smoothing,
+   square bevelled panels instead of rounded ones, 1px hard text shadows. Never use other font
+   sizes or font-weight: a pixel font off its grid turns blurry. */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body, #root {
   height: 100%;
   background: #120f20;
   color: #fff;
-  font-family: "Galmuri11", monospace;
+  font-family: "Mulmaru", "Galmuri11", monospace;
+  font-synthesis: none;
   font-size: 12px;
   line-height: 1.5;
   -webkit-font-smoothing: none;
@@ -17,8 +18,9 @@ html, body, #root {
 }
 button { font: inherit; cursor: pointer; }
 img, canvas { image-rendering: pixelated; }
+b, strong { font-weight: normal; color: #fff3c4; }
 
-.small { font-family: "Galmuri9", monospace; font-size: 10px; }
+.small { font-size: 12px; }
 .big { font-size: 24px; }
 
 /* Bevelled pixel panel: light top-left edge, dark bottom-right edge. */
@@ -56,7 +58,7 @@ img, canvas { image-rendering: pixelated; }
 .row button { min-width: 72px; padding: 4px 6px; }
 .row button.wide { flex: 1; padding: 8px; }
 .row button.gold { background: #b8860b; box-shadow: inset 2px 2px 0 #e9c46a, inset -2px -2px 0 #7a5a07; }
-.sub { font-family: "Galmuri9", monospace; font-size: 10px; color: #b8b3d6; }
+.sub { font-size: 12px; color: #b8b3d6; }
 .bar { height: 4px; background: #0b0916; margin-top: 4px; }
 .bar i { display: block; height: 100%; background: #e9c46a; }
 
@@ -65,28 +67,28 @@ img, canvas { image-rendering: pixelated; }
 .screen { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; height: 100%; padding: 24px; text-align: center; }
 .screen small { color: #b8b3d6; }
 .screen button { padding: 6px 14px; }
-.banner { padding: 4px 12px; background: #3a3358; color: #e9e4ff; text-align: center; font-family: "Galmuri9", monospace; font-size: 10px; }
+.banner { padding: 4px 12px; background: #3a3358; color: #e9e4ff; text-align: center; font-size: 12px; }
 .banner.warn { background: #8a3b12; color: #fff; }
-.tier { font-family: "Galmuri9", monospace; font-size: 10px; padding: 0 3px; background: #4a4370; }
+.tier { font-size: 12px; padding: 0 3px; background: #4a4370; }
 .tier.t2 { background: #2a6f97; }
 .tier.t3 { background: #9d4edd; }
 
 .battle-head { position: absolute; top: 6px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; text-shadow: 1px 1px 0 #000; pointer-events: none; }
-.battle-head .floor-no { font-weight: 700; }
+.battle-head .floor-no { }
 .floor-bar { width: 50%; height: 6px; background: #400; border: 2px solid #000; }
 .floor-bar i { display: block; height: 100%; background: #6ab04c; }
-.boss-timer { color: #ffd166; font-weight: 700; }
+.boss-timer { color: #ffd166; }
 .skills { position: absolute; bottom: 6px; left: 6px; display: flex; gap: 4px; }
-.skills span { font-family: "Galmuri9", monospace; font-size: 10px; padding: 0 4px; background: rgba(0, 0, 0, 0.7); border: 1px solid #000; }
+.skills span { font-size: 12px; padding: 0 4px; background: rgba(0, 0, 0, 0.7); border: 1px solid #000; }
 .side-icons { position: absolute; right: 6px; top: 40px; display: flex; flex-direction: column; gap: 4px; }
-.side-icons button { width: 48px; padding: 2px 0; border: 2px solid #000; background: rgba(43, 36, 64, 0.9); color: #fff; font-family: "Galmuri9", monospace; font-size: 10px; display: flex; flex-direction: column; align-items: center; text-shadow: 1px 1px 0 #000; }
+.side-icons button { width: 56px; padding: 2px 0; border: 2px solid #000; background: rgba(43, 36, 64, 0.9); color: #fff; font-size: 12px; display: flex; flex-direction: column; align-items: center; text-shadow: 1px 1px 0 #000; }
 .side-icons button span { font-size: 24px; line-height: 1; }
-.prestige-btn { position: absolute; left: 6px; bottom: 26px; padding: 2px 8px; border: 2px solid #000; background: rgba(43, 36, 64, 0.9); color: #fff; font-weight: 700; display: flex; flex-direction: column; align-items: center; text-shadow: 1px 1px 0 #000; }
-.prestige-btn small { font-family: "Galmuri9", monospace; font-size: 10px; color: #ffd166; }
+.prestige-btn { position: absolute; left: 6px; bottom: 26px; padding: 2px 8px; border: 2px solid #000; background: rgba(43, 36, 64, 0.9); color: #fff; display: flex; flex-direction: column; align-items: center; text-shadow: 1px 1px 0 #000; }
+.prestige-btn small { font-size: 12px; color: #ffd166; }
 
-.currency { display: flex; justify-content: space-between; padding: 4px 10px; background: #0b0916; font-weight: 700; border-top: 2px solid #2b2440; border-bottom: 2px solid #2b2440; }
+.currency { display: flex; justify-content: space-between; padding: 4px 10px; background: #0b0916; border-top: 2px solid #2b2440; border-bottom: 2px solid #2b2440; }
 .bottom-nav { display: flex; background: #0b0916; border-top: 2px solid #2b2440; }
-.bottom-nav button { flex: 1; padding: 4px 0; background: none; border: none; color: #b8b3d6; font-family: "Galmuri9", monospace; font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.bottom-nav button { flex: 1; padding: 4px 0; background: none; border: none; color: #b8b3d6; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .bottom-nav button .icon { font-size: 24px; line-height: 1; }
 .bottom-nav button.on { color: #e9c46a; background: #2b2440; box-shadow: inset 0 2px 0 #e9c46a; }
 .bottom-nav button:disabled { color: #555; }
@@ -100,6 +102,6 @@ img, canvas { image-rendering: pixelated; }
 .sheet-body { overflow-y: auto; padding: 6px; display: flex; flex-direction: column; gap: 4px; background: #1b1a2e; }
 .suit-set { padding: 6px; display: flex; flex-direction: column; gap: 4px; }
 .suit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
-.suit-grid button { padding: 4px 2px; font-family: "Galmuri9", monospace; font-size: 10px; }
+.suit-grid button { padding: 4px 2px; font-size: 12px; }
 .suit-grid button.owned { background: #3a5a40; box-shadow: inset 2px 2px 0 #5a8a60, inset -2px -2px 0 #24382a; }
 .suit-grid button.worn { background: #e9c46a; color: #000; text-shadow: none; box-shadow: inset 2px 2px 0 #fff2b0, inset -2px -2px 0 #a8862a; }
