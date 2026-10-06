@@ -1,33 +1,29 @@
-import { useEffect, useRef } from "react";
 import { departmentOf, isBossFloor, targetsOn } from "../../shared/data/floors";
 import { PRESTIGE_MIN_FLOOR } from "../../shared/data/prestige";
 import { formatCount } from "../../shared/format";
 import { skillsUnlocked } from "../../shared/data/skills";
-import { targetSec } from "../../shared/settle";
 import type { GameState } from "../../shared/state";
 import { heroPower, jobChangeReward } from "../../shared/stats";
 import type { GameStore } from "../game/store";
+import { BattleCanvas } from "./BattleCanvas";
+import { Icon } from "./Icon";
 import { MissionCard, missionsWaiting, type MissionPlace } from "./MissionCard";
 
 export type SheetId = "prestige" | "suits" | "apartment" | "relics" | "office" | "missions" | "ranking" | "settings";
 
-// Gray-box stand-in for the step 7 sprite renderer: low-res canvas, scaled up crisp. The layout
-// puts title and floor bar on top, ranking and settings top left, the side icons on the right, the
-// job-change button bottom left and the step mission bottom right.
-const W = 160;
-const H = 96;
-
+// The battle scene (BattleCanvas) with the screen's controls over it: title and floor bar on top,
+// missions, ranking and settings top left, the side icons on the right, the job-change button
+// bottom left and the step mission bottom right.
 const SIDE: { id: SheetId; icon: string; label: string }[] = [
-  { id: "suits", icon: "👔", label: "정장" },
-  { id: "apartment", icon: "🏠", label: "아파트" },
-  { id: "relics", icon: "🏅", label: "기념품" },
-  { id: "office", icon: "🖥", label: "사무용품" },
+  { id: "suits", icon: "side_suits", label: "정장" },
+  { id: "apartment", icon: "side_apartment", label: "아파트" },
+  { id: "relics", icon: "side_relics", label: "기념품" },
+  { id: "office", icon: "side_office", label: "사무용품" },
 ];
 
 export function Battle({ state, store, onOpen, onGo }: {
   state: GameState; store: GameStore; onOpen: (id: SheetId) => void; onGo: (p: MissionPlace) => void;
 }) {
-  const ref = useRef<HTMLCanvasElement>(null);
   const { floor, target, carrySec, farming, maxFloor } = state.run;
   const power = heroPower(state);
   const boss = isBossFloor(floor) && !farming;
@@ -36,28 +32,9 @@ export function Battle({ state, store, onOpen, onGo }: {
   const ready = maxFloor >= PRESTIGE_MIN_FLOOR;
   const reward = jobChangeReward(state);
 
-  useEffect(() => {
-    const ctx = ref.current?.getContext("2d");
-    if (!ctx) return;
-    const perKill = targetSec(floor, power) + power.walkSec;
-    const left = Number.isFinite(perKill) ? Math.max(0, 1 - carrySec / perKill) : 1;
-    ctx.fillStyle = "#3d5a80";
-    ctx.fillRect(0, 0, W, H * 0.65);
-    ctx.fillStyle = "#6b4f2a";
-    ctx.fillRect(0, H * 0.65, W, H * 0.35);
-    ctx.fillStyle = "#e9c46a";
-    ctx.fillRect(40, 44, 14, 18);
-    ctx.fillStyle = boss ? "#d62828" : "#9d4edd";
-    ctx.fillRect(boss ? 100 : 104, boss ? 38 : 46, boss ? 24 : 16, boss ? 24 : 16);
-    ctx.fillStyle = "#400";
-    ctx.fillRect(96, 66, 32, 3);
-    ctx.fillStyle = "#e63946";
-    ctx.fillRect(96, 66, 32 * left, 3);
-  });
-
   return (
     <section className="battle">
-      <canvas ref={ref} width={W} height={H} />
+      <BattleCanvas state={state} />
       <header className="battle-head">
         <div>마왕그룹 {departmentOf(floor)}</div>
         <div className="floor-no">{floor}층{farming ? " · 파밍 중" : ""}</div>
@@ -76,7 +53,7 @@ export function Battle({ state, store, onOpen, onGo }: {
       <div className="side-icons">
         {SIDE.map((s) => (
           <button key={s.id} onClick={() => onOpen(s.id)}>
-            <span>{s.icon}</span>
+            <Icon name={s.icon} />
             {s.label}
           </button>
         ))}

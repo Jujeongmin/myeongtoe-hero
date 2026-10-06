@@ -1,10 +1,11 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import { artVersions } from "./vite-plugins/artVersions.ts";
 import { cssCacheBust } from "./vite-plugins/cssCacheBust.ts";
 
 export default defineConfig({
-  // cssCacheBust: the editor container caches .css for 4 hours; see the plugin.
-  plugins: [react(), cssCacheBust()],
+  // cssCacheBust and artVersions: the editor container caches static files for hours; see the plugins.
+  plugins: [react(), cssCacheBust(), artVersions()],
   // Verse8 serves the game from a sub-path; root-absolute URLs 404 there.
   base: "./",
   // Two React copies (SDK peer dep) cause "Invalid hook call"; pin one.

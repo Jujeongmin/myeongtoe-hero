@@ -111,6 +111,8 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .text-input { display: block; width: 100%; margin-top: 2px; padding: 2px 4px; font: inherit; color: #fff; background: #0b0916; border: 2px solid #4a4370; }
 .screen-lock { position: fixed; inset: 0; z-index: 20; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #555; }
 
+.icon-img { image-rendering: pixelated; display: inline-block; vertical-align: middle; }
+.currency span { display: flex; align-items: center; gap: 2px; }
 .currency { display: flex; justify-content: space-between; padding: 4px 10px; background: #0b0916; border-top: 2px solid #2b2440; border-bottom: 2px solid #2b2440; }
 .bottom-nav { display: flex; background: #0b0916; border-top: 2px solid #2b2440; }
 .bottom-nav button { flex: 1; padding: 4px 0; background: none; border: none; color: #b8b3d6; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
