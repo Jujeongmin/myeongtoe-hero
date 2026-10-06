@@ -25,6 +25,11 @@ describe("state", () => {
     expect(s.office).toEqual({ keyboard: 1, mouse: 1, chair: 1, monitor: 1 });
     expect("stats" in s).toBe(false);
     expect(Number.isInteger(s.rngSeed)).toBe(true);
+    expect(s.parking).toEqual({ passes: 16, passCarrySec: 0, best: 0 });
+    expect(s.daily).toEqual({ day: "", entries: 0, bestDepth: 0, claimed: [] });
+    expect(s.missions).toEqual({ step: 0, special: [] });
+    expect(s.attendance).toEqual({ lastDay: "", count: 0 });
+    expect(s.nickname).toBe("");
   });
 
   test("round-trips through a save, keeping reserved fields", () => {
@@ -105,5 +110,26 @@ describe("state", () => {
     const save = toSave(newState(0)) as unknown as Record<string, unknown>;
     save.certs = { c00: 3, c01: 0, fake: 9, c02: 1.5 };
     expect(fromSave(save).certs).toEqual({ c00: 3 });
+  });
+  test("a version 3 save migrates with full parking passes and empty missions", () => {
+    const v3 = { ...toSave(newState(0)), v: 3 } as Record<string, unknown>;
+    for (const k of ["parking", "daily", "missions", "attendance", "nickname"]) delete v3[k];
+    const s = fromSave(v3);
+    expect(s.v).toBe(SAVE_VERSION);
+    expect(s.parking.passes).toBe(16);
+    expect(s.missions).toEqual({ step: 0, special: [] });
+  });
+
+  test("parking passes stay within 0..16, lists stay unique", () => {
+    const save = toSave(newState(0)) as unknown as Record<string, unknown>;
+    save.parking = { passes: 99, passCarrySec: -3, best: 12 };
+    save.daily = { day: "2026-10-06", entries: 2, bestDepth: 40, claimed: ["e1", "e1", 3] };
+    save.missions = { step: 4, special: ["f500", "f500"] };
+    save.nickname = "박부장최고".repeat(10);
+    const s = fromSave(save);
+    expect(s.parking).toEqual({ passes: 16, passCarrySec: 0, best: 12 });
+    expect(s.daily.claimed).toEqual(["e1"]);
+    expect(s.missions.special).toEqual(["f500"]);
+    expect(s.nickname).toBe("");
   });
 });

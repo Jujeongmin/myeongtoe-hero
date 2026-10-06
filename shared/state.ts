@@ -6,9 +6,11 @@ import { findPet } from "./data/pets";
 import { findRelic } from "./data/relics";
 import { findSideJob } from "./data/sideJobs";
 
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 export const OFFLINE_CAP_SEC = 12 * 3600;
 export const OFFICE_MAX_GRADE = 17;
+// 지하주차장 passes stored at most (the original dungeon's 16). Re-exported by data/parking.ts.
+export const PARK_PASS_MAX = 16;
 
 // Where Park is in the tower this run. `target` counts monsters killed on the floor; `carrySec` is
 // time already spent toward the next kill; `farming` means a boss beat him and he is grinding the
@@ -63,6 +65,14 @@ export interface GameState {
   suits: string[];
   wear: Record<string, string>;
   office: OfficeGrades;
+  // 지하주차장: passes held, seconds toward the next one, the deepest run ever.
+  parking: { passes: number; passCarrySec: number; best: number };
+  // Today's parking record for the daily quests (a new day starts fresh when read; see dailyOf).
+  daily: { day: string; entries: number; bestDepth: number; claimed: string[] };
+  // Step missions done so far, and the special missions already paid.
+  missions: { step: number; special: string[] };
+  attendance: { lastDay: string; count: number };
+  nickname: string;
 }
 
 export interface SaveData extends Omit<GameState, "gold"> {
@@ -75,6 +85,14 @@ function obj(x: unknown): Record<string, unknown> {
 
 function int(x: unknown, min: number, fallback: number): number {
   return typeof x === "number" && Number.isInteger(x) && x >= min ? x : fallback;
+}
+
+function strings(x: unknown): string[] {
+  return Array.isArray(x) ? [...new Set(x.filter((v): v is string => typeof v === "string" && v.length <= 32))] : [];
+}
+
+function text(x: unknown, max: number): string {
+  return typeof x === "string" && x.length <= max ? x : "";
 }
 
 function seconds(x: unknown): number {
@@ -105,6 +123,15 @@ const MIGRATIONS: Record<number, (save: Record<string, unknown>) => Record<strin
       gear: { ...gear, level: Math.min(int(gear.level, 0, 0), GEAR_MAX_LEVEL) },
     };
   },
+  // v4: the parking garage (passes full), daily quests, missions, attendance and a nickname.
+  3: (save) => ({
+    ...save, v: 4,
+    parking: { passes: PARK_PASS_MAX, passCarrySec: 0, best: 0 },
+    daily: { day: "", entries: 0, bestDepth: 0, claimed: [] },
+    missions: { step: 0, special: [] },
+    attendance: { lastDay: "", count: 0 },
+    nickname: "",
+  }),
 };
 
 export function freshRun(): RunState {
@@ -135,6 +162,11 @@ export function newState(now: number): GameState {
     suits: [],
     wear: {},
     office: { keyboard: 1, mouse: 1, chair: 1, monitor: 1 },
+    parking: { passes: PARK_PASS_MAX, passCarrySec: 0, best: 0 },
+    daily: { day: "", entries: 0, bestDepth: 0, claimed: [] },
+    missions: { step: 0, special: [] },
+    attendance: { lastDay: "", count: 0 },
+    nickname: "",
   };
 }
 
@@ -144,6 +176,8 @@ export function cloneState(s: GameState): GameState {
   return {
     ...s, run: { ...s.run }, gear: { ...s.gear }, sideJobs, flags: { ...s.flags }, certs: { ...s.certs },
     pets: { ...s.pets }, relics: { ...s.relics }, suits: [...s.suits], wear: { ...s.wear }, office: { ...s.office },
+    parking: { ...s.parking }, daily: { ...s.daily, claimed: [...s.daily.claimed] },
+    missions: { ...s.missions, special: [...s.missions.special] }, attendance: { ...s.attendance },
   };
 }
 
@@ -192,6 +226,10 @@ export function fromSave(raw: unknown): GameState {
     if (typeof id === "string" && suits.includes(id) && id.endsWith(`_${part}`)) wear[part] = id;
   }
   const carry = data.ticketCarry;
+  const parking = obj(data.parking);
+  const daily = obj(data.daily);
+  const missions = obj(data.missions);
+  const attendance = obj(data.attendance);
   return {
     v: SAVE_VERSION,
     lastTick: seconds(data.lastTick),
@@ -221,5 +259,19 @@ export function fromSave(raw: unknown): GameState {
     suits,
     wear,
     office: { keyboard: grade(office.keyboard), mouse: grade(office.mouse), chair: grade(office.chair), monitor: grade(office.monitor) },
+    parking: {
+      passes: Math.min(PARK_PASS_MAX, int(parking.passes, 0, 0)),
+      passCarrySec: seconds(parking.passCarrySec),
+      best: int(parking.best, 0, 0),
+    },
+    daily: {
+      day: text(daily.day, 10),
+      entries: int(daily.entries, 0, 0),
+      bestDepth: int(daily.bestDepth, 0, 0),
+      claimed: strings(daily.claimed),
+    },
+    missions: { step: int(missions.step, 0, 0), special: strings(missions.special) },
+    attendance: { lastDay: text(attendance.lastDay, 10), count: int(attendance.count, 0, 0) },
+    nickname: text(data.nickname, 16),
   };
 }
