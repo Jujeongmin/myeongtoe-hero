@@ -9,7 +9,7 @@ describe("core loop on the server", () => {
     s.bestFloor = 100;
     s.gold = Big.of(1, 20);
     await $global.updateUserState("test-p", { save: toSave(s) });
-    const r = await server.sync([{ k: "prestige", boosted: false }]);
+    const r = await server.sync([{ k: "prestige", mode: "plain" }]);
     expect(r.rejected.length).toBe(0);
     expect(r.save.run.floor).toBe(1);
     expect(r.save.prestiges).toBe(1);

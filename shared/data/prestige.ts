@@ -1,7 +1,13 @@
 // 이직: from floor 100, trade the run for 응시권 and 보석 by how high it got. The 응시권 grow
 // exponentially with the floor: 100 at floor 100, about 300,000 at floor 1000.
 export const PRESTIGE_MIN_FLOOR = 100;
-export const BOOSTED_PRESTIGE_GEMS = 1000;
+// 강화이직 and 초강화이직: pay 보석 up front for more 응시권 (the 보석 reward stays as is).
+export type PrestigeMode = "plain" | "boosted" | "super";
+export const PRESTIGE_MODES: Record<PrestigeMode, { gems: number; ticketMult: number }> = {
+  plain: { gems: 0, ticketMult: 1 },
+  boosted: { gems: 500, ticketMult: 3 },
+  super: { gems: 1000, ticketMult: 5 },
+};
 export const PRESTIGE_TICKET_BASE = 100;
 export const PRESTIGE_TICKET_GROWTH = 1.009;
 

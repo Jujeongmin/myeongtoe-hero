@@ -7,7 +7,7 @@ import { ATTENDANCE_REWARDS, STEP_MISSIONS, findSpecialMission, type Reward } fr
 import { runParking } from "./data/parking";
 import { dailyOf } from "./daily";
 import { PET_BOX_COUPONS, findPet, petLevelCost, petsUnlocked } from "./data/pets";
-import { BOOSTED_PRESTIGE_GEMS, PRESTIGE_MIN_FLOOR } from "./data/prestige";
+import { PRESTIGE_MIN_FLOOR, PRESTIGE_MODES, type PrestigeMode } from "./data/prestige";
 import { findRelic, relicLevelCost } from "./data/relics";
 import { findSideJob } from "./data/sideJobs";
 import { petLevel, relicLevel } from "./mods";
@@ -32,7 +32,7 @@ export type Intent =
   | { k: "levelSideJob"; id: string }
   // Takes a certificate (level 0 → 1) or levels it; `bulk` keeps going while it can pay.
   | { k: "levelCert"; id: string; bulk: boolean }
-  | { k: "prestige"; boosted: boolean }
+  | { k: "prestige"; mode: PrestigeMode }
   | { k: "levelPet"; id: string }
   | { k: "petBox" }
   | { k: "levelRelic"; id: string }
@@ -62,7 +62,7 @@ export function readIntent(raw: unknown): Intent | null {
         ? { k: "levelCert", id: r.id, bulk: r.bulk }
         : null;
     case "prestige":
-      return typeof r.boosted === "boolean" ? { k: "prestige", boosted: r.boosted } : null;
+      return r.mode === "plain" || r.mode === "boosted" || r.mode === "super" ? { k: "prestige", mode: r.mode } : null;
     case "petBox":
     case "expandApartment":
     case "enterParking":
@@ -160,11 +160,11 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
     }
     case "prestige": {
       if (s.run.maxFloor < PRESTIGE_MIN_FLOOR) throw new RuleError("locked");
-      if (intent.boosted) spendGems(s, BOOSTED_PRESTIGE_GEMS);
+      const mode = PRESTIGE_MODES[intent.mode];
+      spendGems(s, mode.gems);
       const reward = jobChangeReward(s);
-      const mult = intent.boosted ? 2 : 1;
-      s.tickets += reward.tickets * mult;
-      s.gems += reward.gems * mult;
+      s.tickets += reward.tickets * mode.ticketMult;
+      s.gems += reward.gems;
       s.gold = Big.ZERO;
       s.run = freshRun();
       // 구매확정-ed tiers stay: the last of them in hand at Lv5, so the next can be bought at once.

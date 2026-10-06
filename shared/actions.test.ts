@@ -5,7 +5,7 @@ import { CERT_MAX_LEVEL, certLevelCost, findCert } from "./data/certs";
 import { GEAR_MAX_LEVEL, GEAR_TIERS, gearAtk, gearConfirmCost, gearLevelCost, gearPrice } from "./data/gear";
 import { SUIT_ITEMS, apartmentCost, officeUpgradeCost } from "./data/home";
 import { PET_BOX_COUPONS, petLevelCost } from "./data/pets";
-import { BOOSTED_PRESTIGE_GEMS, PRESTIGE_MIN_FLOOR, prestigeReward } from "./data/prestige";
+import { PRESTIGE_MIN_FLOOR, prestigeReward } from "./data/prestige";
 import { relicLevelCost } from "./data/relics";
 import { SIDE_JOBS, sideJobCost } from "./data/sideJobs";
 import { gearPriceFor, sideJobCostFor } from "./prices";
@@ -44,7 +44,9 @@ describe("readIntent", () => {
     expect(readIntent({ k: "buyCert" })).toBeNull();
     expect(readIntent({ k: "levelCert", id: "atk1", bulk: true })).toEqual({ k: "levelCert", id: "atk1", bulk: true });
     expect(readIntent({ k: "levelCert", id: "atk1" })).toBeNull();
-    expect(readIntent({ k: "prestige", boosted: true })).toEqual({ k: "prestige", boosted: true });
+    expect(readIntent({ k: "prestige", mode: "super" })).toEqual({ k: "prestige", mode: "super" });
+    expect(readIntent({ k: "prestige", mode: "toString" })).toBeNull();
+    expect(readIntent({ k: "prestige", boosted: true })).toBeNull();
     expect(readIntent({ k: "prestige" })).toBeNull();
   });
 });
@@ -177,11 +179,11 @@ describe("prestige", () => {
   }
 
   test("not before floor 100", () => {
-    expect(codeOf(at(PRESTIGE_MIN_FLOOR - 1), { k: "prestige", boosted: false })).toBe("locked");
+    expect(codeOf(at(PRESTIGE_MIN_FLOOR - 1), { k: "prestige", mode: "plain" })).toBe("locked");
   });
 
   test("resets the run and keeps the permanent things", () => {
-    const after = applyIntent(at(120), { k: "prestige", boosted: false });
+    const after = applyIntent(at(120), { k: "prestige", mode: "plain" });
     const reward = prestigeReward(120, 0);
     expect(after.gold.isZero()).toBe(true);
     expect(after.run).toEqual({ floor: 1, target: 0, carrySec: 0, farming: false, maxFloor: 1 });
@@ -194,12 +196,16 @@ describe("prestige", () => {
     expect(after.prestiges).toBe(1);
   });
 
-  test("boosted: pays gems first, then doubles the reward", () => {
+  test("강화이직: 500 gems for ×3 tickets; 초강화이직: 1000 gems for ×5; gems reward unchanged", () => {
     const reward = prestigeReward(120, 0);
-    const after = applyIntent(at(120), { k: "prestige", boosted: true });
-    expect(after.tickets).toBe(7 + reward.tickets * 2);
-    expect(after.gems).toBe(1500 - BOOSTED_PRESTIGE_GEMS + reward.gems * 2);
-    expect(codeOf({ ...at(120), gems: 999 }, { k: "prestige", boosted: true })).toBe("not_enough_gems");
+    const boosted = applyIntent(at(120), { k: "prestige", mode: "boosted" });
+    expect(boosted.tickets).toBe(7 + reward.tickets * 3);
+    expect(boosted.gems).toBe(1500 - 500 + reward.gems);
+    const sup = applyIntent(at(120), { k: "prestige", mode: "super" });
+    expect(sup.tickets).toBe(7 + reward.tickets * 5);
+    expect(sup.gems).toBe(1500 - 1000 + reward.gems);
+    expect(codeOf({ ...at(120), gems: 499 }, { k: "prestige", mode: "boosted" })).toBe("not_enough_gems");
+    expect(codeOf({ ...at(120), gems: 999 }, { k: "prestige", mode: "super" })).toBe("not_enough_gems");
   });
 
   test("tickets grow exponentially: 100 at floor 100, about 300,000 at floor 1000", () => {
@@ -289,7 +295,7 @@ describe("permanent growth", () => {
   test("a job change keeps all of it", () => {
     const s = base({ bestFloor: 1000, apartment: 3, suits: [SUIT_ITEMS[0].id], wear: { helmet: SUIT_ITEMS[0].id }, pets: { p_intern: 4 }, relics: { r_badge: 2 } });
     s.run = { ...s.run, floor: 100, maxFloor: 100 };
-    const after = applyIntent(s, { k: "prestige", boosted: false });
+    const after = applyIntent(s, { k: "prestige", mode: "plain" });
     expect(after.apartment).toBe(3);
     expect(after.suits).toEqual([SUIT_ITEMS[0].id]);
     expect(after.wear).toEqual({ helmet: SUIT_ITEMS[0].id });
@@ -323,9 +329,9 @@ describe("구매확정 (confirming gear)", () => {
   test("a job change keeps confirmed weapons: the last one at Lv5, ready to buy the next", () => {
     const s = rich2({ tier: 4, level: 3, confirmed: 3 });
     s.run = { ...s.run, floor: 120, maxFloor: 120 };
-    expect(applyIntent(s, { k: "prestige", boosted: false }).gear).toEqual({ tier: 2, level: GEAR_MAX_LEVEL, confirmed: 3 });
+    expect(applyIntent(s, { k: "prestige", mode: "plain" }).gear).toEqual({ tier: 2, level: GEAR_MAX_LEVEL, confirmed: 3 });
     const none = rich2({ tier: 4, level: 3, confirmed: 0 });
     none.run = { ...none.run, floor: 120, maxFloor: 120 };
-    expect(applyIntent(none, { k: "prestige", boosted: false }).gear).toEqual({ tier: 0, level: 0, confirmed: 0 });
+    expect(applyIntent(none, { k: "prestige", mode: "plain" }).gear).toEqual({ tier: 0, level: 0, confirmed: 0 });
   });
 });
