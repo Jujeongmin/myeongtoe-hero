@@ -2,7 +2,9 @@ import { Big } from "./big";
 import { certLevelCost, certOpen, findCert } from "./data/certs";
 import { GEAR_MAX_LEVEL, GEAR_TIERS, gearConfirmCost } from "./data/gear";
 import { OFFICE_PARTS, apartmentCost, findSuitItem, officeUpgradeCost, type OfficePart } from "./data/home";
+import { extendBuff } from "./data/buffs";
 import { dailyQuestReward, findDailyQuest } from "./data/dailyQuests";
+import { BUFF_MS, findGemItem } from "./data/gemShop";
 import { ATTENDANCE_REWARDS, STEP_MISSIONS, findSpecialMission, type Reward } from "./data/missions";
 import { runParking } from "./data/parking";
 import { dailyOf } from "./daily";
@@ -13,7 +15,7 @@ import { findSideJob } from "./data/sideJobs";
 import { petLevel, relicLevel } from "./mods";
 import { nextRandom } from "./rng";
 import { gearLevelCostFor, gearPriceFor, sideJobCostFor } from "./prices";
-import { heroPower, jobChangeReward } from "./stats";
+import { heroPower, jobChangeReward, killGoldNow } from "./stats";
 import { kstDay } from "./time";
 import { OFFICE_MAX_GRADE, cloneState, freshRun, type GameState } from "./state";
 
@@ -45,7 +47,8 @@ export type Intent =
   | { k: "claimStep" }
   | { k: "claimSpecial"; id: string }
   | { k: "claimAttendance" }
-  | { k: "confirmGear" };
+  | { k: "confirmGear" }
+  | { k: "buyGemItem"; id: string };
 
 // Untrusted input (from the network) to an Intent, or null for anything else.
 export function readIntent(raw: unknown): Intent | null {
@@ -55,6 +58,8 @@ export function readIntent(raw: unknown): Intent | null {
     case "buyGear":
     case "levelGear":
       return { k: r.k };
+    case "buyGemItem":
+      return typeof r.id === "string" && r.id.length <= 32 ? { k: r.k, id: r.id } : null;
     case "levelSideJob":
       return typeof r.id === "string" && r.id.length <= 32 ? { k: r.k, id: r.id } : null;
     case "levelCert":
@@ -241,6 +246,15 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       if (value < quest.goal) throw new RuleError("not_done");
       s.coupons += dailyQuestReward(quest, s.lastTick);
       s.daily = { ...today, claimed: [...today.claimed, quest.id] };
+      return s;
+    }
+    case "buyGemItem": {
+      const item = findGemItem(intent.id);
+      if (!item) throw new RuleError("unknown");
+      spendGems(s, item.gems);
+      if (item.kind === "buff") extendBuff(s, item.buff, BUFF_MS);
+      else if (item.kind === "gold") s.gold = s.gold.add(killGoldNow(s).mulN(item.kills));
+      else s.run = { ...s.run, gearBoost: s.run.gearBoost + 1 };
       return s;
     }
     case "confirmGear": {

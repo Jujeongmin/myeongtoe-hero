@@ -1,6 +1,6 @@
 import type { Big } from "./big";
 import { BUFFS, buffActive } from "./data/buffs";
-import { BOSS_LIMIT_SEC, WALK_SEC } from "./data/floors";
+import { BOSS_LIMIT_SEC, WALK_SEC, killGold } from "./data/floors";
 import { prestigeReward } from "./data/prestige";
 import { gearAtk } from "./data/gear";
 import { skillFactor, skillsUnlocked } from "./data/skills";
@@ -56,6 +56,12 @@ export function heroPower(s: GameState): Power {
     drainPerSec: m.drainPerSec,
     walkSec: buffActive(s, "move") ? WALK_SEC / BUFFS.move.mult : WALK_SEC,
   };
+}
+
+// The gold one kill on the current floor pays right now (buffs and all): what gold rewards from the
+// shop and ads are measured in.
+export function killGoldNow(s: GameState): Big {
+  return killGold(s.run.floor).mulN(heroPower(s).goldMult);
 }
 
 export function heroDps(s: GameState): Big {
