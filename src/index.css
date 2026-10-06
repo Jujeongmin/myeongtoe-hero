@@ -76,6 +76,11 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .tier { font-size: 12px; padding: 0 3px; background: #4a4370; }
 .tier.t2 { background: #2a6f97; }
 .tier.t3 { background: #9d4edd; }
+.tier.t4 { background: #c1121f; }
+.tier.t5 { background: #b8860b; }
+.group-title { padding: 6px 2px 2px; color: #e9c46a; }
+.row .buttons { display: flex; gap: 4px; }
+.row .buttons button { min-width: 56px; }
 
 .battle-head { position: absolute; top: 6px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; text-shadow: 1px 1px 0 #000; pointer-events: none; }
 .battle-head .floor-no { }

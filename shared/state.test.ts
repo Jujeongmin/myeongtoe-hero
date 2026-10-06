@@ -106,10 +106,14 @@ describe("state", () => {
     expect(s.wear).toEqual({ helmet: "s1_helmet" });
   });
 
+  test("a version 5 save loses its randomly drawn certificates", () => {
+    const v5 = { ...toSave(newState(0)), v: 5, certs: { c00: 3, c07: 1 } } as Record<string, unknown>;
+    expect(fromSave(v5).certs).toEqual({});
+  });
   test("unknown certificates and bad levels are dropped", () => {
     const save = toSave(newState(0)) as unknown as Record<string, unknown>;
-    save.certs = { c00: 3, c01: 0, fake: 9, c02: 1.5 };
-    expect(fromSave(save).certs).toEqual({ c00: 3 });
+    save.certs = { atk1: 3, gold1: 0, fake: 9, crit1: 1.5, b_aspd: 99 };
+    expect(fromSave(save).certs).toEqual({ atk1: 3, b_aspd: 10 });
   });
   test("a version 3 save migrates with full parking passes and empty missions", () => {
     const v3 = { ...toSave(newState(0)), v: 3 } as Record<string, unknown>;

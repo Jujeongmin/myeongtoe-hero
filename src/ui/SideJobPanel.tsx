@@ -1,5 +1,6 @@
-import { SIDE_JOBS, sideJobCost, sideJobCycle, sideJobIncome } from "../../shared/data/sideJobs";
+import { SIDE_JOBS, sideJobCycle, sideJobIncome } from "../../shared/data/sideJobs";
 import { formatBig } from "../../shared/format";
+import { sideJobCostFor } from "../../shared/prices";
 import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
 
@@ -17,7 +18,7 @@ export function SideJobPanel({ state, store }: { state: GameState; store: GameSt
         }
         const own = state.sideJobs[job.id];
         const level = own?.level ?? 0;
-        const cost = sideJobCost(job, level);
+        const cost = sideJobCostFor(state, job, level);
         const cycle = sideJobCycle(job, level);
         const progress = level > 0 && own ? own.progressSec / cycle : 0;
         return (

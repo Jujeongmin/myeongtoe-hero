@@ -16,14 +16,14 @@ describe("core loop on the server", () => {
     expect(r.save.tickets).toBeGreaterThan(0);
   });
 
-  test("a certificate draw on the server matches the client's prediction", async (server) => {
+  test("taking a certificate on the server matches the client's prediction", async (server) => {
     server.connect({ account: "test-q" });
     const s = newState(Date.now());
-    s.tickets = 5;
+    s.tickets = 30;
     await $global.updateUserState("test-q", { save: toSave(s) });
-    const r = await server.sync([{ k: "buyCert" }]);
-    expect(Object.keys(r.save.certs).length).toBe(1);
-    expect(r.save.tickets).toBe(4);
+    const r = await server.sync([{ k: "levelCert", id: "atk1", bulk: true }]);
+    expect(r.save.certs).toEqual({ atk1: 2 });
+    expect(r.save.tickets).toBe(5);
   });
 
   test("a version 1 save on the server is migrated", async (server) => {

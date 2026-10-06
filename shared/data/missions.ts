@@ -1,8 +1,9 @@
 import type { GameState } from "../state";
+import { CERTS } from "./certs";
 import { awakenStage } from "./pets";
 
 // Missions: 단계 미션 (one guided step at a time, shown on the battle screen —
-// "4단계 미션: 무기 [3.쇠꼬챙이] 구매"), 특수 임무 (one-off goals), and 7-day attendance. Checks read
+// "4단계 미션: 스테이플러 구매"), 특수 임무 (one-off goals), and 7-day attendance. Checks read
 // the save only; lifetime values (best floor, job changes, collections) wherever possible.
 export interface Reward {
   gems?: number;
@@ -52,7 +53,7 @@ export const SPECIAL_MISSIONS: readonly MissionDef[] = [
   { id: "p10", text: "이직 10회", done: (s) => s.prestiges >= 10, reward: { gems: 200 } },
   { id: "p30", text: "이직 30회", done: (s) => s.prestiges >= 30, reward: { gems: 500 } },
   { id: "c20", text: "자격증 20개", done: (s) => owned(s.certs) >= 20, reward: { gems: 200 } },
-  { id: "c40", text: "자격증 40개 전부", done: (s) => owned(s.certs) >= 40, reward: { gems: 500 } },
+  { id: "c40", text: `자격증 ${CERTS.length}개 전부`, done: (s) => owned(s.certs) >= CERTS.length, reward: { gems: 500 } },
   { id: "k100", text: "지하주차장 100m", done: (s) => s.parking.best >= 100, reward: { gems: 100 } },
   { id: "k500", text: "지하주차장 500m", done: (s) => s.parking.best >= 500, reward: { gems: 300 } },
   { id: "k1000", text: "지하주차장 1000m", done: (s) => s.parking.best >= 1000, reward: { gems: 600 } },

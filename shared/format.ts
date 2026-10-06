@@ -1,4 +1,4 @@
-import type { Big } from "./big";
+import { Big } from "./big";
 
 // The unit for 1000^k: 1 → A, 26 → Z, 27 → AA (bijective base 26, like spreadsheet columns).
 export function unitName(k: number): string {
@@ -24,4 +24,9 @@ export function formatBig(v: Big): string {
   else if (scaled < 100) text = (Math.floor(scaled * 10) / 10).toFixed(1);
   else text = String(Math.floor(scaled));
   return text + unitName(k);
+}
+
+// Counts that can run past the safe-integer range (응시권 from late job changes), shown like gold.
+export function formatCount(n: number): string {
+  return formatBig(Big.from(Math.floor(n)));
 }

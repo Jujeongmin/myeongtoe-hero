@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
-import { certBonuses } from "../../shared/data/certs";
 import { WALK_SEC, departmentOf, isBossFloor, targetsOn } from "../../shared/data/floors";
-import { PRESTIGE_MIN_FLOOR, prestigeReward } from "../../shared/data/prestige";
+import { PRESTIGE_MIN_FLOOR } from "../../shared/data/prestige";
+import { formatCount } from "../../shared/format";
 import { skillsUnlocked } from "../../shared/data/skills";
 import { targetSec } from "../../shared/settle";
 import type { GameState } from "../../shared/state";
-import { heroPower } from "../../shared/stats";
+import { heroPower, jobChangeReward } from "../../shared/stats";
 
 export type SheetId = "prestige" | "suits" | "apartment" | "relics" | "office";
 
@@ -30,7 +30,7 @@ export function Battle({ state, onOpen }: { state: GameState; onOpen: (id: Sheet
   const bossLeft = Math.max(0, Math.ceil(power.bossLimitSec - carrySec));
   const skills = skillsUnlocked(state.bestFloor);
   const ready = maxFloor >= PRESTIGE_MIN_FLOOR;
-  const reward = prestigeReward(maxFloor, certBonuses(state.certs).prestige);
+  const reward = jobChangeReward(state);
 
   useEffect(() => {
     const ctx = ref.current?.getContext("2d");
@@ -72,7 +72,7 @@ export function Battle({ state, onOpen }: { state: GameState; onOpen: (id: Sheet
       </div>
       <button className="prestige-btn" onClick={() => onOpen("prestige")}>
         이직
-        <small>{ready ? `📝 +${reward.tickets}` : `${PRESTIGE_MIN_FLOOR}층부터`}</small>
+        <small>{ready ? `📝 +${formatCount(reward.tickets)}` : `${PRESTIGE_MIN_FLOOR}층부터`}</small>
       </button>
       {skills.length > 0 && (
         <div className="skills">

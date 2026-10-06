@@ -1,14 +1,16 @@
 import { describe, expect, test } from "vitest";
 import { applyIntent, readIntent, RuleError, type Intent } from "./actions";
 import { Big } from "./big";
-import { CERTS, certDrawCost, certLevelCost } from "./data/certs";
+import { CERT_MAX_LEVEL, certLevelCost, findCert } from "./data/certs";
 import { GEAR_MAX_LEVEL, GEAR_TIERS, gearAtk, gearConfirmCost, gearLevelCost, gearPrice } from "./data/gear";
 import { SUIT_ITEMS, apartmentCost, officeUpgradeCost } from "./data/home";
 import { PET_BOX_COUPONS, petLevelCost } from "./data/pets";
 import { BOOSTED_PRESTIGE_GEMS, PRESTIGE_MIN_FLOOR, prestigeReward } from "./data/prestige";
 import { relicLevelCost } from "./data/relics";
 import { SIDE_JOBS, sideJobCost } from "./data/sideJobs";
+import { gearPriceFor, sideJobCostFor } from "./prices";
 import { newState, type GameState } from "./state";
+import { jobChangeReward } from "./stats";
 
 function rich(gold = Big.of(1, 300)): GameState {
   return { ...newState(0), gold };
@@ -39,7 +41,9 @@ describe("readIntent", () => {
     expect(readIntent({ k: "petBox" })).toEqual({ k: "petBox" });
     expect(readIntent({ k: "wearSuit", id: "s1_accessory" })).toEqual({ k: "wearSuit", id: "s1_accessory" });
     expect(readIntent({ k: "confirmGear" })).toEqual({ k: "confirmGear" });
-    expect(readIntent({ k: "buyCert" })).toEqual({ k: "buyCert" });
+    expect(readIntent({ k: "buyCert" })).toBeNull();
+    expect(readIntent({ k: "levelCert", id: "atk1", bulk: true })).toEqual({ k: "levelCert", id: "atk1", bulk: true });
+    expect(readIntent({ k: "levelCert", id: "atk1" })).toBeNull();
     expect(readIntent({ k: "prestige", boosted: true })).toEqual({ k: "prestige", boosted: true });
     expect(readIntent({ k: "prestige" })).toBeNull();
   });
@@ -106,41 +110,56 @@ describe("side jobs", () => {
 
 describe("certificates", () => {
   const withTickets = (tickets: number) => ({ ...rich(), tickets });
+  const atk1 = findCert("atk1")!;
 
-  test("a draw spends tickets and gives a tier-1 certificate not owned yet", () => {
-    const after = applyIntent(withTickets(10), { k: "buyCert" });
-    const owned = Object.keys(after.certs);
-    expect(owned).toHaveLength(1);
-    expect(CERTS.find((c) => c.id === owned[0])!.tier).toBe(1);
-    expect(after.certs[owned[0]]).toBe(1);
-    expect(after.tickets).toBe(10 - certDrawCost(0));
-    expect(after.rngSeed).not.toBe(rich().rngSeed);
+  test("taking one costs its level-0 price; levelling then costs base + step × level", () => {
+    const took = applyIntent(withTickets(100), { k: "levelCert", id: "atk1", bulk: false });
+    expect(took.certs.atk1).toBe(1);
+    expect(took.tickets).toBe(100 - 10);
+    const again = applyIntent(took, { k: "levelCert", id: "atk1", bulk: false });
+    expect(again.certs.atk1).toBe(2);
+    expect(again.tickets).toBe(90 - certLevelCost(atk1, 1));
+    expect(certLevelCost(atk1, 1)).toBe(15);
   });
 
-  test("the same seed draws the same certificate (client and server agree)", () => {
-    const s = withTickets(10);
-    expect(Object.keys(applyIntent(s, { k: "buyCert" }).certs)).toEqual(Object.keys(applyIntent(s, { k: "buyCert" }).certs));
+  test("bulk keeps levelling while the tickets last", () => {
+    const after = applyIntent(withTickets(100), { k: "levelCert", id: "atk1", bulk: true });
+    // 10 + 15 + 20 + 25 + 30 = 100; the next (35) is out of reach.
+    expect(after.certs.atk1).toBe(5);
+    expect(after.tickets).toBe(0);
+    expect(applyIntent(withTickets(99), { k: "levelCert", id: "atk1", bulk: true }).certs.atk1).toBe(4);
   });
 
-  test("never draws one already owned; runs out at the open tiers", () => {
-    let s = withTickets(10_000);
-    for (let i = 0; i < 10; i++) s = applyIntent(s, { k: "buyCert" });
-    expect(Object.keys(s.certs)).toHaveLength(10);
-    expect(Object.keys(s.certs).every((id) => CERTS.find((c) => c.id === id)!.tier === 1)).toBe(true);
-    for (let i = 0; i < 30; i++) s = applyIntent(s, { k: "buyCert" });
-    expect(Object.keys(s.certs)).toHaveLength(40);
-    expect(codeOf(s, { k: "buyCert" })).toBe("max");
-    expect(codeOf(withTickets(0), { k: "buyCert" })).toBe("not_enough_tickets");
+  test("bulk stops at the cap", () => {
+    const after = applyIntent(withTickets(1e9), { k: "levelCert", id: "b_aspd", bulk: true });
+    expect(after.certs.b_aspd).toBe(10);
+    expect(codeOf(after, { k: "levelCert", id: "b_aspd", bulk: false })).toBe("max");
   });
 
-  test("levelling one needs it owned and tickets", () => {
-    const c = CERTS[0];
-    const s = { ...withTickets(100), certs: { [c.id]: 1 } };
-    const after = applyIntent(s, { k: "levelCert", id: c.id });
-    expect(after.certs[c.id]).toBe(2);
-    expect(after.tickets).toBe(100 - certLevelCost(c, 1));
-    expect(codeOf(s, { k: "levelCert", id: CERTS[1].id })).toBe("not_owned");
-    expect(codeOf({ ...s, tickets: 0 }, { k: "levelCert", id: c.id })).toBe("not_enough_tickets");
+  test("a higher grade opens only once the one below is maxed", () => {
+    const s = { ...withTickets(1e12), certs: { atk1: CERT_MAX_LEVEL - 1 } };
+    expect(codeOf(s, { k: "levelCert", id: "atk2", bulk: false })).toBe("locked");
+    const maxed = { ...s, certs: { atk1: CERT_MAX_LEVEL } };
+    expect(applyIntent(maxed, { k: "levelCert", id: "atk2", bulk: false }).certs.atk2).toBe(1);
+  });
+
+  test("이직 자격증 are paid in gems", () => {
+    const s = { ...rich(), gems: 1000, tickets: 0 };
+    const after = applyIntent(s, { k: "levelCert", id: "c_coach", bulk: false });
+    expect(after.certs.c_coach).toBe(1);
+    expect(after.gems).toBe(800);
+    expect(codeOf({ ...s, gems: 199 }, { k: "levelCert", id: "c_coach", bulk: false })).toBe("not_enough_gems");
+  });
+
+  test("unknown ids and empty wallets are turned down", () => {
+    expect(codeOf(withTickets(100), { k: "levelCert", id: "nope", bulk: false })).toBe("unknown");
+    expect(codeOf(withTickets(9), { k: "levelCert", id: "atk1", bulk: false })).toBe("not_enough_tickets");
+  });
+
+  test("구매관리사 makes gear and side jobs cheaper", () => {
+    const s = { ...rich(), certs: { b_cost: 40 } };
+    expect(gearPriceFor(s, 1).toNumber()).toBeCloseTo(gearPrice(1).toNumber() * 0.2);
+    expect(sideJobCostFor(s, SIDE_JOBS[0], 3).toNumber()).toBeCloseTo(sideJobCost(SIDE_JOBS[0], 3).toNumber() * 0.2);
   });
 });
 
@@ -151,7 +170,7 @@ describe("prestige", () => {
     s.bestFloor = floor;
     s.gear = { tier: 4, level: 5, confirmed: 0 };
     s.sideJobs = { j00: { level: 5, progressSec: 0, running: true } };
-    s.certs = { c00: 2 };
+    s.certs = { atk1: 2 };
     s.tickets = 7;
     s.gems = 1500;
     return s;
@@ -169,7 +188,7 @@ describe("prestige", () => {
     expect(after.gear).toEqual({ tier: 0, level: 0, confirmed: 0 });
     expect(after.sideJobs).toEqual({});
     expect(after.bestFloor).toBe(120);
-    expect(after.certs).toEqual({ c00: 2 });
+    expect(after.certs).toEqual({ atk1: 2 });
     expect(after.tickets).toBe(7 + reward.tickets);
     expect(after.gems).toBe(1500 + reward.gems);
     expect(after.prestiges).toBe(1);
@@ -183,10 +202,25 @@ describe("prestige", () => {
     expect(codeOf({ ...at(120), gems: 999 }, { k: "prestige", boosted: true })).toBe("not_enough_gems");
   });
 
-  test("reward grows with the floor", () => {
-    expect(prestigeReward(100, 0)).toEqual({ tickets: 2, gems: 5 });
-    expect(prestigeReward(200, 0).tickets).toBeGreaterThan(prestigeReward(100, 0).tickets);
-    expect(prestigeReward(200, 0.5).tickets).toBe(Math.floor(prestigeReward(200, 0).tickets * 1.5));
+  test("tickets grow exponentially: 100 at floor 100, about 300,000 at floor 1000", () => {
+    expect(prestigeReward(100, 0)).toEqual({ tickets: 100, gems: 5 });
+    expect(prestigeReward(1000, 0).tickets).toBeGreaterThan(250_000);
+    expect(prestigeReward(1000, 0).tickets).toBeLessThan(400_000);
+    expect(prestigeReward(300, 0).tickets).toBe(Math.floor(100 * 1.009 ** 200));
+    expect(prestigeReward(200, 0.5).tickets).toBe(Math.floor(100 * 1.009 ** 100 * 1.5));
+  });
+
+  test("커리어코치, 자소서첨삭사 and 인맥관리사 raise the tickets", () => {
+    const s = at(300);
+    const plain = jobChangeReward(s).tickets;
+    s.certs = { c_coach: 10 };
+    expect(jobChangeReward(s).tickets).toBe(Math.floor(100 * 1.009 ** 200 * 2));
+    s.certs = { c_coach: 10, c_resume: 20 };
+    expect(jobChangeReward(s).tickets).toBe(Math.floor(100 * 1.009 ** 200 * 3));
+    s.certs = { c_network: 10 };
+    expect(jobChangeReward(s).tickets).toBe(Math.floor(100 * 1.009 ** 250));
+    expect(jobChangeReward(s).gems).toBe(15);
+    expect(plain).toBe(Math.floor(100 * 1.009 ** 200));
   });
 });
 

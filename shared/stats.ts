@@ -1,5 +1,6 @@
 import type { Big } from "./big";
 import { BOSS_LIMIT_SEC } from "./data/floors";
+import { prestigeReward } from "./data/prestige";
 import { gearAtk } from "./data/gear";
 import { skillFactor, skillsUnlocked } from "./data/skills";
 import { mods } from "./mods";
@@ -35,8 +36,9 @@ export function heroPower(s: GameState): Power {
   const m = mods(s);
   const atk = heroAtk(s);
   const aspd = HERO_ASPD * m.aspdMult * skillProduct(s, "aspd");
-  const critBonus = HERO_CRIT_BONUS + m.critDmgAdd;
-  const hits = atk.mulN(aspd * (1 + HERO_CRIT_CHANCE * critBonus) * skillProduct(s, "damage"));
+  const critBonus = (HERO_CRIT_BONUS + m.critDmgAdd) * m.critDmgMult;
+  const critChance = Math.min(1, HERO_CRIT_CHANCE + m.critChanceAdd);
+  const hits = atk.mulN(aspd * (1 + critChance * critBonus) * skillProduct(s, "damage"));
   const dps = m.extraHitPerSec > 0 ? hits.add(atk.mulN(m.extraHitPerSec)) : hits;
   const bossTime = skillsUnlocked(s.bestFloor)
     .filter((k) => k.kind === "bossTime")
@@ -53,6 +55,14 @@ export function heroPower(s: GameState): Power {
 
 export function heroDps(s: GameState): Big {
   return heroPower(s).dps;
+}
+
+// What a job change now would pay: 응시권 count from the best floor stretched by 공주임 and with
+// 인맥관리사's floors added.
+export function jobChangeReward(s: GameState): { tickets: number; gems: number } {
+  const m = mods(s);
+  const floor = s.run.maxFloor;
+  return prestigeReward(floor, m.prestigeBonus, Math.floor(floor * m.prestigeFloorMult) + m.prestigeFloorAdd);
 }
 
 export function offlineCapSec(s: GameState): number {

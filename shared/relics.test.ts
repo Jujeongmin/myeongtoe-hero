@@ -1,5 +1,4 @@
 import { describe, expect, test } from "vitest";
-import { CERTS } from "./data/certs";
 import { RELICS, relicLevelCost, relicsUnlocked } from "./data/relics";
 import { mods } from "./mods";
 import { newState } from "./state";
@@ -40,7 +39,7 @@ describe("relics", () => {
   });
 
   test("파스 strengthens tier-3 certificates", () => {
-    const atk3 = CERTS.find((c) => c.tier === 3 && c.kind === "atk")!.id;
+    const atk3 = "atk3";
     const s = at(8000, 3500);
     s.certs = { [atk3]: 1 };
     const t = at(7999, 3500);

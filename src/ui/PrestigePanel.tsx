@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { certBonuses } from "../../shared/data/certs";
-import { BOOSTED_PRESTIGE_GEMS, PRESTIGE_MIN_FLOOR, prestigeReward } from "../../shared/data/prestige";
+import { BOOSTED_PRESTIGE_GEMS, PRESTIGE_MIN_FLOOR } from "../../shared/data/prestige";
+import { formatCount } from "../../shared/format";
 import type { GameState } from "../../shared/state";
+import { jobChangeReward } from "../../shared/stats";
 import type { GameStore } from "../game/store";
 
 // Two taps: the first arms the button, the second does it (no window.confirm: the Verse8 iframe may
@@ -10,7 +11,7 @@ export function PrestigePanel({ state, store }: { state: GameState; store: GameS
   const [armed, setArmed] = useState<"plain" | "boosted" | null>(null);
   const floor = state.run.maxFloor;
   const ready = floor >= PRESTIGE_MIN_FLOOR;
-  const reward = prestigeReward(floor, certBonuses(state.certs).prestige);
+  const reward = jobChangeReward(state);
 
   const press = (kind: "plain" | "boosted") => {
     if (armed !== kind) {
@@ -33,7 +34,7 @@ export function PrestigePanel({ state, store }: { state: GameState; store: GameS
         <div className="grow">
           이번 회차 최고 {floor}층
           <div className="sub">
-            {ready ? `받을 보상: 📝 ${reward.tickets} · 💎 ${reward.gems}` : `${PRESTIGE_MIN_FLOOR}층에 도달하면 이직할 수 있어요`}
+            {ready ? `받을 보상: 📝 ${formatCount(reward.tickets)} · 💎 ${reward.gems}` : `${PRESTIGE_MIN_FLOOR}층에 도달하면 이직할 수 있어요`}
           </div>
         </div>
       </div>

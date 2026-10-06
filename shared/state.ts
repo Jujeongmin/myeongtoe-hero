@@ -6,7 +6,7 @@ import { findPet } from "./data/pets";
 import { findRelic } from "./data/relics";
 import { findSideJob } from "./data/sideJobs";
 
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 export const OFFLINE_CAP_SEC = 12 * 3600;
 export const OFFICE_MAX_GRADE = 17;
 // 지하주차장 passes stored at most. Re-exported by data/parking.ts.
@@ -150,6 +150,8 @@ const MIGRATIONS: Record<number, (save: Record<string, unknown>) => Record<strin
       gear: { ...obj(save.gear), confirmed: 0 },
     };
   },
+  // v6: 자격증 became a fixed list picked one by one; the old randomly drawn ones are gone.
+  5: (save) => ({ ...save, v: 6, certs: {} }),
 };
 
 export function freshRun(): RunState {
@@ -231,7 +233,8 @@ export function fromSave(raw: unknown): GameState {
   const gear = obj(data.gear);
   const certs: Record<string, number> = {};
   for (const [id, level] of Object.entries(obj(data.certs))) {
-    if (findCert(id) && int(level, 1, 0) >= 1) certs[id] = level as number;
+    const def = findCert(id);
+    if (def && int(level, 1, 0) >= 1) certs[id] = Math.min(level as number, def.maxLevel);
   }
   const grade = (x: unknown) => Math.min(OFFICE_MAX_GRADE, int(x, 1, 1));
   const office = obj(data.office);

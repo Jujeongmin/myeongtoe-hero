@@ -1,5 +1,5 @@
 import { Big } from "../../shared/big";
-import { formatBig } from "../../shared/format";
+import { formatBig, formatCount } from "../../shared/format";
 import type { GameStore } from "../game/store";
 
 function duration(seconds: number): string {
@@ -19,7 +19,7 @@ export function OfflinePopup({ store }: { store: GameStore }) {
         <p className="sub">자리를 비운 {duration(r.seconds)} 동안</p>
         <p>💰 {formatBig(Big.from(r.gold))}</p>
         {r.floorTo !== r.floorFrom && <p>{r.floorFrom}층 → {r.floorTo}층</p>}
-        {r.tickets > 0 && <p>📝 응시권 {r.tickets}</p>}
+        {r.tickets > 0 && <p>📝 응시권 {formatCount(r.tickets)}</p>}
         {r.gems > 0 && <p>💎 보석 {r.gems}</p>}
         <button onClick={() => store.dismissOffline()}>받기</button>
       </div>

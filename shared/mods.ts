@@ -1,4 +1,4 @@
-import { certBonuses } from "./data/certs";
+import { certEffects } from "./data/certs";
 import { apartmentDamage, findSuitItem, suitSetWorn } from "./data/home";
 import { awakenStage, petsUnlocked } from "./data/pets";
 import { relicsUnlocked } from "./data/relics";
@@ -11,11 +11,16 @@ export interface Mods {
   dmgMult: number;
   aspdMult: number;
   critDmgAdd: number;
+  critDmgMult: number;
+  critChanceAdd: number;
   bossMult: number;
   goldMult: number;
   sideJobMult: number;
+  // Gear prices and level costs, side-job level costs (구매관리사).
+  costMult: number;
   prestigeBonus: number;
   prestigeFloorMult: number;
+  prestigeFloorAdd: number;
   offlineSec: number;
   hpMult: number;
   drainPerSec: number;
@@ -35,17 +40,21 @@ export function relicLevel(s: GameState, id: string): number {
 }
 
 export function mods(s: GameState): Mods {
-  const c = certBonuses(s.certs, 1 + 0.2 * relicLevel(s, "r_pas"));
+  const c = certEffects(s.certs, 1 + 0.2 * relicLevel(s, "r_pas"));
   const m: Mods = {
-    dmgMult: 1 + c.atk,
-    aspdMult: 1 + c.aspd,
-    critDmgAdd: c.critDmg,
-    bossMult: 1 + c.boss,
-    goldMult: 1 + c.gold,
-    sideJobMult: 1 + c.sideJob,
-    prestigeBonus: c.prestige,
+    dmgMult: c.dmgMult,
+    aspdMult: c.aspdMult,
+    critDmgAdd: c.critDmgAdd,
+    critDmgMult: c.critDmgMult,
+    critChanceAdd: c.critChanceAdd,
+    bossMult: 1,
+    goldMult: c.goldMult,
+    sideJobMult: c.sideJobMult,
+    costMult: c.costMult,
+    prestigeBonus: c.prestigeBonus,
     prestigeFloorMult: 1,
-    offlineSec: c.offlineSec,
+    prestigeFloorAdd: c.prestigeFloors,
+    offlineSec: 0,
     hpMult: 1,
     drainPerSec: 0,
     extraHitPerSec: 0,

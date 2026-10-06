@@ -1,18 +1,19 @@
 import { Big } from "./big";
-import { CERTS, certBonuses, certDrawCost, certLevelCost, certTierOpen, findCert } from "./data/certs";
-import { GEAR_MAX_LEVEL, GEAR_TIERS, gearConfirmCost, gearLevelCost, gearPrice } from "./data/gear";
+import { certLevelCost, certOpen, findCert } from "./data/certs";
+import { GEAR_MAX_LEVEL, GEAR_TIERS, gearConfirmCost } from "./data/gear";
 import { OFFICE_PARTS, apartmentCost, findSuitItem, officeUpgradeCost, type OfficePart } from "./data/home";
 import { dailyQuestReward, findDailyQuest } from "./data/dailyQuests";
 import { ATTENDANCE_REWARDS, STEP_MISSIONS, findSpecialMission, type Reward } from "./data/missions";
 import { runParking } from "./data/parking";
 import { dailyOf } from "./daily";
 import { PET_BOX_COUPONS, findPet, petLevelCost, petsUnlocked } from "./data/pets";
-import { BOOSTED_PRESTIGE_GEMS, PRESTIGE_MIN_FLOOR, prestigeReward } from "./data/prestige";
+import { BOOSTED_PRESTIGE_GEMS, PRESTIGE_MIN_FLOOR } from "./data/prestige";
 import { findRelic, relicLevelCost } from "./data/relics";
-import { findSideJob, sideJobCost } from "./data/sideJobs";
+import { findSideJob } from "./data/sideJobs";
 import { petLevel, relicLevel } from "./mods";
 import { nextRandom } from "./rng";
-import { heroPower } from "./stats";
+import { gearLevelCostFor, gearPriceFor, sideJobCostFor } from "./prices";
+import { heroPower, jobChangeReward } from "./stats";
 import { kstDay } from "./time";
 import { OFFICE_MAX_GRADE, cloneState, freshRun, type GameState } from "./state";
 
@@ -29,8 +30,8 @@ export type Intent =
   | { k: "buyGear" }
   | { k: "levelGear" }
   | { k: "levelSideJob"; id: string }
-  | { k: "buyCert" }
-  | { k: "levelCert"; id: string }
+  // Takes a certificate (level 0 → 1) or levels it; `bulk` keeps going while it can pay.
+  | { k: "levelCert"; id: string; bulk: boolean }
   | { k: "prestige"; boosted: boolean }
   | { k: "levelPet"; id: string }
   | { k: "petBox" }
@@ -56,10 +57,10 @@ export function readIntent(raw: unknown): Intent | null {
       return { k: r.k };
     case "levelSideJob":
       return typeof r.id === "string" && r.id.length <= 32 ? { k: r.k, id: r.id } : null;
-    case "buyCert":
-      return { k: "buyCert" };
     case "levelCert":
-      return typeof r.id === "string" && r.id.length <= 32 ? { k: "levelCert", id: r.id } : null;
+      return typeof r.id === "string" && r.id.length <= 32 && typeof r.bulk === "boolean"
+        ? { k: "levelCert", id: r.id, bulk: r.bulk }
+        : null;
     case "prestige":
       return typeof r.boosted === "boolean" ? { k: "prestige", boosted: r.boosted } : null;
     case "petBox":
@@ -115,7 +116,7 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
   switch (intent.k) {
     case "levelGear": {
       if (s.gear.level >= GEAR_MAX_LEVEL) throw new RuleError("max");
-      spend(s, gearLevelCost(s.gear.tier, s.gear.level));
+      spend(s, gearLevelCostFor(s, s.gear.tier, s.gear.level));
       s.gear.level += 1;
       return s;
     }
@@ -123,7 +124,7 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       const next = s.gear.tier + 1;
       if (next >= GEAR_TIERS.length) throw new RuleError("max");
       if (s.gear.level < GEAR_MAX_LEVEL) throw new RuleError("locked");
-      spend(s, gearPrice(next));
+      spend(s, gearPriceFor(s, next));
       s.gear = { tier: next, level: 0, confirmed: s.gear.confirmed };
       return s;
     }
@@ -132,35 +133,35 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       if (!job) throw new RuleError("unknown");
       if (s.run.maxFloor < job.unlockFloor) throw new RuleError("locked");
       const own = s.sideJobs[job.id] ?? { level: 0, progressSec: 0, running: false };
-      spend(s, sideJobCost(job, own.level));
+      spend(s, sideJobCostFor(s, job, own.level));
       s.sideJobs[job.id] = own.level === 0
         ? { level: 1, progressSec: 0, running: true }
         : { ...own, level: own.level + 1 };
       return s;
     }
-    case "buyCert": {
-      const owned = Object.keys(s.certs).length;
-      const open = certTierOpen(owned);
-      const pool = CERTS.filter((c) => c.tier <= open && !(c.id in s.certs));
-      if (pool.length === 0) throw new RuleError("max");
-      spendTickets(s, certDrawCost(owned));
-      const draw = nextRandom(s.rngSeed);
-      s.rngSeed = draw.seed;
-      s.certs[pool[Math.floor(draw.value * pool.length)].id] = 1;
-      return s;
-    }
     case "levelCert": {
       const def = findCert(intent.id);
-      const level = s.certs[intent.id];
-      if (!def || !level) throw new RuleError("not_owned");
-      spendTickets(s, certLevelCost(def, level));
-      s.certs[def.id] = level + 1;
+      if (!def) throw new RuleError("unknown");
+      if (!certOpen(def, s.certs)) throw new RuleError("locked");
+      let level = s.certs[def.id] ?? 0;
+      if (level >= def.maxLevel) throw new RuleError("max");
+      const pay = def.currency === "gems" ? spendGems : spendTickets;
+      pay(s, certLevelCost(def, level));
+      level += 1;
+      if (intent.bulk) {
+        for (; level < def.maxLevel; level++) {
+          const cost = certLevelCost(def, level);
+          if ((def.currency === "gems" ? s.gems : s.tickets) < cost) break;
+          pay(s, cost);
+        }
+      }
+      s.certs[def.id] = level;
       return s;
     }
     case "prestige": {
       if (s.run.maxFloor < PRESTIGE_MIN_FLOOR) throw new RuleError("locked");
       if (intent.boosted) spendGems(s, BOOSTED_PRESTIGE_GEMS);
-      const reward = prestigeReward(s.run.maxFloor, certBonuses(s.certs).prestige);
+      const reward = jobChangeReward(s);
       const mult = intent.boosted ? 2 : 1;
       s.tickets += reward.tickets * mult;
       s.gems += reward.gems * mult;
