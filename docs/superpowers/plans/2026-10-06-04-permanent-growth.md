@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 원작 원작의 영구 성장 축을 원작 구조대로 넣는다. 업무 장비 Lv5 상한(원작 무기 규칙), 동료 7종(원작 펫), 동료 상자, 퇴직 기념품 8종(원작 고대유물), 아파트(원작 원작 타워), 정장 6부위 × 6세트(원작 코스튬), 사무용품 4부위 17등급(원작 마왕성 장비)이 들어간다.
+**Goal:** 영구 성장 축을 넣는다. 업무 장비 Lv5 상한, 동료 7종, 동료 상자, 퇴직 기념품 8종, 아파트, 정장 6부위 × 6세트, 사무용품 4부위 17등급이 들어간다.
 
 **Architecture:** 영구 성장 효과를 `shared/mods.ts`의 `mods(state)` 한 곳에서 `Mods`로 합친다. 자격증, 동료, 기념품, 아파트, 정장, 사무용품의 효과가 모두 여기로 모인다. `heroPower`, `offlineCapSec`, `settle`은 `Mods`만 본다. 동료 효과 중 "몬스터 체력 깎기"와 "초당 체력 % 감소"는 `Power`에 `hpMult`, `drainPerSec`을 더해서 닫힌 공식으로 정산한다(`처치 시간 = 1 / (dps/hp + drain)`). 랜덤 효과(최대리 0~30%, 공주임 랜덤 버프, 오사원 응시권 확률)는 기대값으로 계산한다. 응시권 확률 드롭은 소수점 이월(`ticketCarry`)로 쪼개도 결과가 같게 한다.
 
@@ -10,30 +10,30 @@
 
 ## Global Constraints
 
-- 원작과 다른 구조는 구현 전에 사용자 승인을 받는다(2026-10-06 지시). 이 계획의 구조는 아래 "사용자 결정"으로 승인받았다.
+- 구조 변경은 구현 전에 사용자 승인을 받는다(2026-10-06 지시). 이 계획의 구조는 아래 "사용자 결정"으로 승인받았다.
 - 규칙은 `shared/`에만 둔다. 수치는 1차 값이고 8단계 시뮬레이터로 조정한다(상수 이름 유지).
 - 세이브 버전 3, 2→3 마이그레이션. 기존 업무 장비 레벨이 5를 넘으면 5로 맞춘다.
 - 커밋 직전 `npm test`, `npm run typecheck`, `npm run server:test`. 태스크마다 `develop` 푸시(`$TEMP/ship.sh` 사용).
 - 상품권(🎟)은 5단계(지하주차장)부터 들어온다. 이 단계의 상품권 소비 기능은 로컬 세이브를 고쳐서 시험한다.
 
 **사용자 결정 (2026-10-06):**
-- 피해 없는 전투를 유지한다(원작 문서에 체력/피해 언급 없음).
-- 업무 장비는 원작 무기처럼 레벨 최대 5, Lv5가 되어야 다음 장비를 살 수 있다.
-- 동료는 원작 펫 구조: 층 도달 자동 획득, 패시브, 보석 레벨업, 2000층마다 각성(최대 10단계). 변환안(아래 표)대로.
-- 동료 상자(원작 펫 상자): 상품권 70개, 랜덤 동료 +1레벨. 마왕성 동료 승급은 생략.
-- 기념품은 원작 고대유물 구조: 층 도달 자동 획득, 보석 레벨업. 변환안대로. 채광 관련(얼음팩)은 3차.
-- 사무용품은 원작 마왕성 장비 구조: 4부위를 처음부터 보유, 상품권으로 1→17등급 업그레이드만(뽑기 없음, 1→2등급 200개).
-- 공주임(원작 나공주)의 버프는 자동 발동(평균 효과).
+- 피해 없는 전투를 유지한다.
+- 업무 장비는 레벨 최대 5, Lv5가 되어야 다음 장비를 살 수 있다.
+- 동료 구조: 층 도달 자동 획득, 패시브, 보석 레벨업, 2000층마다 각성(최대 10단계). 동료 목록은 아래 표대로.
+- 동료 상자: 상품권 70개, 랜덤 동료 +1레벨. 동료 승급은 생략.
+- 기념품 구조: 층 도달 자동 획득, 보석 레벨업. 기념품 목록은 아래 표대로. 채광 관련(얼음팩)은 3차.
+- 사무용품 구조: 4부위를 처음부터 보유, 상품권으로 1→17등급 업그레이드만(뽑기 없음, 1→2등급 200개).
+- 공주임의 버프는 자동 발동(평균 효과).
 
-**사용자 결정 2차 (원작 게임 화면 확인 후, 2026-10-06):**
-- 화면을 원작처럼: 하단 메뉴 6개(부업, 장비, 동료, 자격증, 상점, 던전), 아직 안 열린 메뉴는 잠금 표시. 이직은 전투 화면 왼쪽 아래 버튼. 정장, 아파트, 기념품, 사무용품은 전투 화면 오른쪽 아이콘으로 여는 창. 재화 줄은 전투 화면 바로 아래.
-- 장비 목록은 원작 무기 목록처럼 30개 전부 표시(Lv x/5, ATK, 버튼).
-- 업무 장비 수치를 원작 화면 값에 맞춘다: 공격력 50에서 ×3씩, 가격 600에서 ×6씩. 몬스터 체력 기본값도 ×5(20 → 100)로 올려 초반 속도를 유지한다.
-- 골드 스탯 강화(3단계의 "강화" 탭)를 뺀다. 원작 하단 메뉴에 없고, 공속, 치명타는 보물(우리 자격증)에서 얻는다.
+**사용자 결정 2차 (화면 구조, 2026-10-06):**
+- 화면 구조: 하단 메뉴 6개(부업, 장비, 동료, 자격증, 상점, 던전), 아직 안 열린 메뉴는 잠금 표시. 이직은 전투 화면 왼쪽 아래 버튼. 정장, 아파트, 기념품, 사무용품은 전투 화면 오른쪽 아이콘으로 여는 창. 재화 줄은 전투 화면 바로 아래.
+- 장비 목록은 30개 전부 표시(Lv x/5, ATK, 버튼).
+- 업무 장비 수치: 공격력 50에서 ×3씩, 가격 600에서 ×6씩. 몬스터 체력 기본값도 ×5(20 → 100)로 올려 초반 속도를 유지한다.
+- 골드 스탯 강화(3단계의 "강화" 탭)를 뺀다. 하단 메뉴에 두지 않고, 공속, 치명타는 자격증에서 얻는다.
 - 정장은 부위별로 하나씩 착용하고, 착용한 것만 효과(세트 보너스는 같은 세트 6부위를 모두 착용했을 때). 착용 정보(`wear`)는 7단계에서 캐릭터 외형 레이어로 그린다. 손에 든 업무 장비도 외형 레이어다.
-- 원작의 단계 미션은 5단계에 넣는다.
+- 단계 미션은 5단계에 넣는다.
 
-**동료 7종 (원작 펫 → 우리 버전)**
+**동료 7종**
 
 | id | 이름 | 획득 층 | 효과 (Lv1) | 레벨당 | 각성 효과 |
 |---|---|---|---|---|---|
@@ -47,7 +47,7 @@
 
 각성 단계 = `min(10, floor(최고 층 / 2000))`. 1단계 이상이면 각성 효과가 켜지고, 기본 효과가 단계당 +10%다.
 
-**기념품 8종 (원작 고대유물 → 우리 버전)**
+**기념품 8종**
 
 | id | 이름 | 획득 층 | 레벨당 효과 |
 |---|---|---|---|
@@ -62,7 +62,7 @@
 
 ---
 
-### Task 1: 원작 정렬 — 무기 규칙, 무기 수치, 골드 강화 제거
+### Task 1: 업무 장비 정리 — 레벨 상한, 장비 수치, 골드 강화 제거
 
 **Files:**
 - Modify: `shared/data/gear.ts`, `shared/data/floors.ts`, `shared/actions.ts`, `shared/stats.ts`
@@ -83,12 +83,12 @@
 - prestige 테스트의 `s.stats = …`와 `expect(after.stats)…` 줄을 지운다.
 - gear: import에 `GEAR_MAX_LEVEL`, `gearAtk` 추가. "buying the next tier resets the level"의 상태와 거절 검사 상태를 모두 `level: GEAR_MAX_LEVEL`로 바꾼다. 추가:
 ```ts
-  test("levels stop at 5, and the next tier opens only then (원작 무기 규칙)", () => {
+  test("levels stop at 5, and the next tier opens only then", () => {
     expect(codeOf({ ...rich(), gear: { tier: 0, level: GEAR_MAX_LEVEL } }, { k: "levelGear" })).toBe("max");
     expect(codeOf({ ...rich(), gear: { tier: 0, level: GEAR_MAX_LEVEL - 1 } }, { k: "buyGear" })).toBe("locked");
   });
 
-  test("the original's weapon numbers: ATK 50 ×3, price 600 ×6", () => {
+  test("gear numbers: ATK 50 ×3, price 600 ×6", () => {
     expect(gearAtk(0, 0).toNumber()).toBeCloseTo(50, 9);
     expect(gearAtk(1, 0).toNumber()).toBeCloseTo(150, 9);
     expect(gearPrice(1).toNumber()).toBeCloseTo(600, 6);
@@ -111,9 +111,9 @@
 
 - [ ] **Step 3: 구현**
 
-`shared/data/gear.ts`: `GEAR_MAX_LEVEL = 5` 추가, `GEAR_ATK_BASE = 50`, `GEAR_ATK_GROWTH = 3`, `GEAR_PRICE_BASE = 100`, `GEAR_PRICE_GROWTH = 6`. 주석: 원작 무기 목록(나뭇가지 ATK 50, 이후 ×3, 두 번째 600골드, 이후 ×6).
+`shared/data/gear.ts`: `GEAR_MAX_LEVEL = 5` 추가, `GEAR_ATK_BASE = 50`, `GEAR_ATK_GROWTH = 3`, `GEAR_PRICE_BASE = 100`, `GEAR_PRICE_GROWTH = 6`. 주석: 업무 장비 수치(볼펜 ATK 50, 이후 ×3, 두 번째 600골드, 이후 ×6).
 
-`shared/data/floors.ts`: `HP_BASE = 100`(장비 공격력 기본값을 원작대로 5배 올린 만큼).
+`shared/data/floors.ts`: `HP_BASE = 100`(장비 공격력 기본값을 5배 올린 만큼).
 
 `shared/actions.ts`: `levelStat` 제거, `levelGear` 맨 앞 `if (s.gear.level >= GEAR_MAX_LEVEL) throw new RuleError("max");`, `buyGear`의 `max` 검사 다음 `if (s.gear.level < GEAR_MAX_LEVEL) throw new RuleError("locked");`, `prestige`의 `s.stats = …` 제거.
 
@@ -131,7 +131,7 @@ export function heroAtk(s: GameState): Big {
 - [ ] **Step 4: 통과 확인 후 배포**
 ```bash
 git rm -q shared/data/stats.ts src/ui/StatPanel.tsx
-bash "$TEMP/ship.sh" "feat: follow the original — weapon level cap, weapon numbers, no gold stat upgrades" shared src
+bash "$TEMP/ship.sh" "feat: gear level cap, gear numbers, no gold stat upgrades" shared src
 ```
 
 ---
@@ -214,7 +214,7 @@ export const OFFICE_MAX_GRADE = 17;
 - `MIGRATIONS[2]`:
 ```ts
   // v3: permanent growth (pets, relics, apartment, suits, office) and the coupon currency. Gear above
-  // level 5 comes down to 5 (the original's weapon rule).
+  // level 5 comes down to 5 (the gear level cap).
   2: (save) => {
     const gear = obj(save.gear);
     return {
@@ -376,9 +376,9 @@ const P = (dps: Big, extra: Partial<Power> = {}): Power => ({ dps, bossDps: dps,
 
 `shared/data/pets.ts`:
 ```ts
-// 동료 (the original's pets): each joins on its own once the best floor reaches it, works passively,
-// levels with 보석, and awakens every 2000 floors (up to 10 stages). The 동료 상자 (the original's
-// pet box) gives a random unlocked one a level for 상품권.
+// 동료: each joins on its own once the best floor reaches it, works passively,
+// levels with 보석, and awakens every 2000 floors (up to 10 stages). The 동료 상자
+// gives a random unlocked one a level for 상품권.
 export interface PetDef {
   id: string;
   name: string;
@@ -715,7 +715,7 @@ describe("relics", () => {
 
 `shared/data/relics.ts`:
 ```ts
-// 퇴직 기념품 (the original's ancient relics): each arrives on its own at its floor and levels with
+// 퇴직 기념품: each arrives on its own at its floor and levels with
 // 보석. 7000층's (mining power) waits for the stock-market content.
 export interface RelicDef {
   id: string;
@@ -845,7 +845,7 @@ describe("suits", () => {
 });
 
 describe("office", () => {
-  test("grade 1 → 2 costs 200 coupons, like the original's 200 coins", () => {
+  test("grade 1 → 2 costs 200 coupons", () => {
     expect(officeUpgradeCost(1)).toBe(200);
     expect(officeUpgradeCost(2)).toBeGreaterThan(200);
   });
@@ -865,10 +865,9 @@ describe("office", () => {
 
 `shared/data/home.ts`:
 ```ts
-// 집 (home) content. 아파트 is the original's 원작 타워 (보석, damage ×2 every 10). 정장 is the
-// original's costumes: six parts, bought with 상품권, a bonus for a full set. 사무용품 is the
-// original's 마왕성 gear: four parts owned from the start, upgraded with 상품권 from grade 1 to 17
-// (1 → 2 costs 200, as the original's coins did). No draws anywhere.
+// 집 (home) content. 아파트: 보석, damage ×2 every 10. 정장: six parts, bought with 상품권, a bonus
+// for a full set. 사무용품: four parts owned from the start, upgraded with 상품권 from grade 1 to 17
+// (1 → 2 costs 200). No draws anywhere.
 export function apartmentCost(pyeong: number): number {
   return Math.ceil(10 * 1.1 ** pyeong);
 }
@@ -1162,23 +1161,23 @@ bash "$TEMP/ship.sh" "feat: intents for pets, relics, apartment, suits and offic
 
 ---
 
-### Task 7: 화면 — 원작 구조 (하단 메뉴 6개, 전투 화면 버튼, 전체 장비 목록)
+### Task 7: 화면 구조 (하단 메뉴 6개, 전투 화면 버튼, 전체 장비 목록)
 
 **Files:**
 - Create: `src/ui/CurrencyBar.tsx`, `src/ui/BottomNav.tsx`, `src/ui/Sheet.tsx`, `src/ui/PetPanel.tsx`, `src/ui/HomePanels.tsx`
 - Modify: `src/App.tsx`, `src/ui/Battle.tsx`, `src/ui/GearPanel.tsx`, `src/ui/PrestigePanel.tsx`, `src/ui/text.ts`, `src/index.css`, `shared/data/floors.ts`, `shared/data/data.test.ts`
 - Delete: `src/ui/TopBar.tsx`
 
-**원작 화면 대응** (사용자가 보낸 원작 스크린샷 기준):
+**화면 구성**:
 
-| 원작 | 우리 |
+| 위치 | 구성 |
 |---|---|
-| 상단: 던전 이름 "원작의 첫번째 던전", 3층, 층 진행 바 | 상단: "마왕그룹 {부서}", N층, 층 진행 바(처치 수) |
-| 전투 화면 왼쪽 아래 "환생 🔑100" 버튼 | "이직 📝+N" 버튼 → 이직 창 |
-| 전투 화면 오른쪽 아이콘: 코스튬, 던전 패스, JUMP, 핫딜 | 👔 정장, 🏠 아파트, 🏅 기념품, 🖥 사무용품 (던전 패스/핫딜은 6단계) |
-| 전투 화면 아래 재화 줄: 골드, 열쇠, 무기 정령, 보석 | 💰 골드, 📝 응시권, 💎 보석, 🎟 상품권 |
-| 무기 목록: 전 무기 표시, Lv x/5, ATK, 버튼 | 업무 장비 30개 전부 표시 |
-| 하단 메뉴: 퀘스트, 무기, 펫, 보물, 상점, 던전 (잠금 표시) | 부업, 장비, 동료, 자격증, 상점, 던전 (잠금 표시) |
+| 상단 | "마왕그룹 {부서}", N층, 층 진행 바(처치 수) |
+| 전투 화면 왼쪽 아래 | "이직 📝+N" 버튼 → 이직 창 |
+| 전투 화면 오른쪽 아이콘 | 👔 정장, 🏠 아파트, 🏅 기념품, 🖥 사무용품 (던전 패스/핫딜은 6단계) |
+| 전투 화면 아래 재화 줄 | 💰 골드, 📝 응시권, 💎 보석, 🎟 상품권 |
+| 장비 목록 | 업무 장비 30개 전부 표시(Lv x/5, ATK, 버튼) |
+| 하단 메뉴 | 부업, 장비, 동료, 자격증, 상점, 던전 (잠금 표시) |
 
 잠금 조건: 동료 = 최고 100층, 자격증 = 최고 11층(첫 팀장 보스 처치 = 첫 응시권), 상점 = 6단계, 던전 = 5단계("준비 중").
 
@@ -1234,7 +1233,7 @@ export function CurrencyBar({ state }: { state: GameState }) {
 ```tsx
 import type { ReactNode } from "react";
 
-// A panel over the game (the original opens costumes and the like this way).
+// A panel over the game (정장, 아파트 and the like open this way).
 export function Sheet({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
   return (
     <div className="modal-back" onClick={onClose}>
@@ -1256,7 +1255,7 @@ import type { GameState } from "../../shared/state";
 
 export type NavTab = "sideJobs" | "gear" | "pets" | "certs" | "shop" | "dungeon";
 
-// The original's bottom menu (퀘스트, 무기, 펫, 보물, 상점, 던전), locked until it opens.
+// The bottom menu (부업, 장비, 동료, 자격증, 상점, 던전), locked until it opens.
 const ITEMS: { id: NavTab; icon: string; label: string; open: (s: GameState) => boolean; hint: string }[] = [
   { id: "sideJobs", icon: "📋", label: "부업", open: () => true, hint: "" },
   { id: "gear", icon: "🖊", label: "장비", open: () => true, hint: "" },
@@ -1296,8 +1295,8 @@ import { heroPower } from "../../shared/stats";
 
 export type SheetId = "prestige" | "suits" | "apartment" | "relics" | "office";
 
-// Gray-box stand-in for the step 7 sprite renderer: low-res canvas, scaled up crisp. The layout
-// follows the original's battle screen: title and floor bar on top, the job-change button bottom
+// Gray-box stand-in for the step 7 sprite renderer: low-res canvas, scaled up crisp. The layout:
+// title and floor bar on top, the job-change button bottom
 // left, the side icons on the right.
 const W = 160;
 const H = 96;
@@ -1373,7 +1372,7 @@ export function Battle({ state, onOpen }: { state: GameState; onOpen: (id: Sheet
 }
 ```
 
-`src/ui/GearPanel.tsx` 전체 (원작 무기 목록처럼 전부 표시):
+`src/ui/GearPanel.tsx` 전체 (30개 전부 표시):
 ```tsx
 import { GEAR_MAX_LEVEL, GEAR_TIERS, gearAtk, gearLevelCost, gearPrice } from "../../shared/data/gear";
 import { formatBig } from "../../shared/format";
@@ -1686,7 +1685,7 @@ import를 맞추고(`BottomNav, type NavTab`, `type SheetId` from Battle, `Curre
 
 ```bash
 git rm -q src/ui/TopBar.tsx
-bash "$TEMP/ship.sh" "feat: the original's screen layout — bottom menu, battle buttons, full gear list" src shared
+bash "$TEMP/ship.sh" "feat: screen layout — bottom menu, battle buttons, full gear list" src shared
 ```
 
 ---
@@ -1730,18 +1729,18 @@ describe("permanent growth on the server", () => {
 
 - [ ] **Step 2: 설계 문서 반영**
 
-- §5.1 업무 장비: "레벨은 최대 5. Lv5가 되어야 다음 장비를 살 수 있다(원작 무기 규칙)."
-- §5.3 동료: 원작 펫 구조로 다시 쓴다. 이 계획의 동료 표, 각성, 동료 상자(상품권 70, 랜덤 동료 +1레벨), 승급 생략을 넣는다.
+- §5.1 업무 장비: "레벨은 최대 5. Lv5가 되어야 다음 장비를 살 수 있다."
+- §5.3 동료: 새 구조로 다시 쓴다. 이 계획의 동료 표, 각성, 동료 상자(상품권 70, 랜덤 동료 +1레벨), 승급 생략을 넣는다.
 - §5.3 퇴직 기념품: 기념품 표(8종, 7000층은 3차)로 바꾼다.
 - §5.3 정장: 6부위(가발, 정장, 코트, 장갑, 구두, 넥타이) × 6세트, 세트 보너스.
 - §5.3 사무용품: 4부위를 처음부터 보유, 상품권으로 1→17등급 업그레이드(1→2가 200), 뽑기 없음.
-- §6.5 뽑기: "동료와 사무용품은 뽑기가 아니다(원작 구조, 2026-10-06 사용자 결정). 확률형 요소는 동료 상자(랜덤 동료 +1레벨)와 자격증 응시다. VX 상품 구성은 6단계 계획 전에 다시 정한다."
-- §5.1 스탯 강화를 지운다(원작 하단 메뉴에 없음, 공속과 치명타는 자격증에서). 업무 장비 수치는 원작 무기 목록 값(ATK 50 ×3, 가격 600 ×6).
+- §6.5 뽑기: "동료와 사무용품은 뽑기가 아니다(2026-10-06 사용자 결정). 확률형 요소는 동료 상자(랜덤 동료 +1레벨)와 자격증 응시다. VX 상품 구성은 6단계 계획 전에 다시 정한다."
+- §5.1 스탯 강화를 지운다(하단 메뉴에 두지 않음, 공속과 치명타는 자격증에서). 업무 장비 수치는 ATK 50 ×3, 가격 600 ×6.
 - §5.3 정장: 부위별 착용, 착용한 것만 효과, 6부위 같은 세트 착용 시 세트 보너스. 착용 정보는 캐릭터 외형 레이어로 그린다(7단계).
-- §8.1: 원작 화면 구조로 다시 쓴다. 전투 화면(위에 부서/층/진행 바, 왼쪽 아래 이직 버튼, 오른쪽 정장/아파트/기념품/사무용품 아이콘) → 재화 줄 → 목록 → 하단 메뉴 6개(부업, 장비, 동료, 자격증, 상점, 던전, 잠금 표시).
+- §8.1: 새 화면 구조로 다시 쓴다. 전투 화면(위에 부서/층/진행 바, 왼쪽 아래 이직 버튼, 오른쪽 정장/아파트/기념품/사무용품 아이콘) → 재화 줄 → 목록 → 하단 메뉴 6개(부업, 장비, 동료, 자격증, 상점, 던전, 잠금 표시).
 - §8.2 아트: 박부장은 기본 몸 + 부위별 레이어(정장 6부위, 손에 든 업무 장비)로 그린다. 애니메이션 프레임마다 레이어 위치를 맞춘다.
-- 5단계 범위에 원작의 단계 미션(안내형 미션)을 추가한다.
-- §10 결정 기록에 "원작 구조 우선(원작과 다른 구조는 사용자 승인)" 행 추가.
+- 5단계 범위에 단계 미션(안내형 미션)을 추가한다.
+- §10 결정 기록에 "구조 변경은 사용자 승인" 행 추가.
 - 로드맵 4단계 행의 계획 링크.
 
 - [ ] **Step 3: 배포**
