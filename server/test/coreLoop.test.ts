@@ -1,5 +1,5 @@
 import { Big } from "../../shared/big";
-import { newState, toSave } from "../../shared/state";
+import { SAVE_VERSION, newState, toSave } from "../../shared/state";
 
 describe("core loop on the server", () => {
   test("a job change resets the run and pays tickets", async (server) => {
@@ -35,7 +35,7 @@ describe("core loop on the server", () => {
     };
     await $global.updateUserState("test-r", { save: v1 });
     const r = await server.sync([]);
-    expect(r.save.v).toBe(2);
+    expect(r.save.v).toBe(SAVE_VERSION);
     expect(r.save.gear.level).toBe(2);
     expect(r.save.tickets).toBe(0);
   });

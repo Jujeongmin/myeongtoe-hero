@@ -13,9 +13,17 @@ describe("state", () => {
     expect(s.sideJobs).toEqual({});
     expect(s.tickets).toBe(0);
     expect(s.gems).toBe(0);
-    expect(s.stats).toEqual({ atk: 0, crit: 0, critDmg: 0, aspd: 0 });
     expect(s.certs).toEqual({});
     expect(s.prestiges).toBe(0);
+    expect(s.coupons).toBe(0);
+    expect(s.ticketCarry).toBe(0);
+    expect(s.pets).toEqual({});
+    expect(s.relics).toEqual({});
+    expect(s.apartment).toBe(0);
+    expect(s.suits).toEqual([]);
+    expect(s.wear).toEqual({});
+    expect(s.office).toEqual({ keyboard: 1, mouse: 1, chair: 1, monitor: 1 });
+    expect("stats" in s).toBe(false);
     expect(Number.isInteger(s.rngSeed)).toBe(true);
   });
 
@@ -67,8 +75,30 @@ describe("state", () => {
     expect(s.v).toBe(SAVE_VERSION);
     expect(s.gear).toEqual({ tier: 2, level: 4 });
     expect(s.tickets).toBe(0);
-    expect(s.stats).toEqual({ atk: 0, crit: 0, critDmg: 0, aspd: 0 });
     expect(s.certs).toEqual({});
+  });
+
+  test("a version 2 save migrates, and gear above level 5 comes down to 5", () => {
+    const v2 = { ...toSave(newState(0)), v: 2, gear: { tier: 3, level: 12 } } as Record<string, unknown>;
+    for (const k of ["coupons", "ticketCarry", "pets", "relics", "apartment", "suits", "office", "wear"]) delete v2[k];
+    v2.stats = { atk: 3, crit: 0, critDmg: 0, aspd: 0 };
+    const s = fromSave(v2);
+    expect(s.v).toBe(SAVE_VERSION);
+    expect(s.gear).toEqual({ tier: 3, level: 5 });
+    expect(s.office).toEqual({ keyboard: 1, mouse: 1, chair: 1, monitor: 1 });
+    expect(s.suits).toEqual([]);
+    expect("stats" in s).toBe(false);
+  });
+
+  test("office grades stay within 1..17, suits are unique, only owned parts are worn", () => {
+    const save = toSave(newState(0)) as unknown as Record<string, unknown>;
+    save.office = { keyboard: 40, mouse: 0, chair: 3, monitor: "x" };
+    save.suits = ["s1_hair", "s1_hair", 5, "s2_suit"];
+    save.wear = { hair: "s1_hair", suit: "s3_suit", tie: "s1_hair" };
+    const s = fromSave(save);
+    expect(s.office).toEqual({ keyboard: 17, mouse: 1, chair: 3, monitor: 1 });
+    expect(s.suits).toEqual(["s1_hair", "s2_suit"]);
+    expect(s.wear).toEqual({ hair: "s1_hair" });
   });
 
   test("unknown certificates and bad levels are dropped", () => {
