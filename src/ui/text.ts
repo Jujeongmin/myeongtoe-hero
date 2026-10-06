@@ -11,6 +11,7 @@ const ERRORS: Record<string, string> = {
   no_pass: "주차권이 없어요",
   not_done: "아직 조건을 채우지 못했어요",
   claimed: "이미 받았어요",
+  cooldown: "아직 다시 볼 수 없어요",
   bad_nickname: "닉네임은 한글·영문·숫자 2~8자예요",
 };
 

@@ -2,11 +2,12 @@ import { Big } from "./big";
 import { certLevelCost, certOpen, findCert } from "./data/certs";
 import { GEAR_MAX_LEVEL, GEAR_TIERS, gearConfirmCost } from "./data/gear";
 import { OFFICE_PARTS, apartmentCost, findSuitItem, officeUpgradeCost, type OfficePart } from "./data/home";
-import { extendBuff } from "./data/buffs";
+import { AD_BUFF_MS, AD_COUPONS, AD_GEMS_MAX, AD_GEMS_MIN, AD_GOLD_KILLS, adReadyAt, findAd } from "./data/ads";
+import { BUFF_KINDS, extendBuff } from "./data/buffs";
 import { dailyQuestReward, findDailyQuest } from "./data/dailyQuests";
 import { BUFF_MS, findGemItem } from "./data/gemShop";
 import { ATTENDANCE_REWARDS, STEP_MISSIONS, findSpecialMission, type Reward } from "./data/missions";
-import { runParking } from "./data/parking";
+import { PARK_PASS_MAX, runParking } from "./data/parking";
 import { dailyOf } from "./daily";
 import { PET_BOX_COUPONS, findPet, petLevelCost, petsUnlocked } from "./data/pets";
 import { PRESTIGE_MIN_FLOOR, PRESTIGE_MODES, type PrestigeMode } from "./data/prestige";
@@ -48,7 +49,8 @@ export type Intent =
   | { k: "claimSpecial"; id: string }
   | { k: "claimAttendance" }
   | { k: "confirmGear" }
-  | { k: "buyGemItem"; id: string };
+  | { k: "buyGemItem"; id: string }
+  | { k: "watchAd"; id: string };
 
 // Untrusted input (from the network) to an Intent, or null for anything else.
 export function readIntent(raw: unknown): Intent | null {
@@ -59,6 +61,7 @@ export function readIntent(raw: unknown): Intent | null {
     case "levelGear":
       return { k: r.k };
     case "buyGemItem":
+    case "watchAd":
       return typeof r.id === "string" && r.id.length <= 32 ? { k: r.k, id: r.id } : null;
     case "levelSideJob":
       return typeof r.id === "string" && r.id.length <= 32 ? { k: r.k, id: r.id } : null;
@@ -255,6 +258,45 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       if (item.kind === "buff") extendBuff(s, item.buff, BUFF_MS);
       else if (item.kind === "gold") s.gold = s.gold.add(killGoldNow(s).mulN(item.kills));
       else s.run = { ...s.run, gearBoost: s.run.gearBoost + 1 };
+      return s;
+    }
+    case "watchAd": {
+      const ad = findAd(intent.id);
+      if (!ad) throw new RuleError("unknown");
+      if (s.lastTick < adReadyAt(s, ad)) throw new RuleError("cooldown");
+      switch (ad.id) {
+        case "ad_gems": {
+          const draw = nextRandom(s.rngSeed);
+          s.rngSeed = draw.seed;
+          s.gems += AD_GEMS_MIN + Math.floor(draw.value * (AD_GEMS_MAX - AD_GEMS_MIN + 1));
+          break;
+        }
+        case "ad_gold":
+          s.gold = s.gold.add(killGoldNow(s).mulN(AD_GOLD_KILLS));
+          break;
+        case "ad_buff": {
+          const draw = nextRandom(s.rngSeed);
+          s.rngSeed = draw.seed;
+          extendBuff(s, BUFF_KINDS[Math.floor(draw.value * BUFF_KINDS.length)], AD_BUFF_MS);
+          break;
+        }
+        case "ad_coupons":
+          s.coupons += AD_COUPONS;
+          break;
+        case "ad_parking":
+          if (s.parking.passes >= PARK_PASS_MAX) throw new RuleError("max");
+          s.parking = { ...s.parking, passes: s.parking.passes + 1 };
+          break;
+        case "ad_offline": {
+          const bonus = s.offlineBonus;
+          if (!bonus || s.lastTick > bonus.until) throw new RuleError("not_done");
+          s.gold = s.gold.add(Big.from(bonus.gold));
+          s.tickets += bonus.tickets;
+          s.offlineBonus = null;
+          break;
+        }
+      }
+      s.ads = { ...s.ads, [ad.id]: s.lastTick };
       return s;
     }
     case "confirmGear": {

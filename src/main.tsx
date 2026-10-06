@@ -8,8 +8,11 @@ import { GameServerProvider } from "@agent8/gameserver";
 import { LocalApp, OnlineApp } from "./App";
 import "./fonts.css";
 import "./index.css";
+import { initAds } from "./net/ads";
 import { wantsOnline } from "./net/connection";
 import { ErrorBoundary } from "./ui/ErrorBoundary";
+
+initAds();
 
 const online = wantsOnline(import.meta.env.VITE_AGENT8_VERSE, window.location.search, import.meta.env.DEV);
 

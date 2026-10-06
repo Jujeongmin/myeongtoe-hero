@@ -1,4 +1,5 @@
 import { applyIntent, readIntent, RuleError } from "./actions";
+import { OFFLINE_BONUS_MS } from "./data/ads";
 import { settle } from "./settle";
 import { fromSave, newState, toSave, type GameState, type SaveData } from "./state";
 import { offlineCapSec } from "./stats";
@@ -45,6 +46,8 @@ export function syncSave(raw: unknown, intents: unknown, now: number): SyncResul
   const before = fresh ? newState(now) : fromSave(raw);
   let state = settle(before, now);
   const offline = fresh ? null : report(before, state);
+  // The welcome-back reward can be had once more by watching an ad, for a little while.
+  if (offline) state = { ...state, offlineBonus: { gold: offline.gold, tickets: offline.tickets, until: now + OFFLINE_BONUS_MS } };
   const rejected: SyncResult["rejected"] = [];
   const list = Array.isArray(intents) ? intents : [];
   list.forEach((rawIntent, index) => {
