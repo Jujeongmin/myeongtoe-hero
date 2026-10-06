@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { departmentOf, isBossFloor } from "../../shared/data/floors";
+import { departmentOf } from "../../shared/data/floors";
 import { targetSec } from "../../shared/settle";
 import type { GameState } from "../../shared/state";
 import { heroPower } from "../../shared/stats";
@@ -7,15 +7,20 @@ import {
   ANIMS, BASELINE_Y, FRAME, LAYERS, SHINE, backgroundFile, gearSprite, image, parkStrip, partStrip, type Anim,
 } from "../game/sprites";
 
-// The battle scene at its native pixel size: 150 px tall (the 96 px background at the bottom, its top
-// row stretched up as sky/ceiling), as wide as the screen's shape allows, scaled up crisp by CSS. It only shows what settle decided: the time into the current kill (run.carrySec,
-// moved on smoothly between the store's updates) says whether Park is walking to the next monster
-// or hitting it, and how hurt the monster is.
-const H = 150;
-const BG_H = 96;
-const BG_Y = H - BG_H;
-const FLOOR_Y = BG_Y + 82;
+// The battle scene at its native pixel size, scaled up crisp by CSS. The scale is set so Park's body
+// (44 px) stands about 17% of the screen's width tall, with the floor 73% of the way down; the
+// 96 px department background sits on that floor, its top row stretched up as ceiling.
+// It only shows what settle decided: the time into the current kill (run.carrySec, moved on
+// smoothly between the store's updates) says whether Park is walking to the next monster or
+// swinging at it. One swing takes one hit's time (power.hitSec), and the first swing starts when
+// he reaches the monster.
+const BODY_PX = 44;
+const BODY_SHARE = 0.17;
+const FLOOR_SHARE = 0.73;
+const BG_FLOOR = 82;
 const WALK_PX_PER_SEC = 48;
+// A swing is never drawn faster than this, however fast Park hits.
+const MIN_SWING_SEC = 0.24;
 
 interface Snapshot {
   state: GameState;
@@ -39,59 +44,65 @@ export function BattleCanvas({ state }: { state: GameState }) {
       const dt = Math.min(0.1, (now - last) / 1000);
       last = now;
       const parent = el.parentElement;
-      const w = parent ? Math.max(64, Math.round((H * parent.clientWidth) / Math.max(1, parent.clientHeight))) : 160;
-      if (el.width !== w || el.height !== H) {
+      const cw = Math.max(1, parent?.clientWidth ?? 320);
+      const ch = Math.max(1, parent?.clientHeight ?? 200);
+      const scale = Math.max(1, (cw * BODY_SHARE) / BODY_PX);
+      const w = Math.round(cw / scale);
+      const h = Math.round(ch / scale);
+      if (el.width !== w || el.height !== h) {
         el.width = w;
-        el.height = H;
+        el.height = h;
       }
-      scroll = draw(ctx, w, snap.current, now, dt, scroll);
+      scroll = draw(ctx, w, h, snap.current, now, dt, scroll);
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  return <canvas ref={canvas} width={160} height={H} />;
+  return <canvas ref={canvas} width={160} height={96} />;
 }
 
-function draw(ctx: CanvasRenderingContext2D, w: number, { state, at }: Snapshot, now: number, dt: number, scroll: number): number {
+function draw(
+  ctx: CanvasRenderingContext2D, w: number, h: number, { state, at }: Snapshot, now: number, dt: number, scroll: number,
+): number {
   ctx.imageSmoothingEnabled = false;
-  const { floor, carrySec, farming } = state.run;
+  const { floor, carrySec } = state.run;
   const power = heroPower(state);
   const fight = targetSec(floor, power);
   const perKill = fight + power.walkSec;
   const t = Number.isFinite(perKill) && perKill > 0 ? (carrySec + (now - at) / 1000) % perKill : 0;
   const walking = t < power.walkSec || !Number.isFinite(fight);
-  const anim: Anim = walking ? "walk" : "attack";
-  const nextScroll = walking ? scroll + WALK_PX_PER_SEC * dt * (1 / power.walkSec) : scroll;
+  const nextScroll = walking ? scroll + (WALK_PX_PER_SEC * dt) / power.walkSec : scroll;
+  const floorY = Math.round(h * FLOOR_SHARE);
 
-  // Background, tiled and scrolling while Park walks.
+  ctx.clearRect(0, 0, w, h);
   const bg = image(backgroundFile(departmentOf(floor)));
   if (bg) {
+    const top = floorY - BG_FLOOR;
     const off = Math.floor(nextScroll) % bg.width;
     for (let x = -off; x < w; x += bg.width) {
-      ctx.drawImage(bg, 0, 0, bg.width, 1, x, 0, bg.width, BG_Y);
-      ctx.drawImage(bg, x, BG_Y);
+      if (top > 0) ctx.drawImage(bg, 0, 0, bg.width, 1, x, 0, bg.width, top);
+      ctx.drawImage(bg, x, top);
+      const below = top + bg.height;
+      if (below < h) ctx.drawImage(bg, 0, bg.height - 1, bg.width, 1, x, below, bg.width, h - below);
     }
-  } else {
-    ctx.fillStyle = "#3d5a80";
-    ctx.fillRect(0, 0, w, H);
   }
 
-  // Park left of centre (clear of the job-change button), the monster walking in from the right.
-  const parkX = Math.round(w * 0.42) - 34;
-  const parkY = FLOOR_Y - BASELINE_Y;
-  const a = ANIMS[anim];
-  const elapsed = walking ? t : t - power.walkSec;
-  const fi = Math.floor((elapsed * 1000) / a.ms) % a.frames.length;
-  drawPark(ctx, state, anim, fi, parkX, parkY, now);
+  let anim: Anim;
+  let fi: number;
+  if (walking) {
+    anim = "walk";
+    fi = Math.floor((t * 1000) / ANIMS.walk.ms) % ANIMS.walk.frames.length;
+  } else {
+    anim = "attack";
+    const swing = Math.max(MIN_SWING_SEC, power.hitSec);
+    const into = ((t - power.walkSec) % swing) / swing;
+    fi = Math.min(ANIMS.attack.frames.length - 1, Math.floor(into * ANIMS.attack.frames.length));
+  }
 
-  const boss = isBossFloor(floor) && !farming;
-  const contact = parkX + 46;
-  const startX = w + 4;
-  const mx = walking ? Math.round(startX + (contact - startX) * (t / Math.max(0.001, power.walkSec))) : contact;
-  const hpLeft = walking ? 1 : Math.max(0, 1 - (t - power.walkSec) / Math.max(0.001, fight));
-  drawMonster(ctx, mx, boss, hpLeft, fi, anim);
+  // Park a little left of centre; the monster (its sprites are on the way) will stand to his right.
+  drawPark(ctx, state, anim, fi, Math.round(w * 0.42) - 34, floorY - BASELINE_Y, now);
   return nextScroll;
 }
 
@@ -132,30 +143,4 @@ function drawGear(ctx: CanvasRenderingContext2D, tier: number, hand: [number, nu
   ctx.rotate(((handAngle - g.angle) * Math.PI) / 180);
   ctx.drawImage(img, -g.grip[0], -g.grip[1]);
   ctx.restore();
-}
-
-// Stand-in monster until its sprites exist: a block with eyes, red and bigger for a boss.
-function drawMonster(ctx: CanvasRenderingContext2D, x: number, boss: boolean, hpLeft: number, fi: number, anim: Anim): void {
-  const w = boss ? 26 : 16;
-  const h = boss ? 30 : 18;
-  const hit = anim === "attack" && fi >= 2 && fi <= 4 ? 1 : 0;
-  const left = x + hit;
-  const top = FLOOR_Y - h;
-  ctx.fillStyle = "#000";
-  ctx.fillRect(left - 1, top - 1, w + 2, h + 2);
-  ctx.fillStyle = boss ? "#c1121f" : "#7b2cbf";
-  ctx.fillRect(left, top, w, h);
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(left + 3, top + 5, 3, 3);
-  ctx.fillRect(left + 9, top + 5, 3, 3);
-  ctx.fillStyle = "#000";
-  ctx.fillRect(left + 3, top + 6, 2, 2);
-  ctx.fillRect(left + 9, top + 6, 2, 2);
-  // Health bar above it.
-  ctx.fillStyle = "#000";
-  ctx.fillRect(left - 1, top - 6, w + 2, 4);
-  ctx.fillStyle = "#400";
-  ctx.fillRect(left, top - 5, w, 2);
-  ctx.fillStyle = "#e63946";
-  ctx.fillRect(left, top - 5, Math.round(w * hpLeft), 2);
 }

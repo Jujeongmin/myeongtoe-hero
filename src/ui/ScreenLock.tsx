@@ -15,7 +15,7 @@ export function ScreenLock({ state, onClose }: { state: GameState; onClose: () =
   };
   return (
     <div className="screen-lock" onClick={tap}>
-      <div className="sub">{state.run.floor}층 · 💰 {formatBig(state.gold)}</div>
+      <div className="sub">{state.run.floor}층 · 골드 {formatBig(state.gold)}</div>
       <div className="sub">두 번 탭하면 돌아가요</div>
     </div>
   );

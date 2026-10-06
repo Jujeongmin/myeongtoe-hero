@@ -3,6 +3,7 @@ import { formatBig } from "../../shared/format";
 import { gearLevelCostFor, gearPriceFor } from "../../shared/prices";
 import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
+import { Amount } from "./Amount";
 
 // Every tier listed: the ones behind owned, the current one to level
 // up to 5, the next one to buy once the current is at 5, the rest waiting. 구매확정 on top: the
@@ -28,7 +29,7 @@ export function GearPanel({ state, store }: { state: GameState; store: GameStore
             disabled={!reached || state.gems < confirmCost.gems || state.gold.lt(confirmCost.gold)}
             onClick={() => store.do({ k: "confirmGear" })}
           >
-            확정<br />💎 {confirmCost.gems} · {formatBig(confirmCost.gold)}
+            확정<br /><Amount icon="gem" value={confirmCost.gems} /> <Amount icon="gold" value={formatBig(confirmCost.gold)} />
           </button>
         )}
       </div>

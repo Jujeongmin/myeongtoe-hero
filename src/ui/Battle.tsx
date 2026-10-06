@@ -8,6 +8,8 @@ import type { GameStore } from "../game/store";
 import { BattleCanvas } from "./BattleCanvas";
 import { Icon } from "./Icon";
 import { MissionCard, missionsWaiting, type MissionPlace } from "./MissionCard";
+import { Amount } from "./Amount";
+import { CurrencyBar } from "./CurrencyBar";
 
 export type SheetId = "prestige" | "suits" | "apartment" | "relics" | "office" | "missions" | "ranking" | "settings";
 
@@ -41,14 +43,14 @@ export function Battle({ state, store, onOpen, onGo }: {
         <div className="floor-bar">
           <i style={{ width: `${(Math.min(target, targetsOn(floor)) / targetsOn(floor)) * 100}%` }} />
         </div>
-        {boss && <div className="boss-timer">⏱ 보스 {bossLeft}초</div>}
+        {boss && <div className="boss-timer">보스 {bossLeft}초</div>}
       </header>
       <div className="top-icons">
         <button onClick={() => onOpen("missions")} aria-label="미션">
-          📋{missionsWaiting(state) && <i className="dot" />}
+          미션{missionsWaiting(state) && <i className="dot" />}
         </button>
-        <button onClick={() => onOpen("ranking")} aria-label="랭킹">🏆</button>
-        <button onClick={() => onOpen("settings")} aria-label="설정">⚙</button>
+        <button onClick={() => onOpen("ranking")} aria-label="랭킹">랭킹</button>
+        <button onClick={() => onOpen("settings")} aria-label="설정">설정</button>
       </div>
       <div className="side-icons">
         {SIDE.map((s) => (
@@ -60,9 +62,10 @@ export function Battle({ state, store, onOpen, onGo }: {
       </div>
       <button className="prestige-btn" onClick={() => onOpen("prestige")}>
         이직
-        <small>{ready ? `📝 +${formatCount(reward.tickets)}` : `${PRESTIGE_MIN_FLOOR}층부터`}</small>
+        <small>{ready ? <Amount icon="ticket" value={`+${formatCount(reward.tickets)}`} /> : `${PRESTIGE_MIN_FLOOR}층부터`}</small>
       </button>
       <MissionCard state={state} store={store} onGo={onGo} />
+      <CurrencyBar state={state} />
       {skills.length > 0 && (
         <div className="skills">
           {skills.map((s) => (

@@ -7,13 +7,15 @@ import { BUFF_KINDS, extendBuff } from "./data/buffs";
 import { dailyQuestReward, findDailyQuest } from "./data/dailyQuests";
 import { BUFF_MS, findGemItem } from "./data/gemShop";
 import { ATTENDANCE_REWARDS, STEP_MISSIONS, findSpecialMission, type Reward } from "./data/missions";
-import { PARK_PASS_MAX, runParking } from "./data/parking";
+import { runParking } from "./data/parking";
+import { dailyVxClaimed, dailyVxGems } from "./data/shop";
 import { dailyOf } from "./daily";
 import { PET_BOX_COUPONS, findPet, petLevelCost, petsUnlocked } from "./data/pets";
 import { PRESTIGE_MIN_FLOOR, PRESTIGE_MODES, type PrestigeMode } from "./data/prestige";
 import { findRelic, relicLevelCost } from "./data/relics";
 import { findSideJob } from "./data/sideJobs";
-import { petLevel, relicLevel } from "./mods";
+import { parkPassMax, petLevel, relicLevel } from "./mods";
+import { vipPerks } from "./vip";
 import { nextRandom } from "./rng";
 import { gearLevelCostFor, gearPriceFor, sideJobCostFor } from "./prices";
 import { heroPower, jobChangeReward, killGoldNow } from "./stats";
@@ -50,7 +52,8 @@ export type Intent =
   | { k: "claimAttendance" }
   | { k: "confirmGear" }
   | { k: "buyGemItem"; id: string }
-  | { k: "watchAd"; id: string };
+  | { k: "watchAd"; id: string }
+  | { k: "claimDailyVx" };
 
 // Untrusted input (from the network) to an Intent, or null for anything else.
 export function readIntent(raw: unknown): Intent | null {
@@ -77,6 +80,7 @@ export function readIntent(raw: unknown): Intent | null {
     case "claimStep":
     case "claimAttendance":
     case "confirmGear":
+    case "claimDailyVx":
       return { k: r.k };
     case "levelPet":
     case "levelRelic":
@@ -277,14 +281,14 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
         case "ad_buff": {
           const draw = nextRandom(s.rngSeed);
           s.rngSeed = draw.seed;
-          extendBuff(s, BUFF_KINDS[Math.floor(draw.value * BUFF_KINDS.length)], AD_BUFF_MS);
+          extendBuff(s, BUFF_KINDS[Math.floor(draw.value * BUFF_KINDS.length)], AD_BUFF_MS * vipPerks(s).adBuffMult);
           break;
         }
         case "ad_coupons":
           s.coupons += AD_COUPONS;
           break;
         case "ad_parking":
-          if (s.parking.passes >= PARK_PASS_MAX) throw new RuleError("max");
+          if (s.parking.passes >= parkPassMax(s)) throw new RuleError("max");
           s.parking = { ...s.parking, passes: s.parking.passes + 1 };
           break;
         case "ad_offline": {
@@ -297,6 +301,14 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
         }
       }
       s.ads = { ...s.ads, [ad.id]: s.lastTick };
+      return s;
+    }
+    case "claimDailyVx": {
+      const gems = dailyVxGems(s);
+      if (gems === 0) throw new RuleError("locked");
+      if (dailyVxClaimed(s)) throw new RuleError("claimed");
+      s.gems += gems;
+      s.vx = { ...s.vx, dailyClaimed: kstDay(s.lastTick) };
       return s;
     }
     case "confirmGear": {
@@ -330,7 +342,8 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
     case "claimAttendance": {
       const today = kstDay(s.lastTick);
       if (s.attendance.lastDay === today) throw new RuleError("claimed");
-      grant(s, ATTENDANCE_REWARDS[s.attendance.count % ATTENDANCE_REWARDS.length]);
+      const reward = ATTENDANCE_REWARDS[s.attendance.count % ATTENDANCE_REWARDS.length];
+      grant(s, reward.gems ? { ...reward, gems: Math.floor(reward.gems * vipPerks(s).attendanceGemMult) } : reward);
       s.attendance = { lastDay: today, count: s.attendance.count + 1 };
       return s;
     }

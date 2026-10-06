@@ -1,3 +1,4 @@
+import { applyPurchase, readPurchaseEvent } from "../../shared/purchase";
 import { RANKING_SIZE, rankRowOf, readBoard, readNickname, type RankRow, type RankingView } from "../../shared/ranking";
 import { fromSave, newState, toSave, type SaveData } from "../../shared/state";
 import { syncSave, type SyncResult } from "../../shared/sync";
@@ -5,6 +6,7 @@ import { syncSave, type SyncResult } from "../../shared/sync";
 // Where the save lives in the account's global user state, and the record last put on the boards.
 const SAVE_KEY = "save";
 const RANKED_KEY = "ranked";
+const RECEIPTS_KEY = "receipts";
 const RANKING = "ranking";
 
 function stripId(item: Record<string, unknown>): RankRow {
@@ -34,6 +36,22 @@ export class Server {
       await $global.updateUserState(account, { [SAVE_KEY]: result.save });
       await updateRanking(account, result.save, userState?.[RANKED_KEY]);
       return result;
+    });
+  }
+
+  // Verse8 calls this when a VX Shop purchase completes, possibly more than once for the same
+  // receipt: each purchaseId pays once, and a repeat still answers success so the platform stops.
+  async $onItemPurchased(raw: unknown): Promise<{ success: boolean; code: string }> {
+    const event = readPurchaseEvent(raw);
+    if (!event) return { success: false, code: "invalid_event" };
+    return $lock(`save:${event.account}`, async () => {
+      const userState = await $global.getUserState(event.account);
+      const out = applyPurchase(userState?.[SAVE_KEY], userState?.[RECEIPTS_KEY], event, Date.now());
+      if (out.code === "unknown_product") return { success: false, code: out.code };
+      if (out.code === "granted") {
+        await $global.updateUserState(event.account, { [SAVE_KEY]: out.save, [RECEIPTS_KEY]: out.receipts });
+      }
+      return { success: true, code: out.code };
     });
   }
 

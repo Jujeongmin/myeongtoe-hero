@@ -9,7 +9,6 @@ import { Verse8Transport } from "./net/verse8Transport";
 import { Battle, type SheetId } from "./ui/Battle";
 import { BottomNav, type NavTab } from "./ui/BottomNav";
 import { CertPanel } from "./ui/CertPanel";
-import { CurrencyBar } from "./ui/CurrencyBar";
 import { GearPanel } from "./ui/GearPanel";
 import { MissionSheet } from "./ui/MissionSheet";
 import { ParkingPanel } from "./ui/ParkingPanel";
@@ -107,7 +106,6 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
           } else setSheet(place.sheet);
         }}
       />
-      <CurrencyBar state={state} />
       <main className="list">
         {tab === "sideJobs" && <SideJobPanel state={state} store={store} />}
         {tab === "gear" && <GearPanel state={state} store={store} />}

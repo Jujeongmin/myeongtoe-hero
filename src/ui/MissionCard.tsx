@@ -1,8 +1,9 @@
-import { SPECIAL_MISSIONS, STEP_MISSIONS, rewardText } from "../../shared/data/missions";
+import { SPECIAL_MISSIONS, STEP_MISSIONS } from "../../shared/data/missions";
 import type { GameState } from "../../shared/state";
 import { kstDay } from "../../shared/time";
 import type { GameStore } from "../game/store";
 import type { NavTab } from "./BottomNav";
+import { RewardView } from "./Amount";
 
 // Where a step mission is done: a bottom tab or a panel opened from the battle screen. Floor goals
 // go to the gear tab (a stronger tool is what gets Park higher).
@@ -37,7 +38,7 @@ export function MissionCard({ state, store, onGo }: { state: GameState; store: G
     >
       <div className="sub">{step + 1}단계 미션</div>
       <div>{m.text}</div>
-      {done ? <div className="claim">받기 {rewardText(m.reward)}</div> : <div className="sub">{rewardText(m.reward)} ▶</div>}
+      {done ? <div className="claim">받기 <RewardView reward={m.reward} /></div> : <div className="sub"><RewardView reward={m.reward} /> 이동</div>}
     </div>
   );
 }

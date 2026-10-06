@@ -23,6 +23,8 @@ export interface Power {
   drainPerSec: number;
   // Walking time between kills (halved by the 칼퇴 걸음 buff).
   walkSec: number;
+  // Seconds between Park's own hits (the screen times one swing to it).
+  hitSec: number;
 }
 
 function skillProduct(s: GameState, kind: string): number {
@@ -55,6 +57,7 @@ export function heroPower(s: GameState): Power {
     hpMult: m.hpMult,
     drainPerSec: m.drainPerSec,
     walkSec: buffActive(s, "move") ? WALK_SEC / BUFFS.move.mult : WALK_SEC,
+    hitSec: 1 / aspd,
   };
 }
 

@@ -124,14 +124,14 @@ describe("state", () => {
     expect(s.missions).toEqual({ step: 0, special: [] });
   });
 
-  test("parking passes stay within 0..16, lists stay unique", () => {
+  test("parking passes stay within 0..18 (16 + VIP), lists stay unique", () => {
     const save = toSave(newState(0)) as unknown as Record<string, unknown>;
     save.parking = { passes: 99, passCarrySec: -3, best: 12 };
     save.daily = { day: "2026-10-06", entries: 2, bestDepth: 40, claimed: ["e1", "e1", 3] };
     save.missions = { step: 4, special: ["f500", "f500"] };
     save.nickname = "박부장최고".repeat(10);
     const s = fromSave(save);
-    expect(s.parking).toEqual({ passes: 16, passCarrySec: 0, best: 12 });
+    expect(s.parking).toEqual({ passes: 18, passCarrySec: 0, best: 12 });
     expect(s.daily.claimed).toEqual(["e1"]);
     expect(s.missions.special).toEqual(["f500"]);
     expect(s.nickname).toBe("");

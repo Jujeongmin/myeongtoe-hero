@@ -3,6 +3,7 @@ import { formatBig } from "../../shared/format";
 import { sideJobCostFor } from "../../shared/prices";
 import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
+import { Icon } from "./Icon";
 
 export function SideJobPanel({ state, store }: { state: GameState; store: GameStore }) {
   return (
@@ -11,7 +12,7 @@ export function SideJobPanel({ state, store }: { state: GameState; store: GameSt
         if (state.run.maxFloor < job.unlockFloor) {
           return (
             <div key={job.id} className="row locked">
-              <span>🔒 {job.name}</span>
+              <span className="locked-name"><Icon name="lock" size={16} /> {job.name}</span>
               <span className="sub">{job.unlockFloor}층 도달 시</span>
             </div>
           );

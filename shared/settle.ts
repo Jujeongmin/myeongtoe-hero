@@ -4,7 +4,7 @@ import { isBossFloor, killGold, targetHp, targetsOn } from "./data/floors";
 import { rechargePasses } from "./data/parking";
 import { findSideJob, sideJobCycle, sideJobIncome } from "./data/sideJobs";
 import { cloneState, type GameState, type RunState, type SideJobState } from "./state";
-import { mods, type Mods } from "./mods";
+import { mods, parkPassMax, type Mods } from "./mods";
 import { heroPower, offlineCapSec, type Power } from "./stats";
 
 // Enough for 12 offline hours at one kill a second, with room to spare; only a broken table loops.
@@ -161,7 +161,7 @@ function settleSpan(start: GameState, to: number): GameState {
   next.ticketCarry = drops - Math.floor(drops);
   next.sideJobs = jobs.sideJobs;
   next.gold = next.gold.add(battle.gold).add(jobs.gold).add(pay);
-  next.parking = rechargePasses(next.parking, dt);
+  next.parking = rechargePasses(next.parking, dt, parkPassMax(next));
   return next;
 }
 

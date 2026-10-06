@@ -14,6 +14,14 @@ import { ErrorBoundary } from "./ui/ErrorBoundary";
 
 initAds();
 
+// No dragging or selecting text and pictures anywhere but the text fields (index.css does the same
+// for browsers that honour it).
+const editable = (target: EventTarget | null) => target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement;
+document.addEventListener("dragstart", (e) => e.preventDefault());
+document.addEventListener("selectstart", (e) => {
+  if (!editable(e.target)) e.preventDefault();
+});
+
 const online = wantsOnline(import.meta.env.VITE_AGENT8_VERSE, window.location.search, import.meta.env.DEV);
 
 createRoot(document.getElementById("root")!).render(

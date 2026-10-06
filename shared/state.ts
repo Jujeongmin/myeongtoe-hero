@@ -322,7 +322,8 @@ export function fromSave(raw: unknown): GameState {
     wear,
     office: { keyboard: grade(office.keyboard), mouse: grade(office.mouse), chair: grade(office.chair), monitor: grade(office.monitor) },
     parking: {
-      passes: Math.min(PARK_PASS_MAX, int(parking.passes, 0, 0)),
+      // VIP can hold up to 2 more.
+      passes: Math.min(PARK_PASS_MAX + 2, int(parking.passes, 0, 0)),
       passCarrySec: seconds(parking.passCarrySec),
       best: int(parking.best, 0, 0),
     },

@@ -74,5 +74,5 @@ export function findSpecialMission(id: string): MissionDef | undefined {
 }
 
 export function rewardText(r: Reward): string {
-  return [r.gems && `💎 ${r.gems}`, r.tickets && `📝 ${r.tickets}`, r.coupons && `🎟 ${r.coupons}`].filter(Boolean).join(" ");
+  return [r.gems && `보석 ${r.gems}`, r.tickets && `응시권 ${r.tickets}`, r.coupons && `상품권 ${r.coupons}`].filter(Boolean).join(" · ");
 }

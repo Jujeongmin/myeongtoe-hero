@@ -4,6 +4,8 @@ import {
 import { formatCount } from "../../shared/format";
 import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
+import { Amount } from "./Amount";
+import { Icon } from "./Icon";
 
 function pct(v: number): string {
   return v >= 1000 ? formatCount(v) : String(Math.round(v * 100) / 100);
@@ -22,7 +24,6 @@ function CertRow({ def, state, store }: { def: CertDef; state: GameState; store:
   const level = state.certs[def.id] ?? 0;
   const maxed = level >= def.maxLevel;
   const cost = maxed ? 0 : certLevelCost(def, level);
-  const icon = def.currency === "gems" ? "💎" : "📝";
   const have = def.currency === "gems" ? state.gems : state.tickets;
   return (
     <div className="row">
@@ -36,7 +37,7 @@ function CertRow({ def, state, store }: { def: CertDef; state: GameState; store:
       ) : (
         <div className="buttons">
           <button disabled={have < cost} onClick={() => store.do({ k: "levelCert", id: def.id, bulk: false })}>
-            {level === 0 ? "취득" : "+1"}<br />{icon} {formatCount(cost)}
+            {level === 0 ? "취득" : "+1"}<br /><Amount icon={def.currency === "gems" ? "gem" : "ticket"} value={formatCount(cost)} />
           </button>
           <button disabled={have < cost} onClick={() => store.do({ k: "levelCert", id: def.id, bulk: true })}>
             최대<br />한번에
@@ -62,7 +63,7 @@ export function CertPanel({ state, store }: { state: GameState; store: GameStore
             <CertRow def={top} state={state} store={store} />
             {after && (
               <div className="row locked">
-                <span>🔒 {after.name}</span>
+                <span className="locked-name"><Icon name="lock" size={16} /> {after.name}</span>
                 <span className="sub">{certPrerequisite(after)!.name} MAX 시</span>
               </div>
             )}
@@ -71,7 +72,7 @@ export function CertPanel({ state, store }: { state: GameState; store: GameStore
       })}
       <div className="group-title">필수 자격증</div>
       {CERTS.filter((c) => c.group === "basic").map((def) => <CertRow key={def.id} def={def} state={state} store={store} />)}
-      <div className="group-title">이직 자격증 (💎 보석)</div>
+      <div className="group-title">이직 자격증 (보석)</div>
       {CERTS.filter((c) => c.group === "career").map((def) => <CertRow key={def.id} def={def} state={state} store={store} />)}
     </>
   );

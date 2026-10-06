@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { ATTENDANCE_REWARDS, SPECIAL_MISSIONS, rewardText } from "../../shared/data/missions";
+import { ATTENDANCE_REWARDS, SPECIAL_MISSIONS } from "../../shared/data/missions";
 import type { GameState } from "../../shared/state";
 import { kstDay } from "../../shared/time";
 import type { GameStore } from "../game/store";
+import { RewardView } from "./Amount";
 
 type Tab = "special" | "attendance";
 const TABS: { id: Tab; label: string }[] = [
@@ -34,7 +35,7 @@ function Specials({ state, store }: { state: GameState; store: GameStore }) {
           <div key={m.id} className="row">
             <div className="grow">
               {m.text}
-              <div className="sub">{rewardText(m.reward)}</div>
+              <div className="sub"><RewardView reward={m.reward} /></div>
             </div>
             <button disabled={claimed || !m.done(state)} onClick={() => store.do({ k: "claimSpecial", id: m.id })}>
               {claimed ? "받음" : "받기"}
@@ -64,7 +65,7 @@ function Attendance({ state, store }: { state: GameState; store: GameStore }) {
         {ATTENDANCE_REWARDS.map((r, i) => (
           <div key={i} className={`day${i === now ? " now" : ""}${i < now || (today && i === now) ? " got" : ""}`}>
             <div className="sub">{i + 1}일</div>
-            <div>{rewardText(r)}</div>
+            <div><RewardView reward={r} /></div>
           </div>
         ))}
       </div>

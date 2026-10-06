@@ -4,6 +4,7 @@ import { formatCount } from "../../shared/format";
 import type { GameState } from "../../shared/state";
 import { jobChangeReward } from "../../shared/stats";
 import type { GameStore } from "../game/store";
+import { Amount } from "./Amount";
 
 // Two taps: the first arms the button, the second does it (no window.confirm: the Verse8 iframe may
 // not allow dialogs).
@@ -34,7 +35,7 @@ export function PrestigePanel({ state, store }: { state: GameState; store: GameS
         <div className="grow">
           이번 회차 최고 {floor}층
           <div className="sub">
-            {ready ? `받을 보상: 📝 ${formatCount(reward.tickets)} · 💎 ${reward.gems}` : `${PRESTIGE_MIN_FLOOR}층에 도달하면 이직할 수 있어요`}
+            {ready ? <>받을 보상: <Amount icon="ticket" value={formatCount(reward.tickets)} /> <Amount icon="gem" value={reward.gems} /></> : `${PRESTIGE_MIN_FLOOR}층에 도달하면 이직할 수 있어요`}
           </div>
         </div>
       </div>
@@ -51,7 +52,7 @@ export function PrestigePanel({ state, store }: { state: GameState; store: GameS
             <button className="wide gold" disabled={!ready || state.gems < gems} onClick={() => press(mode)}>
               {armed === mode
                 ? `보석 ${gems}개로 ${name}할까요? 한 번 더 누르세요`
-                : `${name} (💎 ${gems}, 응시권 ${ticketMult}배 · 📝 ${formatCount(reward.tickets * ticketMult)})`}
+                : <>{name} (<Amount icon="gem" value={gems} />, 응시권 {ticketMult}배 <Amount icon="ticket" value={formatCount(reward.tickets * ticketMult)} />)</>}
             </button>
           </div>
         );

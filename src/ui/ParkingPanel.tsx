@@ -7,6 +7,7 @@ import type { GameState } from "../../shared/state";
 import { heroPower } from "../../shared/stats";
 import { isSaturday } from "../../shared/time";
 import type { GameStore } from "../game/store";
+import { Amount } from "./Amount";
 
 function clock(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -37,7 +38,7 @@ export function ParkingPanel({ state, store }: { state: GameState; store: GameSt
             {" · "}최고 B{best}m
           </div>
         </div>
-        <button disabled={passes <= 0} onClick={enter}>입장<br />🅿 1</button>
+        <button disabled={passes <= 0} onClick={enter}>입장<br />주차권 1장</button>
       </div>
       <div className="group-title">
         오늘의 주차장 퀘스트 · 입장 {today.entries}회 · 최고 B{today.bestDepth}m{saturday ? " · 토요일 2배!" : ""}
@@ -53,7 +54,7 @@ export function ParkingPanel({ state, store }: { state: GameState; store: GameSt
               <div className="sub">{Math.min(have, q.goal)}/{q.goal}</div>
             </div>
             <button disabled={!done || claimed} onClick={() => store.do({ k: "claimDaily", id: q.id })}>
-              {claimed ? "받음" : <>받기<br />🎟 {dailyQuestReward(q, state.lastTick)}</>}
+              {claimed ? "받음" : <>받기<br /><Amount icon="coupon" value={dailyQuestReward(q, state.lastTick)} /></>}
             </button>
           </div>
         );
@@ -64,7 +65,7 @@ export function ParkingPanel({ state, store }: { state: GameState; store: GameSt
             <h3>주차장 탐사 끝</h3>
             <p>30초 동안 <b>B{result.depth}m</b>까지 내려갔어요</p>
             <p className="sub">상자 {result.chests}개</p>
-            {result.tickets > 0 ? <p>📝 응시권 {formatCount(result.tickets)}</p> : <p className="sub">20m마다 상자가 있어요</p>}
+            {result.tickets > 0 ? <p>응시권 <Amount icon="ticket" value={formatCount(result.tickets)} /></p> : <p className="sub">20m마다 상자가 있어요</p>}
             <button onClick={() => setResult(null)}>확인</button>
           </div>
         </div>

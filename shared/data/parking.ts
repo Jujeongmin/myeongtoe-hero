@@ -49,11 +49,12 @@ export function runParking(power: Power): ParkingRun {
 }
 
 // Passes refill with time (called from settle). A full stack holds no partial time.
-export function rechargePasses(parking: GameState["parking"], dt: number): GameState["parking"] {
+export function rechargePasses(parking: GameState["parking"], dt: number, max = PARK_PASS_MAX): GameState["parking"] {
+  if (parking.passes >= max) return { ...parking, passCarrySec: 0 };
   let { passes, passCarrySec } = parking;
   passCarrySec += dt;
   const gained = Math.floor(passCarrySec / PARK_RECHARGE_SEC);
-  passes = Math.min(PARK_PASS_MAX, passes + gained);
-  passCarrySec = passes >= PARK_PASS_MAX ? 0 : passCarrySec - gained * PARK_RECHARGE_SEC;
+  passes = Math.min(max, passes + gained);
+  passCarrySec = passes >= max ? 0 : passCarrySec - gained * PARK_RECHARGE_SEC;
   return { ...parking, passes, passCarrySec };
 }

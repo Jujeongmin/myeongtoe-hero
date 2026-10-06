@@ -2,7 +2,9 @@ import { certEffects } from "./data/certs";
 import { apartmentDamage, findSuitItem, suitSetWorn } from "./data/home";
 import { awakenStage, petsUnlocked } from "./data/pets";
 import { relicsUnlocked } from "./data/relics";
-import type { GameState } from "./state";
+import { PREMIUM_OFFLINE_SEC } from "./data/shop";
+import { PARK_PASS_MAX, type GameState } from "./state";
+import { vipPerks } from "./vip";
 
 // Every permanent effect in one place: certificates, relics, the apartment, suits, office gear and
 // pets. heroPower, settle and the offline cap read only this. Random effects (최대리's
@@ -65,7 +67,15 @@ export function mods(s: GameState): Mods {
   applyRelics(s, m);
   applyHome(s, m);
   applyPets(s, m);
+  const vip = vipPerks(s);
+  m.sideJobMult *= vip.sideJobMult;
+  m.offlineSec += vip.offlineSec + (s.vx.premium ? PREMIUM_OFFLINE_SEC : 0);
   return m;
+}
+
+// Parking passes held at most (VIP 3 and 6 add one each).
+export function parkPassMax(s: GameState): number {
+  return PARK_PASS_MAX + vipPerks(s).parkPassBonus;
 }
 
 function applyHome(s: GameState, m: Mods): void {
