@@ -4,6 +4,7 @@ import { GEAR_MAX_LEVEL, GEAR_TIERS, gearConfirmCost } from "./data/gear";
 import { OFFICE_PARTS, apartmentCost, findSuitItem, officeUpgradeCost, type OfficePart } from "./data/home";
 import { AD_BUFF_MS, AD_COUPONS, AD_GEMS_MAX, AD_GEMS_MIN, AD_GOLD_KILLS, adReadyAt, findAd } from "./data/ads";
 import { BUFF_KINDS, extendBuff } from "./data/buffs";
+import { SPEED_AD_MS } from "./data/speed";
 import { dailyQuestReward, findDailyQuest } from "./data/dailyQuests";
 import { BUFF_MS, findGemItem } from "./data/gemShop";
 import { ATTENDANCE_REWARDS, STEP_MISSIONS, findSpecialMission, type Reward } from "./data/missions";
@@ -53,7 +54,8 @@ export type Intent =
   | { k: "confirmGear" }
   | { k: "buyGemItem"; id: string }
   | { k: "watchAd"; id: string }
-  | { k: "claimDailyVx" };
+  | { k: "claimDailyVx" }
+  | { k: "toggleSpeed" };
 
 // Untrusted input (from the network) to an Intent, or null for anything else.
 export function readIntent(raw: unknown): Intent | null {
@@ -81,6 +83,7 @@ export function readIntent(raw: unknown): Intent | null {
     case "claimAttendance":
     case "confirmGear":
     case "claimDailyVx":
+    case "toggleSpeed":
       return { k: r.k };
     case "levelPet":
     case "levelRelic":
@@ -269,6 +272,9 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       if (!ad) throw new RuleError("unknown");
       if (s.lastTick < adReadyAt(s, ad)) throw new RuleError("cooldown");
       switch (ad.id) {
+        case "ad_speed":
+          s.speed = { ...s.speed, until: Math.max(s.speed.until, s.lastTick) + SPEED_AD_MS };
+          break;
         case "ad_gems": {
           const draw = nextRandom(s.rngSeed);
           s.rngSeed = draw.seed;
@@ -301,6 +307,11 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
         }
       }
       s.ads = { ...s.ads, [ad.id]: s.lastTick };
+      return s;
+    }
+    case "toggleSpeed": {
+      if (!s.vx.premium) throw new RuleError("locked");
+      s.speed = { ...s.speed, on: !s.speed.on };
       return s;
     }
     case "claimDailyVx": {

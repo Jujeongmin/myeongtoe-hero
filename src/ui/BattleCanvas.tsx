@@ -6,7 +6,7 @@ import { targetSec } from "../../shared/settle";
 import type { GameState } from "../../shared/state";
 import { HERO_CRIT_CHANCE, heroPower } from "../../shared/stats";
 import {
-  ANIMS, ATTACK_IMPACT_FRAME, BASELINE_Y, FRAME, LAYERS, LAYERS_ARM_FRONT, SHINE, backgroundFile, gearSprite, image, monsterFor, parkStrip, partStrip,
+  ANIMS, ATTACK_IMPACT_FRAME, BASELINE_Y, FRAME, HP_BAR, LAYERS, LAYERS_ARM_FRONT, SHINE, backgroundFile, gearSprite, image, monsterFor, parkStrip, partStrip,
   type Anim, type MonsterSprite,
 } from "../game/sprites";
 
@@ -199,8 +199,31 @@ function draw(
       ? Math.min(a.frames - 1, Math.floor((HURT_MS - (sim.hurtUntil - now)) / a.ms))
       : Math.floor(now / a.ms) % a.frames;
     drawMonster(ctx, monster, hurt ? "hurt" : "idle", f, monsterX, floorY);
+    drawHpBar(ctx, monster, monsterX, floorY, 1 - landed / n);
   }
   return nextScroll;
+}
+
+// The monster's health bar (art/ui hp_bar, 3-slice) over its head: one step down per hit.
+function drawHpBar(ctx: CanvasRenderingContext2D, m: MonsterSprite, x: number, floorY: number, value: number): void {
+  const empty = image(HP_BAR.empty);
+  const fill = image(HP_BAR.fill);
+  const frame = image(HP_BAR.frame);
+  if (!empty || !fill || !frame) return;
+  const w = Math.max(HP_BAR.w, Math.round(m.size * 0.5));
+  const left = Math.round(x + m.hpBar[0] - w / 2);
+  const top = floorY - m.baseline - m.hover + m.hpBar[1] - HP_BAR.h - 1;
+  const slice = (img: HTMLImageElement, width: number) => {
+    const e = HP_BAR.edge;
+    if (width <= 0) return;
+    const mid = img.width - 2 * e;
+    ctx.drawImage(img, 0, 0, Math.min(e, width), img.height, left, top, Math.min(e, width), img.height);
+    if (width > e) ctx.drawImage(img, e, 0, mid, img.height, left + e, top, Math.min(w - 2 * e, width - e), img.height);
+    if (width > w - e) ctx.drawImage(img, img.width - e, 0, e, img.height, left + w - e, top, width - (w - e), img.height);
+  };
+  slice(empty, w);
+  slice(fill, Math.round(w * Math.max(0, Math.min(1, value))));
+  slice(frame, w);
 }
 
 function drawMonster(ctx: CanvasRenderingContext2D, m: MonsterSprite, anim: "idle" | "hurt" | "death", f: number, x: number, floorY: number): void {

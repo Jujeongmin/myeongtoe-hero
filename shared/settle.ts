@@ -1,5 +1,6 @@
 import { Big } from "./big";
 import { BUFF_KINDS } from "./data/buffs";
+import { SPEED_MULT, speedActive } from "./data/speed";
 import { isBossFloor, killGold, targetHp, targetsOn } from "./data/floors";
 import { rechargePasses } from "./data/parking";
 import { findSideJob, sideJobCycle, sideJobIncome } from "./data/sideJobs";
@@ -137,16 +138,18 @@ export function settle(state: GameState, now: number): GameState {
   let next = cloneState(state);
   next.lastTick = Math.max(state.lastTick, now - offlineCapSec(state) * 1000);
   while (next.lastTick < now) {
-    const ends = BUFF_KINDS.map((k) => next.buffs[k]).filter((t) => t > next.lastTick && t < now);
+    const ends = [...BUFF_KINDS.map((k) => next.buffs[k]), next.speed.until].filter((t) => t > next.lastTick && t < now);
     next = settleSpan(next, Math.min(now, ...ends));
   }
   return next;
 }
 
-// Settles lastTick to `to` at the power of lastTick (nothing changes power within the span).
+// Settles lastTick to `to` at the power of lastTick (nothing changes power within the span). With
+// 배속 on, the tower and the side jobs get twice the time; passes recharge in real time.
 function settleSpan(start: GameState, to: number): GameState {
   const next = cloneState(start);
-  const dt = (to - start.lastTick) / 1000;
+  const real = (to - start.lastTick) / 1000;
+  const dt = speedActive(next) ? real * SPEED_MULT : real;
   const m = mods(next);
   const battle = settleBattle(next.run, heroPower(next), dt);
   const jobs = settleSideJobs(next.sideJobs, dt, m.sideJobMult);
@@ -161,7 +164,7 @@ function settleSpan(start: GameState, to: number): GameState {
   next.ticketCarry = drops - Math.floor(drops);
   next.sideJobs = jobs.sideJobs;
   next.gold = next.gold.add(battle.gold).add(jobs.gold).add(pay);
-  next.parking = rechargePasses(next.parking, dt, parkPassMax(next));
+  next.parking = rechargePasses(next.parking, real, parkPassMax(next));
   return next;
 }
 

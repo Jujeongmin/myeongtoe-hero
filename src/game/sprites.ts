@@ -17,6 +17,7 @@ const URLS = import.meta.glob(
     "../../art/backgrounds/*.png",
     "../../art/icons/*.png",
     "../../art/monsters/*.png",
+    "../../art/ui/*.png",
   ],
   { eager: true, query: "?url", import: "default" },
 ) as Record<string, string>;
@@ -100,9 +101,30 @@ export function partStrip(id: string, anim: Anim): string {
   return `parts/suits/strips/${id}_${anim}.png`;
 }
 
+// The URL of any art file the screen may show as an <img> (gear icons and the like).
+export function imageUrl(path: string): string | undefined {
+  return url(path);
+}
+
 export function iconUrl(name: string): string | undefined {
   return url(`icons/${name}.png`);
 }
+
+// The UI frames (art/ui) as CSS variables (--ui-<file name>), so index.css can draw them with
+// border-image at their versioned URLs.
+export function applyUiSkin(root: HTMLElement = document.documentElement): void {
+  for (const key of Object.keys(URLS)) {
+    const m = /^\.\.\/\.\.\/art\/ui\/([a-z_]+)\.png$/.exec(key);
+    if (!m || m[1].startsWith("_")) continue;
+    const src = url(`ui/${m[1]}.png`);
+    if (src) root.style.setProperty(`--ui-${m[1].replace(/_/g, "-")}`, `url("${src}")`);
+  }
+}
+
+export const HP_BAR = {
+  w: 24, h: 5, edge: 3,
+  empty: "ui/hp_bar_empty.png", fill: "ui/hp_bar_fill.png", frame: "ui/hp_bar_frame.png",
+};
 
 const images = new Map<string, HTMLImageElement>();
 

@@ -8,11 +8,13 @@ import { GameServerProvider } from "@agent8/gameserver";
 import { LocalApp, OnlineApp } from "./App";
 import "./fonts.css";
 import "./index.css";
+import { applyUiSkin } from "./game/sprites";
 import { initAds } from "./net/ads";
 import { wantsOnline } from "./net/connection";
 import { ErrorBoundary } from "./ui/ErrorBoundary";
 
 initAds();
+applyUiSkin();
 
 // No dragging or selecting text and pictures anywhere but the text fields (index.css does the same
 // for browsers that honour it).

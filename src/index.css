@@ -98,8 +98,14 @@ b, strong { font-weight: normal; color: #fff3c4; }
 
 .battle-head { position: absolute; top: 6px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; text-shadow: 1px 1px 0 #000; pointer-events: none; }
 .battle-head .floor-no { }
-.floor-bar { width: 50%; height: 6px; background: #400; border: 2px solid #000; }
-.floor-bar i { display: block; height: 100%; background: #6ab04c; }
+/* Pixel-art bars (art/ui, 3-slice, drawn at 2 CSS px per art pixel). */
+.pbar { position: relative; display: block; image-rendering: pixelated; }
+.pbar i { position: absolute; inset: 0; border-style: solid; border-color: transparent; }
+.pbar-progress { width: 50%; height: 12px; }
+.pbar-progress i { border-width: 0 6px; }
+.pbar-progress .empty { border-image: var(--ui-progress-bar-empty) 0 3 fill / 0 6px stretch; }
+.pbar-progress .fill { border-image: var(--ui-progress-bar-fill) 0 3 fill / 0 6px stretch; }
+.pbar-progress .frame { border-image: var(--ui-progress-bar-frame) 0 3 fill / 0 6px stretch; }
 .boss-timer { color: #ffd166; }
 .skills { position: absolute; top: 40px; left: 6px; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
 .skills span { font-size: 12px; padding: 0 4px; background: rgba(0, 0, 0, 0.7); border: 1px solid #000; }
@@ -149,3 +155,33 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .suit-grid button { padding: 4px 2px; font-size: 12px; }
 .suit-grid button.owned { background: #3a5a40; box-shadow: inset 2px 2px 0 #5a8a60, inset -2px -2px 0 #24382a; }
 .suit-grid button.worn { background: #e9c46a; color: #000; text-shadow: none; box-shadow: inset 2px 2px 0 #fff2b0, inset -2px -2px 0 #a8862a; }
+
+/* ---- Pixel-art UI skin (art/ui, PixelLab), drawn with border-image at 2 CSS px per art pixel ---- */
+.row { border: 12px solid transparent; border-image: var(--ui-row-panel) 6 fill / 12px repeat; background: none; box-shadow: none; padding: 0 2px; min-height: 64px; image-rendering: pixelated; }
+.row.locked { min-height: 48px; }
+.row.current { border-image: var(--ui-row-panel) 6 fill / 12px repeat; filter: brightness(1.15); }
+.row button, .modal button, .sheet header button, .btn { border: 12px solid transparent; border-image: var(--ui-button-gold) 6 fill / 12px repeat; background: none; box-shadow: none; color: #fff; padding: 0 2px; min-width: 76px; min-height: 40px; text-shadow: 1px 1px 0 #000; image-rendering: pixelated; }
+.row button:disabled, .modal button:disabled { border-image: var(--ui-button-disabled) 6 fill / 12px repeat; color: #bbb; }
+.row button.hot, .row button.gold, .modal button.gold { border-image: var(--ui-button-gold-hot) 6 fill / 12px repeat; color: #ffd166; }
+.icon-box { flex: none; width: 72px; height: 72px; border: 12px solid transparent; border-image: var(--ui-icon-box) 12 fill / 12px; background: none; box-shadow: none; display: grid; place-items: center; }
+.bottom-nav { gap: 2px; padding: 2px; background: #0b0916; }
+.bottom-nav button { border: 13px solid transparent; border-image: var(--ui-nav-tile) 13 fill / 13px; background: none; box-shadow: none; padding: 0; justify-content: center; }
+.bottom-nav button .icon { margin: -10px 0 -2px; }
+.bottom-nav button.on { border-image: var(--ui-nav-tile-on) 14 fill / 13px; background: none; box-shadow: none; color: #ffd166; }
+.mission-card { border: 14px solid transparent; border-image: var(--ui-mission-panel) 14 fill / 14px; background: none; box-shadow: none; padding: 0; }
+.mission-card > div { margin: -6px 0; }
+.menu-btn { width: 32px; height: 32px; padding: 0; border: none; background: var(--ui-menu-button) center / 32px 32px no-repeat; box-shadow: none; image-rendering: pixelated; }
+.menu-btn.on { background: var(--ui-menu-button) center / 32px 32px no-repeat; filter: brightness(0.75); }
+.top-icons button { min-width: 0; width: 32px; height: 32px; padding: 0; border: none; background: none; box-shadow: none; }
+.speed-btn { position: absolute; left: 6px; top: 40px; z-index: 2; display: flex; flex-direction: column; align-items: center; padding: 0 4px; border: 12px solid transparent; border-image: var(--ui-button-gold) 6 fill / 12px repeat; background: none; color: #fff; text-shadow: 1px 1px 0 #000; line-height: 1.2; }
+.speed-btn.on { border-image: var(--ui-button-gold-hot) 6 fill / 12px repeat; color: #ffd166; }
+.speed-btn small { font-size: 12px; }
+.skills { top: 66px; left: 50%; transform: translateX(-50%); flex-direction: row; flex-wrap: wrap; justify-content: center; max-width: 52%; }
+.gear-img { width: 48px; height: 48px; object-fit: contain; image-rendering: pixelated; }
+.row { gap: 10px; }
+.tabs { margin-bottom: 2px; }
+.tabs button { border: 12px solid transparent; border-image: var(--ui-button-gold) 6 fill / 12px repeat; background: none; padding: 0; color: #b8b3d6; }
+.tabs button.on { border-image: var(--ui-button-gold-hot) 6 fill / 12px repeat; color: #ffd166; }
+.modal { border: 14px solid transparent; border-image: var(--ui-mission-panel) 14 fill / 14px; background: none; box-shadow: none; }
+.sheet { border: 12px solid transparent; border-image: var(--ui-row-panel) 6 fill / 12px repeat; background: none; box-shadow: none; }
+.sheet-body { background: none; }

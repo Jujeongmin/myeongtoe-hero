@@ -25,9 +25,9 @@ function codeOf(s: GameState, intent: Intent): string {
 }
 
 describe("rewarded ads", () => {
-  test("six placements with cooldowns, no daily limit", () => {
+  test("seven placements with cooldowns, no daily limit", () => {
     expect(AD_PLACEMENTS.map((a) => [a.id, a.cooldownMs / MIN])).toEqual([
-      ["ad_gems", 15], ["ad_gold", 15], ["ad_buff", 30], ["ad_coupons", 60], ["ad_parking", 120], ["ad_offline", 0],
+      ["ad_speed", 30], ["ad_gems", 15], ["ad_gold", 15], ["ad_buff", 30], ["ad_coupons", 60], ["ad_parking", 120], ["ad_offline", 0],
     ]);
   });
 

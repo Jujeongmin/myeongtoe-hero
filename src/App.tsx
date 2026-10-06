@@ -5,7 +5,9 @@ import { useGameView } from "./game/useGameView";
 import { connectionOf, shouldPlayLocally, type Connection } from "./net/connection";
 import { loginState } from "./net/login";
 import { LocalTransport, OFFLINE } from "./net/transport";
+import { onShopClosed, startShop } from "./net/shop";
 import { Verse8Transport } from "./net/verse8Transport";
+import { getUser } from "@verse8/platform";
 import { Battle, type SheetId } from "./ui/Battle";
 import { BottomNav, type NavTab } from "./ui/BottomNav";
 import { CertPanel } from "./ui/CertPanel";
@@ -17,6 +19,7 @@ import { OfflinePopup } from "./ui/OfflinePopup";
 import { PetPanel } from "./ui/PetPanel";
 import { PrestigePanel } from "./ui/PrestigePanel";
 import { RankingSheet } from "./ui/RankingSheet";
+import { ShopPanel } from "./ui/ShopPanel";
 import { ScreenLock, SettingsPanel } from "./ui/ScreenLock";
 import { Sheet } from "./ui/Sheet";
 import { SideJobPanel } from "./ui/SideJobPanel";
@@ -58,6 +61,18 @@ export function OnlineApp() {
     const id = setInterval(check, 1000);
     return () => clearInterval(id);
   }, [fallback, connection, store, startedAt]);
+
+  // The VX Shop: started for this account, and a sync after its dialog closes so a purchase shows.
+  useEffect(() => {
+    try {
+      startShop(getUser().account);
+    } catch {
+      // Not logged in to Verse8: no shop.
+    }
+    return onShopClosed((_, purchased) => {
+      if (purchased) void store.syncNow().catch(() => undefined);
+    });
+  }, [store]);
 
   useEffect(() => {
     if (fallback) store.setTransport(new LocalTransport(window.localStorage));
@@ -112,6 +127,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
         {tab === "pets" && <PetPanel state={state} store={store} />}
         {tab === "certs" && <CertPanel state={state} store={store} />}
         {tab === "dungeon" && <ParkingPanel state={state} store={store} />}
+        {tab === "shop" && <ShopPanel state={state} store={store} />}
       </main>
       <BottomNav state={state} tab={tab} onPick={setTab} />
       {sheet && (

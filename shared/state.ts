@@ -7,7 +7,7 @@ import { findPet } from "./data/pets";
 import { findRelic } from "./data/relics";
 import { findSideJob } from "./data/sideJobs";
 
-export const SAVE_VERSION = 7;
+export const SAVE_VERSION = 8;
 export const OFFLINE_CAP_SEC = 12 * 3600;
 export const OFFICE_MAX_GRADE = 17;
 // 지하주차장 passes stored at most. Re-exported by data/parking.ts.
@@ -96,6 +96,8 @@ export interface GameState {
   vx: VxState;
   // The last welcome-back reward, claimable once more by an ad until `until`.
   offlineBonus: { gold: string; tickets: number; until: number } | null;
+  // 배속: on until `until` (from an ad), or always while `on` for 프리미엄 buyers.
+  speed: { until: number; on: boolean };
 }
 
 export interface SaveData extends Omit<GameState, "gold"> {
@@ -181,6 +183,8 @@ const MIGRATIONS: Record<number, (save: Record<string, unknown>) => Record<strin
     run: { ...obj(save.run), gearBoost: 0 },
     buffs: {}, ads: {}, startedAt: save.lastTick, vx: {}, offlineBonus: null,
   }),
+  // v8: 배속.
+  7: (save) => ({ ...save, v: 8, speed: { until: 0, on: false } }),
 };
 
 export function freshRun(): RunState {
@@ -220,6 +224,7 @@ export function newState(now: number): GameState {
     startedAt: now,
     vx: { total: 0, premium: false, passUntil: 0, dailyClaimed: "", rookie: false, promos: [] },
     offlineBonus: null,
+    speed: { until: 0, on: false },
   };
 }
 
@@ -233,6 +238,7 @@ export function cloneState(s: GameState): GameState {
     missions: { ...s.missions, special: [...s.missions.special] }, attendance: { ...s.attendance },
     buffs: { ...s.buffs }, ads: { ...s.ads }, vx: { ...s.vx, promos: [...s.vx.promos] },
     offlineBonus: s.offlineBonus && { ...s.offlineBonus },
+    speed: { ...s.speed },
   };
 }
 
@@ -350,5 +356,6 @@ export function fromSave(raw: unknown): GameState {
     offlineBonus: seconds(bonus.until) > 0 && typeof bonus.gold === "string"
       ? { gold: gold(bonus.gold).toString(), tickets: int(bonus.tickets, 0, 0), until: seconds(bonus.until) }
       : null,
+    speed: { until: seconds(obj(data.speed).until), on: obj(data.speed).on === true },
   };
 }

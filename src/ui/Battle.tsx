@@ -9,6 +9,8 @@ import type { GameStore } from "../game/store";
 import { BattleCanvas } from "./BattleCanvas";
 import { Icon } from "./Icon";
 import { MissionCard, missionsWaiting, type MissionPlace } from "./MissionCard";
+import { PixelBar } from "./PixelBar";
+import { SpeedButton } from "./SpeedButton";
 import { Amount } from "./Amount";
 import { CurrencyBar } from "./CurrencyBar";
 
@@ -42,20 +44,20 @@ export function Battle({ state, store, onOpen, onGo }: {
       <header className="battle-head">
         <div>마왕그룹 {departmentOf(floor)}</div>
         <div className="floor-no">{floor}층{farming ? " · 파밍 중" : ""}</div>
-        <div className="floor-bar">
-          <i style={{ width: `${(Math.min(target, targetsOn(floor)) / targetsOn(floor)) * 100}%` }} />
-        </div>
-        {boss && <div className="boss-timer">보스 {bossLeft}초</div>}
+        <PixelBar kind="progress" value={Math.min(target, targetsOn(floor)) / targetsOn(floor)} />
+        {boss && <div className="boss-timer"><Icon name="timer" size={16} /> 보스 {bossLeft}초</div>}
       </header>
       <div className="top-icons">
         <button onClick={() => onOpen("missions")} aria-label="미션">
-          미션{missionsWaiting(state) && <i className="dot" />}
+          <Icon name="missions" />
+          {missionsWaiting(state) && <i className="dot" />}
         </button>
-        <button onClick={() => onOpen("ranking")} aria-label="랭킹">랭킹</button>
-        <button onClick={() => onOpen("settings")} aria-label="설정">설정</button>
+        <button onClick={() => onOpen("ranking")} aria-label="랭킹"><Icon name="rank" /></button>
+        <button onClick={() => onOpen("settings")} aria-label="설정"><Icon name="settings" /></button>
       </div>
+      <SpeedButton state={state} store={store} />
       <div className="side-menu">
-        <button className={`menu-btn${menuOpen ? " on" : ""}`} onClick={() => setMenuOpen(!menuOpen)}>메뉴</button>
+        <button className={`menu-btn${menuOpen ? " on" : ""}`} aria-label="메뉴" onClick={() => setMenuOpen(!menuOpen)} />
         {menuOpen && (
           <div className="side-icons">
             {SIDE.map((s) => (

@@ -99,6 +99,12 @@ export class GameStore {
     return this.transport.ranking(board);
   }
 
+  // Syncs now rather than at the next heartbeat (a VX purchase has just been paid on the server).
+  async syncNow(): Promise<void> {
+    this.lastSyncAt = Number.NEGATIVE_INFINITY;
+    await this.flush();
+  }
+
   // The new name is saved by the server; sync at once so the screen shows it.
   async setNickname(name: string): Promise<void> {
     await this.transport.setNickname(name);
