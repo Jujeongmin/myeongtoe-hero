@@ -2,12 +2,15 @@ import { Big } from "./big";
 import { CERTS, certBonuses, certDrawCost, certLevelCost, certTierOpen, findCert } from "./data/certs";
 import { GEAR_MAX_LEVEL, GEAR_TIERS, gearLevelCost, gearPrice } from "./data/gear";
 import { OFFICE_PARTS, apartmentCost, findSuitItem, officeUpgradeCost, type OfficePart } from "./data/home";
+import { runParking } from "./data/parking";
+import { dailyOf } from "./daily";
 import { PET_BOX_COUPONS, findPet, petLevelCost, petsUnlocked } from "./data/pets";
 import { BOOSTED_PRESTIGE_GEMS, PRESTIGE_MIN_FLOOR, prestigeReward } from "./data/prestige";
 import { findRelic, relicLevelCost } from "./data/relics";
 import { findSideJob, sideJobCost } from "./data/sideJobs";
 import { petLevel, relicLevel } from "./mods";
 import { nextRandom } from "./rng";
+import { heroPower } from "./stats";
 import { OFFICE_MAX_GRADE, cloneState, freshRun, type GameState } from "./state";
 
 // A player's request the rules turned down. `code` goes back to the client as is (ui/text.ts has the
@@ -33,7 +36,8 @@ export type Intent =
   | { k: "expandApartment" }
   | { k: "buySuit"; id: string }
   | { k: "wearSuit"; id: string }
-  | { k: "upgradeOffice"; part: OfficePart };
+  | { k: "upgradeOffice"; part: OfficePart }
+  | { k: "enterParking" };
 
 // Untrusted input (from the network) to an Intent, or null for anything else.
 export function readIntent(raw: unknown): Intent | null {
@@ -54,6 +58,7 @@ export function readIntent(raw: unknown): Intent | null {
       return typeof r.boosted === "boolean" ? { k: "prestige", boosted: r.boosted } : null;
     case "petBox":
     case "expandApartment":
+    case "enterParking":
       return { k: r.k };
     case "levelPet":
     case "levelRelic":
@@ -202,6 +207,15 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       const item = findSuitItem(intent.id);
       if (!item || !s.suits.includes(item.id)) throw new RuleError("not_owned");
       s.wear = { ...s.wear, [item.part]: item.id };
+      return s;
+    }
+    case "enterParking": {
+      if (s.parking.passes <= 0) throw new RuleError("no_pass");
+      const run = runParking(heroPower(s));
+      const today = dailyOf(s);
+      s.parking = { ...s.parking, passes: s.parking.passes - 1, best: Math.max(s.parking.best, run.depth) };
+      s.tickets += run.tickets;
+      s.daily = { ...today, claimed: [...today.claimed], entries: today.entries + 1, bestDepth: Math.max(today.bestDepth, run.depth) };
       return s;
     }
     case "upgradeOffice": {

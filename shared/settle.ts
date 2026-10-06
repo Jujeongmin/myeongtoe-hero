@@ -1,5 +1,6 @@
 import { Big } from "./big";
 import { WALK_SEC, isBossFloor, killGold, targetHp, targetsOn } from "./data/floors";
+import { rechargePasses } from "./data/parking";
 import { findSideJob, sideJobCycle, sideJobIncome } from "./data/sideJobs";
 import { cloneState, type GameState, type RunState, type SideJobState } from "./state";
 import { mods, type Mods } from "./mods";
@@ -152,6 +153,7 @@ export function settle(state: GameState, now: number): GameState {
   next.ticketCarry = drops - Math.floor(drops);
   next.sideJobs = jobs.sideJobs;
   next.gold = next.gold.add(battle.gold).add(jobs.gold).add(pay);
+  next.parking = rechargePasses(next.parking, dt);
   return next;
 }
 
