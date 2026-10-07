@@ -121,7 +121,7 @@ export const EPISODES: readonly Episode[] = [
     floor: 100,
     title: "헤드헌터",
     panels: [
-      { img: "hunter_1", lines: [{ who: "헤드헌터 냥", text: "박부장님, 더 좋은 조건으로 1층부터 다시 시작하시죠.", at: [96, 36] }] },
+      { img: "hunter_1", lines: [{ who: "헤드헌터 냥", text: "박부장님, 연봉은 올려 드리죠. 대신 1층부터 다시 시작입니다.", at: [96, 36] }] },
       { img: "hunter_2", lines: [{ who: "박부장", text: "1층부터? 내가 여기까지 어떻게 왔는데!", at: [110, 10] }] },
       { img: "hunter_3", lines: [{ who: "헤드헌터 냥", text: "경력은 인정해 드립니다. 이직할 때마다 자격증 응시권으로요. 자격증 붙으면 1층쯤은 금방이죠.", at: [112, 30] }] },
       { img: "hunter_4", lines: [{ who: "박부장", text: "…중장비 자격증도 있나?", at: [92, 18] }, { text: "100층부터 이직할 수 있어요." }] },

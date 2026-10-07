@@ -43,7 +43,7 @@ export function PrestigePanel({ state, store, onClose }: { state: GameState; sto
         </header>
         <div className="prestige-pitch">
           <img src={imageUrl("story/src/ref_headhunter_cat.png")} width={64} height={64} alt="" draggable={false} />
-          <div className="prestige-say">{t("박부장님, 더 좋은 조건으로 1층부터 다시 시작하시죠.")}</div>
+          <div className="prestige-say">{t("박부장님, 연봉은 올려 드리죠. 대신 1층부터 다시 시작입니다.")}</div>
         </div>
         <div className="prestige-terms">
           <div>{t("이번 회차 최고 {floor}층", { floor })}</div>
