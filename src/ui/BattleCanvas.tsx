@@ -20,9 +20,9 @@ import { t } from "../i18n";
 // fighting it. A fight is split into as many hits as Park's attack speed allows; each hit lands on
 // the swing's impact frame, knocks the monster's health down one step and shows its damage, and
 // the last one kills it.
-// Park and the monsters at a set size, not a share of the screen width: about 1.2 CSS px per art
-// pixel, rounded to whole device pixels (Park stands about 50 px tall on any phone).
-const ART_CSS_PX = 1.2;
+// Park and the monsters at a set size, not a share of the screen width: about 1.5 CSS px per art
+// pixel, rounded to whole device pixels (Park stands about 60 px tall on any phone).
+const ART_CSS_PX = 1.5;
 // Bosses are drawn about this much bigger than the other monsters (rounded to whole device pixels).
 const BOSS_SIZE = 1.3;
 let artScale = 1;
@@ -171,7 +171,7 @@ function say(el: HTMLDivElement | null, text: string, x: number, y: number): voi
   bubbleTimer = window.setTimeout(() => (el.hidden = true), BUBBLE_MS);
 }
 
-// Size a bubble to the characters (Park is about 50 px tall): font 10px down to 8px, wrapping at
+// Size a bubble to the characters (Park is about 60 px tall): font 10px down to 8px, wrapping at
 // 140/110/90 px, the first size that covers none of the other UI and stays inside the battle
 // area; if nothing fits, the smallest try stays.
 function fitBubble(el: HTMLDivElement): void {
@@ -184,14 +184,20 @@ function fitBubble(el: HTMLDivElement): void {
   const clear = (r: DOMRect) =>
     r.left >= area.left && r.right <= area.right && r.top >= area.top &&
     !others.some((o) => Math.min(r.right, o.right) - Math.max(r.left, o.left) > 1 && Math.min(r.bottom, o.bottom) - Math.max(r.top, o.top) > 1);
-  for (const px of [10, 9, 8]) {
-    for (const width of [140, 110, 90]) {
-      el.style.fontSize = `${px}px`;
-      el.style.lineHeight = `${px + 2}px`;
-      el.style.maxWidth = `${width}px`;
-      if (clear(el.getBoundingClientRect())) return;
+  // Still in the way at the smallest size: slide it left a step at a time (the tail stays over Park).
+  const left = parseFloat(el.style.left) || 0;
+  for (const dx of [0, -16, -32, -48]) {
+    el.style.left = `${left + dx}px`;
+    for (const px of [10, 9, 8]) {
+      for (const width of [140, 110, 90]) {
+        el.style.fontSize = `${px}px`;
+        el.style.lineHeight = `${px + 2}px`;
+        el.style.maxWidth = `${width}px`;
+        if (clear(el.getBoundingClientRect())) return;
+      }
     }
   }
+  el.style.left = `${left}px`;
 }
 
 // A damage number that rises and fades over the monster (pixel font text, not a picture).
