@@ -352,3 +352,4 @@ html[lang="ja"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional J
 .theme-office .row button.hot { border-image: var(--ui-office-button-hot, var(--ui-button-gold-hot)) 8 8 11 8 fill / 8px 8px 11px 8px; }
 .theme-office .row button { color: #1d1d1d; text-shadow: none; }
 .theme-office .row button.hot { color: #3a2000; }
+.sheet-wallet { margin-left: auto; margin-right: 8px; display: flex; gap: 8px; font-size: 12px; }

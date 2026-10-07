@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import type { GameState } from "../shared/state";
+import { Amount } from "./ui/Amount";
 import { useGameServer } from "@agent8/gameserver";
 import { GameStore } from "./game/store";
 import { useGameView } from "./game/useGameView";
@@ -36,6 +38,17 @@ const SHEET_THEMES: Partial<Record<SheetId, string>> = {
   suits: "costume", apartment: "apartment", relics: "relics", office: "office",
   missions: "missions", ranking: "ranking", settings: "settings", story: "story",
 };
+
+// What each menu spends: 코스튬 (buy and rent with 상품권, 불꽃 with 보석), 아파트 and 기념품
+// (보석), 사무용품 (상품권).
+function walletFor(sheet: SheetId, state: GameState): ReactNode {
+  const coupons = <Amount icon="coupon" value={state.coupons.toLocaleString("en-US")} />;
+  const gems = <Amount icon="gem" value={state.gems.toLocaleString("en-US")} />;
+  if (sheet === "suits") return <>{coupons} {gems}</>;
+  if (sheet === "apartment" || sheet === "relics") return gems;
+  if (sheet === "office") return coupons;
+  return null;
+}
 
 const SHEET_TITLES: Record<SheetId, string> = {
   prestige: "이직", suits: "코스튬", apartment: "아파트", relics: "퇴직 기념품", office: "사무용품",
@@ -154,7 +167,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
       <BottomNav state={state} tab={tab} onPick={setTab} onLocked={(text) => store.notify(text)} />
       {sheet === "prestige" && <PrestigePanel state={state} store={store} onClose={() => setSheet(null)} />}
       {sheet && sheet !== "prestige" && (
-        <Sheet title={t(SHEET_TITLES[sheet])} theme={SHEET_THEMES[sheet]} onClose={() => setSheet(null)}>
+        <Sheet title={t(SHEET_TITLES[sheet])} theme={SHEET_THEMES[sheet]} wallet={walletFor(sheet, state)} onClose={() => setSheet(null)}>
           {sheet === "suits" && <CostumePanel state={state} store={store} />}
           {sheet === "apartment" && <ApartmentPanel state={state} store={store} />}
           {sheet === "relics" && <RelicPanel state={state} store={store} />}
