@@ -96,7 +96,7 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .row button.hot { background: #8d1c1c; color: #ffd166; }
 .row .buttons button { min-width: 56px; }
 
-.battle-head { position: absolute; top: 6px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; text-shadow: 1px 1px 0 #000; pointer-events: none; }
+.battle-head { position: absolute; top: 4px; left: 142px; right: 40px; height: 32px; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 6px; white-space: nowrap; text-shadow: 1px 1px 0 #000; pointer-events: none; }
 .battle-head .floor-no { }
 /* Pixel-art bars (art/ui, 3-slice, drawn at 2 CSS px per art pixel). */
 .pbar { position: relative; display: block; image-rendering: pixelated; }
@@ -106,7 +106,8 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .pbar-progress .empty { border-image: var(--ui-progress-bar-empty) 0 3 fill / 0 6px stretch; }
 .pbar-progress .fill { border-image: var(--ui-progress-bar-fill) 0 3 fill / 0 6px stretch; }
 .pbar-progress .frame { border-image: var(--ui-progress-bar-frame) 0 3 fill / 0 6px stretch; }
-.boss-timer { color: #ffd166; }
+.boss-timer { display: flex; align-items: center; gap: 2px; width: 72px; }
+.boss-timer .pbar { flex: 1; }
 .skills { position: absolute; top: 40px; left: 6px; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
 .skills span { font-size: 12px; padding: 0 4px; background: rgba(0, 0, 0, 0.7); border: 1px solid #000; }
 .side-menu { position: absolute; z-index: 3; right: 4px; top: 4px; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
@@ -202,7 +203,7 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .buff-bar .buff.on { opacity: 1; }
 .buff-bar .buff small { position: absolute; left: 50%; top: 30px; transform: translateX(-50%); font-size: 12px; color: #ffd166; text-shadow: 1px 1px 0 #000, -1px 0 0 #000; white-space: nowrap; }
 .bottom-nav button.locked { color: #777; }
-.atk-now { color: #ffd166; font-size: 12px; }
+.atk-now { position: absolute; z-index: 2; left: 6px; top: 94px; color: #ffd166; font-size: 12px; text-shadow: 1px 1px 0 #000, -1px 0 0 #000; pointer-events: none; }
 /* Nav tiles: icon and label stacked in the middle of the tile. */
 .bottom-nav button { height: 68px; align-items: center; justify-content: center; gap: 0; line-height: 1.2; }
 /* Top left: the three buffs and the 2x button, small, in one row. */

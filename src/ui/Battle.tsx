@@ -1,6 +1,7 @@
 import { MONSTERS_PER_FLOOR, departmentOf, isBoss } from "../../shared/data/floors";
 import { monsterFor } from "../game/sprites";
 import { SpriteThumb } from "./SpriteThumb";
+import { PixelBar } from "./PixelBar";
 import { PRESTIGE_MIN_FLOOR } from "../../shared/data/prestige";
 import { useState } from "react";
 import { formatBig, formatCount } from "../../shared/format";
@@ -50,11 +51,11 @@ export function Battle({ state, store, onOpen, onGo }: {
     <section className="battle">
       <BattleCanvas state={state} />
       <header className="battle-head">
-        <div>마왕그룹 {departmentOf(floor)}</div>
-        <div className="floor-no">{floor}층{farming ? " · 파밍 중" : ""}</div>
-        <div className="atk-now">공격력 {formatBig(atk)}</div>
-        {boss && <div className="boss-timer"><Icon name="timer" size={16} /> 보스 {bossLeft}초</div>}
+        <span>{departmentOf(floor)} {floor}층</span>
+        {farming && <span className="floor-no">파밍 중</span>}
+        {boss && <span className="boss-timer"><Icon name="timer" size={16} /><PixelBar kind="progress" value={bossLeft / power.bossLimitSec} /></span>}
       </header>
+      <div className="atk-now">공격력 {formatBig(atk)}</div>
       <div className="top-left">
         <BuffBar state={state} store={store} onShop={() => onGo({ tab: "shop" })} />
         <SpeedButton state={state} store={store} />
