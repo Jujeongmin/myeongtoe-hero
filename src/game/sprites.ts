@@ -142,10 +142,31 @@ export function image(path: string): HTMLImageElement | null {
     const src = url(path);
     if (!src) return null;
     img = new Image();
+    img.decoding = "async";
     img.src = src;
     images.set(path, img);
+    // Decode off the main thread now, so the first frame that draws it doesn't stall on it.
+    img.decode?.().catch(() => undefined);
   }
   return img.complete && img.naturalWidth > 0 ? img : null;
+}
+
+// Everything the battle screen can draw (Park and his costumes and weapons, monsters, backgrounds,
+// hit effects, the parking garage), loaded and decoded a few at a time while the game is idle, so
+// a new monster, boss or costume never appears mid-fight with a hitch while its image decodes.
+const BATTLE_ART = /^(park\/|parts\/suits\/strips\/|parts\/gear\/|backgrounds\/|monsters\/|fx\/|parking\/)/;
+let preloading = false;
+export function preloadBattleArt(): void {
+  if (preloading || typeof window === "undefined") return;
+  preloading = true;
+  const queue = Object.keys(URLS).map((k) => k.slice("../../art/".length)).filter((p) => BATTLE_ART.test(p));
+  const idle = (fn: () => void) =>
+    typeof window.requestIdleCallback === "function" ? window.requestIdleCallback(fn, { timeout: 500 }) : setTimeout(fn, 50);
+  const step = () => {
+    for (const path of queue.splice(0, 8)) image(path);
+    if (queue.length > 0) idle(step);
+  };
+  idle(step);
 }
 
 // ---- monsters ----

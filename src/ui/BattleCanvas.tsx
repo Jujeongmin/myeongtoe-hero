@@ -6,7 +6,7 @@ import { targetSec } from "../../shared/settle";
 import type { GameState } from "../../shared/state";
 import { heroCrit, heroPower } from "../../shared/stats";
 import { PARK_CHEST_EVERY, PARK_RUN_SEC, PARK_STEP_SEC, parkHp } from "../../shared/data/parking";
-import { ANIMS, ATTACK_IMPACT_FRAME, BASELINE_Y, HP_BAR, backgroundFile, image, monsterFor, type Anim, type MonsterSprite } from "../game/sprites";
+import { ANIMS, ATTACK_IMPACT_FRAME, BASELINE_Y, HP_BAR, backgroundFile, image, monsterFor, preloadBattleArt, type Anim, type MonsterSprite } from "../game/sprites";
 import { drawPark, visibleWear } from "../game/drawPark";
 import { t } from "../i18n";
 
@@ -76,6 +76,7 @@ export function BattleCanvas({ state }: { state: GameState }) {
   const snap = useRef<Snapshot>({ state, at: performance.now() });
   snap.current = { state, at: performance.now() };
 
+  useEffect(() => preloadBattleArt(), []);
   useEffect(() => {
     const el = canvas.current;
     if (!el) return;

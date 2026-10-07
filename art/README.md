@@ -1,5 +1,7 @@
 # 명퇴용사 박부장: art assets
 
+> **2026-10-07 cleanup:** every file the game does not load was deleted (raw picks and alternates in `*/src/`, contact sheets `_sheet_*.png`, old and preview folders, single animation frames, the webtoon style test): 869 files, about 10.7 MB. Sections below still describe how those files were made; they are in git history before this commit. All remaining PNGs were re-saved losslessly (palette PNG where a picture has 256 colours or fewer): 3.4 MB to 1.7 MB.
+
 Every image is pixel art at its native size. Alpha is binary (0 or 255), there is no anti-aliasing and palettes are limited.
 Scale up only by an integer factor with nearest-neighbour.
 
