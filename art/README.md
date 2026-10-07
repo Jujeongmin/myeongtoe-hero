@@ -310,6 +310,32 @@ Six normal monsters did not read as office monsters, so they were redrawn with t
 - `monsters.json`: only `name` (card_pixie), `bodyHeight`, `bodyWidth` and `hpBarAnchor` changed for these six; `flying`, `hoverPx` and the animation timings are as before.
 - `sticky_moth` stays in the files and in the 총무팀 previews, but it is not in 총무팀's `spareNormal`.
 
+### Humanoid bosses (batch A)
+
+Five bosses were redrawn as people first: former office workers re-hired by 마왕그룹 as contract bosses and cursed into a zombie, ghost or demon version of their job. They are new ids; the entries are in `monsters/new_bosses_A.json` (`monsters` plus a `replace` map from old id to new id) and are not yet merged into `monsters.json`. The old strips are copied to `monsters/old/`.
+
+| id (replaces) | Name | Role, department | Picture | Body (w×h) |
+|---|---|---|---|---|
+| `baek_bujang` (`copier_golem`) | 야근 좀비 백부장 | teamLeader, 총무팀 | a gaunt grey-green zombie man with messy dark hair, red-rimmed glaring eyes and stubble, a crumpled white shirt with rolled sleeves, an ID lanyard and a paper coffee cup, slouching | 41×52 |
+| `gangsi_sangmu` (`cardigan_ogre`) | 결재 강시 총무 상무 | executive, 총무팀 | a pale blue hopping-zombie executive in a grey three-piece suit, arms stretched out, a yellow approval slip with one red stamp (no writing) on his forehead and a bunch of brass keys at his belt, caught mid-hop | 48×66 |
+| `silijeok_timjang` (`megaphone_orc`) | 실적귀 영업팀장 | teamLeader, 영업팀 | a blue ghost sales manager in a shiny suit, glowing hollow eyes and forehead veins, shouting into a red megaphone with a rolled sales chart in the other hand, legs fading into wisps | 58×50 |
+| `golf_sangmu` (`golf_minotaur`) | 골프광 영업 상무 | executive, 영업팀 | a tanned pot-bellied executive in a pink golf polo and checked trousers, cap and sunglasses, small horns through the cap, swinging a driver wreathed in dark purple flame | 51×66 |
+| `sosong_timjang` (`scale_gargoyle`) | 소송 흡혈귀 법무팀장 | teamLeader, 법무팀 | a pale vampire lawyer with slicked-back hair, red eyes and small fangs, a black suit and red tie under a high-collared red-lined cape, holding a thick stack of lawsuit papers tied with a red ribbon | 49×51 |
+
+- **Generation:** PixelLab `create_1_direction_object` (sidescroller view), one description per candidate:
+  - 16 team-leader candidates at 64×64, with `megaphone_orc` and `pen_demon` idle frame 0 as style references;
+  - 16 executive candidates at 80×80, with `golf_minotaur` and `judge_lich` idle frame 0;
+  - one 80×80 re-roll of 16 with `golf_minotaur` only, because the first talismans had glyph-like squiggles and the golfers stood square to the viewer.
+  - The jiangshi pick faced right and was mirrored; the other picks already faced west.
+- **Downscale:** each pick was cropped, scaled ×4 nearest-neighbour and reduced with the kCentroid downscaler (`sprite-gen`) to its body height (team leaders 50–52 px, executives 66 px). The palette is the pick's own colours merged pairwise (closest pair first) down to 25, plus `#0C0B0A` for the outline (26 in total). This keeps small accent colours, such as the zombie's red eyes and the coffee cup, that a median cut lost. Alpha is binary. Each sprite is centred on its canvas with its feet on the role's feet line (y 56 or y 72).
+- **Strips:** the same frame edits as the office-object redo (idle squash and stretch, hurt flash and red tint, death squash, puff, cloud). Differences:
+  - `silijeok_timjang` is a ghost, so its idle is a bob (0, −1, −2, −1 px) instead of a squash. It still stands on the feet line, so `flying` is false and `hoverPx` is 0.
+  - Death frame 1 carries the puff and sparkles cut from the replaced boss's own death frame 1 (both executives use `cardigan_ogre`'s). Death frames 2 and 3 are that boss's cloud and fading puffs, moved to the new body centre.
+- **Preview:** `monsters/preview/bosses_A_x3.png`. The top row is idle frame 0 ×3; under it each boss has one row of all ten frames ×2.
+- **Known weak points:**
+  - The golfer swings toward Park but his face and belly are turned three-quarters to the viewer, not in profile.
+  - The vampire lawyer is the classic caped-vampire archetype, so "lawyer" comes mainly from the paper stack and red tie.
+
 ## UI icons (second batch, `icons/`)
 
 - 20 icons at 32×32, no text:
@@ -384,6 +410,7 @@ All UI frames were generated with PixelLab (Pixen) at native size and cropped. `
   - CSS: `border: 12px solid transparent; border-image: var(--ui-speech-bubble) 6 fill / 12px stretch;` (12px = 6 px at ×2). The body's bottom outline is 3 px above the canvas bottom, so leave that much (×scale) for the tail under the text.
   - `applyUiSkin` exposes it as `--ui-speech-bubble`.
 - **Fixed size:** `menu_button` (32×32), crimson with gold corners and a three-line menu mark.
+- **Boss portrait frame** (`boss_frame.png`, 40×40, fixed size, not 9-slice): dark-crimson border with a black inner ring and two curved black horns on the top corners, for the 보스 도전 button. The centre is fully transparent, a 20×20 hole at x 10–29, y 12–31 (rounded corners), so draw the boss sprite under the frame. PixelLab `create_1_direction_object`, one 64-candidate 40 px batch styled from `menu_button` and `icon_box` (25 generations); candidate 2 used as generated, alpha binarised, 50 colours.
 - **Notification dot** (`red_dot.png`, 10×10, fixed size): a red dot with a `#14110f` outline, darker red lower-right shade and a short white highlight at the upper left (5 colours). It replaces the CSS-drawn red dot; place it on the icon's top-right corner at an integer scale. `applyUiSkin` exposes it as `--ui-red-dot`.
 - `_preview_x1.png` / `_preview_x3.png`: a mock list (row panel + icon box + progress bar + the three button states), the HP bar, mission panel, both nav tiles and the menu button.
 

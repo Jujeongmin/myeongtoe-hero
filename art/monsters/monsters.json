@@ -13,8 +13,8 @@
     "clip_rat"
    ],
    "spareNormal": [],
-   "teamLeader": "copier_golem",
-   "executive": "cardigan_ogre"
+   "teamLeader": "baek_bujang",
+   "executive": "gangsi_sangmu"
   },
   {
    "id": "sales",
@@ -28,8 +28,8 @@
    "spareNormal": [
     "card_pixie"
    ],
-   "teamLeader": "megaphone_orc",
-   "executive": "golf_minotaur"
+   "teamLeader": "silijeok_timjang",
+   "executive": "golf_sangmu"
   },
   {
    "id": "legal",
@@ -43,7 +43,7 @@
    "spareNormal": [
     "redtape_worm"
    ],
-   "teamLeader": "scale_gargoyle",
+   "teamLeader": "sosong_timjang",
    "executive": "judge_lich"
   },
   {
@@ -213,9 +213,9 @@
     }
    }
   },
-  "copier_golem": {
-   "id": "copier_golem",
-   "name": "복합기 골렘",
+  "baek_bujang": {
+   "id": "baek_bujang",
+   "name": "야근 좀비 백부장",
    "department": "general_affairs",
    "departmentName": "총무팀",
    "background": "bg_general_affairs.png",
@@ -227,35 +227,35 @@
    "feetBaselineY": 56,
    "hoverPx": 0,
    "bodyHeight": 52,
-   "bodyWidth": 54,
+   "bodyWidth": 41,
    "hpBarAnchor": [
-    32,
+    31,
     0
    ],
    "animations": {
     "idle": {
-     "file": "copier_golem_idle.png",
+     "file": "baek_bujang_idle.png",
      "frameCount": 4,
      "frameDurationMs": 160,
      "loop": true
     },
     "hurt": {
-     "file": "copier_golem_hurt.png",
+     "file": "baek_bujang_hurt.png",
      "frameCount": 2,
      "frameDurationMs": 90,
      "loop": false
     },
     "death": {
-     "file": "copier_golem_death.png",
+     "file": "baek_bujang_death.png",
      "frameCount": 4,
      "frameDurationMs": 100,
      "loop": false
     }
    }
   },
-  "cardigan_ogre": {
-   "id": "cardigan_ogre",
-   "name": "총무 상무 오우거",
+  "gangsi_sangmu": {
+   "id": "gangsi_sangmu",
+   "name": "결재 강시 총무 상무",
    "department": "general_affairs",
    "departmentName": "총무팀",
    "background": "bg_general_affairs.png",
@@ -266,27 +266,27 @@
    "frameHeight": 80,
    "feetBaselineY": 72,
    "hoverPx": 0,
-   "bodyHeight": 68,
-   "bodyWidth": 76,
+   "bodyHeight": 66,
+   "bodyWidth": 48,
    "hpBarAnchor": [
     40,
-    0
+    2
    ],
    "animations": {
     "idle": {
-     "file": "cardigan_ogre_idle.png",
+     "file": "gangsi_sangmu_idle.png",
      "frameCount": 4,
      "frameDurationMs": 160,
      "loop": true
     },
     "hurt": {
-     "file": "cardigan_ogre_hurt.png",
+     "file": "gangsi_sangmu_hurt.png",
      "frameCount": 2,
      "frameDurationMs": 90,
      "loop": false
     },
     "death": {
-     "file": "cardigan_ogre_death.png",
+     "file": "gangsi_sangmu_death.png",
      "frameCount": 4,
      "frameDurationMs": 100,
      "loop": false
@@ -453,9 +453,9 @@
     }
    }
   },
-  "megaphone_orc": {
-   "id": "megaphone_orc",
-   "name": "실적왕 오크",
+  "silijeok_timjang": {
+   "id": "silijeok_timjang",
+   "name": "실적귀 영업팀장",
    "department": "sales",
    "departmentName": "영업팀",
    "background": "bg_sales.png",
@@ -466,36 +466,36 @@
    "frameHeight": 64,
    "feetBaselineY": 56,
    "hoverPx": 0,
-   "bodyHeight": 45,
-   "bodyWidth": 60,
+   "bodyHeight": 50,
+   "bodyWidth": 58,
    "hpBarAnchor": [
     32,
-    7
+    1
    ],
    "animations": {
     "idle": {
-     "file": "megaphone_orc_idle.png",
+     "file": "silijeok_timjang_idle.png",
      "frameCount": 4,
      "frameDurationMs": 160,
      "loop": true
     },
     "hurt": {
-     "file": "megaphone_orc_hurt.png",
+     "file": "silijeok_timjang_hurt.png",
      "frameCount": 2,
      "frameDurationMs": 90,
      "loop": false
     },
     "death": {
-     "file": "megaphone_orc_death.png",
+     "file": "silijeok_timjang_death.png",
      "frameCount": 4,
      "frameDurationMs": 100,
      "loop": false
     }
    }
   },
-  "golf_minotaur": {
-   "id": "golf_minotaur",
-   "name": "영업 상무 미노타우로스",
+  "golf_sangmu": {
+   "id": "golf_sangmu",
+   "name": "골프광 영업 상무",
    "department": "sales",
    "departmentName": "영업팀",
    "background": "bg_sales.png",
@@ -506,27 +506,27 @@
    "frameHeight": 80,
    "feetBaselineY": 72,
    "hoverPx": 0,
-   "bodyHeight": 68,
-   "bodyWidth": 68,
+   "bodyHeight": 66,
+   "bodyWidth": 51,
    "hpBarAnchor": [
-    40,
-    0
+    39,
+    2
    ],
    "animations": {
     "idle": {
-     "file": "golf_minotaur_idle.png",
+     "file": "golf_sangmu_idle.png",
      "frameCount": 4,
      "frameDurationMs": 160,
      "loop": true
     },
     "hurt": {
-     "file": "golf_minotaur_hurt.png",
+     "file": "golf_sangmu_hurt.png",
      "frameCount": 2,
      "frameDurationMs": 90,
      "loop": false
     },
     "death": {
-     "file": "golf_minotaur_death.png",
+     "file": "golf_sangmu_death.png",
      "frameCount": 4,
      "frameDurationMs": 100,
      "loop": false
@@ -693,9 +693,9 @@
     }
    }
   },
-  "scale_gargoyle": {
-   "id": "scale_gargoyle",
-   "name": "저울 가고일",
+  "sosong_timjang": {
+   "id": "sosong_timjang",
+   "name": "소송 흡혈귀 법무팀장",
    "department": "legal",
    "departmentName": "법무팀",
    "background": "bg_legal.png",
@@ -706,27 +706,27 @@
    "frameHeight": 64,
    "feetBaselineY": 56,
    "hoverPx": 0,
-   "bodyHeight": 52,
-   "bodyWidth": 52,
+   "bodyHeight": 51,
+   "bodyWidth": 49,
    "hpBarAnchor": [
-    32,
-    0
+    31,
+    1
    ],
    "animations": {
     "idle": {
-     "file": "scale_gargoyle_idle.png",
+     "file": "sosong_timjang_idle.png",
      "frameCount": 4,
      "frameDurationMs": 160,
      "loop": true
     },
     "hurt": {
-     "file": "scale_gargoyle_hurt.png",
+     "file": "sosong_timjang_hurt.png",
      "frameCount": 2,
      "frameDurationMs": 90,
      "loop": false
     },
     "death": {
-     "file": "scale_gargoyle_death.png",
+     "file": "sosong_timjang_death.png",
      "frameCount": 4,
      "frameDurationMs": 100,
      "loop": false
