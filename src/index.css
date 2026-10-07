@@ -381,3 +381,7 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .parking-depth.bump-big { animation: depth-bump-big 320ms steps(4); color: #fff2a8; }
 @keyframes depth-bump { 0% { transform: translateX(-50%) scale(1.25); } 100% { transform: translateX(-50%) scale(1); } }
 @keyframes depth-bump-big { 0% { transform: translateX(-50%) scale(1.6); } 100% { transform: translateX(-50%) scale(1); } }
+/* Step mission card: the frame drawn 10px thick with the text fully inside it (no negative margins). */
+.mission-card { border-width: 10px; border-image: var(--ui-mission-panel) 14 fill / 10px; padding: 1px 2px; }
+.mission-card > div { margin: 0; }
+.mission-card .claim { margin-top: 3px; }
