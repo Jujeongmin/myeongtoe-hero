@@ -837,3 +837,4 @@ Each menu has its own frame set instead of the shared blue row panel. Every them
 ## Button corners cleaned (2026-10-07)
 
 - `ui/button_gold.png`, `button_gold_hot.png` and `button_disabled.png` lost their corner ornaments (gold studs, silver brackets and a white tip pixel) at the user's request: in each corner a 10x10 area was refilled from the edge cross-sections next to it, with the very corner pixel left transparent. The originals are in `ui/src/*_corners_orig.png`.
+- `ui/row_panel.png` got the same treatment (its gold corner brackets refilled from the edges, 6x6 per corner, 2026-10-07); original in `ui/src/row_panel_corners_orig.png`.
