@@ -21,8 +21,9 @@ import { t } from "../i18n";
 // fighting it. A fight is split into as many hits as Park's attack speed allows; each hit lands on
 // the swing's impact frame, knocks the monster's health down one step and shows its damage, and
 // the last one kills it.
-const BODY_PX = 44;
-const BODY_SHARE = 0.15;
+// Park and the monsters at a set size, not a share of the screen width: about 1.2 CSS px per art
+// pixel, rounded to whole device pixels (Park stands about 50 px tall on any phone).
+const ART_CSS_PX = 1.2;
 const BG_H = 96;
 const BG_FLOOR = 82;
 const WALK_PX_PER_SEC = 48;
@@ -91,7 +92,7 @@ export function BattleCanvas({ state }: { state: GameState }) {
       const ch = Math.max(1, parent?.clientHeight ?? 200);
       const dpr = window.devicePixelRatio || 1;
       // Device pixels per art pixel for Park and the monsters.
-      const scale = Math.max(1, Math.round(((cw * BODY_SHARE) / BODY_PX) * dpr));
+      const scale = Math.max(1, Math.round(ART_CSS_PX * dpr));
       const w = Math.round((cw * dpr) / scale);
       const h = Math.round((ch * dpr) / scale);
       if (el.width !== w || el.height !== h) {
@@ -145,14 +146,41 @@ function nameTag(el: HTMLDivElement | null, text: string, x: number, y: number):
 
 // Park's speech bubble over his head: one at a time, gone after a few seconds.
 let bubbleTimer = 0;
+// The battle screen's controls a bubble must not cover.
+const BUBBLE_AVOID = ".battle-head, .top-left, .side-menu, .boss-btn, .atk-now, .prestige-btn, .mission-card, .monster-name, .currency, .parking-depth";
+
 function say(el: HTMLDivElement | null, text: string, x: number, y: number): void {
   if (!el) return;
   el.textContent = text;
   el.style.left = `${Math.round(x)}px`;
   el.style.top = `${Math.round(y)}px`;
   el.hidden = false;
+  fitBubble(el);
   window.clearTimeout(bubbleTimer);
   bubbleTimer = window.setTimeout(() => (el.hidden = true), BUBBLE_MS);
+}
+
+// Size a bubble to the characters (Park is about 50 px tall): font 10px down to 8px, wrapping at
+// 140/110/90 px, the first size that covers none of the other UI and stays inside the battle
+// area; if nothing fits, the smallest try stays.
+function fitBubble(el: HTMLDivElement): void {
+  const scene = el.closest(".battle");
+  if (!scene) return;
+  const area = scene.getBoundingClientRect();
+  const others = [...scene.querySelectorAll<HTMLElement>(BUBBLE_AVOID)]
+    .filter((o) => !o.hidden && o.offsetParent !== null)
+    .map((o) => o.getBoundingClientRect());
+  const clear = (r: DOMRect) =>
+    r.left >= area.left && r.right <= area.right && r.top >= area.top &&
+    !others.some((o) => Math.min(r.right, o.right) - Math.max(r.left, o.left) > 1 && Math.min(r.bottom, o.bottom) - Math.max(r.top, o.top) > 1);
+  for (const px of [10, 9, 8]) {
+    for (const width of [140, 110, 90]) {
+      el.style.fontSize = `${px}px`;
+      el.style.lineHeight = `${px + 2}px`;
+      el.style.maxWidth = `${width}px`;
+      if (clear(el.getBoundingClientRect())) return;
+    }
+  }
 }
 
 // A damage number that rises and fades over the monster (pixel font text, not a picture).
@@ -222,6 +250,12 @@ function draw(
     sim.current = monsterFor(department, floor, place, boss) ?? null;
   }
 
+  // Development: window.__quip = "…" makes Park say it now (to check bubble layout).
+  const dev = import.meta.env.DEV ? (window as unknown as { __quip?: string }) : null;
+  if (dev?.__quip) {
+    talk(dev.__quip, ...head);
+    dev.__quip = undefined;
+  }
   if (now >= sim.quipAt) {
     talk(pickLine(PARK_QUIPS, Math.random()), ...head);
     sim.quipAt = now + QUIP_MIN_MS + QUIP_MORE_MS * Math.random();
