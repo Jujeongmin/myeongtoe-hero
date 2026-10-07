@@ -166,7 +166,7 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .icon-box { flex: none; width: 72px; height: 72px; border: 12px solid transparent; border-image: var(--ui-icon-box) 12 fill / 12px; background: none; box-shadow: none; display: grid; place-items: center; }
 .bottom-nav { gap: 2px; padding: 2px; background: #0b0916; }
 .bottom-nav button { border: 13px solid transparent; border-image: var(--ui-nav-tile) 13 fill / 13px; background: none; box-shadow: none; padding: 0; justify-content: center; }
-.bottom-nav button .icon { margin: -10px 0 -2px; }
+.bottom-nav button .icon { display: flex; justify-content: center; margin: -6px 0 0; line-height: 0; }
 .bottom-nav button.on { border-image: var(--ui-nav-tile-on) 14 fill / 13px; background: none; box-shadow: none; color: #ffd166; }
 .mission-card { border: 14px solid transparent; border-image: var(--ui-mission-panel) 14 fill / 14px; background: none; box-shadow: none; padding: 0; }
 .mission-card > div { margin: -6px 0; }
@@ -203,3 +203,5 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .buff-bar .buff small { position: absolute; left: 50%; top: 30px; transform: translateX(-50%); font-size: 12px; color: #ffd166; text-shadow: 1px 1px 0 #000, -1px 0 0 #000; white-space: nowrap; }
 .bottom-nav button.locked { color: #777; }
 .boss-need { color: #ffd166; }
+/* Nav tiles: icon and label stacked in the middle of the tile. */
+.bottom-nav button { height: 68px; align-items: center; justify-content: center; gap: 0; line-height: 1.2; }
