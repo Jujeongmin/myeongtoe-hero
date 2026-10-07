@@ -278,7 +278,7 @@ function draw(
 // Hit bursts (art/fx/hit_spark.png, crit_spark.png: one row of frames each), drawn over the monster.
 const HIT_FX = {
   hit: { file: "fx/hit_spark.png", size: 32, frames: 5, ms: 45 },
-  crit: { file: "fx/crit_spark.png", size: 48, frames: 6, ms: 45 },
+  crit: { file: "fx/crit_spark.png", size: 48, frames: 6, ms: 50 },
 };
 const SHAKE_MS = 140;
 

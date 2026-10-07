@@ -1,0 +1,23 @@
+{
+ "hit": {
+  "file": "hit_spark.png",
+  "frameWidth": 32,
+  "frameHeight": 32,
+  "frameCount": 5,
+  "msPerFrame": 45,
+  "loop": false,
+  "anchor": [16, 16],
+  "frames": ["tiny flash", "big star with speed lines and paper bits", "star breaking apart", "fading specks", "nearly empty"]
+ },
+ "crit": {
+  "file": "crit_spark.png",
+  "frameWidth": 48,
+  "frameHeight": 48,
+  "frameCount": 6,
+  "msPerFrame": 50,
+  "loop": false,
+  "anchor": [24, 24],
+  "frames": ["hot flash", "big jagged starburst with speed lines and paper confetti", "starburst inside the shockwave ring", "burst shattering, ring broken into arcs", "fading specks and confetti", "nearly empty"]
+ },
+ "anchorNote": "anchor is the centre of the burst inside each frame: draw frame i at hitPoint - anchor (frame i of a strip is at x = frameWidth * i). Scale only by an integer factor with nearest-neighbour."
+}
