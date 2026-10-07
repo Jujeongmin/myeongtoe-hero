@@ -43,8 +43,8 @@ const SHEET_THEMES: Partial<Record<SheetId, string>> = {
 // What each menu spends: 코스튬 (buy and rent with 상품권, 불꽃 with 보석), 아파트 and 기념품
 // (보석), 사무용품 (상품권).
 function walletFor(sheet: SheetId, state: GameState): ReactNode {
-  const coupons = <span className="wallet-pill"><Icon name="coupon" /><b>{formatCount(state.coupons)}</b></span>;
-  const gems = <span className="wallet-pill"><Icon name="gem" /><b>{formatCount(state.gems)}</b></span>;
+  const coupons = <span className="wallet-pill"><Icon name="coupon" size={16} /><b>{formatCount(state.coupons)}</b></span>;
+  const gems = <span className="wallet-pill"><Icon name="gem" size={16} /><b>{formatCount(state.gems)}</b></span>;
   if (sheet === "suits") return <>{coupons} {gems}</>;
   if (sheet === "apartment" || sheet === "relics") return gems;
   if (sheet === "office") return coupons;
