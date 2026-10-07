@@ -17,6 +17,7 @@ Scale up only by an integer factor with nearest-neighbour.
 | `parts/suits/strips/s{set}_{slot}_{anim}.png` | The same parts redrawn for every frame of idle, walk and attack (108 strips). The 36 `_attack` strips were redone for the current attack by inpainting each set onto the bare attack frames (see How it was made); the previous ones are in `parts/old_suits_v2/attack_v4_strips/`. |
 | `parts/suits/parts.json` | Slot, anchor, offset, layer, bbox and strip paths of every part. |
 | `park/fx/head_shine.png`, `park/fx/head_shine.json` | Animated glint on Park's bald crown (6 frames, 11×11 each). |
+| `fx/hit_spark.png`, `fx/crit_spark.png`, `fx/hit_fx.json` | Hit-impact bursts for Park's hits on monsters: normal (5 frames, 32×32) and critical (6 frames, 48×48). `fx/_sheet_hit.png` is the preview and `fx/src/` holds the raw generations. See Hit sparks. |
 | `parts/old_suits/` | The first office-suit parts. They fit only `park/old/` and are kept for reference. |
 | `parts/old_suits_v2/` | The previous code-drawn fantasy parts, replaced by the current ones. Kept for reference. |
 | `parts/gear/g00..g29.png` | 30 hand-held office items (업무 장비), each at most 24×24, drawn upright. |
@@ -120,6 +121,26 @@ Each set was dressed once on Park's idle frame 0 (see How it was made). The shap
 - Show it only when no helmet is worn.
 - The optional moving highlight across the scalp was not made. The twinkle alone reads well at 1×.
 
+## Hit sparks (`fx/`)
+
+- One-shot bursts drawn on the monster where Park's item lands. Transparent, binary alpha, no text. Frame *i* of each strip is at x = frameWidth·i.
+
+  | File | Frames | Size | ms per frame | Anchor | Frames in order |
+  |---|---|---|---|---|---|
+  | `hit_spark.png` | 5 | 32×32 | 45 | [16, 16] | a tiny white-yellow flash; the big yellow star with a white-hot core, 3 speed lines on the left and 2 white paper scraps; the star breaking into shards; a few yellow specks and one paper scrap; two specks |
+  | `crit_spark.png` | 6 | 48×48 | 50 | [24, 24] | a hot red-orange flash; a big jagged crimson-orange-gold starburst with speed lines and paper confetti; the starburst inside a thin gold shockwave ring, more confetti; the burst shattering into eight shards, the ring broken into arcs; fading orange specks and four paper scraps; nearly empty (one speck and the last scraps) |
+
+- `hit_fx.json` holds the same data. The anchor is the centre of the burst, so draw frame *i* at hit point − anchor.
+- The star, shards and paper have the game's near-black outline `#0C0B0A`, so they read on dark and light floors. The small fading specks and the crit's gold ring have no outline. Palettes: 24 colours (hit), 32 colours (crit).
+- `_sheet_hit.png`: every frame ×3, hit on top and crit below, each on a dark and a light background.
+- **How they were made (PixelLab Pro Flash, no hand drawing):**
+  - Each strip was generated as one image of side-by-side frames, so the frames share one drawing and style. The style image was `icons/speed.png`, `gold.png` and `buff_atk.png` side by side (hit); for the crit it was two frames of the hit strip next to `buff_atk.png`, and for the crit's second half the crit's own frames 2–3.
+  - Hit: one 160×32 image of 5 cells; the frames came out inside their cells. Frames 3 and 4 were moved 2 and 3 px left so their centre lines up with the star.
+  - Crit: 6 × 48 px is wider than Pro Flash allows (256), so it was made as two 144×48 images of 3 frames. Frames 1–3 are one image (`src/crit_spark_raw_a.png`). Frames 4 and 6 are from `src/crit_spark_raw_b.png` (its third cell came back empty), and frame 5 from `src/crit_spark_raw_c.png` (its first frame was cut by the left edge), both made with the same prompt and style image. Each frame was cut out whole and centred on its burst centre; no pixel was lost or moved within a frame.
+  - Cleanup: near-black colours (no channel above `0x30`) snapped to `#0C0B0A`; then the closest pair of colours was merged into the more common one until 24 (hit) or 32 (crit) remained. Alpha was already binary.
+  - The raw images are in `fx/src/` (`hit_spark_raw.png`, `crit_spark_raw_a/b/c.png`).
+- Known issues: the crit's first frame is a 23 px flash, bigger than the hit's tiny flash. The crit's frames 5 and 6 come from two different images, so their paper scraps are not at the same spots.
+
 ## Office items (`parts/gear/gear.json`)
 
 - `grip: [x, y]` is the pixel the fist holds, inside the item PNG (bottom-centre, because every item is drawn upright).
@@ -210,6 +231,7 @@ No image contains text.
 
 ## Generation budget
 
+- **Hit sparks (PixelLab Pro Flash):** **60 generations**, 10 images at 6 each. Hit: 4 images at 160×32 (one more failed in background removal and was not charged); the first two had frames crossing their cells or no flash, the third had no speed lines, the fourth was used. Crit: 6 images, a 144×96 3×2 grid that came back as treasure chests, then 144×48 halves: a swirl, a blue burst (palette not copied), the used first half, and two second halves that were both used in part.
 - **Office-object monster redo (PixelLab):** **40 generations**: 2 × 16-candidate `create_1_direction_object` batches at 64×64 (20 each). Another session drew webtoon panels on the same account at the same time, so the balance drop over that period is larger.
 - **Aura / legend icons, speech bubble, red dot (PixelLab):** **43 generations**: 2 × 64-candidate batches (20 each; 32 px icons, 24 px UI), 2 × Pixen 16×16 red dots and 1 × Pixen edit test that tried to add a glow to the helmet (rejected: it only added noise).
 - **Costume attack strips (PixelLab Pro Flash inpaint):**
@@ -439,6 +461,38 @@ All UI frames were generated with PixelLab (Pixen) at native size and cropped. `
 - **Boss portrait frame** (`boss_frame.png`, 40×40, fixed size, not 9-slice): dark-crimson border with a black inner ring and two curved black horns on the top corners, for the 보스 도전 button. The centre is fully transparent, a 20×20 hole at x 10–29, y 12–31 (rounded corners), so draw the boss sprite under the frame. PixelLab `create_1_direction_object`, one 64-candidate 40 px batch styled from `menu_button` and `icon_box` (25 generations); candidate 2 used as generated, alpha binarised, 50 colours.
 - **Notification dot** (`red_dot.png`, 10×10, fixed size): a red dot with a `#14110f` outline, darker red lower-right shade and a short white highlight at the upper left (5 colours). It replaces the CSS-drawn red dot; place it on the icon's top-right corner at an integer scale. `applyUiSkin` exposes it as `--ui-red-dot`.
 - `_preview_x1.png` / `_preview_x3.png`: a mock list (row panel + icon box + progress bar + the three button states), the HP bar, mission panel, both nav tiles and the menu button.
+- **이직 (job change) frames**, all 9-slice (`ui.json → nineSlice`), binary alpha, dark outline, no text:
+
+  | File | Size | Slice | Look |
+  |---|---|---|---|
+  | `prestige_button` | 48×32 | 8 | deep teal-green leather briefcase, stitched seams, brass corner plates |
+  | `prestige_button_on` | 48×32 | 8 | the same frame in bright glowing mint teal (job change available) |
+  | `prestige_panel` | 48×48 | 12 | cream offer-letter paper, gold double-line border, small red seal in the bottom-right corner slice; flat paper centre `#e2d5b5` |
+  | `prestige_card_plain` | 36×36 | 10 | navy and silver; flat grey-blue centre `#89abb9` |
+  | `prestige_card_boosted` | 36×36 | 10 | gold; flat warm paper centre `#f3d3a3` |
+  | `prestige_card_super` | 36×36 | 10 | royal purple with gold trim and gold sparkles in the corners; flat lavender centre `#dccdee` |
+
+  - Made with PixelLab Pixen (`create_image_pixen`) at native size, one generation per roll. Raw picks are in `ui/src/prestige_*_raw.png`.
+  - Cleanup: alpha binarised, near-identical colours merged, the centres flattened to one paper colour, and each edge band made periodic (1–2 px) so it repeats without seams. Corner details stay inside the corner slices.
+  - The panel's grey rim and gold line were swapped (grey → gold, gold → dark ochre) to give the gold double line. `prestige_button` is `prestige_button_on` with its teal darkened; the purple card's centre was transparent after background removal and was filled with lavender.
+  - `_sheet_prestige.png`: each frame at ×4, the buttons stretched to 160×48, the panel stretched to 300×400 holding the three cards (268×104), and some other stretches (all ×2).
+
+### Themed menu panels
+
+Each menu has its own frame set instead of the shared blue row panel. Every theme has `<theme>_panel` (48×48, slice 12, the whole sheet), `<theme>_row` (36×36, slice 10, one list row), `<theme>_button` and `<theme>_button_hot` (32×24, slice 8; `_hot` = highlighted/affordable). All are 9-slice in `ui.json → nineSlice`, binary alpha, `#0c0b0a` outline, no text, `repeat` safe: the edge bands are one repeated cross-section and the centres are one flat colour, and every ornament sits inside a corner slice.
+
+| Theme | Panel | Row | Button / hot | Panel centre |
+|---|---|---|---|---|
+| `costume` (wardrobe) | dark polished wood, gold coat hooks in the corners | dark red velvet cushion, bevelled frame, gold tacks | gold-trimmed wood plaque with studs / red velvet plaque with a gold glint | dark red `#7a0e19` |
+| `apartment` | honey-wood trim, beige wallpaper, tiny door in the bottom-right corner | cream card, honey-wood edge | wooden door-plate / warm orange door-plate | light beige `#d2be99` |
+| `relics` (memento cabinet) | dark mahogany, brass corner plates, glass shine top-left | brass-rimmed dark wood slot | dull brass nameplate / polished gold nameplate with screws | dark `#321717` |
+| `office` | steel desk metal, bolts in the corners, dark green desk mat | thin steel frame, paperclip on the top-left corner | grey keycap / lit amber keycap | dark green `#446951` |
+
+- Odd ones: `office_button` / `office_button_hot` use a **bottom slice of 11** (top/left/right 8), because the keycap's front bevel lives at the bottom. `office_row`'s paperclip rises 3 px above the frame, so its top 3 rows are transparent apart from the clip. `relics_panel`'s brass plates stick out 1 px past the wood, so each edge has a 1 px transparent margin.
+- Made with PixelLab `create_1_direction_object` (sidescroller view, 48 px, 16 candidates per batch, one item description per candidate). 7 batches, **140 generations**: costume 1, apartment 3 (the first had no outlines; one of the re-rolls was styled from the costume picks, the used one was not), relics 2 (the re-roll styled from the first batch), office 2 (the panel/row re-roll styled from the first batch's keycaps).
+- Cleanup (scripts not kept): alpha binarised, near-black outline set to `#0c0b0a`, enclosed transparent gaps filled from the inside colour, frames cut to size by removing or repeating middle rows/columns, edges made uniform and centres flattened.
+- Hand fixes: `apartment_panel`'s door was moved 1 px down (one door row dropped) to fit the corner; `office_row`'s paperclip lost its 1 px shadow column to fit the 10 px corner; the office keycaps ran off the canvas, so each is its complete right half mirrored, with pin-holes filled and the front bevel shortened; the relics cabinet ran off the canvas, so `relics_panel` is its top-right quadrant mirrored both ways, with a short glass-shine streak redrawn in the top-left corner in the generated shine colours.
+- Previews: `_sheet_costume.png`, `_sheet_apartment.png`, `_sheet_relics.png`, `_sheet_office.png`, each frame at ×1 and ×4, then stretched at 1 px per pixel (panel 300×360, row 300×56, buttons 90×40), the whole sheet at ×2.
 
 ## Story panels (`story/`)
 

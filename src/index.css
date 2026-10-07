@@ -343,3 +343,12 @@ html[lang="ja"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional J
 .prestige-sheet b { color: #7a1d12; text-shadow: none; }
 .story-narration.one-line { white-space: nowrap; overflow: hidden; }
 .prestige-terms .one-line { white-space: nowrap; overflow: hidden; }
+/* Theme details: text colour per panel centre, and the office keycap's deeper front bevel. */
+.theme-apartment { color: #2a1d12; }
+.theme-apartment .sub { color: #5a4630; }
+.theme-apartment b { color: #7a3d12; }
+.theme-costume .sub, .theme-relics .sub, .theme-office .sub { color: #e8d9b8; }
+.theme-office .row button { border-width: 8px 8px 11px 8px; border-image: var(--ui-office-button, var(--ui-button-gold)) 8 8 11 8 fill / 8px 8px 11px 8px; }
+.theme-office .row button.hot { border-image: var(--ui-office-button-hot, var(--ui-button-gold-hot)) 8 8 11 8 fill / 8px 8px 11px 8px; }
+.theme-office .row button { color: #1d1d1d; text-shadow: none; }
+.theme-office .row button.hot { color: #3a2000; }

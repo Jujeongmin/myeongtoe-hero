@@ -40,6 +40,7 @@ export function RelicPanel({ state, store }: Props) {
         const cost = relicLevelCost(level);
         return (
           <div key={r.id} className="row">
+            <span className="icon-box"><Icon name={r.id} /></span>
             <div className="grow">
               <b>{t(r.name)}</b> Lv{level}
               <div className="sub">{t("{text} / 레벨", { text: t(r.text) })}</div>
@@ -63,6 +64,7 @@ export function OfficePanel({ state, store }: Props) {
         const cost = officeUpgradeCost(grade);
         return (
           <div key={p.key} className="row">
+            <span className="icon-box"><Icon name={`o_${p.key}`} /></span>
             <div className="grow">
               <b>{t(p.name)}</b> {t("{n}등급", { n: grade })}
               <div className="sub">{t("{text} / 등급", { text: t(p.text) })}</div>

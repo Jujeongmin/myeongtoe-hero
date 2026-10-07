@@ -144,6 +144,358 @@
    "css": "border-image: url(speech_bubble.png) 6 fill / calc(6px * var(--px)) stretch;",
    "use": "speech bubble; the tail (down-left) lives in the bottom-left corner slice, so it never repeats. The body's bottom outline is 3 px above the canvas bottom, so the bubble's visible box ends 3 px (x scale) above the element box.",
    "centerRepeat": "stretch"
+  },
+  "prestige_button": {
+   "file": "prestige_button.png",
+   "size": [
+    48,
+    32
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+   },
+   "css": "border-image: url(prestige_button.png) 8 fill / calc(8px * var(--px)) repeat;",
+   "use": "이직 button on the battle screen: deep teal-green leather briefcase with stitched seams and brass corner plates",
+   "centerRepeat": "repeat"
+  },
+  "prestige_button_on": {
+   "file": "prestige_button_on.png",
+   "size": [
+    48,
+    32
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+   },
+   "css": "border-image: url(prestige_button_on.png) 8 fill / calc(8px * var(--px)) repeat;",
+   "use": "이직 button when the job change is available: same frame in bright glowing mint teal",
+   "centerRepeat": "repeat"
+  },
+  "prestige_panel": {
+   "file": "prestige_panel.png",
+   "size": [
+    48,
+    48
+   ],
+   "slice": {
+    "top": 12,
+    "right": 12,
+    "bottom": 12,
+    "left": 12
+   },
+   "css": "border-image: url(prestige_panel.png) 12 fill / calc(12px * var(--px)) repeat;",
+   "use": "whole 이직 sheet: cream offer-letter paper with a gold double-line border; small red seal in the bottom-right corner slice (never repeats); flat paper centre #e2d5b5 for dark text",
+   "centerRepeat": "repeat"
+  },
+  "prestige_card_plain": {
+   "file": "prestige_card_plain.png",
+   "size": [
+    36,
+    36
+   ],
+   "slice": {
+    "top": 10,
+    "right": 10,
+    "bottom": 10,
+    "left": 10
+   },
+   "css": "border-image: url(prestige_card_plain.png) 10 fill / calc(10px * var(--px)) repeat;",
+   "use": "이직 option card, normal change: navy and silver, flat grey-blue centre #89abb9",
+   "centerRepeat": "repeat"
+  },
+  "prestige_card_boosted": {
+   "file": "prestige_card_boosted.png",
+   "size": [
+    36,
+    36
+   ],
+   "slice": {
+    "top": 10,
+    "right": 10,
+    "bottom": 10,
+    "left": 10
+   },
+   "css": "border-image: url(prestige_card_boosted.png) 10 fill / calc(10px * var(--px)) repeat;",
+   "use": "이직 option card, boosted change: gold, flat warm paper centre #f3d3a3",
+   "centerRepeat": "repeat"
+  },
+  "prestige_card_super": {
+   "file": "prestige_card_super.png",
+   "size": [
+    36,
+    36
+   ],
+   "slice": {
+    "top": 10,
+    "right": 10,
+    "bottom": 10,
+    "left": 10
+   },
+   "css": "border-image: url(prestige_card_super.png) 10 fill / calc(10px * var(--px)) repeat;",
+   "use": "이직 option card, super change: royal purple with gold trim and gold sparkles in the corners, flat lavender centre #dccdee",
+   "centerRepeat": "repeat"
+  },
+  "costume_panel": {
+   "file": "costume_panel.png",
+   "size": [
+    48,
+    48
+   ],
+   "slice": {
+    "top": 12,
+    "right": 12,
+    "bottom": 12,
+    "left": 12
+   },
+   "css": "border-image: url(costume_panel.png) 12 fill / calc(12px * var(--px)) repeat;",
+   "use": "hero wardrobe sheet: dark polished wood frame with gold coat-hook ornaments in the four corner slices; flat dark red velvet centre #7a0e19 (dark, use light text)",
+   "centerRepeat": "repeat"
+  },
+  "costume_row": {
+   "file": "costume_row.png",
+   "size": [
+    36,
+    36
+   ],
+   "slice": {
+    "top": 10,
+    "right": 10,
+    "bottom": 10,
+    "left": 10
+   },
+   "css": "border-image: url(costume_row.png) 10 fill / calc(10px * var(--px)) repeat;",
+   "use": "wardrobe list row: dark red velvet cushion with a bevelled dark frame and gold corner tacks; flat dark velvet centre #530e16 (dark, use light text)",
+   "centerRepeat": "repeat"
+  },
+  "costume_button": {
+   "file": "costume_button.png",
+   "size": [
+    32,
+    24
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+   },
+   "css": "border-image: url(costume_button.png) 8 fill / calc(8px * var(--px)) repeat;",
+   "use": "wardrobe action button: gold-trimmed brown wood plaque with gold corner studs; flat wood centre #744529",
+   "centerRepeat": "repeat"
+  },
+  "costume_button_hot": {
+   "file": "costume_button_hot.png",
+   "size": [
+    32,
+    24
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+   },
+   "css": "border-image: url(costume_button_hot.png) 8 fill / calc(8px * var(--px)) repeat;",
+   "use": "wardrobe button, affordable: red velvet plaque with a gold rim and a gold glint in the top-left corner slice; flat red centre #b6101c",
+   "centerRepeat": "repeat"
+  },
+  "apartment_panel": {
+   "file": "apartment_panel.png",
+   "size": [
+    48,
+    48
+   ],
+   "slice": {
+    "top": 12,
+    "right": 12,
+    "bottom": 12,
+    "left": 12
+   },
+   "css": "border-image: url(apartment_panel.png) 12 fill / calc(12px * var(--px)) repeat;",
+   "use": "apartment sheet: light honey-wood trim around warm beige wallpaper, a tiny wooden door inside the bottom-right corner slice; flat beige centre #d2be99 (light, use dark text)",
+   "centerRepeat": "repeat"
+  },
+  "apartment_row": {
+   "file": "apartment_row.png",
+   "size": [
+    36,
+    36
+   ],
+   "slice": {
+    "top": 10,
+    "right": 10,
+    "bottom": 10,
+    "left": 10
+   },
+   "css": "border-image: url(apartment_row.png) 10 fill / calc(10px * var(--px)) repeat;",
+   "use": "apartment list row: cream card with a honey-wood edge and rounded corners; flat cream centre #eddfc2 (light, use dark text)",
+   "centerRepeat": "repeat"
+  },
+  "apartment_button": {
+   "file": "apartment_button.png",
+   "size": [
+    32,
+    24
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+   },
+   "css": "border-image: url(apartment_button.png) 8 fill / calc(8px * var(--px)) repeat;",
+   "use": "apartment action button: wooden door-plate, dark wood rim around a light wood face; flat centre #e3c29b (dark text)",
+   "centerRepeat": "repeat"
+  },
+  "apartment_button_hot": {
+   "file": "apartment_button_hot.png",
+   "size": [
+    32,
+    24
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+   },
+   "css": "border-image: url(apartment_button_hot.png) 8 fill / calc(8px * var(--px)) repeat;",
+   "use": "apartment button, affordable: warm orange door-plate with a darker rim; flat orange centre #fda23a",
+   "centerRepeat": "repeat"
+  },
+  "relics_panel": {
+   "file": "relics_panel.png",
+   "size": [
+    48,
+    48
+   ],
+   "slice": {
+    "top": 12,
+    "right": 12,
+    "bottom": 12,
+    "left": 12
+   },
+   "css": "border-image: url(relics_panel.png) 12 fill / calc(12px * var(--px)) repeat;",
+   "use": "memento cabinet sheet: dark mahogany frame with brass corner plates and a small glass shine in the top-left corner slice; flat dark glass centre #321717 (dark, use light text). The brass corner plates stick out 1 px past the wood, so every edge has a 1 px transparent margin",
+   "centerRepeat": "repeat"
+  },
+  "relics_row": {
+   "file": "relics_row.png",
+   "size": [
+    36,
+    36
+   ],
+   "slice": {
+    "top": 10,
+    "right": 10,
+    "bottom": 10,
+    "left": 10
+   },
+   "css": "border-image: url(relics_row.png) 10 fill / calc(10px * var(--px)) repeat;",
+   "use": "memento display slot: brass-rimmed dark wood shelf; flat dark brown centre #46291d (dark, use light text)",
+   "centerRepeat": "repeat"
+  },
+  "relics_button": {
+   "file": "relics_button.png",
+   "size": [
+    32,
+    24
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+   },
+   "css": "border-image: url(relics_button.png) 8 fill / calc(8px * var(--px)) repeat;",
+   "use": "memento action button: dull brass nameplate with a bevelled rim; flat centre #846b4b",
+   "centerRepeat": "repeat"
+  },
+  "relics_button_hot": {
+   "file": "relics_button_hot.png",
+   "size": [
+    32,
+    24
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+   },
+   "css": "border-image: url(relics_button_hot.png) 8 fill / calc(8px * var(--px)) repeat;",
+   "use": "memento button, affordable: polished gold nameplate with four screws; flat gold centre #fdc53b (dark text)",
+   "centerRepeat": "repeat"
+  },
+  "office_panel": {
+   "file": "office_panel.png",
+   "size": [
+    48,
+    48
+   ],
+   "slice": {
+    "top": 12,
+    "right": 12,
+    "bottom": 12,
+    "left": 12
+   },
+   "css": "border-image: url(office_panel.png) 12 fill / calc(12px * var(--px)) repeat;",
+   "use": "office supplies sheet: steel-grey desk-metal frame with a bolt in each corner slice; flat dark green desk-mat centre #446951 (dark, use light text)",
+   "centerRepeat": "repeat"
+  },
+  "office_row": {
+   "file": "office_row.png",
+   "size": [
+    36,
+    36
+   ],
+   "slice": {
+    "top": 10,
+    "right": 10,
+    "bottom": 10,
+    "left": 10
+   },
+   "css": "border-image: url(office_row.png) 10 fill / calc(10px * var(--px)) repeat;",
+   "use": "office list row: thin steel frame with a paperclip on the top-left corner slice (it rises 3 px above the frame top, rows 0-2 are transparent elsewhere); flat dark green centre #446951 (dark, use light text)",
+   "centerRepeat": "repeat"
+  },
+  "office_button": {
+   "file": "office_button.png",
+   "size": [
+    32,
+    24
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 11,
+    "left": 8
+   },
+   "css": "border-image: url(office_button.png) 8 8 11 8 fill / calc(8px * var(--px)) calc(8px * var(--px)) calc(11px * var(--px)) calc(8px * var(--px)) repeat;",
+   "use": "office action button: chunky grey keyboard keycap (top face + front bevel); the bottom slice is 11 px because the front bevel lives there; flat top face #b9b9bd (dark text)",
+   "centerRepeat": "repeat"
+  },
+  "office_button_hot": {
+   "file": "office_button_hot.png",
+   "size": [
+    32,
+    24
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 11,
+    "left": 8
+   },
+   "css": "border-image: url(office_button_hot.png) 8 8 11 8 fill / calc(8px * var(--px)) calc(8px * var(--px)) calc(11px * var(--px)) calc(8px * var(--px)) repeat;",
+   "use": "office button, affordable: lit amber keycap, same shape and slices as office_button; flat top face #fcb73c (dark text)",
+   "centerRepeat": "repeat"
   }
  },
  "threeSlice": {
