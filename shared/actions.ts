@@ -6,6 +6,7 @@ import {
   AURAS, LEGENDS, LEGEND_MAX_LEVEL, RENT_MS, SUIT_PARTS, auraOpen, findSuitItem, hasCostume, legendOpen, rentPrice,
 } from "./data/costumes";
 import { findEpisode } from "./data/story";
+import { MONSTERS_PER_FLOOR } from "./data/floors";
 import { AD_BUFF_MS, AD_COUPONS, AD_GEMS_MAX, AD_GEMS_MIN, AD_GOLD_KILLS, adReadyAt, findAd } from "./data/ads";
 import { BUFF_KINDS, extendBuff } from "./data/buffs";
 import { SPEED_AD_MS } from "./data/speed";
@@ -55,6 +56,7 @@ export type Intent =
   | { k: "wearAura"; set: number }
   | { k: "levelLegend"; part: string }
   | { k: "readStory"; id: string }
+  | { k: "challengeBoss" }
   | { k: "upgradeOffice"; part: OfficePart }
   | { k: "enterParking" }
   | { k: "claimDaily"; id: string }
@@ -94,6 +96,7 @@ export function readIntent(raw: unknown): Intent | null {
     case "confirmGear":
     case "claimDailyVx":
     case "toggleSpeed":
+    case "challengeBoss":
       return { k: r.k };
     case "levelPet":
     case "levelRelic":
@@ -379,6 +382,12 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
     case "toggleSpeed": {
       if (!s.vx.premium) throw new RuleError("locked");
       s.speed = { ...s.speed, on: !s.speed.on };
+      return s;
+    }
+    case "challengeBoss": {
+      // Farming: try the floor's boss now (too weak, it runs out of time and farming goes on).
+      if (!s.run.farming) throw new RuleError("not_farming");
+      s.run = { ...s.run, farming: false, target: MONSTERS_PER_FLOOR - 1, carrySec: 0 };
       return s;
     }
     case "readStory": {

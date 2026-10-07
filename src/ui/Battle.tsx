@@ -1,5 +1,4 @@
-import { MONSTERS_PER_FLOOR, departmentOf, isBoss } from "../../shared/data/floors";
-import { targetSec } from "../../shared/settle";
+import { departmentOf, isBoss } from "../../shared/data/floors";
 import { PRESTIGE_MIN_FLOOR } from "../../shared/data/prestige";
 import { useState } from "react";
 import { formatBig, formatCount } from "../../shared/format";
@@ -49,12 +48,7 @@ export function Battle({ state, store, onOpen, onGo }: {
       <header className="battle-head">
         <div>마왕그룹 {departmentOf(floor)}</div>
         <div className="floor-no">{floor}층{farming ? " · 파밍 중" : ""}</div>
-        {farming && (
-          <div className="boss-need">
-            보스 도전에 공격력 {formatBig(atk.mulN(Math.max(1.01, targetSec(floor, MONSTERS_PER_FLOOR - 1, power) / power.bossLimitSec)))} 필요
-            <br />지금 {formatBig(atk)}
-          </div>
-        )}
+        <div className="atk-now">공격력 {formatBig(atk)}</div>
         {boss && <div className="boss-timer"><Icon name="timer" size={16} /> 보스 {bossLeft}초</div>}
       </header>
       <div className="top-left">
@@ -87,6 +81,9 @@ export function Battle({ state, store, onOpen, onGo }: {
         이직
         <small>{ready ? <Amount icon="ticket" value={`+${formatCount(reward.tickets)}`} /> : `${PRESTIGE_MIN_FLOOR}층부터`}</small>
       </button>
+      {farming && (
+        <button className="boss-btn" onClick={() => store.do({ k: "challengeBoss" })}>보스 도전</button>
+      )}
       <MissionCard state={state} store={store} onGo={onGo} />
       <CurrencyBar state={state} />
     </section>

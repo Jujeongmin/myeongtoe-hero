@@ -50,6 +50,38 @@ export const EPISODES: readonly Episode[] = [
       },
     ],
   },
+  {
+    id: "ep1",
+    floor: 100,
+    title: "1화 — 상무님은 부재중",
+    panels: [
+      { img: "ep1_1", lines: [{ who: "???", text: "명퇴 대상자여… 감히 여기까지…" }] },
+      { img: "ep1_2", lines: [{ who: "박부장", text: "사, 상무님! 저는 그냥 퇴직금 얘기를…" }] },
+      { img: "ep1_3", lines: [{ text: "자세히 보니 상무 등신대였다. 목에 걸린 팻말: '골프 중 — 급한 건 비서실로'. 목소리는 휴대폰 자동응답." }] },
+      { img: "ep1_4", lines: [{ who: "박부장", text: "결재 반려! …25년 동안 이런 상사 한둘이 아니었다." }] },
+      { img: "ep1_5", lines: [{ who: "김인턴", text: "사람이다… 3개월 만에 사람이다… 복사기 고치다가 갇혔어요." }] },
+      {
+        img: "ep1_6",
+        lines: [
+          { who: "김인턴", text: "부장님이시죠? 저 정규직 전환 약속 받았는데요!" },
+          { text: "(난 명퇴했는데…)" },
+          { who: "박부장", text: "…열심히 하면." },
+          { text: "김인턴이 동료가 되었다." },
+        ],
+      },
+    ],
+  },
+  {
+    id: "hunter",
+    floor: 100,
+    title: "헤드헌터",
+    panels: [
+      { img: "hunter_1", lines: [{ who: "헤드헌터 냥", text: "박부장님, 더 좋은 조건으로 1층부터 다시 시작하시죠." }] },
+      { img: "hunter_2", lines: [{ who: "박부장", text: "1층부터? 내가 여기까지 어떻게 왔는데!" }] },
+      { img: "hunter_3", lines: [{ who: "헤드헌터 냥", text: "경력은 인정해 드립니다. 이직할 때마다 자격증 응시권으로요. 자격증 붙으면 1층쯤은 금방이죠." }] },
+      { img: "hunter_4", lines: [{ who: "박부장", text: "…중장비 자격증도 있나?" }, { text: "100층부터 이직할 수 있어요." }] },
+    ],
+  },
 ];
 
 export function findEpisode(id: string): Episode | undefined {

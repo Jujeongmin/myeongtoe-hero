@@ -202,7 +202,7 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .buff-bar .buff.on { opacity: 1; }
 .buff-bar .buff small { position: absolute; left: 50%; top: 30px; transform: translateX(-50%); font-size: 12px; color: #ffd166; text-shadow: 1px 1px 0 #000, -1px 0 0 #000; white-space: nowrap; }
 .bottom-nav button.locked { color: #777; }
-.boss-need { color: #ffd166; margin-top: 14px; text-align: center; }
+.atk-now { color: #ffd166; font-size: 12px; }
 /* Nav tiles: icon and label stacked in the middle of the tile. */
 .bottom-nav button { height: 68px; align-items: center; justify-content: center; gap: 0; line-height: 1.2; }
 /* Top left: the three buffs and the 2x button, small, in one row. */
@@ -253,3 +253,5 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .story-say b { display: block; color: #8d1c1c; }
 .story-say:nth-of-type(even) { align-self: flex-end; }
 .story-end { min-width: 160px; }
+/* 보스 도전: while farming, right side above the step mission. */
+.boss-btn { position: absolute; z-index: 2; right: 6px; bottom: 76px; min-height: 40px; padding: 0 4px; border: 12px solid transparent; border-image: var(--ui-button-gold-hot) 6 fill / 12px repeat; background: none; color: #ffd166; text-shadow: 1px 1px 0 #000; image-rendering: pixelated; }
