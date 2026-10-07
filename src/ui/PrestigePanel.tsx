@@ -7,6 +7,7 @@ import type { GameStore } from "../game/store";
 import { t } from "../i18n";
 import { imageUrl } from "../game/sprites";
 import { Amount } from "./Amount";
+import { useFitText } from "./useFitText";
 
 // 이직: the headhunter's offer letter. The cat makes the pitch, the letter lists what resets and what
 // stays, and the three offers sit on their own cards (plain, boosted, super). Two taps on an offer:
@@ -46,7 +47,7 @@ export function PrestigePanel({ state, store, onClose }: { state: GameState; sto
         </div>
         <div className="prestige-terms">
           <div>{t("이번 회차 최고 {floor}층", { floor })}</div>
-          <div className="sub">{t("층, 골드, 업무 장비(구매확정한 것은 남아요), 부업이 초기화돼요. 자격증, 동료, 기념품, 코스튬, 아파트, 사무용품, 응시권, 보석, 상품권은 남아요.")}</div>
+          <FitLine text={t("층, 골드, 업무 장비(구매확정한 것은 남아요), 부업이 초기화돼요.")} />
         </div>
         {offers.map(({ mode, name }) => {
           const { gems, ticketMult } = PRESTIGE_MODES[mode];
@@ -68,4 +69,9 @@ export function PrestigePanel({ state, store, onClose }: { state: GameState; sto
       </div>
     </div>
   );
+}
+
+function FitLine({ text }: { text: string }) {
+  const ref = useFitText<HTMLDivElement>(text);
+  return <div ref={ref} className="sub one-line">{text}</div>;
 }
