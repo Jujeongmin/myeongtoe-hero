@@ -288,7 +288,7 @@ html[lang="ja"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional J
 .prestige-close { margin-left: auto; border: 12px solid transparent; border-image: var(--ui-button-gold) 6 fill / 12px repeat; background: none; color: #fff; padding: 0 2px; min-height: 36px; text-shadow: 1px 1px 0 #000; }
 .prestige-pitch { display: flex; align-items: flex-end; gap: 6px; }
 .prestige-pitch img { flex: none; image-rendering: pixelated; }
-.prestige-say { position: relative; padding: 0 2px 1px; border: 8px solid transparent; border-image: var(--ui-speech-bubble) 6 fill / 8px; font-size: 12px; line-height: 15px; transform: scaleX(1); }
+.prestige-say { position: relative; padding: 0 2px 1px; border: 8px solid transparent; border-image: var(--ui-speech-box) 6 fill / 8px; font-size: 12px; line-height: 15px; }
 .prestige-terms { padding: 2px 4px; font-size: 12px; line-height: 15px; }
 .prestige-card { display: flex; align-items: center; gap: 6px; min-height: 52px; padding: 0 2px; border: 10px solid transparent; border-image: var(--ui-prestige-card-plain, var(--ui-row-panel)) 10 fill / 10px; color: #1d1a2e; image-rendering: pixelated; }
 .prestige-card.boosted { border-image: var(--ui-prestige-card-boosted, var(--ui-row-panel)) 10 fill / 10px; }
