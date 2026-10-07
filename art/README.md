@@ -26,7 +26,7 @@ Scale up only by an integer factor with nearest-neighbour.
 | `icons/*.png` | UI icons, 32×32, plus 16×16 small icons named `*_s.png`. `icons/_sheet.png`, `_sheet_ui.png`, `_sheet_small.png` and `_sheet_aura_legend.png` are contact sheets. |
 | `vx/*.png` | 13 VX shop product images, 512×512 (128×128 pixel art scaled ×4 nearest-neighbour). The 128 px sources are in `vx/src/`, and `vx/_sheet.png` shows all of them. |
 | `icons/extra/`, `parts/gear/extra/` | Unused extras left over from generation. They can be deleted. |
-| `story/prologue_1..7.png`, `story/ep0_1..4.png`, `story/ep1_1..6.png`, `story/hunter_1..4.png`, `story/ep2_1..4.png`, `story/ep3_1..4.png`, `story/ep4_1..4.png`, `story/ep5_1..5.png` | Webtoon panels (prologue, episodes 0.5–5, headhunter), 192×128, opaque, no text. `story/_sheet_prologue.png`, `_sheet_ep0.png`, `_sheet_ep1.png`, `_sheet_hunter.png`, `_sheet_ep2.png`, `_sheet_ep3.png`, `_sheet_ep4.png` and `_sheet_ep5.png` show them ×2 in reading order; `story/src/` holds the raw picks, unused alternates and the character references. See Story panels. |
+| `story/prologue_1..7.png`, `story/ep0_1..4.png`, `story/ep1_1..6.png`, `story/hunter_1..4.png`, `story/ep2_1..4.png`, `story/ep3_1..4.png`, `story/ep4_1..4.png`, `story/ep5_1..5.png`, `story/ep6_1..4.png`, `story/ep7_1..4.png` | Webtoon panels (prologue, episodes 0.5–7, headhunter), 192×128, opaque, no text. `story/_sheet_prologue.png`, `_sheet_ep0.png`, `_sheet_ep1.png`, `_sheet_hunter.png`, `_sheet_ep2.png` to `_sheet_ep7.png` show them ×2 in reading order; `story/src/` holds the raw picks, unused alternates and the character references. See Story panels. |
 
 ## Park
 
@@ -336,6 +336,32 @@ Five bosses were redrawn as people first: former office workers re-hired by 마�
   - The golfer swings toward Park but his face and belly are turned three-quarters to the viewer, not in profile.
   - The vampire lawyer is the classic caped-vampire archetype, so "lawyer" comes mainly from the paper stack and red tie.
 
+### Humanoid bosses (batch B)
+
+Five more bosses were redrawn the same way, as cursed office workers first. They are new ids. Their entries are in `monsters/new_bosses_B.json` (`monsters` plus a `replace` map from old id to new id) and are not yet merged into `monsters.json`. The old strips are copied to `monsters/old/`.
+
+| id (replaces) | Name | Role, department | Picture | Body (w×h) |
+|---|---|---|---|---|
+| `deadline_timjang` (`server_golem`) | 데드라인 좀비 개발팀장 | teamLeader, 개발팀 | a grey-green zombie developer with dark eye circles, a grey hoodie half up behind a glowing cyan headset, a red energy-drink can held out, and a laptop under his arm whose screen glows red (no text) | 46×50 |
+| `legacy_sangmu` (`legacy_hydra`) | 레거시 사이보그 개발 상무 | executive, 개발팀 | a balding old executive in a brown cardigan and red tie, a beige PC tower with vents and a floppy slot bolted to his back, his front arm a hanging bundle of coloured cables, and a green monocle screen over one eye | 58×66 |
+| `jeoseung_timjang` (`safe_mimic`) | 저승사자 재무팀장 | teamLeader, 재무팀 | a Korean-style reaper finance manager: a wide black gat, a black suit and tie, a deathly pale face, a black ledger under one arm and a tall red fountain pen dripping red ink, held like a scythe | 43×52 |
+| `sujeonno_sangmu` (`gold_dragon`) | 황금 수전노 재무 상무 | executive, 재무팀 | a hunched bald old executive in a navy suit studded with gold coins, glowing yellow eyes and a gold-toothed grin, hugging a money sack over a heap of gold coins | 67×64 |
+| `nakhasan_jeonmu` (`pen_demon`) | 낙하산 전무 | teamLeader, 임원실 | a smug young executive with slicked black hair, a slim navy suit and red tie, small red horns and a pointed tail, a parachute pack with a red-and-white canopy half open behind him, and a big fountain pen held upright like a trident | 50×52 |
+
+- **Generation:** PixelLab `create_1_direction_object` (sidescroller view), 16 candidates at 80×80 per call, with `golf_minotaur` and `megaphone_orc` idle frame 0 as style references. Every boss got one call. Re-rolls:
+  - the zombie got two more, for a hood that sits half up and a laptop screen that visibly glows red;
+  - the cyborg got two more, because the first back-mounted computers had logo-like marks or a screen shaped like a well-known computer;
+  - the reaper got one more, for a human face instead of a skull-like one;
+  - the miser got one more, for coins on the suit and a bigger coin heap.
+  - All picks already faced west.
+- **Downscale:** the same as the office-object redo (crop, ×4 nearest-neighbour, kCentroid to the body height, binary alpha, a median cut to 26 colours, the darkest colours snapped to `#0C0B0A`). Heights are 50–52 px for team leaders and 64–66 px for executives. Each sprite is centred on its canvas with its feet on y 56 or y 72.
+- **Strips:** the same frame edits as the office-object redo. Death frame 0 is 105 % wide (as in the old boss strips). Death frame 1 carries the small puff and sparkles common to the replaced bosses of that role (`copier_golem`, `server_golem` and `safe_mimic` for team leaders; `cardigan_ogre`, `judge_lich`, `legacy_hydra` and `gold_dragon` for executives). Death frames 2 and 3 are `copier_golem`'s or `cardigan_ogre`'s cloud and fading puffs, moved to the new body centre.
+- **Preview:** `monsters/preview/bosses_B_x3.png`. The top row shows idle frame 0 ×3 on each department background. Under it, each boss has one row of all ten frames ×2.
+- **Known weak points:**
+  - The reaper reads as a reaper first. "Finance" comes only from the small dark ledger and the red pen.
+  - The miser's money sack carries a small `$` sign.
+  - The team leaders are narrower (43–50 px) than the blocky bosses they replace (54–60 px).
+
 ## UI icons (second batch, `icons/`)
 
 - 20 icons at 32×32, no text:
@@ -536,6 +562,29 @@ All UI frames were generated with PixelLab (Pixen) at native size and cropped. `
 - Raw picks: `story/src/{ep4,ep5}_N_raw_*.png`. Rejected rolls were not kept: one `ep4_1` with no characters at all and one with Park running from the slime; three `ep4_4` with Park and the buff icons but no phone.
 - Credits: **110 generations**: 4 Pro Flash 64×64 references (5 each) and 15 Pro Flash panels at 192×128 (6 each; `ep4_1` was rolled 3 times and `ep4_4` 5 times; the other panels once).
 - Known issues: in `ep5_1` and `ep5_5` Park is seen from behind, and in `ep5_1` he is small and tinted red by the torchlight. `ep5_3`, `ep5_4` and `ep5_5` have a flat dark band across the top (asked for as caption space), and `ep4_4` a nearly flat one. `ep5_4` is a larger close-up of Park, so it looks coarser, like `prologue_6`. In `ep5_3` 김팀장's hair is messier than in his reference (after the fight).
+
+### Episodes 6 and 7 (`ep6_*`, `ep7_*`)
+
+- "6화 — 3일 차 신입 (1100층)" and "7화 — 올해의 영업왕 (2000층, 공로패)", 4 panels each, same format as the prologue. `story/_sheet_ep6.png` and `_sheet_ep7.png` show them ×2 in one row (like `_sheet_ep2.png`). Characters were placed with empty space above their heads for the game's speech bubbles.
+
+  | File | Panel |
+  |---|---|
+  | `ep6_1` | Floor 1100 break room (coffee machine, water cooler, vending machine, purple glow, a wall torch): 오사원 at a round table, cheek on his hand, writes on a sheet with a black pen; a paper cup and his phone beside him |
+  | `ep6_2` | Park stands in teacher mode, frowning, holding the sheet covered in red wavy correction lines and a red tick, the red pen at his chest; 오사원 sits at the table and looks up blankly |
+  | `ep6_3` | Both seated at the table: 오사원 with starry eyes, a blush and clasped hands, sparkles around him; Park holds the red-marked sheet with a puzzled face and a sweat drop |
+  | `ep6_4` | 오사원 stands and tucks the folded red-marked sheet away, phone in his other hand; Park behind the table, arms crossed, eyes closed, nodding with a satisfied smile |
+  | `ep7_1` | Floor 2000 sales boss room (bar-chart posters, a row of framed trophy plaques, torches, toppled desks): the defeated boss, a translucent pale-blue ghost of a man in a suit with spiral eyes, lies on the floor fading into wisps beside a dropped megaphone; Park stands to the left, sweating, pen in hand |
+  | `ep7_2` | A wood wall of dull plaques with blank gold plates; one gleams with sparkles and shows a photo of a young Park (full black hair, moustache, navy suit); Park in the foreground points at it, eyes bulging, mouth open |
+  | `ep7_3` | 박주임 bends forward toward the gleaming plaque with starry eyes and a big grin; Park beside him, eyes closed, holds up a flat palm to say no |
+  | `ep7_4` | Chest-up Park holds the plaque turned over: on the plain brown back, a small round white sticker with the red horned-circle emblem from `prologue_6`; he squints at it, one brow raised |
+
+- New character reference (64×64, transparent, binary alpha, in `story/src/`): `ref_oh_sawon.png`, 막내 오사원: two-block haircut, white wireless earbuds, oversized beige cardigan over a white T-shirt, slim blue lanyard, sleepy deadpan face, a black phone in one hand. Pro Flash with `park_office_ref.png` as the style image (proportions, outline and shading only), rolled twice; the cleaner roll had no visible earbuds, so one Pro Flash text edit added the earbuds and lanyard and made the sides of the hair shorter (a second edit with another seed was not used).
+- Style images: `ep6_1` used the 오사원 reference alone; `ep6_2`–`ep6_4` used Park + 오사원 side by side (128×64, labelled "left: Park, right: 오사원"); `ep7_3` used Park + 박주임 (`ref_park_jumim.png`); `ep7_1`, `ep7_2` and `ep7_4` used Park's reference alone. The ep7 boss has no reference: it is a generic ghostly sales manager drawn from the prompt. The emblem in `ep7_4` was described in the prompt (a red ring with two short horns on top). Prompts repeat the same description of Park.
+- `ep6_2` was fixed with a Pro Flash text edit of the whole panel: the first roll's red marks looked like an O, an X and a 9; the edit turned them into wavy correction lines and a tick. A Pro Flash inpaint over the sheet was tried first and came back unchanged.
+- Cleanup as for the prologue (colours merged at RGB distance ≤ 6, 0–35 faint specks per panel; 27–89 colours per panel). Six panels came back with a light bottom row (the grid-recovery artefact; in `ep6_2` it had letter-like grey dashes), and some had an off-colour first or last column (`ep6_1`, `ep6_2`, `ep7_1`, `ep7_3`, `ep7_4`); each was replaced by a copy of the row or column next to it. Nothing was redrawn.
+- Raw picks: `story/src/{ep6,ep7}_N_raw_*.png` (and `ep6_2_edit_e62e.png`, the edited `ep6_2` before cleanup). Unused alternates: `alt_ep6_3a` (a thought bubble with a clock and a sunset door filled the space above 오사원's head, and a grey question mark floated by Park) and `alt_ep7_4a` (stronger close-up, but Park's head touches the top edge, leaving no room for his line). Other rejected rolls were not kept: an `ep6_1` where the earbuds did not show (also its edited version), an `ep6_2` re-roll with smaller, flatter figures, and an `ep7_2` where Park was cut off at the bottom-left corner.
+- Credits: **116 generations**: 오사원 reference 20 (2 Pro Flash 64×64 creates and 2 edits, 5 each); 13 Pro Flash panels at 192×128 (6 each; `ep6_1`, `ep6_2`, `ep6_3`, `ep7_2` and `ep7_4` were rolled twice); 2 Pro Flash edits at 192×128 (6 each) and 1 Pro Flash inpaint (6, provisional).
+- Known issues: in `ep7_1` Park stands beside the ghost rather than over it, and looks tired rather than triumphant. In `ep7_2` and `ep7_3` the young Park photo on the plaque is small (about 16–25 px across). `ep6_2` has only 28 colours after the edit, so it looks a little flatter than the other panels. In `ep6_4` the folded sheet is held at the pocket rather than shown inside it. `ep7_4` is a larger close-up of Park, like `ep5_4`, so it looks coarser.
 
 ## Story icon (`icons/story.png`)
 

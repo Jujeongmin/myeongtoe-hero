@@ -58,8 +58,8 @@
    "spareNormal": [
     "cable_spider"
    ],
-   "teamLeader": "server_golem",
-   "executive": "legacy_hydra"
+   "teamLeader": "deadline_timjang",
+   "executive": "legacy_sangmu"
   },
   {
    "id": "finance",
@@ -73,8 +73,8 @@
    "spareNormal": [
     "piggy_boar"
    ],
-   "teamLeader": "safe_mimic",
-   "executive": "gold_dragon"
+   "teamLeader": "jeoseung_timjang",
+   "executive": "sujeonno_sangmu"
   },
   {
    "id": "executive",
@@ -88,7 +88,7 @@
    "spareNormal": [
     "golfball_wisp"
    ],
-   "teamLeader": "pen_demon",
+   "teamLeader": "nakhasan_jeonmu",
    "executive": "chairman_demon_king"
   }
  ],
@@ -933,9 +933,9 @@
     }
    }
   },
-  "server_golem": {
-   "id": "server_golem",
-   "name": "서버랙 골렘",
+  "deadline_timjang": {
+   "id": "deadline_timjang",
+   "name": "데드라인 좀비 개발팀장",
    "department": "dev",
    "departmentName": "개발팀",
    "background": "bg_dev.png",
@@ -946,36 +946,36 @@
    "frameHeight": 64,
    "feetBaselineY": 56,
    "hoverPx": 0,
-   "bodyHeight": 52,
-   "bodyWidth": 54,
+   "bodyHeight": 50,
+   "bodyWidth": 46,
    "hpBarAnchor": [
     32,
-    0
+    2
    ],
    "animations": {
     "idle": {
-     "file": "server_golem_idle.png",
+     "file": "deadline_timjang_idle.png",
      "frameCount": 4,
      "frameDurationMs": 160,
      "loop": true
     },
     "hurt": {
-     "file": "server_golem_hurt.png",
+     "file": "deadline_timjang_hurt.png",
      "frameCount": 2,
      "frameDurationMs": 90,
      "loop": false
     },
     "death": {
-     "file": "server_golem_death.png",
+     "file": "deadline_timjang_death.png",
      "frameCount": 4,
      "frameDurationMs": 100,
      "loop": false
     }
    }
   },
-  "legacy_hydra": {
-   "id": "legacy_hydra",
-   "name": "개발 상무 레거시 히드라",
+  "legacy_sangmu": {
+   "id": "legacy_sangmu",
+   "name": "레거시 사이보그 개발 상무",
    "department": "dev",
    "departmentName": "개발팀",
    "background": "bg_dev.png",
@@ -986,27 +986,27 @@
    "frameHeight": 80,
    "feetBaselineY": 72,
    "hoverPx": 0,
-   "bodyHeight": 60,
-   "bodyWidth": 76,
+   "bodyHeight": 66,
+   "bodyWidth": 58,
    "hpBarAnchor": [
     40,
-    8
+    2
    ],
    "animations": {
     "idle": {
-     "file": "legacy_hydra_idle.png",
+     "file": "legacy_sangmu_idle.png",
      "frameCount": 4,
      "frameDurationMs": 160,
      "loop": true
     },
     "hurt": {
-     "file": "legacy_hydra_hurt.png",
+     "file": "legacy_sangmu_hurt.png",
      "frameCount": 2,
      "frameDurationMs": 90,
      "loop": false
     },
     "death": {
-     "file": "legacy_hydra_death.png",
+     "file": "legacy_sangmu_death.png",
      "frameCount": 4,
      "frameDurationMs": 100,
      "loop": false
@@ -1173,9 +1173,9 @@
     }
    }
   },
-  "safe_mimic": {
-   "id": "safe_mimic",
-   "name": "금고 미믹",
+  "jeoseung_timjang": {
+   "id": "jeoseung_timjang",
+   "name": "저승사자 재무팀장",
    "department": "finance",
    "departmentName": "재무팀",
    "background": "bg_finance.png",
@@ -1187,35 +1187,35 @@
    "feetBaselineY": 56,
    "hoverPx": 0,
    "bodyHeight": 52,
-   "bodyWidth": 54,
+   "bodyWidth": 43,
    "hpBarAnchor": [
-    32,
+    31,
     0
    ],
    "animations": {
     "idle": {
-     "file": "safe_mimic_idle.png",
+     "file": "jeoseung_timjang_idle.png",
      "frameCount": 4,
      "frameDurationMs": 160,
      "loop": true
     },
     "hurt": {
-     "file": "safe_mimic_hurt.png",
+     "file": "jeoseung_timjang_hurt.png",
      "frameCount": 2,
      "frameDurationMs": 90,
      "loop": false
     },
     "death": {
-     "file": "safe_mimic_death.png",
+     "file": "jeoseung_timjang_death.png",
      "frameCount": 4,
      "frameDurationMs": 100,
      "loop": false
     }
    }
   },
-  "gold_dragon": {
-   "id": "gold_dragon",
-   "name": "재무 상무 황금 드래곤",
+  "sujeonno_sangmu": {
+   "id": "sujeonno_sangmu",
+   "name": "황금 수전노 재무 상무",
    "department": "finance",
    "departmentName": "재무팀",
    "background": "bg_finance.png",
@@ -1226,27 +1226,27 @@
    "frameHeight": 80,
    "feetBaselineY": 72,
    "hoverPx": 0,
-   "bodyHeight": 66,
-   "bodyWidth": 76,
+   "bodyHeight": 64,
+   "bodyWidth": 67,
    "hpBarAnchor": [
-    40,
-    2
+    39,
+    4
    ],
    "animations": {
     "idle": {
-     "file": "gold_dragon_idle.png",
+     "file": "sujeonno_sangmu_idle.png",
      "frameCount": 4,
      "frameDurationMs": 160,
      "loop": true
     },
     "hurt": {
-     "file": "gold_dragon_hurt.png",
+     "file": "sujeonno_sangmu_hurt.png",
      "frameCount": 2,
      "frameDurationMs": 90,
      "loop": false
     },
     "death": {
-     "file": "gold_dragon_death.png",
+     "file": "sujeonno_sangmu_death.png",
      "frameCount": 4,
      "frameDurationMs": 100,
      "loop": false
@@ -1413,9 +1413,9 @@
     }
    }
   },
-  "pen_demon": {
-   "id": "pen_demon",
-   "name": "전무 데몬",
+  "nakhasan_jeonmu": {
+   "id": "nakhasan_jeonmu",
+   "name": "낙하산 전무",
    "department": "executive",
    "departmentName": "임원실",
    "background": "bg_executive.png",
@@ -1426,27 +1426,27 @@
    "frameHeight": 64,
    "feetBaselineY": 56,
    "hoverPx": 0,
-   "bodyHeight": 50,
-   "bodyWidth": 60,
+   "bodyHeight": 52,
+   "bodyWidth": 50,
    "hpBarAnchor": [
     32,
-    2
+    0
    ],
    "animations": {
     "idle": {
-     "file": "pen_demon_idle.png",
+     "file": "nakhasan_jeonmu_idle.png",
      "frameCount": 4,
      "frameDurationMs": 160,
      "loop": true
     },
     "hurt": {
-     "file": "pen_demon_hurt.png",
+     "file": "nakhasan_jeonmu_hurt.png",
      "frameCount": 2,
      "frameDurationMs": 90,
      "loop": false
     },
     "death": {
-     "file": "pen_demon_death.png",
+     "file": "nakhasan_jeonmu_death.png",
      "frameCount": 4,
      "frameDurationMs": 100,
      "loop": false
