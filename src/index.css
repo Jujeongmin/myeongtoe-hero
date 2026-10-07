@@ -185,3 +185,8 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .modal { border: 14px solid transparent; border-image: var(--ui-mission-panel) 14 fill / 14px; background: none; box-shadow: none; }
 .sheet { border: 12px solid transparent; border-image: var(--ui-row-panel) 6 fill / 12px repeat; background: none; box-shadow: none; }
 .sheet-body { background: none; }
+/* Offline popup: the ad button big and crimson with its icon, plain 받기 smaller beside it. */
+.popup-actions { display: flex; gap: 6px; align-items: stretch; margin-top: 6px; }
+.modal .popup-actions button { margin-top: 0; }
+.modal .ad-btn { flex: 2; display: flex; align-items: center; justify-content: center; gap: 4px; line-height: 1.3; }
+.modal .plain-btn { flex: 1; border-image: var(--ui-button-gold) 6 fill / 12px repeat; color: #fff; }

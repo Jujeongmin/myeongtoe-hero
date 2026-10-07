@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { GameStore } from "../game/store";
 import { showAd } from "../net/ads";
 import { Amount } from "./Amount";
+import { Icon } from "./Icon";
 
 function duration(seconds: number): string {
   const h = Math.floor(seconds / 3600);
@@ -35,12 +36,15 @@ export function OfflinePopup({ store }: { store: GameStore }) {
         {r.floorTo !== r.floorFrom && <p>{r.floorFrom}층에서 {r.floorTo}층까지</p>}
         {r.tickets > 0 && <p>응시권 <Amount icon="ticket" value={formatCount(r.tickets)} /></p>}
         {r.gems > 0 && <p>보석 <Amount icon="gem" value={r.gems} /></p>}
-        {canDouble && (
-          <button className="gold" disabled={busy} onClick={() => void double()}>
-            {premium ? "한 번 더 받기" : "광고 보고 한 번 더 받기"}
-          </button>
-        )}
-        <button onClick={() => store.dismissOffline()}>받기</button>
+        <div className="popup-actions">
+          {canDouble && (
+            <button className="gold ad-btn" disabled={busy} onClick={() => void double()}>
+              <Icon name={premium ? "premium" : "ad"} />
+              <span>{premium ? "한 번 더 받기" : <>광고 보고<br />한 번 더 받기</>}</span>
+            </button>
+          )}
+          <button className="plain-btn" onClick={() => store.dismissOffline()}>받기</button>
+        </div>
       </div>
     </div>
   );
