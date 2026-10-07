@@ -278,3 +278,66 @@ html[lang="ja"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional J
 .bottom-nav .nav-label { display: block; width: 100%; white-space: nowrap; overflow: hidden; text-align: center; }
 /* Level-up and buy buttons: red when there is gold for it, the plain gold button when there isn't. */
 .row button.poor:disabled { border-image: var(--ui-button-gold) 6 fill / 12px repeat; color: #fff; }
+/* 이직: an offer letter (art/ui/prestige_panel) with the headhunter's pitch and three offer cards. */
+.prestige-btn { border: 8px solid transparent; border-image: var(--ui-prestige-button, var(--ui-button-gold)) 8 fill / 8px; background: none; image-rendering: pixelated; }
+.prestige-btn.ready { border-image: var(--ui-prestige-button-on, var(--ui-button-gold-hot)) 8 fill / 8px; }
+.prestige-sheet { width: min(400px, 94vw); max-height: 86dvh; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding: 4px; border: 12px solid transparent; border-image: var(--ui-prestige-panel, var(--ui-row-panel)) 12 fill / 12px; color: #2a1d12; image-rendering: pixelated; }
+.prestige-sheet header { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+.prestige-sheet header .sub { color: #6b5a44; }
+.prestige-sheet .sub { color: #6b5a44; }
+.prestige-close { margin-left: auto; border: 12px solid transparent; border-image: var(--ui-button-gold) 6 fill / 12px repeat; background: none; color: #fff; padding: 0 2px; min-height: 36px; text-shadow: 1px 1px 0 #000; }
+.prestige-pitch { display: flex; align-items: flex-end; gap: 6px; }
+.prestige-pitch img { flex: none; image-rendering: pixelated; }
+.prestige-say { position: relative; padding: 0 2px 1px; border: 8px solid transparent; border-image: var(--ui-speech-bubble) 6 fill / 8px; font-size: 12px; line-height: 15px; transform: scaleX(1); }
+.prestige-terms { padding: 2px 4px; font-size: 12px; line-height: 15px; }
+.prestige-card { display: flex; align-items: center; gap: 6px; min-height: 52px; padding: 0 2px; border: 10px solid transparent; border-image: var(--ui-prestige-card-plain, var(--ui-row-panel)) 10 fill / 10px; color: #1d1a2e; image-rendering: pixelated; }
+.prestige-card.boosted { border-image: var(--ui-prestige-card-boosted, var(--ui-row-panel)) 10 fill / 10px; }
+.prestige-card.super { border-image: var(--ui-prestige-card-super, var(--ui-row-panel)) 10 fill / 10px; }
+.prestige-card .grow { flex: 1; min-width: 0; }
+.prestige-card .sub { color: #4a3a28; }
+.prestige-card .mult { color: #b3261e; }
+.prestige-card button { flex: none; min-width: 76px; min-height: 40px; border: 12px solid transparent; border-image: var(--ui-button-gold) 6 fill / 12px repeat; background: none; color: #fff; padding: 0 2px; text-shadow: 1px 1px 0 #000; }
+.prestige-card button.hot { border-image: var(--ui-button-gold-hot) 6 fill / 12px repeat; color: #ffd166; }
+.prestige-card button:disabled { border-image: var(--ui-button-disabled) 6 fill / 12px repeat; color: #bbb; }
+/* Themed menus: each sheet uses its own frames (art/ui/<theme>_*.png), falling back to the shared ones. */
+.theme-costume { border-image: var(--ui-costume-panel, var(--ui-row-panel)) 12 fill / 12px; }
+.theme-costume .row, .theme-costume .costume-row { border: 10px solid transparent; border-image: var(--ui-costume-row, var(--ui-row-panel)) 10 fill / 10px; }
+.theme-costume .row button, .theme-costume .tabs button { border: 8px solid transparent; border-image: var(--ui-costume-button, var(--ui-button-gold)) 8 fill / 8px; }
+.theme-costume .row button.hot, .theme-costume .tabs button.on { border-image: var(--ui-costume-button-hot, var(--ui-button-gold-hot)) 8 fill / 8px; }
+.theme-costume .row button:disabled { filter: grayscale(0.7) brightness(0.8); }
+.theme-apartment { border-image: var(--ui-apartment-panel, var(--ui-row-panel)) 12 fill / 12px; }
+.theme-apartment .row, .theme-apartment .costume-row { border: 10px solid transparent; border-image: var(--ui-apartment-row, var(--ui-row-panel)) 10 fill / 10px; }
+.theme-apartment .row button, .theme-apartment .tabs button { border: 8px solid transparent; border-image: var(--ui-apartment-button, var(--ui-button-gold)) 8 fill / 8px; }
+.theme-apartment .row button.hot, .theme-apartment .tabs button.on { border-image: var(--ui-apartment-button-hot, var(--ui-button-gold-hot)) 8 fill / 8px; }
+.theme-apartment .row button:disabled { filter: grayscale(0.7) brightness(0.8); }
+.theme-relics { border-image: var(--ui-relics-panel, var(--ui-row-panel)) 12 fill / 12px; }
+.theme-relics .row, .theme-relics .costume-row { border: 10px solid transparent; border-image: var(--ui-relics-row, var(--ui-row-panel)) 10 fill / 10px; }
+.theme-relics .row button, .theme-relics .tabs button { border: 8px solid transparent; border-image: var(--ui-relics-button, var(--ui-button-gold)) 8 fill / 8px; }
+.theme-relics .row button.hot, .theme-relics .tabs button.on { border-image: var(--ui-relics-button-hot, var(--ui-button-gold-hot)) 8 fill / 8px; }
+.theme-relics .row button:disabled { filter: grayscale(0.7) brightness(0.8); }
+.theme-office { border-image: var(--ui-office-panel, var(--ui-row-panel)) 12 fill / 12px; }
+.theme-office .row, .theme-office .costume-row { border: 10px solid transparent; border-image: var(--ui-office-row, var(--ui-row-panel)) 10 fill / 10px; }
+.theme-office .row button, .theme-office .tabs button { border: 8px solid transparent; border-image: var(--ui-office-button, var(--ui-button-gold)) 8 fill / 8px; }
+.theme-office .row button.hot, .theme-office .tabs button.on { border-image: var(--ui-office-button-hot, var(--ui-button-gold-hot)) 8 fill / 8px; }
+.theme-office .row button:disabled { filter: grayscale(0.7) brightness(0.8); }
+.theme-missions { border-image: var(--ui-missions-panel, var(--ui-row-panel)) 12 fill / 12px; }
+.theme-missions .row, .theme-missions .costume-row { border: 10px solid transparent; border-image: var(--ui-missions-row, var(--ui-row-panel)) 10 fill / 10px; }
+.theme-missions .row button, .theme-missions .tabs button { border: 8px solid transparent; border-image: var(--ui-missions-button, var(--ui-button-gold)) 8 fill / 8px; }
+.theme-missions .row button.hot, .theme-missions .tabs button.on { border-image: var(--ui-missions-button-hot, var(--ui-button-gold-hot)) 8 fill / 8px; }
+.theme-missions .row button:disabled { filter: grayscale(0.7) brightness(0.8); }
+.theme-ranking { border-image: var(--ui-ranking-panel, var(--ui-row-panel)) 12 fill / 12px; }
+.theme-ranking .row, .theme-ranking .costume-row { border: 10px solid transparent; border-image: var(--ui-ranking-row, var(--ui-row-panel)) 10 fill / 10px; }
+.theme-ranking .row button, .theme-ranking .tabs button { border: 8px solid transparent; border-image: var(--ui-ranking-button, var(--ui-button-gold)) 8 fill / 8px; }
+.theme-ranking .row button.hot, .theme-ranking .tabs button.on { border-image: var(--ui-ranking-button-hot, var(--ui-button-gold-hot)) 8 fill / 8px; }
+.theme-ranking .row button:disabled { filter: grayscale(0.7) brightness(0.8); }
+.theme-settings { border-image: var(--ui-settings-panel, var(--ui-row-panel)) 12 fill / 12px; }
+.theme-settings .row, .theme-settings .costume-row { border: 10px solid transparent; border-image: var(--ui-settings-row, var(--ui-row-panel)) 10 fill / 10px; }
+.theme-settings .row button, .theme-settings .tabs button { border: 8px solid transparent; border-image: var(--ui-settings-button, var(--ui-button-gold)) 8 fill / 8px; }
+.theme-settings .row button.hot, .theme-settings .tabs button.on { border-image: var(--ui-settings-button-hot, var(--ui-button-gold-hot)) 8 fill / 8px; }
+.theme-settings .row button:disabled { filter: grayscale(0.7) brightness(0.8); }
+.theme-story { border-image: var(--ui-story-panel, var(--ui-row-panel)) 12 fill / 12px; }
+.theme-story .row, .theme-story .costume-row { border: 10px solid transparent; border-image: var(--ui-story-row, var(--ui-row-panel)) 10 fill / 10px; }
+.theme-story .row button, .theme-story .tabs button { border: 8px solid transparent; border-image: var(--ui-story-button, var(--ui-button-gold)) 8 fill / 8px; }
+.theme-story .row button.hot, .theme-story .tabs button.on { border-image: var(--ui-story-button-hot, var(--ui-button-gold-hot)) 8 fill / 8px; }
+.theme-story .row button:disabled { filter: grayscale(0.7) brightness(0.8); }
+.prestige-sheet b { color: #7a1d12; text-shadow: none; }

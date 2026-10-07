@@ -5,11 +5,13 @@ import type { GameState } from "../../shared/state";
 import { jobChangeReward } from "../../shared/stats";
 import type { GameStore } from "../game/store";
 import { t } from "../i18n";
+import { imageUrl } from "../game/sprites";
 import { Amount } from "./Amount";
 
-// Two taps: the first arms the button, the second does it (no window.confirm: the Verse8 iframe may
-// not allow dialogs).
-export function PrestigePanel({ state, store }: { state: GameState; store: GameStore }) {
+// 이직: the headhunter's offer letter. The cat makes the pitch, the letter lists what resets and what
+// stays, and the three offers sit on their own cards (plain, boosted, super). Two taps on an offer:
+// the first arms it, the second signs (no window.confirm: the Verse8 iframe may not allow dialogs).
+export function PrestigePanel({ state, store, onClose }: { state: GameState; store: GameStore; onClose: () => void }) {
   const [armed, setArmed] = useState<PrestigeMode | null>(null);
   const floor = state.run.maxFloor;
   const ready = floor >= PRESTIGE_MIN_FLOOR;
@@ -22,42 +24,48 @@ export function PrestigePanel({ state, store }: { state: GameState; store: GameS
     }
     setArmed(null);
     store.do({ k: "prestige", mode: kind });
+    onClose();
   };
 
+  const offers: { mode: PrestigeMode; name: string }[] = [
+    { mode: "plain", name: t("이직") },
+    { mode: "boosted", name: t("강화이직") },
+    { mode: "super", name: t("초강화이직") },
+  ];
+
   return (
-    <>
-      <div className="row">
-        <div className="grow">
-          <b>{t("이직")}</b> {t("(지금까지 {n}번)", { n: state.prestiges })}
+    <div className="modal-back" onClick={onClose}>
+      <div className="prestige-sheet" onClick={(e) => e.stopPropagation()}>
+        <header>
+          <b>{t("이직")}</b> <span className="sub">{t("(지금까지 {n}번)", { n: state.prestiges })}</span>
+          <button className="prestige-close" onClick={onClose} aria-label={t("닫기")}>{t("닫기")}</button>
+        </header>
+        <div className="prestige-pitch">
+          <img src={imageUrl("story/src/ref_headhunter_cat.png")} width={64} height={64} alt="" draggable={false} />
+          <div className="prestige-say">{t("박부장님, 더 좋은 조건으로 1층부터 다시 시작하시죠.")}</div>
+        </div>
+        <div className="prestige-terms">
+          <div>{t("이번 회차 최고 {floor}층", { floor })}</div>
           <div className="sub">{t("층, 골드, 업무 장비(구매확정한 것은 남아요), 부업이 초기화돼요. 자격증, 동료, 기념품, 코스튬, 아파트, 사무용품, 응시권, 보석, 상품권은 남아요.")}</div>
         </div>
+        {offers.map(({ mode, name }) => {
+          const { gems, ticketMult } = PRESTIGE_MODES[mode];
+          const afford = state.gems >= gems;
+          return (
+            <div key={mode} className={`prestige-card ${mode}`}>
+              <div className="grow">
+                <b>{name}</b>{ticketMult > 1 && <span className="mult"> ×{ticketMult}</span>}
+                <div className="sub">
+                  {ready ? <><Amount icon="ticket" value={formatCount(reward.tickets * ticketMult)} /> <Amount icon="gem" value={reward.gems} /></> : t("{floor}층에 도달하면 이직할 수 있어요", { floor: PRESTIGE_MIN_FLOOR })}
+                </div>
+              </div>
+              <button className={armed === mode ? "hot" : ""} disabled={!ready || !afford} onClick={() => press(mode)}>
+                {armed === mode ? t("한 번 더") : gems > 0 ? <Amount icon="gem" value={gems} /> : t("이직하기")}
+              </button>
+            </div>
+          );
+        })}
       </div>
-      <div className="row">
-        <div className="grow">
-          {t("이번 회차 최고 {floor}층", { floor })}
-          <div className="sub">
-            {ready ? <>{t("받을 보상:")} <Amount icon="ticket" value={formatCount(reward.tickets)} /> <Amount icon="gem" value={reward.gems} /></> : t("{floor}층에 도달하면 이직할 수 있어요", { floor: PRESTIGE_MIN_FLOOR })}
-          </div>
-        </div>
-      </div>
-      <div className="row">
-        <button className="wide" disabled={!ready} onClick={() => press("plain")}>
-          {armed === "plain" ? t("정말 이직할까요? 한 번 더 누르세요") : t("이직하기")}
-        </button>
-      </div>
-      {(["boosted", "super"] as const).map((mode) => {
-        const { gems, ticketMult } = PRESTIGE_MODES[mode];
-        const name = mode === "boosted" ? t("강화이직") : t("초강화이직");
-        return (
-          <div key={mode} className="row">
-            <button className="wide gold" disabled={!ready || state.gems < gems} onClick={() => press(mode)}>
-              {armed === mode
-                ? t("보석 {gems}개로 {name}할까요? 한 번 더 누르세요", { gems, name })
-                : <>{name} (<Amount icon="gem" value={gems} />, {t("응시권 {n}배", { n: ticketMult })} <Amount icon="ticket" value={formatCount(reward.tickets * ticketMult)} />)</>}
-            </button>
-          </div>
-        );
-      })}
-    </>
+    </div>
   );
 }

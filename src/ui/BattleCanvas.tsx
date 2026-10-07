@@ -50,6 +50,9 @@ interface Sim {
   floor: number;
   boss: boolean;
   quipAt: number;
+  // Hit bursts still playing, and a short screen shake after a critical hit.
+  fx: { crit: boolean; x: number; y: number; since: number }[];
+  shakeUntil: number;
 }
 
 const QUIP_MIN_MS = 25_000;
@@ -74,7 +77,7 @@ export function BattleCanvas({ state }: { state: GameState }) {
     let last = performance.now();
     const sim: Sim = {
       kill: "", hits: 0, hurtUntil: 0, dying: null, current: null, currentX: 0, floor: 0, boss: false,
-      quipAt: performance.now() + QUIP_MIN_MS * Math.random(),
+      quipAt: performance.now() + QUIP_MIN_MS * Math.random(), fx: [], shakeUntil: 0,
     };
     const loop = (now: number) => {
       const dt = Math.min(0.1, (now - last) / 1000);
@@ -196,7 +199,10 @@ function draw(
     sim.quipAt = now + QUIP_MIN_MS + QUIP_MORE_MS * Math.random();
   }
 
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, w, h);
+  // A critical hit shakes the scene by a pixel or two for a moment.
+  if (now < sim.shakeUntil) ctx.translate(Math.round(Math.random() * 4 - 2), Math.round(Math.random() * 2 - 1));
   const bg = image(backgroundFile(department));
   if (bg) {
     const bw = bg.width * bgScale;
@@ -226,6 +232,10 @@ function draw(
     for (let k = sim.hits; k < landed; k++) {
       const crit = Math.random() < critChance;
       pop(formatBig(hp.mulN(1 / n)), monsterX + monster.size / 2 + (k % 3) * 3 - 3, top, crit);
+      // The burst where the swing lands: the monster's front edge, at about chest height.
+      const body = floorY - monster.baseline - monster.hover + (monster.baseline - monster.hpBar[1]) * 0.45;
+      sim.fx.push({ crit, x: monsterX + monster.size * 0.32 + (k % 2) * 3, y: body + monster.hpBar[1] * 0.2, since: now });
+      if (crit) sim.shakeUntil = now + SHAKE_MS;
     }
     sim.hits = landed;
     sim.hurtUntil = now + HURT_MS;
@@ -260,8 +270,27 @@ function draw(
     drawMonster(ctx, monster, hurt ? "hurt" : "idle", f, monsterX, floorY);
     drawHpBar(ctx, monster, monsterX, floorY, 1 - landed / n);
     tag(monster.name, monsterX + monster.hpBar[0], floorY - monster.baseline - monster.hover + monster.hpBar[1] - HP_BAR.h - 1);
+    drawHitFx(ctx, sim, now);
   } else tag("", 0, 0);
   return nextScroll;
+}
+
+// Hit bursts (art/fx/hit_spark.png, crit_spark.png: one row of frames each), drawn over the monster.
+const HIT_FX = {
+  hit: { file: "fx/hit_spark.png", size: 32, frames: 5, ms: 45 },
+  crit: { file: "fx/crit_spark.png", size: 48, frames: 6, ms: 45 },
+};
+const SHAKE_MS = 140;
+
+function drawHitFx(ctx: CanvasRenderingContext2D, sim: Sim, now: number): void {
+  sim.fx = sim.fx.filter((f) => {
+    const spec = f.crit ? HIT_FX.crit : HIT_FX.hit;
+    const i = Math.floor((now - f.since) / spec.ms);
+    if (i >= spec.frames) return false;
+    const img = image(spec.file);
+    if (img) ctx.drawImage(img, i * spec.size, 0, spec.size, spec.size, Math.round(f.x - spec.size / 2), Math.round(f.y - spec.size / 2), spec.size, spec.size);
+    return true;
+  });
 }
 
 // The monster's health bar (art/ui hp_bar, 3-slice) over its head: one step down per hit.

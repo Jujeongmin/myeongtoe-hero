@@ -84,7 +84,7 @@ export function Battle({ state, store, onOpen, onGo }: {
           </div>
         )}
       </div>
-      <button className="prestige-btn" onClick={() => onOpen("prestige")}>
+      <button className={`prestige-btn${ready ? " ready" : ""}`} onClick={() => onOpen("prestige")}>
         {t("이직")}
         <small>{ready ? <Amount icon="ticket" value={`+${formatCount(reward.tickets)}`} /> : t("{floor}층부터", { floor: PRESTIGE_MIN_FLOOR })}</small>
       </button>

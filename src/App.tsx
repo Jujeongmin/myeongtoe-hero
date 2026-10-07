@@ -32,6 +32,11 @@ import { Toast } from "./ui/Toast";
 
 const SYNC_MS = 1500;
 
+const SHEET_THEMES: Partial<Record<SheetId, string>> = {
+  suits: "costume", apartment: "apartment", relics: "relics", office: "office",
+  missions: "missions", ranking: "ranking", settings: "settings", story: "story",
+};
+
 const SHEET_TITLES: Record<SheetId, string> = {
   prestige: "이직", suits: "코스튬", apartment: "아파트", relics: "퇴직 기념품", office: "사무용품",
   missions: "미션", ranking: "랭킹", settings: "설정", story: "스토리",
@@ -147,9 +152,9 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
         {tab === "shop" && <ShopPanel state={state} store={store} />}
       </main>
       <BottomNav state={state} tab={tab} onPick={setTab} onLocked={(text) => store.notify(text)} />
-      {sheet && (
-        <Sheet title={t(SHEET_TITLES[sheet])} onClose={() => setSheet(null)}>
-          {sheet === "prestige" && <PrestigePanel state={state} store={store} />}
+      {sheet === "prestige" && <PrestigePanel state={state} store={store} onClose={() => setSheet(null)} />}
+      {sheet && sheet !== "prestige" && (
+        <Sheet title={t(SHEET_TITLES[sheet])} theme={SHEET_THEMES[sheet]} onClose={() => setSheet(null)}>
           {sheet === "suits" && <CostumePanel state={state} store={store} />}
           {sheet === "apartment" && <ApartmentPanel state={state} store={store} />}
           {sheet === "relics" && <RelicPanel state={state} store={store} />}
