@@ -3,6 +3,7 @@ import { EPISODES, type Episode, type StoryPanel } from "../../shared/data/story
 import type { GameState } from "../../shared/state";
 import { imageUrl } from "../game/sprites";
 import type { GameStore } from "../game/store";
+import { useFitText } from "./useFitText";
 import { t } from "../i18n";
 
 // An episode can be shown once every panel's picture is in art/story.
@@ -111,7 +112,7 @@ function Panel({ panel, width }: { panel: StoryPanel; width: number }) {
       })}
       {panel.lines.some((l) => !l.who) && (
         <div className="story-captions">
-          {panel.lines.filter((l) => !l.who).map((l, j) => <div key={j} className="story-narration">{t(l.text)}</div>)}
+          {panel.lines.filter((l) => !l.who).map((l, j) => (l.oneLine ? <OneLine key={j} text={t(l.text)} /> : <div key={j} className="story-narration">{t(l.text)}</div>))}
         </div>
       )}
     </section>
@@ -141,4 +142,9 @@ export function StoryList({ state, onRead }: { state: GameState; onRead: (ep: Ep
 // The next episode to open by itself, when its pictures are in.
 export function storyToShow(state: GameState): Episode | undefined {
   return EPISODES.find((e) => state.bestFloor >= e.floor && !state.story.includes(e.id) && episodeReady(e));
+}
+
+function OneLine({ text }: { text: string }) {
+  const ref = useFitText<HTMLDivElement>(text);
+  return <div ref={ref} className="story-narration one-line">{text}</div>;
 }

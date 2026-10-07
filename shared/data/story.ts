@@ -9,6 +9,7 @@ export interface StoryLine {
   // the bubble grows up from it, to the right (to the left when `flip`).
   at?: [number, number];
   flip?: boolean;
+  oneLine?: boolean; // narration kept on one line (the font shrinks to fit)
   w?: number; // the bubble's widest, in panel pixels (default 62% of the panel)
 }
 
@@ -35,7 +36,7 @@ export const EPISODES: readonly Episode[] = [
       {
         img: "prologue_2",
         lines: [
-          { text: "마왕그룹 본사 용사 채용 — 나이·경력 무관 / 성과급 즉시 지급 / 출퇴근 자유" },
+          { text: "마왕그룹 본사 용사 채용 — 나이·경력 무관 / 성과급 즉시 지급", oneLine: true },
           { who: "박부장", text: "…나이 무관?", at: [172, 8], flip: true },
         ],
       },

@@ -341,3 +341,4 @@ html[lang="ja"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional J
 .theme-story .row button.hot, .theme-story .tabs button.on { border-image: var(--ui-story-button-hot, var(--ui-button-gold-hot)) 8 fill / 8px; }
 .theme-story .row button:disabled { filter: grayscale(0.7) brightness(0.8); }
 .prestige-sheet b { color: #7a1d12; text-shadow: none; }
+.story-narration.one-line { white-space: nowrap; overflow: hidden; }
