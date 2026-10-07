@@ -4,11 +4,12 @@ import {
   hasCostume, legendEffectText, legendOpen, rentPrice, type SuitItem, type SuitPart,
 } from "../../shared/data/costumes";
 import type { GameState } from "../../shared/state";
-import { ANIMS, BASELINE_Y, FRAME, image, partStrip } from "../game/sprites";
+import { ANIMS, BASELINE_Y, FRAME, partStrip } from "../game/sprites";
 import { drawPark, visibleWear } from "../game/drawPark";
 import type { GameStore } from "../game/store";
 import { Amount } from "./Amount";
 import { Icon } from "./Icon";
+import { SpriteThumb } from "./SpriteThumb";
 
 type Tab = SuitPart | "aura" | "legend";
 const TABS: { id: Tab; label: string }[] = [
@@ -72,7 +73,7 @@ function CostumeRow({ item, state, store, trying, onTry }: {
   const refund = state.costume.rented.includes(item.id) ? rentPrice(item) : 0;
   return (
     <div className={`row costume-row${trying ? " current" : ""}`} onClick={onTry}>
-      <span className="icon-box"><PartThumb id={item.id} /></span>
+      <span className="icon-box"><SpriteThumb path={partStrip(item.id, "idle")} frame={FRAME} className="part-thumb" /></span>
       <div className="grow">
         <b>{item.name}</b>
         <div className="sub">{costumeEffectText(item.effect)}</div>
@@ -160,42 +161,6 @@ function Legends({ state, store }: { state: GameState; store: GameStore }) {
       ))}
     </>
   );
-}
-
-// The costume piece itself: its pixels in the first idle frame, cropped and scaled up whole.
-function PartThumb({ id }: { id: string }) {
-  const ref = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    let timer = 0;
-    const draw = () => {
-      const img = image(partStrip(id, "idle"));
-      const canvas = ref.current;
-      if (!img || !canvas) {
-        timer = window.setTimeout(draw, 100);
-        return;
-      }
-      const cell = document.createElement("canvas");
-      cell.width = cell.height = FRAME;
-      const cctx = cell.getContext("2d")!;
-      cctx.drawImage(img, 0, 0, FRAME, FRAME, 0, 0, FRAME, FRAME);
-      const px = cctx.getImageData(0, 0, FRAME, FRAME).data;
-      let x0 = FRAME, y0 = FRAME, x1 = -1, y1 = -1;
-      for (let y = 0; y < FRAME; y++) for (let x = 0; x < FRAME; x++) {
-        if (px[(y * FRAME + x) * 4 + 3] === 0) continue;
-        x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y);
-      }
-      const ctx = canvas.getContext("2d")!;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (x1 < 0) return;
-      const w = x1 - x0 + 1, h = y1 - y0 + 1;
-      const k = Math.max(1, Math.floor(Math.min(canvas.width / w, canvas.height / h)));
-      ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(cell, x0, y0, w, h, Math.floor((canvas.width - w * k) / 2), Math.floor((canvas.height - h * k) / 2), w * k, h * k);
-    };
-    draw();
-    return () => window.clearTimeout(timer);
-  }, [id]);
-  return <canvas ref={ref} className="part-thumb" width={40} height={40} />;
 }
 
 // Park at 3× in an idle loop, wearing `wear`.

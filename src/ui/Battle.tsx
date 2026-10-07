@@ -1,4 +1,6 @@
-import { departmentOf, isBoss } from "../../shared/data/floors";
+import { MONSTERS_PER_FLOOR, departmentOf, isBoss } from "../../shared/data/floors";
+import { monsterFor } from "../game/sprites";
+import { SpriteThumb } from "./SpriteThumb";
 import { PRESTIGE_MIN_FLOOR } from "../../shared/data/prestige";
 import { useState } from "react";
 import { formatBig, formatCount } from "../../shared/format";
@@ -41,6 +43,8 @@ export function Battle({ state, store, onOpen, onGo }: {
   const bossLeft = Math.max(0, Math.ceil(power.bossLimitSec - carrySec));
   const ready = maxFloor >= PRESTIGE_MIN_FLOOR;
   const reward = jobChangeReward(state);
+  // The floor's boss, for the 보스 도전 button.
+  const bossSprite = farming ? monsterFor(departmentOf(floor), floor, MONSTERS_PER_FLOOR - 1, true) : undefined;
 
   return (
     <section className="battle">
@@ -82,7 +86,10 @@ export function Battle({ state, store, onOpen, onGo }: {
         <small>{ready ? <Amount icon="ticket" value={`+${formatCount(reward.tickets)}`} /> : `${PRESTIGE_MIN_FLOOR}층부터`}</small>
       </button>
       {farming && (
-        <button className="boss-btn" onClick={() => store.do({ k: "challengeBoss" })}>보스 도전</button>
+        <button className="boss-btn" onClick={() => store.do({ k: "challengeBoss" })}>
+          {bossSprite && <SpriteThumb path={bossSprite.anims.idle.file} frame={bossSprite.size} res={56} size={56} />}
+          <span>보스 도전</span>
+        </button>
       )}
       <MissionCard state={state} store={store} onGo={onGo} />
       <CurrencyBar state={state} />

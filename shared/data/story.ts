@@ -51,6 +51,29 @@ export const EPISODES: readonly Episode[] = [
     ],
   },
   {
+    id: "ep0",
+    floor: 3,
+    title: "0.5화 — 월급만큼만",
+    panels: [
+      { img: "ep0_1", lines: [{ who: "박부장", text: "덤벼라!" }] },
+      {
+        img: "ep0_2",
+        lines: [
+          { who: "박부장", text: "…안 덤벼?" },
+          { who: "서류 슬라임", text: "제 업무에 '전투'는 없는데요." },
+        ],
+      },
+      { img: "ep0_3", lines: [{ who: "서류 슬라임", text: "아야. …6시까지만 버티면 돼." }] },
+      {
+        img: "ep0_4",
+        lines: [
+          { text: "마왕그룹 몬스터들은 딱 월급만큼만 일한다. 맞는 것도, 버티는 것도." },
+          { who: "박부장", text: "…라떼는 저러면 잘렸어." },
+        ],
+      },
+    ],
+  },
+  {
     id: "ep1",
     floor: 100,
     title: "1화 — 상무님은 부재중",
