@@ -5,5 +5,5 @@ import { iconUrl } from "../game/sprites";
 export function Icon({ name, size = 32 }: { name: string; size?: number }) {
   const src = (size <= 16 && iconUrl(`${name}_s`)) || iconUrl(name);
   if (!src) return null;
-  return <img className="icon-img" src={src} width={size} height={size} alt="" draggable={false} />;
+  return <img className="icon-img" data-icon={name} src={src} width={size} height={size} alt="" draggable={false} />;
 }

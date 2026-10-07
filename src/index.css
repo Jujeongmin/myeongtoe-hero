@@ -392,3 +392,5 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .bottom-nav { justify-content: space-evenly; }
 .bottom-nav button { flex: 0 0 56px; width: 56px; }
 .mission-card { max-width: 220px; }
+/* The small coupon drawing has a red rim that melts into red buttons: give it a dark outline. */
+.icon-img[data-icon="coupon"] { filter: drop-shadow(1px 0 0 #1b1a2e) drop-shadow(-1px 0 0 #1b1a2e) drop-shadow(0 1px 0 #1b1a2e) drop-shadow(0 -1px 0 #1b1a2e); }
