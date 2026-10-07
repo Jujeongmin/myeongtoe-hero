@@ -15,6 +15,13 @@ function clock(ms: number): string {
   return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
 }
 
+// Under a 28px buff icon: minutes while a minute or more is left ("25분"), then seconds ("45초"),
+// so three labels side by side never run into each other.
+function shortLeft(ms: number): string {
+  const sec = Math.max(0, Math.ceil(ms / 1000));
+  return sec >= 60 ? t("{m}분", { m: Math.ceil(sec / 60) }) : t("{s}초", { s: sec });
+}
+
 // The three buffs (야근 모드, 성과급, 칼퇴 걸음) top left of the battle screen: lit with the time left
 // while on. Tapping one asks once whether to watch that buff's ad, then turns that buff on; while
 // its ad is cooling down a toast says how long. 프리미엄 buyers have all three on for good.
@@ -48,7 +55,7 @@ export function BuffBar({ state, store }: { state: GameState; store: GameStore }
         return (
           <button key={kind} className={`buff${on ? " on" : ""}`} disabled={busy} aria-label={t(BUFFS[kind].name)} onClick={() => press(kind)}>
             <Icon name={ICON[kind]} />
-            {on && !premium && <small>{clock(state.buffs[kind] - state.lastTick)}</small>}
+            {on && !premium && <small>{shortLeft(state.buffs[kind] - state.lastTick)}</small>}
           </button>
         );
       })}

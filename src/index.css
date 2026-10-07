@@ -201,7 +201,7 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .buff-bar { position: absolute; left: 44px; top: 38px; display: flex; gap: 2px; z-index: 2; }
 .buff-bar .buff { position: relative; width: 32px; height: 32px; padding: 0; border: none; background: none; opacity: 0.45; }
 .buff-bar .buff.on { opacity: 1; }
-.buff-bar .buff small { position: absolute; left: 50%; top: 30px; transform: translateX(-50%); font-size: 12px; color: #ffd166; text-shadow: 1px 1px 0 #000, -1px 0 0 #000; white-space: nowrap; }
+.buff-bar .buff small { position: absolute; left: 50%; top: 30px; transform: translateX(-50%); font-size: 10px; color: #ffd166; text-shadow: 1px 1px 0 #000, -1px 0 0 #000; white-space: nowrap; }
 .bottom-nav button.locked { color: #777; }
 .atk-now { position: absolute; z-index: 2; left: 6px; top: 94px; pointer-events: none; }
 /* 공격력: a dark gold-rimmed counter (wallet_pill) with the current weapon popping out on the left. */
