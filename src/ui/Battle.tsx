@@ -1,7 +1,8 @@
 import { t } from "../i18n";
 import { MONSTERS_PER_FLOOR, departmentOf, isBoss } from "../../shared/data/floors";
 import { PARK_RUN_SEC } from "../../shared/data/parking";
-import { monsterFor } from "../game/sprites";
+import { imageUrl, monsterFor } from "../game/sprites";
+import type { Big } from "../../shared/big";
 import { SpriteThumb } from "./SpriteThumb";
 import { PixelBar } from "./PixelBar";
 import { PRESTIGE_MIN_FLOOR } from "../../shared/data/prestige";
@@ -73,7 +74,7 @@ export function Battle({ state, store, onOpen, onGo }: {
         {!parked && !farming && !boss && <span className="floor-no">{t("보스까지 {n}마리", { n: MONSTERS_PER_FLOOR - 1 - Math.min(target, MONSTERS_PER_FLOOR - 1) })}</span>}
         {!parked && boss && <span className="boss-timer"><Icon name="timer" size={16} /><PixelBar kind="progress" value={bossLeft / power.bossLimitSec} /></span>}
       </header>
-      <div className="atk-now">{t("공격력 {atk}", { atk: formatBig(atk) })}</div>
+      <AtkReadout atk={atk} tier={state.gear.tier} />
       <div className="top-left">
         <BuffBar state={state} store={store} />
         <SpeedButton state={state} store={store} />
@@ -124,5 +125,27 @@ export function Battle({ state, store, onOpen, onGo }: {
       <MissionCard state={state} store={store} onGo={onGo} />
       <CurrencyBar state={state} onShop={() => onGo({ tab: "shop" })} />
     </section>
+  );
+}
+
+// 공격력 in a counter with Park's weapon. When it goes up, the counter bumps and the gain floats up
+// out of it ("+N"), so an upgrade is felt on the battle screen too.
+function AtkReadout({ atk, tier }: { atk: Big; tier: number }) {
+  const last = useRef(atk);
+  const [gain, setGain] = useState<{ text: string; at: number } | null>(null);
+  useEffect(() => {
+    if (atk.cmp(last.current) > 0) setGain({ text: `+${formatBig(atk.sub(last.current))}`, at: Date.now() });
+    last.current = atk;
+  }, [atk]);
+  const src = imageUrl(`parts/gear/g${String(tier).padStart(2, "0")}.png`);
+  return (
+    <div className="atk-now">
+      <div key={gain?.at ?? 0} className={`atk-box${gain ? " up" : ""}`}>
+        {src && <img className="atk-weapon" src={src} alt="" draggable={false} />}
+        <span className="atk-label">{t("공격력")}</span>
+        <b>{formatBig(atk)}</b>
+      </div>
+      {gain && <span key={gain.at} className="atk-gain">{gain.text}</span>}
+    </div>
   );
 }

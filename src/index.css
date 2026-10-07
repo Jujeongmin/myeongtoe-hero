@@ -203,7 +203,18 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .buff-bar .buff.on { opacity: 1; }
 .buff-bar .buff small { position: absolute; left: 50%; top: 30px; transform: translateX(-50%); font-size: 12px; color: #ffd166; text-shadow: 1px 1px 0 #000, -1px 0 0 #000; white-space: nowrap; }
 .bottom-nav button.locked { color: #777; }
-.atk-now { position: absolute; z-index: 2; left: 6px; top: 94px; color: #ffd166; font-size: 12px; text-shadow: 1px 1px 0 #000, -1px 0 0 #000; pointer-events: none; }
+.atk-now { position: absolute; z-index: 2; left: 6px; top: 94px; pointer-events: none; }
+/* 공격력: a dark gold-rimmed counter (wallet_pill) with the current weapon popping out on the left. */
+.atk-box { display: inline-flex; align-items: center; gap: 3px; height: 30px; padding: 0 2px 0 0; border: 8px solid transparent; border-image: var(--ui-wallet-pill, var(--ui-icon-box)) 8 fill / 8px; image-rendering: pixelated; box-sizing: border-box; }
+.atk-weapon { width: 32px; height: 32px; margin: -8px -2px -8px -12px; object-fit: contain; image-rendering: pixelated; }
+.atk-label { font-size: 10px; color: #c9c3e0; text-shadow: 1px 1px 0 #000; }
+.atk-box b { font-size: 12px; color: #ffd166; text-shadow: 1px 1px 0 #000, -1px 0 0 #000, 0 -1px 0 #000, 1px 0 0 #000; }
+.atk-box.up { animation: atk-bump 0.35s steps(4); }
+.atk-box.up b { animation: atk-flash 0.6s steps(3); }
+.atk-gain { position: absolute; left: 34px; top: -4px; font-size: 12px; color: #7dff8a; white-space: nowrap; text-shadow: 1px 1px 0 #000, -1px 0 0 #000, 0 -1px 0 #000, 1px 0 0 #000; animation: atk-rise 0.9s steps(9) forwards; }
+@keyframes atk-bump { 0% { transform: scale(1); } 40% { transform: scale(1.15); } 100% { transform: scale(1); } }
+@keyframes atk-flash { 0%, 60% { color: #ffffff; } 100% { color: #ffd166; } }
+@keyframes atk-rise { 0% { transform: translateY(0); opacity: 1; } 70% { opacity: 1; } 100% { transform: translateY(-16px); opacity: 0; } }
 /* Nav tiles: icon and label stacked in the middle of the tile. */
 .bottom-nav button { height: 68px; align-items: center; justify-content: center; gap: 0; line-height: 1.2; }
 /* Top left: the three buffs and the 2x button, small, in one row. */
@@ -418,6 +429,6 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .welcome-go { width: 100%; margin-top: 10px; }
 .welcome-form .row { border: 8px solid transparent; border-image: var(--ui-apply-row, var(--ui-row-panel)) 8 fill / 8px; color: #2a1d1a; }
 .welcome-form .row .sub { text-align: left; }
-/* "+" to the shop at the end of a gem or coupon counter (art/ui/plus_button.png, 20px). */
-.plus-btn { width: 20px; height: 20px; min-height: 0; margin-left: 3px; padding: 0; border: 0; background: var(--ui-plus-button) center / 20px 20px no-repeat; image-rendering: pixelated; pointer-events: auto; cursor: pointer; flex: none; }
-.wallet-pill .plus-btn { margin: 0 -4px 0 4px; }
+/* "+" to the shop at the end of a gem or coupon counter (art/ui/plus_button.png, 26px, drawn 1:1). */
+.plus-btn { width: 26px; height: 26px; min-height: 0; margin-left: 3px; padding: 0; border: 0; background: var(--ui-plus-button) center / 26px 26px no-repeat; image-rendering: pixelated; pointer-events: auto; cursor: pointer; flex: none; }
+.wallet-pill .plus-btn { margin: -5px -6px -5px 4px; }
