@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { AD_PLACEMENTS, adReadyAt } from "../../shared/data/ads";
+import { AD_GOLD_KILLS, AD_PLACEMENTS, adReadyAt } from "../../shared/data/ads";
+import { formatBig } from "../../shared/format";
+import { killGoldNow } from "../../shared/stats";
 import { GEM_ITEMS } from "../../shared/data/gemShop";
 import { PRODUCTS, dailyVxClaimed, dailyVxGems, productOffered } from "../../shared/data/shop";
 import type { GameState } from "../../shared/state";
@@ -62,6 +64,7 @@ function GemShop({ state, store }: { state: GameState; store: GameStore }) {
           <div className="grow">
             <b>{t(item.name)}</b>
             <div className="sub">{t(item.text)}</div>
+            {item.kind === "gold" && <div className="sub"><Amount icon="gold" value={`+${formatBig(killGoldNow(state).mulN(item.kills))}`} /></div>}
           </div>
           <button disabled={state.gems < item.gems} onClick={() => store.do({ k: "buyGemItem", id: item.id })}>
             {t("구매")}<br /><Amount icon="gem" value={item.gems} />
@@ -93,6 +96,7 @@ function AdRewards({ state, store }: { state: GameState; store: GameStore }) {
             <div className="grow">
               <b>{t(ad.name)}</b>
               <div className="sub">{t(ad.text)}</div>
+              {ad.id === "ad_gold" && <div className="sub"><Amount icon="gold" value={`+${formatBig(killGoldNow(state).mulN(AD_GOLD_KILLS))}`} /></div>}
             </div>
             <button className={wait > 0 ? "" : "hot"} disabled={wait > 0 || busy !== ""} onClick={() => void watch(ad.id)}>
               {wait > 0 ? <>{t("대기")}<br />{clock(wait)}</> : premium ? t("받기") : <>{t("광고")}<br />{t("보기")}</>}
