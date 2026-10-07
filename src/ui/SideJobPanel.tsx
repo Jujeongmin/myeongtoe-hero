@@ -34,7 +34,7 @@ export function SideJobPanel({ state, store }: { state: GameState; store: GameSt
                 <i style={{ width: `${Math.min(1, progress) * 100}%` }} />
               </div>
             </div>
-            <button disabled={state.gold.lt(cost)} onClick={() => store.do({ k: "levelSideJob", id: job.id })}>
+            <button className={state.gold.lt(cost) ? "poor" : "hot"} disabled={state.gold.lt(cost)} onClick={() => store.do({ k: "levelSideJob", id: job.id })}>
               {level === 0 ? t("시작") : t("레벨업")}<br />{formatBig(cost)}
             </button>
           </div>

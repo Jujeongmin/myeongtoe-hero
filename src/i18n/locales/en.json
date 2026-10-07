@@ -320,6 +320,7 @@
  "보스 데미지 +{v}": "Boss Damage +{v}",
  "보스 도전!": "Fight Boss!",
  "보스 제한시간 +{v}초": "Boss timer +{v}s",
+ "보스까지 {n}마리": "{n} to boss",
  "보유": "Owned",
  "보유 코스튬 {owned}/{total}": "Costumes {owned}/{total}",
  "보유한 불꽃 1개당 공격력 +{v}": "ATK +{v} per Aura owned",

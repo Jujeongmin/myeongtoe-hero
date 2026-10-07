@@ -54,6 +54,7 @@ export function Battle({ state, store, onOpen, onGo }: {
       <header className="battle-head">
         <span>{t("{dept} {floor}층", { dept: t(departmentOf(floor)), floor })}</span>
         {farming && <span className="floor-no">{t("파밍 중")}</span>}
+        {!farming && !boss && <span className="floor-no">{t("보스까지 {n}마리", { n: MONSTERS_PER_FLOOR - 1 - Math.min(target, MONSTERS_PER_FLOOR - 1) })}</span>}
         {boss && <span className="boss-timer"><Icon name="timer" size={16} /><PixelBar kind="progress" value={bossLeft / power.bossLimitSec} /></span>}
       </header>
       <div className="atk-now">{t("공격력 {atk}", { atk: formatBig(atk) })}</div>

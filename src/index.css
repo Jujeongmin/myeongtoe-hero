@@ -276,3 +276,5 @@ html[lang="ja"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional J
 /* Six equal nav tiles whatever the language; long labels wrap inside their tile. */
 .bottom-nav button { flex: 1 1 0; min-width: 0; }
 .bottom-nav .nav-label { display: block; width: 100%; white-space: nowrap; overflow: hidden; text-align: center; }
+/* Level-up and buy buttons: red when there is gold for it, the plain gold button when there isn't. */
+.row button.poor:disabled { border-image: var(--ui-button-gold) 6 fill / 12px repeat; color: #fff; }

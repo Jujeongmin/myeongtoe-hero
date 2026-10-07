@@ -42,7 +42,7 @@ export function GearPanel({ state, store, onSuits }: { state: GameState; store: 
           const cost = gearLevelCostFor(state, tier, level);
           const maxed = level >= GEAR_MAX_LEVEL;
           button = (
-            <button disabled={maxed || state.gold.lt(cost)} onClick={() => store.do({ k: "levelGear" })}>
+            <button className={maxed ? "" : state.gold.lt(cost) ? "poor" : "hot"} disabled={maxed || state.gold.lt(cost)} onClick={() => store.do({ k: "levelGear" })}>
               {maxed ? t("최대") : <>+1<br /><Amount icon="gold" value={formatBig(cost)} /></>}
             </button>
           );
@@ -50,7 +50,7 @@ export function GearPanel({ state, store, onSuits }: { state: GameState; store: 
           const price = gearPriceFor(state, tier);
           const canBuy = tier === current + 1 && level >= GEAR_MAX_LEVEL;
           button = (
-            <button disabled={!canBuy || state.gold.lt(price)} onClick={() => store.do({ k: "buyGear" })}>
+            <button className={!canBuy ? "" : state.gold.lt(price) ? "poor" : "hot"} disabled={!canBuy || state.gold.lt(price)} onClick={() => store.do({ k: "buyGear" })}>
               {t("구매")}<br /><Amount icon="gold" value={formatBig(price)} />
             </button>
           );
