@@ -1,4 +1,5 @@
 import { t } from "../i18n";
+import { useFitText } from "./useFitText";
 import type { GameState } from "../../shared/state";
 import { Icon } from "./Icon";
 
@@ -28,10 +29,15 @@ export function BottomNav({ state, tab, onPick, onLocked }: {
             onClick={() => (open ? onPick(item.id) : onLocked(t("{name}은(는) {floor}층에서 해금돼요", { name: t(item.label), floor: item.openAt })))}
           >
             <span className="icon"><Icon name={open ? item.icon : "lock"} /></span>
-            {t(item.label)}
+            <NavLabel text={t(item.label)} />
           </button>
         );
       })}
     </nav>
   );
+}
+
+function NavLabel({ text }: { text: string }) {
+  const ref = useFitText<HTMLSpanElement>(text);
+  return <span ref={ref} className="nav-label">{text}</span>;
 }

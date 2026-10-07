@@ -71,7 +71,6 @@ export const EPISODES: readonly Episode[] = [
       {
         img: "ep0_4",
         lines: [
-          { text: "마왕그룹 몬스터들은 딱 월급만큼만 일한다. 맞는 것도, 버티는 것도." },
           { who: "박부장", text: "…라떼는 저러면 잘렸어.", at: [84, 44] },
         ],
       },

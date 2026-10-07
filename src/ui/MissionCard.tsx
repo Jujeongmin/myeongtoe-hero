@@ -1,4 +1,3 @@
-import { useLayoutEffect, useRef } from "react";
 import { SPECIAL_MISSIONS, STEP_MISSIONS } from "../../shared/data/missions";
 import type { GameState } from "../../shared/state";
 import { kstDay } from "../../shared/time";
@@ -6,6 +5,7 @@ import type { GameStore } from "../game/store";
 import { t } from "../i18n";
 import type { NavTab } from "./BottomNav";
 import { RewardView } from "./Amount";
+import { useFitText } from "./useFitText";
 
 // Where a step mission is done: a bottom tab or a panel opened from the battle screen. Floor goals
 // go to the gear tab (a stronger tool is what gets Park higher).
@@ -25,20 +25,6 @@ export function missionsWaiting(state: GameState): boolean {
   return attend || SPECIAL_MISSIONS.some((m) => m.done(state) && !state.missions.special.includes(m.id));
 }
 
-// One line, never cut: the font steps down a pixel at a time until the text fits.
-function useFitText(text: string) {
-  const ref = useRef<HTMLDivElement>(null);
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    for (let px = 12; px >= 7; px--) {
-      el.style.fontSize = `${px}px`;
-      if (el.scrollWidth <= el.clientWidth) break;
-    }
-  }, [text]);
-  return ref;
-}
-
 // Bottom right of the battle screen: the current step mission. Done, it pays in place; not yet,
 // tapping it goes to where it is done.
 export function MissionCard({ state, store, onGo }: { state: GameState; store: GameStore; onGo: (p: MissionPlace) => void }) {
@@ -48,7 +34,7 @@ export function MissionCard({ state, store, onGo }: { state: GameState; store: G
   const done = m.done(state);
   const place = PLACES[m.id];
   const text = t("{step}단계 · {mission}", { step: step + 1, mission: t(m.text, m.vars) });
-  const line = useFitText(text);
+  const line = useFitText<HTMLDivElement>(text);
   return (
     <div
       className={`mission-card${done ? " done" : ""}`}

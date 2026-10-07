@@ -273,3 +273,6 @@ b, strong { font-weight: normal; color: #fff3c4; }
 html[lang="zh-Hans"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional SC", "Galmuri11", monospace; }
 html[lang="zh-Hant"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional TC", "Galmuri11", monospace; }
 html[lang="ja"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional JP", "Galmuri11", monospace; }
+/* Six equal nav tiles whatever the language; long labels wrap inside their tile. */
+.bottom-nav button { flex: 1 1 0; min-width: 0; }
+.bottom-nav .nav-label { display: block; width: 100%; white-space: nowrap; overflow: hidden; text-align: center; }
