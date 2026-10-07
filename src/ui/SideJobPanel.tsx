@@ -6,6 +6,7 @@ import type { GameStore } from "../game/store";
 import { t } from "../i18n";
 import { Amount } from "./Amount";
 import { Icon } from "./Icon";
+import { HoldButton } from "./HoldButton";
 
 export function SideJobPanel({ state, store }: { state: GameState; store: GameStore }) {
   return (
@@ -35,9 +36,9 @@ export function SideJobPanel({ state, store }: { state: GameState; store: GameSt
                 <i style={{ width: `${Math.min(1, progress) * 100}%` }} />
               </div>
             </div>
-            <button className={state.gold.lt(cost) ? "poor" : "hot"} disabled={state.gold.lt(cost)} onClick={() => store.do({ k: "levelSideJob", id: job.id })}>
+            <HoldButton className={state.gold.lt(cost) ? "poor" : "hot"} disabled={state.gold.lt(cost)} onFire={() => store.do({ k: "levelSideJob", id: job.id })}>
               {level === 0 ? t("시작") : t("레벨업")}<br /><Amount icon="gold" value={formatBig(cost)} />
-            </button>
+            </HoldButton>
           </div>
         );
       })}

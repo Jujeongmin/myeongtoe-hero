@@ -7,6 +7,7 @@ import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
 import { Amount } from "./Amount";
 import { Icon } from "./Icon";
+import { HoldButton } from "./HoldButton";
 
 function pct(v: number): string {
   return v >= 1000 ? formatCount(v) : String(Math.round(v * 100) / 100);
@@ -37,9 +38,9 @@ function CertRow({ def, state, store }: { def: CertDef; state: GameState; store:
         <button disabled>MAX</button>
       ) : (
         <div className="buttons">
-          <button disabled={have < cost} onClick={() => store.do({ k: "levelCert", id: def.id, bulk: false })}>
+          <HoldButton disabled={have < cost} onFire={() => store.do({ k: "levelCert", id: def.id, bulk: false })}>
             {level === 0 ? t("취득") : "+1"}<br /><Amount icon={def.currency === "gems" ? "gem" : "ticket"} value={formatCount(cost)} />
-          </button>
+          </HoldButton>
           <button disabled={have < cost} onClick={() => store.do({ k: "levelCert", id: def.id, bulk: true })}>
             {t("최대")}<br />{t("한번에")}
           </button>

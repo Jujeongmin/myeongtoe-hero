@@ -8,6 +8,7 @@ import { gearSprite, imageUrl } from "../game/sprites";
 import type { GameStore } from "../game/store";
 import { Amount } from "./Amount";
 import { Icon } from "./Icon";
+import { HoldButton } from "./HoldButton";
 
 // 코스튬 first (the way in to the costume panel), then every tier: the ones behind owned, the current
 // one to level up to 5, the next one to buy once the current is at 5, the rest waiting. A tier at
@@ -42,9 +43,9 @@ export function GearPanel({ state, store, onSuits }: { state: GameState; store: 
           const cost = gearLevelCostFor(state, tier, level);
           const maxed = level >= GEAR_MAX_LEVEL;
           button = (
-            <button className={maxed ? "" : state.gold.lt(cost) ? "poor" : "hot"} disabled={maxed || state.gold.lt(cost)} onClick={() => store.do({ k: "levelGear" })}>
+            <HoldButton className={maxed ? "" : state.gold.lt(cost) ? "poor" : "hot"} disabled={maxed || state.gold.lt(cost)} onFire={() => store.do({ k: "levelGear" })}>
               {maxed ? t("최대") : <>+1<br /><Amount icon="gold" value={formatBig(cost)} /></>}
-            </button>
+            </HoldButton>
           );
         } else {
           const price = gearPriceFor(state, tier);
