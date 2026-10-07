@@ -6,7 +6,7 @@ import {
 import type { GameState } from "../../shared/state";
 import type { Text } from "../../shared/text";
 import { t } from "../i18n";
-import { ANIMS, BASELINE_Y, FRAME, partStrip } from "../game/sprites";
+import { ANIMS, BASELINE_Y, FRAME, image, partStrip } from "../game/sprites";
 import { drawPark, visibleWear } from "../game/drawPark";
 import type { GameStore } from "../game/store";
 import { Amount } from "./Amount";
@@ -70,7 +70,7 @@ function CostumeRow({ item, state, store, trying, onTry }: {
   const worn = state.wear[item.part] === item.id;
   return (
     <div className={`row costume-row${trying ? " current" : ""}`} onClick={onTry}>
-      <span className="icon-box"><SpriteThumb path={partStrip(item.id, "idle")} frame={FRAME} className="part-thumb" /></span>
+      <span className="icon-box"><CostumeThumb item={item} /></span>
       <div className="grow">
         <b>{t(item.name)}</b>
         <div className="sub">{fx(costumeEffectText(item.effect))}</div>
@@ -153,6 +153,47 @@ function Legends({ state, store }: { state: GameState; store: GameStore }) {
       ))}
     </>
   );
+}
+
+// A costume piece as Park wears it: Park in just that piece, framed on the piece with some of Park
+// around it (at least 26 px of him), so even small gloves or a pin read in context.
+function CostumeThumb({ item }: { item: SuitItem }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    let timer = 0;
+    const draw = () => {
+      const canvas = ref.current;
+      const strip = image(partStrip(item.id, "idle"));
+      if (!canvas || !strip || !image(`park/idle_strip.png`)) {
+        timer = window.setTimeout(draw, 100);
+        return;
+      }
+      const cell = document.createElement("canvas");
+      cell.width = cell.height = FRAME;
+      const cctx = cell.getContext("2d")!;
+      cctx.drawImage(strip, 0, 0, FRAME, FRAME, 0, 0, FRAME, FRAME);
+      const px = cctx.getImageData(0, 0, FRAME, FRAME).data;
+      let x0 = FRAME, y0 = FRAME, x1 = -1, y1 = -1;
+      for (let y = 0; y < FRAME; y++) for (let x = 0; x < FRAME; x++) {
+        if (px[(y * FRAME + x) * 4 + 3] === 0) continue;
+        x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y);
+      }
+      if (x1 < 0) return;
+      cctx.clearRect(0, 0, FRAME, FRAME);
+      drawPark(cctx, { [item.part]: item.id }, -1, "idle", 0, 0, 0, 0);
+      const size = Math.max(26, x1 - x0 + 7, y1 - y0 + 7);
+      const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+      const sx = Math.round(Math.min(FRAME - size, Math.max(0, cx - size / 2)));
+      const sy = Math.round(Math.min(FRAME - size, Math.max(0, cy - size / 2)));
+      canvas.width = canvas.height = size;
+      const ctx = canvas.getContext("2d")!;
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(cell, sx, sy, size, size, 0, 0, size, size);
+    };
+    draw();
+    return () => window.clearTimeout(timer);
+  }, [item]);
+  return <canvas ref={ref} className="part-thumb" width={26} height={26} />;
 }
 
 // Park at 3× in an idle loop, wearing `wear`.

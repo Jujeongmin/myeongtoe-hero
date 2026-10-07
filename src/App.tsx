@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { GameState } from "../shared/state";
-import { Amount } from "./ui/Amount";
+import { Icon } from "./ui/Icon";
+import { formatCount } from "../shared/format";
 import { useGameServer } from "@agent8/gameserver";
 import { GameStore } from "./game/store";
 import { useGameView } from "./game/useGameView";
@@ -42,8 +43,8 @@ const SHEET_THEMES: Partial<Record<SheetId, string>> = {
 // What each menu spends: 코스튬 (buy and rent with 상품권, 불꽃 with 보석), 아파트 and 기념품
 // (보석), 사무용품 (상품권).
 function walletFor(sheet: SheetId, state: GameState): ReactNode {
-  const coupons = <Amount icon="coupon" value={state.coupons.toLocaleString("en-US")} />;
-  const gems = <Amount icon="gem" value={state.gems.toLocaleString("en-US")} />;
+  const coupons = <span className="wallet-pill"><Icon name="coupon" /><b>{formatCount(state.coupons)}</b></span>;
+  const gems = <span className="wallet-pill"><Icon name="gem" /><b>{formatCount(state.gems)}</b></span>;
   if (sheet === "suits") return <>{coupons} {gems}</>;
   if (sheet === "apartment" || sheet === "relics") return gems;
   if (sheet === "office") return coupons;

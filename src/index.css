@@ -364,3 +364,9 @@ html[lang="ja"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional J
 /* Korean wraps between words, not inside them (Japanese and Chinese have no spaces, so they keep
    the normal per-character wrapping); a word too long for its box may still break. */
 html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
+/* Header wallets: each currency in its own counter (art/ui/wallet_pill), the full 32px icon and a
+   bright outlined number, like the battle screen's currency row. */
+.sheet-wallet { gap: 4px; }
+.wallet-pill { display: inline-flex; align-items: center; gap: 2px; height: 28px; padding: 0 4px 0 0; border: 8px solid transparent; border-width: 4px 8px; border-image: var(--ui-wallet-pill, var(--ui-icon-box)) 8 fill / 4px 8px; image-rendering: pixelated; }
+.wallet-pill .icon-img { width: 32px; height: 32px; margin: -6px 0 -6px -8px; }
+.wallet-pill b { color: #ffd166; font-size: 12px; text-shadow: 1px 1px 0 #000, -1px 0 0 #000, 0 -1px 0 #000, 1px 0 0 #000; }
