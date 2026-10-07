@@ -19,6 +19,11 @@ export const PETS: readonly PetDef[] = [
 ];
 
 export const PET_BOX_COUPONS = 70;
+
+// 확률 공개: the 동료 상자 picks one of the joined colleagues with equal odds (percent, 2 decimals).
+export function petBoxChance(joined: number): number {
+  return joined > 0 ? Math.round(10000 / joined) / 100 : 0;
+}
 export const AWAKEN_EVERY = 2000;
 export const AWAKEN_MAX = 10;
 

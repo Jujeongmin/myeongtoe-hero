@@ -17,7 +17,7 @@ const MIN = 60_000;
 
 export const AD_PLACEMENTS: readonly AdPlacement[] = [
   { id: "ad_speed", name: "2배속", text: "30분 동안 전투와 부업 2배속", cooldownMs: 30 * MIN },
-  { id: "ad_gems", name: "보석 받기", text: "보석 5~20개", cooldownMs: 15 * MIN },
+  { id: "ad_gems", name: "보석 받기", text: "보석 5~20개 (개수마다 확률 6.25%)", cooldownMs: 15 * MIN },
   { id: "ad_gold", name: "골드 받기", text: "지금 층 처치 골드 50번분", cooldownMs: 15 * MIN },
   // One per buff, tapped on the buff bar: that buff for AD_BUFF_MS.
   { id: "ad_buff_atk", name: "야근 모드", text: "3분 동안 공격력 6배", cooldownMs: 30 * MIN },
