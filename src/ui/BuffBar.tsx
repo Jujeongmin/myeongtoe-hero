@@ -5,6 +5,7 @@ import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
 import { t } from "../i18n";
 import { showAd } from "../net/ads";
+import { AdConfirm } from "./AdConfirm";
 import { Icon } from "./Icon";
 
 const ICON: Record<BuffKind, string> = { atk: "buff_atk", gold: "buff_gold", move: "buff_move" };
@@ -52,15 +53,13 @@ export function BuffBar({ state, store }: { state: GameState; store: GameStore }
         );
       })}
       {asking && (
-        <div className="modal-back" onClick={() => setAsking(null)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>{t(BUFFS[asking].name)}</h3>
-            <p>{t(findAd(`ad_buff_${asking}`)!.text)}</p>
-            <p>{t("광고를 보고 켤까요?")}</p>
-            <button className="gold" onClick={() => void watch(asking)}>{t("광고 보기")}</button>
-            <button onClick={() => setAsking(null)}>{t("닫기")}</button>
-          </div>
-        </div>
+        <AdConfirm
+          state={state}
+          title={t(BUFFS[asking].name)}
+          text={t(findAd(`ad_buff_${asking}`)!.text)}
+          onWatch={() => void watch(asking)}
+          onClose={() => setAsking(null)}
+        />
       )}
     </div>
   );

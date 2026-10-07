@@ -42,9 +42,8 @@ export function findAd(id: string): AdPlacement | undefined {
   return BY_ID.get(id as AdId);
 }
 
-// 월급 통장 halves every cooldown while it lasts.
-export function adCooldownMs(s: Pick<GameState, "vx" | "lastTick">, ad: AdPlacement): number {
-  return s.vx.passUntil > s.lastTick ? ad.cooldownMs / 2 : ad.cooldownMs;
+export function adCooldownMs(_s: Pick<GameState, "vx" | "lastTick">, ad: AdPlacement): number {
+  return ad.cooldownMs;
 }
 
 // When this placement can be watched next (server ms).

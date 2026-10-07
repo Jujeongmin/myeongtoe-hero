@@ -40,11 +40,11 @@ describe("rewarded ads", () => {
     expect(s.coupons).toBe(60);
   });
 
-  test("월급 통장 halves the cooldowns", () => {
+  test("월급 통장 leaves the cooldowns as they are", () => {
     const s = at(T0);
     s.vx = { ...s.vx, passUntil: T0 + 24 * 60 * MIN };
     const after = applyIntent(s, { k: "watchAd", id: "ad_gems" });
-    expect(adReadyAt(after, findAd("ad_gems")!)).toBe(T0 + 7.5 * MIN);
+    expect(adReadyAt(after, findAd("ad_gems")!)).toBe(T0 + 15 * MIN);
   });
 
   test("gems 5 to 20 by the save's seed, the same on client and server", () => {

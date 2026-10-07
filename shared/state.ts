@@ -8,7 +8,7 @@ import { findPet } from "./data/pets";
 import { findRelic } from "./data/relics";
 import { findSideJob } from "./data/sideJobs";
 
-export const SAVE_VERSION = 11;
+export const SAVE_VERSION = 12;
 export const OFFLINE_CAP_SEC = 12 * 3600;
 export const START_GOLD = 10;
 export const OFFICE_MAX_GRADE = 17;
@@ -85,7 +85,8 @@ export interface GameState {
   // A run lasts until runUntil (server ms) and its result waits in `last` until claimed (`claimed`);
   // the tower waits through both (see PARK_AUTO_CLAIM_MS).
   parking: {
-    passes: number; passCarrySec: number; best: number; runUntil: number;
+    // runFrom..runUntil: the run's real time (30 s, or 15 s under 배속).
+    passes: number; passCarrySec: number; best: number; runFrom: number; runUntil: number;
     last: { depth: number; chests: number; tickets: number } | null; claimed: boolean;
   };
   // Today's parking record for the daily quests (a new day starts fresh when read; see dailyOf).
@@ -209,6 +210,8 @@ const MIGRATIONS: Record<number, (save: Record<string, unknown>) => Record<strin
   9: (save) => ({ ...save, v: 10, story: [] }),
   // v11: a parking run takes 30 s of real time.
   10: (save) => ({ ...save, v: 11, parking: { ...obj(save.parking), runUntil: 0, last: null, claimed: true } }),
+  // v12: when the run started (배속 halves its real time).
+  11: (save) => ({ ...save, v: 12, parking: { ...obj(save.parking), runFrom: Math.max(0, seconds(obj(save.parking).runUntil) - 30_000) } }),
 };
 
 export function freshRun(): RunState {
@@ -239,7 +242,7 @@ export function newState(now: number): GameState {
     suits: [],
     wear: {},
     office: { keyboard: 1, mouse: 1, chair: 1, monitor: 1 },
-    parking: { passes: PARK_PASS_MAX, passCarrySec: 0, best: 0, runUntil: 0, last: null, claimed: true },
+    parking: { passes: PARK_PASS_MAX, passCarrySec: 0, best: 0, runFrom: 0, runUntil: 0, last: null, claimed: true },
     daily: { day: "", entries: 0, bestDepth: 0, claimed: [] },
     missions: { step: 0, special: [] },
     attendance: { lastDay: "", count: 0 },
@@ -364,6 +367,7 @@ export function fromSave(raw: unknown): GameState {
       passes: Math.min(PARK_PASS_MAX + 2, int(parking.passes, 0, 0)),
       passCarrySec: seconds(parking.passCarrySec),
       best: int(parking.best, 0, 0),
+      runFrom: seconds(parking.runFrom),
       runUntil: seconds(parking.runUntil),
       last: parkingRunOf(obj(parking.last)),
       claimed: parking.claimed !== false,

@@ -37,13 +37,13 @@ describe("VX products", () => {
     expect(vipLevel(s.vx.total)).toBe(6);
   });
 
-  test("the rookie pack: within 7 days, once, with all three buffs for 30 minutes", () => {
+  test("the rookie pack: within 7 days, once, currencies only", () => {
     const s = newState(T0);
     expect(productOffered(s, findProduct("pack_rookie")!)).toBe(true);
     expect(productOffered(s, findProduct("pack_rookie")!, T0 + 8 * DAY)).toBe(false);
     const after = grantPurchase(s, "pack_rookie", 1, T0);
     expect([after.gems, after.tickets, after.coupons]).toEqual([1000, 5000, 300]);
-    expect(after.buffs).toEqual({ atk: T0 + 1_800_000, gold: T0 + 1_800_000, move: T0 + 1_800_000 });
+    expect(after.buffs).toEqual(s.buffs);
     expect(productOffered(after, findProduct("pack_rookie")!)).toBe(false);
   });
 

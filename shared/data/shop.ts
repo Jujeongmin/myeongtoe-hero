@@ -63,9 +63,9 @@ export const PRODUCTS: readonly Product[] = [
   gemPack("gems_xxl", 10_000, 17_000, "보석 본사 금고", "HQ Vault"),
   {
     id: "pack_rookie", vx: 500, kind: "once", gems: 1_000, tickets: 5_000, coupons: 300,
-    ...ko({ key: "신입 패키지" }, { key: "시작 {days}일 안 1회: 보석 1,000, 응시권 5,000, 상품권 300, 버프 3종 30분", vars: { days: ROOKIE_DAYS } }),
+    ...ko({ key: "신입 패키지" }, { key: "시작 {days}일 안 1회: 보석 1,000, 응시권 5,000, 상품권 300", vars: { days: ROOKIE_DAYS } }),
     nameEn: "Rookie Pack",
-    textEn: `Once, within ${ROOKIE_DAYS} days of starting: 1,000 gems, 5,000 exam tickets, 300 coupons, all 3 buffs for 30 min`,
+    textEn: `Once, within ${ROOKIE_DAYS} days of starting: 1,000 gems, 5,000 exam tickets, 300 coupons`,
   },
   {
     id: "premium", vx: 1_000, kind: "once",
@@ -77,10 +77,10 @@ export const PRODUCTS: readonly Product[] = [
     id: "pass_salary", vx: 1_000, kind: "timed",
     ...ko(
       { key: "월급 통장" },
-      { key: "{days}일 동안 매일 보석 {gems}, 광고 쿨다운 절반 (다시 사면 {days}일 연장)", vars: { days: PASS_DAYS, gems: PASS_DAILY_GEMS } },
+      { key: "{days}일 동안 매일 보석 {gems} (다시 사면 {days}일 연장)", vars: { days: PASS_DAYS, gems: PASS_DAILY_GEMS } },
     ),
     nameEn: "Salary Account",
-    textEn: `${PASS_DAILY_GEMS} gems daily and half ad cooldowns for ${PASS_DAYS} days (buying again adds ${PASS_DAYS} days)`,
+    textEn: `${PASS_DAILY_GEMS} gems daily for ${PASS_DAYS} days (buying again adds ${PASS_DAYS} days)`,
   },
   promo(100, 500, 500, 1_000, 200),
   promo(300, 1_000, 1_000, 30_000, 400),
@@ -114,12 +114,7 @@ export function grantPurchase(state: GameState, productId: string, quantity: num
   s.tickets += (p.tickets ?? 0) * n;
   s.coupons += (p.coupons ?? 0) * n;
   s.vx = { ...s.vx, total: s.vx.total + p.vx * n };
-  if (p.id === "pack_rookie") {
-    s.vx.rookie = true;
-    const base = { ...s, lastTick: Math.max(s.lastTick, now) };
-    for (const kind of BUFF_KINDS) extendBuff(base, kind, BUFF_MS * n);
-    s.buffs = base.buffs;
-  }
+  if (p.id === "pack_rookie") s.vx.rookie = true;
   if (p.id === "premium") s.vx.premium = true;
   if (p.id === "pass_salary") s.vx.passUntil = Math.max(s.vx.passUntil, now) + PASS_DAYS * DAY_MS * n;
   if (p.floor !== undefined && !s.vx.promos.includes(p.id)) s.vx.promos = [...s.vx.promos, p.id];

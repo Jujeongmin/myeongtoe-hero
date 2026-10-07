@@ -9,7 +9,7 @@ import { findEpisode } from "./data/story";
 import { MONSTERS_PER_FLOOR } from "./data/floors";
 import { AD_BUFF_MS, AD_COUPONS, AD_GEMS_MAX, AD_GEMS_MIN, AD_GOLD_KILLS, adReadyAt, findAd } from "./data/ads";
 import { BUFF_KINDS, extendBuff, type BuffKind } from "./data/buffs";
-import { SPEED_AD_MS } from "./data/speed";
+import { SPEED_AD_MS, SPEED_MULT, speedActive } from "./data/speed";
 import { dailyQuestReward, findDailyQuest } from "./data/dailyQuests";
 import { BUFF_MS, findGemItem } from "./data/gemShop";
 import { ATTENDANCE_REWARDS, STEP_MISSIONS, findSpecialMission, type Reward } from "./data/missions";
@@ -297,7 +297,8 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       const today = dailyOf(s);
       s.parking = {
         ...s.parking, passes: s.parking.passes - 1, best: Math.max(s.parking.best, run.depth),
-        runUntil: s.lastTick + PARK_RUN_SEC * 1000, last: run, claimed: false,
+        // 배속 plays the same 30 seconds in half the real time.
+        runFrom: s.lastTick, runUntil: s.lastTick + (PARK_RUN_SEC * 1000) / (speedActive(s) ? SPEED_MULT : 1), last: run, claimed: false,
       };
       s.daily = { ...today, claimed: [...today.claimed], entries: today.entries + 1, bestDepth: Math.max(today.bestDepth, run.depth) };
       return s;

@@ -164,7 +164,9 @@ function draw(
   const power = heroPower(state);
   const serverNow = state.lastTick + (now - at);
   // 지하주차장 run in progress: the same fight, one monster a meter, deeper each kill.
-  const parking = state.parking.runUntil > serverNow ? parkingView(state, power, serverNow) : null;
+  // A finished run waiting for its reward holds its last moment on screen.
+  const parkingShown = state.parking.runUntil > serverNow || (!state.parking.claimed && state.parking.last !== null);
+  const parking = parkingShown ? parkingView(state, power, Math.min(serverNow, state.parking.runUntil - 1)) : null;
   // The monster being fought: farming repeats the floor's normal ones.
   const current = farming ? 0 : Math.min(target, MONSTERS_PER_FLOOR - 1);
   const walkSec = parking ? PARK_STEP_SEC : power.walkSec;
@@ -303,8 +305,10 @@ const CHEST_MS = 160;
 // Where a parking run is now: which meter's monster (1-based), how long it takes to beat, and the
 // time into it, replaying the run's own schedule (runParking: each meter is its fight plus a step).
 function parkingView(state: GameState, power: ReturnType<typeof heroPower>, serverNow: number) {
-  const start = state.parking.runUntil - PARK_RUN_SEC * 1000;
-  let left = Math.max(0, (serverNow - start) / 1000);
+  const start = state.parking.runFrom;
+  // Run seconds go by faster under 배속 (30 run seconds over the run's real time).
+  const pace = (PARK_RUN_SEC * 1000) / Math.max(1, state.parking.runUntil - state.parking.runFrom);
+  let left = Math.max(0, ((serverNow - start) / 1000) * pace);
   const depth = state.parking.last?.depth ?? 0;
   for (let meter = 1; ; meter++) {
     const hp = parkHp(meter).mulN(power.hpMult);

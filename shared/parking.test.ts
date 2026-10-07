@@ -39,7 +39,7 @@ describe("a parking run", () => {
 describe("parking passes", () => {
   test("recharge one per 15 minutes, up to 16", () => {
     const s = newState(0);
-    s.parking = { passes: 10, passCarrySec: 0, best: 0, runUntil: 0, last: null, claimed: true };
+    s.parking = { passes: 10, passCarrySec: 0, best: 0, runFrom: 0, runUntil: 0, last: null, claimed: true };
     const later = settle(s, (PARK_RECHARGE_SEC * 2 + 60) * 1000);
     expect(later.parking.passes).toBe(12);
     expect(later.parking.passCarrySec).toBeCloseTo(60, 6);
@@ -68,7 +68,7 @@ describe("entering the parking garage", () => {
 
   test("no pass, no entry", () => {
     const s = newState(now);
-    s.parking = { passes: 0, passCarrySec: 0, best: 0, runUntil: 0, last: null, claimed: true };
+    s.parking = { passes: 0, passCarrySec: 0, best: 0, runFrom: 0, runUntil: 0, last: null, claimed: true };
     expect(code(s)).toBe("no_pass");
   });
 
@@ -108,5 +108,16 @@ describe("an unclaimed parking result", () => {
     // (the tower's own boss tickets come on top once it moves again)
     expect(later.tickets - s.tickets).toBeGreaterThanOrEqual(entered.parking.last!.tickets);
     expect(later.run).not.toEqual(entered.run);
+  });
+});
+
+describe("배속 and the parking garage", () => {
+  test("the same 30-second run plays in half the real time", async () => {
+    const { applyIntent } = await import("./actions");
+    const s = newState(1000);
+    s.speed = { until: 1000 + 3_600_000, on: false };
+    const entered = applyIntent(s, { k: "enterParking" });
+    expect(entered.parking.runUntil - entered.parking.runFrom).toBe(15_000);
+    expect(entered.parking.last).toEqual(applyIntent(newState(1000), { k: "enterParking" }).parking.last);
   });
 });

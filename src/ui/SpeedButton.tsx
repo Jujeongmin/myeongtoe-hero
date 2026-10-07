@@ -5,6 +5,7 @@ import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
 import { t } from "../i18n";
 import { showAd } from "../net/ads";
+import { AdConfirm } from "./AdConfirm";
 import { Icon } from "./Icon";
 
 function clock(ms: number): string {
@@ -16,6 +17,7 @@ function clock(ms: number): string {
 // (and again once the ad's cooldown has passed, to add 30 more).
 export function SpeedButton({ state, store }: { state: GameState; store: GameStore }) {
   const [busy, setBusy] = useState(false);
+  const [asking, setAsking] = useState(false);
   const on = speedActive(state);
   const premium = state.vx.premium;
   const left = state.speed.until - state.lastTick;
@@ -27,9 +29,14 @@ export function SpeedButton({ state, store }: { state: GameState; store: GameSto
       return;
     }
     if (!ready) {
-      store.do({ k: "watchAd", id: "ad_speed" });
+      store.notify(t("{time} 뒤에 다시 켤 수 있어요", { time: clock(adReadyAt(state, findAd("ad_speed")!) - state.lastTick) }));
       return;
     }
+    setAsking(true);
+  };
+
+  const watch = async () => {
+    setAsking(false);
     setBusy(true);
     const outcome = await showAd("ad_speed");
     setBusy(false);
@@ -37,9 +44,14 @@ export function SpeedButton({ state, store }: { state: GameState; store: GameSto
   };
 
   return (
-    <button className={`speed-btn${on ? " on" : ""}`} disabled={busy} aria-label={t("2배속")} onClick={() => void press()}>
-      <Icon name="speed" />
-      {on && !(premium && state.speed.on) && <small>{clock(left)}</small>}
-    </button>
+    <>
+      <button className={`speed-btn${on ? " on" : ""}`} disabled={busy} aria-label={t("2배속")} onClick={() => void press()}>
+        <Icon name="speed" />
+        {on && !(premium && state.speed.on) && <small>{clock(left)}</small>}
+      </button>
+      {asking && (
+        <AdConfirm state={state} title={t("2배속")} text={t(findAd("ad_speed")!.text)} onWatch={() => void watch()} onClose={() => setAsking(false)} />
+      )}
+    </>
   );
 }

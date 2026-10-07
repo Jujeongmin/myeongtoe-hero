@@ -359,3 +359,5 @@ html[lang="ja"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional J
 .theme-story .row button { color: #1d1a2e; text-shadow: none; }
 .theme-story .row button.hot { color: #3a1500; }
 .theme-ranking .sub, .theme-settings .sub { color: #c9c3e0; }
+.ad-confirm-buttons { display: flex; gap: 6px; }
+.ad-confirm-buttons button { flex: 1; }
