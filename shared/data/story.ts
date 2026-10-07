@@ -9,6 +9,7 @@ export interface StoryLine {
   // the bubble grows up from it, to the right (to the left when `flip`).
   at?: [number, number];
   flip?: boolean;
+  w?: number; // the bubble's widest, in panel pixels (default 62% of the panel)
 }
 
 export interface StoryPanel {
@@ -42,8 +43,8 @@ export const EPISODES: readonly Episode[] = [
       {
         img: "prologue_4",
         lines: [
-          { who: "서류 슬라임", text: "자기소개 해 보세요.", at: [32, 42] },
-          { who: "박부장", text: "25년간 결재, 회식, 야근… 무엇이든 버텼습니다!", at: [155, 47], flip: true },
+          { who: "서류 슬라임", text: "자기소개 해 보세요.", at: [32, 42], w: 58 },
+          { who: "박부장", text: "25년간 결재, 회식, 야근… 무엇이든 버텼습니다!", at: [158, 47], flip: true, w: 64 },
         ],
       },
       {
@@ -51,7 +52,7 @@ export const EPISODES: readonly Episode[] = [
         lines: [
           { who: "결재 강시 총무 상무", text: "합격. 내일부터 1층에서 시작하세요.", at: [128, 23] },
           { who: "박부장", text: "…직급은요?", at: [22, 40] },
-          { who: "결재 강시 총무 상무", text: "용사요. 계약직.", at: [150, 60] },
+          { who: "결재 강시 총무 상무", text: "용사요. 계약직.", at: [176, 84], flip: true, w: 46 },
         ],
       },
       {

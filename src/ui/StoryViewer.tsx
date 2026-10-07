@@ -81,7 +81,7 @@ function Panel({ panel, width }: { panel: StoryPanel; width: number }) {
         if (!l.who) return null;
         const [x, y] = l.at ?? [12 + 84 * (free++ % 2), 30];
         return (
-          <div key={j} className={`story-say${l.flip ? " flip" : ""}`} style={{ left: x * k, top: y * k, maxWidth: width * 0.62 }}>
+          <div key={j} className={`story-say${l.flip ? " flip" : ""}`} style={{ left: x * k, top: y * k, maxWidth: l.w ? l.w * k : width * 0.62 }}>
             <b>{t(l.who)}</b>{t(l.text)}
           </div>
         );
