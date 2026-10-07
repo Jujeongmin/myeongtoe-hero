@@ -833,3 +833,7 @@ Each menu has its own frame set instead of the shared blue row panel. Every them
 - `ui/profile_panel` (44x45), `profile_row` (36x36), `profile_button` (40x20), `profile_button_hot` (48x29): the 프로필 sheet as a leather employee ID card holder (brown leather, stitching, brass rivets; tan rows). PixelLab Pixflux text-to-image, cropped to their pixels; 9-slice insets 12 / 10 / 8 / 8.
 - `ui/apply_panel` (44x44), `apply_row` (26x26), `apply_button` (42x26), `apply_button_hot` (48x28): the first-launch 입사지원서 as a cream paper form with a dark red ruled border, a dashed field box and red stamp buttons. Same method and insets 12 / 8 / 8 / 8. Raws for all eight in `ui/src/*_raw.png`; contact sheet `ui/_sheet_profile_apply.png`.
 - An img2img pass from the ranking frames (strength 200, then 80) kept too much of the navy ranking look and was dropped (4 generations).
+
+## Button corners cleaned (2026-10-07)
+
+- `ui/button_gold.png`, `button_gold_hot.png` and `button_disabled.png` lost their corner ornaments (gold studs, silver brackets and a white tip pixel) at the user's request: in each corner a 10x10 area was refilled from the edge cross-sections next to it, with the very corner pixel left transparent. The originals are in `ui/src/*_corners_orig.png`.
