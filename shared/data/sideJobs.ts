@@ -2,7 +2,8 @@ import { Big } from "../big";
 
 // 부업: each pays its income once per cycle and starts over on its own. Starting a job costs its
 // base cost; each next level costs 12% more than the last, and the pay grows by half the level-1 pay
-// per level (level n pays base × (n + 1) / 2). Up to level 999. Reset by a job change (이직).
+// per level (level n pays base × (n + 1) / 2), doubled at each milestone level reached (25, 50,
+// 100, then every 100). Up to level 999. Reset by a job change (이직).
 export interface SideJob {
   id: string;
   name: string;
@@ -67,9 +68,22 @@ export function sideJobCost(job: SideJob, level: number): Big {
   return job.baseCost.mul(Big.pow(SIDE_JOB_LEVEL_COST_GROWTH, level));
 }
 
+export const SIDE_JOB_MILESTONES: readonly number[] = [25, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+
+// ×2 for every milestone at or below `level`.
+export function sideJobMilestoneMult(level: number): number {
+  return 2 ** SIDE_JOB_MILESTONES.filter((m) => m <= level).length;
+}
+
+// The next milestone above `level` and the one before it (0 at the start), or null past the last.
+export function sideJobMilestone(level: number): { from: number; to: number } | null {
+  const i = SIDE_JOB_MILESTONES.findIndex((m) => m > level);
+  return i < 0 ? null : { from: i === 0 ? 0 : SIDE_JOB_MILESTONES[i - 1], to: SIDE_JOB_MILESTONES[i] };
+}
+
 export function sideJobIncome(job: SideJob, level: number): Big {
   if (level <= 0) return Big.ZERO;
-  return job.baseIncome.mulN((level + 1) / 2);
+  return job.baseIncome.mulN(((level + 1) / 2) * sideJobMilestoneMult(level));
 }
 
 export function sideJobCycle(job: SideJob, _level: number): number {

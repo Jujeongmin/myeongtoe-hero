@@ -16,7 +16,7 @@ import { Icon } from "./Icon";
 
 type Tab = "gems" | "ads" | "vx";
 const TABS: { id: Tab; label: string }[] = [
-  { id: "gems", label: "보석 교환" },
+  { id: "gems", label: "골드 교환" },
   { id: "ads", label: "광고 보상" },
   { id: "vx", label: "VX 상품" },
 ];
