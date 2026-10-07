@@ -53,6 +53,12 @@ export function Battle({ state, store, onOpen, onGo }: {
         <div>마왕그룹 {departmentOf(floor)}</div>
         <div className="floor-no">{floor}층{farming ? " · 파밍 중" : ""}</div>
         <div className="atk-now">공격력 {formatBig(atk)}</div>
+        {farming && (
+          <button className="boss-btn" onClick={() => store.do({ k: "challengeBoss" })}>
+            <span className="boss-face">{bossSprite && <SpriteThumb path={bossSprite.anims.idle.file} frame={bossSprite.size} res={20} size={20} head />}</span>
+            <span>보스 도전!</span>
+          </button>
+        )}
         {boss && <div className="boss-timer"><Icon name="timer" size={16} /> 보스 {bossLeft}초</div>}
       </header>
       <div className="top-left">
@@ -85,12 +91,6 @@ export function Battle({ state, store, onOpen, onGo }: {
         이직
         <small>{ready ? <Amount icon="ticket" value={`+${formatCount(reward.tickets)}`} /> : `${PRESTIGE_MIN_FLOOR}층부터`}</small>
       </button>
-      {farming && (
-        <button className="boss-btn" onClick={() => store.do({ k: "challengeBoss" })}>
-          {bossSprite && <SpriteThumb path={bossSprite.anims.idle.file} frame={bossSprite.size} res={56} size={56} />}
-          <span>보스 도전</span>
-        </button>
-      )}
       <MissionCard state={state} store={store} onGo={onGo} />
       <CurrencyBar state={state} />
     </section>

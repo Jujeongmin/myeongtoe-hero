@@ -3,8 +3,9 @@ import { image } from "../game/sprites";
 
 // The first frame of a sprite strip, cropped to its pixels and scaled up by a whole number to fill
 // a `res`×`res` canvas (shown at `size` CSS px). Used for costume pieces and the boss portrait.
-export function SpriteThumb({ path, frame, res = 40, size = res, className }: {
+export function SpriteThumb({ path, frame, res = 40, size = res, className, head }: {
   path: string; frame: number; res?: number; size?: number; className?: string;
+  head?: boolean; // only the top square of the sprite (its head), for small portraits
 }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
@@ -31,7 +32,7 @@ export function SpriteThumb({ path, frame, res = 40, size = res, className }: {
       const ctx = canvas.getContext("2d")!;
       ctx.clearRect(0, 0, res, res);
       if (x1 < 0) return;
-      const w = x1 - x0 + 1, h = y1 - y0 + 1;
+      const w = x1 - x0 + 1, h = head ? Math.min(y1 - y0 + 1, x1 - x0 + 1) : y1 - y0 + 1;
       // Whole-number scale-up; a sprite bigger than the canvas shrinks to fit instead.
       const fit = Math.min(res / w, res / h);
       const k = fit >= 1 ? Math.floor(fit) : fit;
@@ -40,6 +41,6 @@ export function SpriteThumb({ path, frame, res = 40, size = res, className }: {
     };
     draw();
     return () => window.clearTimeout(timer);
-  }, [path, frame, res]);
+  }, [path, frame, res, head]);
   return <canvas ref={ref} className={className} width={res} height={res} style={{ width: size, height: size, imageRendering: "pixelated" }} />;
 }
