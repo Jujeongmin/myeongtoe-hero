@@ -50,6 +50,7 @@ function SideJobRow({ job, state, store }: { job: SideJob; state: GameState; sto
   return (
     <div className={`row levelled${up?.milestone ? " milestone" : ""}`}>
       {up && <i key={up.at} className={`row-flash${up.milestone ? " big" : ""}`} />}
+      <span className="icon-box"><Icon name={`job_${job.id}`} /></span>
       <div className="grow">
         <b>{t(job.name)}</b> <span className="lv">Lv{level}{up && <i key={up.at} className="lv-up">{up.milestone ? t("수입 ×2!") : "LV UP"}</i>}</span>
         <div className="sub income">

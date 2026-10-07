@@ -826,3 +826,10 @@ Each menu has its own frame set instead of the shared blue row panel. Every them
 
 - `icons/side_profile.png` (32x32): Park's face for the side menu's 프로필. PixelLab Pixflux img2img (strength 300, 1 generation) from the head of `park/idle_0.png`; raw in `icons/src/side_profile_raw.png`, alpha cut at 128.
 - `ui/plus_button.png` (14x14, drawn 1:1; nearest-neighbour from the 26 px crop): the green "+" at the end of the gem and coupon counters, opening the shop. PixelLab Pixflux 32x32 (1 generation), cropped to its pixels; raw in `ui/src/plus_button_raw.png`.
+
+## Side job icons, profile and application frames
+
+- `icons/job_j00.png` to `job_j24.png` (32x32): one icon per side job (부업), in `SIDE_JOBS` order. PixelLab Pixflux 32x32, one generation each, palette forced to the colours of the existing `icons/` (46 colours); `j03`, `j08` and `j14` were rolled a second time. Raws in `icons/src/job_*_raw.png`, alpha cut at 128. Contact sheet `icons/_sheet_jobs.png`.
+- `ui/profile_panel` (44x45), `profile_row` (36x36), `profile_button` (40x20), `profile_button_hot` (48x29): the 프로필 sheet as a leather employee ID card holder (brown leather, stitching, brass rivets; tan rows). PixelLab Pixflux text-to-image, cropped to their pixels; 9-slice insets 12 / 10 / 8 / 8.
+- `ui/apply_panel` (44x44), `apply_row` (26x26), `apply_button` (42x26), `apply_button_hot` (48x28): the first-launch 입사지원서 as a cream paper form with a dark red ruled border, a dashed field box and red stamp buttons. Same method and insets 12 / 8 / 8 / 8. Raws for all eight in `ui/src/*_raw.png`; contact sheet `ui/_sheet_profile_apply.png`.
+- An img2img pass from the ranking frames (strength 200, then 80) kept too much of the navy ranking look and was dropped (4 generations).
