@@ -5,7 +5,7 @@ import { OFFICE_PARTS, apartmentCost, officeUpgradeCost, type OfficePart } from 
 import {
   AURAS, LEGENDS, LEGEND_MAX_LEVEL, SUIT_PARTS, auraOpen, findSuitItem, hasCostume, legendOpen,
 } from "./data/costumes";
-import { findEpisode } from "./data/story";
+import { episodeOpen, findEpisode } from "./data/story";
 import { MONSTERS_PER_FLOOR } from "./data/floors";
 import { AD_BUFF_MS, AD_COUPONS, AD_GEMS_MAX, AD_GEMS_MIN, AD_GOLD_KILLS, adReadyAt, findAd } from "./data/ads";
 import { BUFF_KINDS, extendBuff, type BuffKind } from "./data/buffs";
@@ -386,7 +386,7 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
     case "readStory": {
       const ep = findEpisode(intent.id);
       if (!ep) throw new RuleError("unknown");
-      if (s.bestFloor < ep.floor) throw new RuleError("locked");
+      if (!episodeOpen(ep, s)) throw new RuleError("locked");
       if (!s.story.includes(ep.id)) s.story = [...s.story, ep.id];
       return s;
     }

@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { EPISODES, type Episode, type StoryPanel } from "../../shared/data/story";
+import { EPISODES, episodeOpen, type Episode, type StoryPanel } from "../../shared/data/story";
 import type { GameState } from "../../shared/state";
 import { imageUrl } from "../game/sprites";
 import type { GameStore } from "../game/store";
@@ -124,12 +124,12 @@ export function StoryList({ state, onRead }: { state: GameState; onRead: (ep: Ep
   return (
     <>
       {EPISODES.filter(episodeReady).map((ep) => {
-        const open = state.bestFloor >= ep.floor;
+        const open = episodeOpen(ep, state);
         return (
           <div key={ep.id} className={`row${open ? "" : " far"}`}>
             <div className="grow">
               <b>{t(ep.title)}</b>
-              <div className="sub">{open ? (state.story.includes(ep.id) ? t("읽음") : t("새 이야기")) : t("{floor}층에서 열려요", { floor: ep.floor })}</div>
+              <div className="sub">{open ? (state.story.includes(ep.id) ? t("읽음") : t("새 이야기")) : ep.allCostumes ? t("코스튬을 모두 모으면 열려요") : t("{floor}층에서 열려요", { floor: ep.floor })}</div>
             </div>
             <button disabled={!open} onClick={() => onRead(ep)}>{t("보기")}</button>
           </div>
@@ -141,7 +141,7 @@ export function StoryList({ state, onRead }: { state: GameState; onRead: (ep: Ep
 
 // The next episode to open by itself, when its pictures are in.
 export function storyToShow(state: GameState): Episode | undefined {
-  return EPISODES.find((e) => state.bestFloor >= e.floor && !state.story.includes(e.id) && episodeReady(e));
+  return EPISODES.find((e) => episodeOpen(e, state) && !state.story.includes(e.id) && episodeReady(e));
 }
 
 function OneLine({ text }: { text: string }) {

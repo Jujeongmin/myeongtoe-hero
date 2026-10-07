@@ -2,6 +2,8 @@
 // best floor reaches it, and can be read again from the menu. Panels are pictures in art/story;
 // the lines are shown as text with them (narration, or who says it).
 
+import { SUIT_ITEMS } from "./costumes";
+
 export interface StoryLine {
   who?: string; // none: narration
   text: string;
@@ -21,6 +23,7 @@ export interface StoryPanel {
 export interface Episode {
   id: string;
   floor: number; // opens when the best floor reaches it (0: from the start)
+  allCostumes?: boolean; // also needs every costume (all 36 suit pieces) owned
   title: string;
   panels: readonly StoryPanel[];
 }
@@ -334,8 +337,152 @@ export const EPISODES: readonly Episode[] = [
       },
     ],
   },
+  {
+    id: "ep12",
+    floor: 6000,
+    title: "12화 — 정규직",
+    panels: [
+      { img: "ep12_1", lines: [{ text: "6000층 인사팀. 거대한 결재 도장이 놓여 있다." }] },
+      { img: "ep12_2", lines: [{ text: "3개월 전, 김인턴은 정규직 약속을 받았었다." }] },
+      {
+        img: "ep12_3",
+        lines: [
+          { who: "김인턴", text: "이 도장… 효력 있는 거예요?", at: [40, 31] },
+          { who: "박부장", text: "몰라. 찍으면 된 거야.", at: [112, 26] },
+        ],
+      },
+      { img: "ep12_4", lines: [{ text: "기념품 '대형 결재 도장'을 얻었다." }] },
+    ],
+  },
+  {
+    id: "ep13",
+    floor: 6500,
+    title: "13화 — 비서실장",
+    panels: [
+      { img: "ep13_1", lines: [{ who: "실장", text: "회장님께서 기다리고 계십니다. 다만… 저는 사표를 내고 왔습니다.", at: [107, 58] }] },
+      { img: "ep13_2", lines: [{ who: "최대리", text: "회장 측 사람이잖아요.", at: [68, 44] }] },
+      {
+        img: "ep13_3",
+        lines: [
+          { who: "실장", text: "회장님 책상에 늘 있던 사진입니다. 회장님은 당신을 아십니다.", at: [120, 13], flip: true },
+          { text: "꽃미남 실장이 동료가 되었다." },
+        ],
+      },
+    ],
+  },
+  {
+    id: "ep14",
+    floor: 7000,
+    title: "14화 — 들켰다",
+    panels: [
+      { img: "ep14_1", lines: [{ text: "7000층 보스와 대치 중. 휴대폰이 울린다. '여보'." }] },
+      { img: "ep14_2", lines: [{ who: "아내", text: "…여보. 이게 뭐야?", at: [48, 14] }] },
+      { img: "ep14_3", lines: [{ who: "박부장", text: "그게… 회사가… 명예롭게…", at: [56, 52] }] },
+      {
+        img: "ep14_4",
+        lines: [
+          { who: "아내", text: "집에서 얘기해.", at: [48, 20] },
+          { text: "뚝. (다음 화에 계속)" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "ep15",
+    floor: 8000,
+    title: "15화 — 택배",
+    panels: [
+      { img: "ep15_1", lines: [{ text: "8000층. 택배 상자 하나가 도착했다." }] },
+      { img: "ep15_2", lines: [{ text: "파스 한 박스, 도시락, 손편지." }] },
+      { img: "ep15_3", lines: [{ text: "당신 허리 안 좋잖아. 파스 붙이고 해. 대출은 내가 알아서 할게. 25년 동안 고생했어. 끝까지 올라가 봐. 대신 다치면 죽어. — 여보가" }] },
+      {
+        img: "ep15_4",
+        lines: [
+          { who: "오사원", text: "저 퇴사 안 할래요…", at: [134, 38], flip: true },
+          { text: "기념품 '파스'를 얻었다." },
+        ],
+      },
+    ],
+  },
+  {
+    id: "ep16",
+    floor: 9000,
+    title: "16화 — 에어컨 고장",
+    panels: [
+      { img: "ep16_1", lines: [{ who: "홍과장", text: "회장실 시원하라고 아랫사람들은 쪄 죽는구만!", at: [115, 52] }] },
+      { img: "ep16_2", lines: [{ text: "실외기 보스가 결재판만 한 부채를 떨어뜨렸다. '회장님 하사품'." }] },
+      {
+        img: "ep16_3",
+        lines: [
+          { who: "박부장", text: "위에서 내려오는 건 명단만 있는 줄 알았는데.", at: [25, 51] },
+          { text: "기념품 '부채'를 얻었다." },
+        ],
+      },
+    ],
+  },
+  {
+    id: "final",
+    floor: 10000,
+    title: "최종화 — 회장실",
+    panels: [
+      { img: "final_1", lines: [{ who: "박부장", text: "회장님. 하나만 묻겠습니다. 왜 저였습니까.", at: [33, 40] }] },
+      {
+        img: "final_2",
+        lines: [
+          { who: "박부장", text: "왕… 대리님?", at: [28, 48] },
+          { who: "회장", text: "오랜만이다, 박 신입.", at: [122, 28] },
+        ],
+      },
+      { img: "final_3", lines: [{ who: "회장", text: "꼭대기에 와 보니 알겠더라. 사람을 자르는 건 쉽고, 끝까지 올라오는 사람을 찾는 건 어렵다.", at: [60, 12] }] },
+      { img: "final_4", lines: [{ who: "회장", text: "그 공고, 너한테만 보였다. 25년 동안 지각 한 번 안 한 사람한테만.", at: [103, 23] }] },
+      { img: "final_5", lines: [{ who: "회장", text: "이겨라. 그럼 이 의자는 네 거다.", at: [160, 31], flip: true }] },
+      { img: "final_6", lines: [{ who: "박부장", text: "회장님, 그럼 첫 결재 하나만 하겠습니다.", at: [72, 38] }] },
+      {
+        img: "final_7",
+        lines: [
+          { who: "박부장", text: "6시에 퇴근하고 싶습니다.", at: [90, 25] },
+          { text: "마왕그룹 명예퇴직 제도 폐지. 전 직원 6시 칼퇴." },
+        ],
+      },
+      {
+        img: "final_8",
+        lines: [
+          { who: "아내", text: "요즘 회사 생활은 어때?", at: [148, 37], flip: true },
+          { who: "박부장", text: "…나 회장 됐어.", at: [33, 38] },
+          { text: "마왕그룹 회장 박부장." },
+          { text: "END — 그리고 탑은 계속된다" },
+        ],
+      },
+    ],
+  },
+  {
+    // After the finale: opens one floor past the 회장실.
+    id: "cookie",
+    floor: 10001,
+    title: "쿠키 — 10000층 이후",
+    panels: [
+      { img: "cookie_1", lines: [{ who: "실장", text: "회장님! 뉴욕 지사에서 용사가 쳐들어왔습니다! 52세랍니다!", at: [36, 34] }] },
+      { img: "cookie_2", lines: [{ who: "박부장", text: "…1층에서 기다리라고 해. 내가 내려간다.", at: [89, 30] }] },
+    ],
+  },
+  {
+    id: "wardrobe",
+    floor: 0,
+    allCostumes: true,
+    title: "특별편 — 옷장",
+    panels: [
+      { img: "wardrobe_1", lines: [{ who: "박부장", text: "부장 시절엔 양복 세 벌로 25년 버텼는데.", at: [110, 40] }] },
+      { img: "wardrobe_2", lines: [{ who: "아내", text: "여보. 이 옷들 살 돈 다 어디서 났어?", at: [140, 35], flip: true }] },
+      { img: "wardrobe_3", lines: [{ who: "박부장", text: "나 얼른 출근해야 해!", at: [128, 18], flip: true }] },
+    ],
+  },
 ];
 
 export function findEpisode(id: string): Episode | undefined {
   return EPISODES.find((e) => e.id === id);
+}
+
+// Whether an episode can be read: its floor reached, and for the 옷장 special every costume owned.
+export function episodeOpen(ep: Episode, s: { bestFloor: number; suits: readonly string[] }): boolean {
+  return s.bestFloor >= ep.floor && (!ep.allCostumes || SUIT_ITEMS.every((i) => s.suits.includes(i.id)));
 }
