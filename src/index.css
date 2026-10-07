@@ -387,10 +387,10 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .mission-card .claim { margin-top: 3px; }
 /* Short phones: the battle area keeps room for its controls (220px at least). */
 .battle { height: max(29%, 220px); }
-/* Fixed sizes, not shares of the screen: nav tiles 56px wide, packed together in the middle
-   (wider phones get more room at the sides), the step mission card at most 220px. */
-.bottom-nav { justify-content: center; gap: 2px; }
-.bottom-nav button { flex: 0 0 56px; width: 56px; }
+/* Nav tiles share the full width, 2px apart (their icons keep a fixed size); the step mission
+   card is at most 220px. */
+.bottom-nav { gap: 2px; }
+.bottom-nav button { flex: 1 1 0; width: auto; }
 .mission-card { max-width: 220px; }
 /* The small coupon drawing has a red rim that melts into red buttons: give it a dark outline. */
 .icon-img[data-icon="coupon"] { filter: drop-shadow(1px 0 0 #1b1a2e) drop-shadow(-1px 0 0 #1b1a2e) drop-shadow(0 1px 0 #1b1a2e) drop-shadow(0 -1px 0 #1b1a2e); }
