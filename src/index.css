@@ -368,7 +368,7 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
    bright outlined number, like the battle screen's currency row. */
 .sheet-wallet { gap: 4px; }
 .wallet-pill { display: inline-flex; align-items: center; gap: 2px; height: 32px; padding: 0 2px 0 0; border: 8px solid transparent; border-image: var(--ui-wallet-pill, var(--ui-icon-box)) 8 fill / 8px; image-rendering: pixelated; }
-.wallet-pill .icon-img { width: 16px; height: 16px; margin: 0; }
+.wallet-pill .icon-img { width: 32px; height: 32px; margin: -8px 0 -8px -14px; } /* the battle screen's 32px icon, overlapping the counter's left end */
 .wallet-pill b { color: #ffd166; font-size: 12px; text-shadow: 1px 1px 0 #000, -1px 0 0 #000, 0 -1px 0 #000, 1px 0 0 #000; }
 /* Webtoon text scales with the panel (--k = screen pixels per art pixel), so bubbles keep the same
    size against the picture on a phone and on a wide screen. */
@@ -418,3 +418,6 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .welcome-go { width: 100%; margin-top: 10px; }
 .welcome-form .row { border: 8px solid transparent; border-image: var(--ui-apply-row, var(--ui-row-panel)) 8 fill / 8px; color: #2a1d1a; }
 .welcome-form .row .sub { text-align: left; }
+/* "+" to the shop at the end of a gem or coupon counter (art/ui/plus_button.png, 20px). */
+.plus-btn { width: 20px; height: 20px; min-height: 0; margin-left: 3px; padding: 0; border: 0; background: var(--ui-plus-button) center / 20px 20px no-repeat; image-rendering: pixelated; pointer-events: auto; cursor: pointer; flex: none; }
+.wallet-pill .plus-btn { margin: 0 -4px 0 4px; }

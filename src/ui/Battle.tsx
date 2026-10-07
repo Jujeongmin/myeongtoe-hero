@@ -122,7 +122,7 @@ export function Battle({ state, store, onOpen, onGo }: {
         </div>
       )}
       <MissionCard state={state} store={store} onGo={onGo} />
-      <CurrencyBar state={state} />
+      <CurrencyBar state={state} onShop={() => onGo({ tab: "shop" })} />
     </section>
   );
 }

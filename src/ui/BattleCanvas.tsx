@@ -23,6 +23,10 @@ import { t } from "../i18n";
 // Park and the monsters at a set size, not a share of the screen width: about 1.2 CSS px per art
 // pixel, rounded to whole device pixels (Park stands about 50 px tall on any phone).
 const ART_CSS_PX = 1.2;
+// Bosses are drawn about this much bigger than the other monsters (rounded to whole device pixels).
+const BOSS_SIZE = 1.3;
+let artScale = 1;
+let bossScale = 1;
 const BG_H = 96;
 const BG_FLOOR = 82;
 const WALK_PX_PER_SEC = 48;
@@ -91,14 +95,20 @@ export function BattleCanvas({ state }: { state: GameState }) {
       const cw = Math.max(1, parent?.clientWidth ?? 320);
       const ch = Math.max(1, parent?.clientHeight ?? 200);
       const dpr = window.devicePixelRatio || 1;
-      // Device pixels per art pixel for Park and the monsters.
+      // Device pixels per art pixel for Park and the monsters. The canvas is at device resolution
+      // and everything is drawn in art pixels through that scale, so a boss can be drawn a whole
+      // number of device pixels bigger per art pixel and still be crisp.
       const scale = Math.max(1, Math.round(ART_CSS_PX * dpr));
-      const w = Math.round((cw * dpr) / scale);
-      const h = Math.round((ch * dpr) / scale);
-      if (el.width !== w || el.height !== h) {
-        el.width = w;
-        el.height = h;
+      artScale = scale;
+      bossScale = Math.max(scale + 1, Math.round(scale * BOSS_SIZE)) / scale;
+      const dw = Math.round(cw * dpr);
+      const dh = Math.round(ch * dpr);
+      if (el.width !== dw || el.height !== dh) {
+        el.width = dw;
+        el.height = dh;
       }
+      const w = dw / scale;
+      const h = dh / scale;
       scroll = draw(ctx, w, h, Math.max(1, Math.ceil(h / BG_H)), snap.current, now, dt, scroll, sim, (text, x, y, crit) => {
         popDamage(layer.current, text, (x * cw) / w, (y * ch) / h, crit);
       }, (text, x, y) => {
@@ -248,7 +258,8 @@ function draw(
     sim.kill = kill;
     sim.hits = 0;
     sim.crits = [];
-    sim.current = monsterFor(department, floor, place, boss) ?? null;
+    const found = monsterFor(department, floor, place, boss) ?? null;
+    sim.current = found && boss ? enlarge(found, bossScale) : found;
   }
 
   // Development: window.__quip = "…" makes Park say it now (to check bubble layout).
@@ -262,7 +273,7 @@ function draw(
     sim.quipAt = now + QUIP_MIN_MS + QUIP_MORE_MS * Math.random();
   }
 
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.setTransform(artScale, 0, 0, artScale, 0, 0);
   ctx.clearRect(0, 0, w, h);
   // A critical hit shakes the scene by a pixel or two for a moment.
   if (now < sim.shakeUntil) ctx.translate(Math.round(Math.random() * 4 - 2), Math.round(Math.random() * 2 - 1));
@@ -347,13 +358,13 @@ function draw(
     drawHpBar(ctx, monster, monsterX, floorY, 1 - landed / n);
     tag(monster.name, monsterX + monster.hpBar[0], floorY - monster.baseline - monster.hover + monster.hpBar[1] - HP_BAR.h - 1);
     drawHitFx(ctx, sim, now);
-  }
+  } else tag("", 0, 0);
   if (sim.chest) {
     const img = image("parking/chest.png");
     const f = Math.floor((now - sim.chest.since) / CHEST_MS);
     if (f >= 6) sim.chest = null;
     else if (img) ctx.drawImage(img, Math.min(3, f) * 32, 0, 32, 32, Math.round(sim.chest.x), floorY - 32, 32, 32);
-  } else tag("", 0, 0);
+  }
   return nextScroll;
 }
 
@@ -421,8 +432,15 @@ function drawHpBar(ctx: CanvasRenderingContext2D, m: MonsterSprite, x: number, f
   slice(frame, w);
 }
 
-function drawMonster(ctx: CanvasRenderingContext2D, m: MonsterSprite, anim: "idle" | "hurt" | "death", f: number, x: number, floorY: number): void {
+// A monster drawn `k` times bigger: its measurements grow with it, its frames stay `frame` wide.
+type Drawn = MonsterSprite & { frame?: number };
+function enlarge(m: MonsterSprite, k: number): Drawn {
+  return { ...m, frame: m.size, size: m.size * k, baseline: m.baseline * k, hover: m.hover * k, hpBar: [m.hpBar[0] * k, m.hpBar[1] * k] };
+}
+
+function drawMonster(ctx: CanvasRenderingContext2D, m: Drawn, anim: "idle" | "hurt" | "death", f: number, x: number, floorY: number): void {
   const img = image(m.anims[anim].file);
   if (!img) return;
-  ctx.drawImage(img, f * m.size, 0, m.size, m.size, x, floorY - m.baseline - m.hover, m.size, m.size);
+  const frame = m.frame ?? m.size;
+  ctx.drawImage(img, f * frame, 0, frame, frame, x, floorY - m.baseline - m.hover, m.size, m.size);
 }

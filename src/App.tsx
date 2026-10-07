@@ -26,6 +26,7 @@ import { PrestigePanel } from "./ui/PrestigePanel";
 import { RankingSheet } from "./ui/RankingSheet";
 import { ShopPanel } from "./ui/ShopPanel";
 import { ScreenLock, SettingsPanel } from "./ui/ScreenLock";
+import { PlusButton } from "./ui/CurrencyBar";
 import { ProfilePanel } from "./ui/ProfilePanel";
 import { Welcome, welcomeNeeded } from "./ui/Welcome";
 import { Sheet } from "./ui/Sheet";
@@ -44,9 +45,10 @@ const SHEET_THEMES: Partial<Record<SheetId, string>> = {
 
 // What each menu spends: 코스튬 (buy and rent with 상품권, 불꽃 with 보석), 아파트 and 기념품
 // (보석), 사무용품 (상품권).
-function walletFor(sheet: SheetId, state: GameState): ReactNode {
-  const coupons = <span className="wallet-pill"><Icon name="coupon" size={16} /><b>{formatCount(state.coupons)}</b></span>;
-  const gems = <span className="wallet-pill"><Icon name="gem" size={16} /><b>{formatCount(state.gems)}</b></span>;
+// Each counter shows the same icon as the battle screen's, and a "+" to the shop.
+function walletFor(sheet: SheetId, state: GameState, onShop: () => void): ReactNode {
+  const coupons = <span className="wallet-pill"><Icon name="coupon" /><b>{formatCount(state.coupons)}</b><PlusButton onShop={onShop} /></span>;
+  const gems = <span className="wallet-pill"><Icon name="gem" /><b>{formatCount(state.gems)}</b><PlusButton onShop={onShop} /></span>;
   if (sheet === "suits") return <>{coupons} {gems}</>;
   if (sheet === "apartment" || sheet === "relics") return gems;
   if (sheet === "office") return coupons;
@@ -172,7 +174,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
       <BottomNav state={state} tab={tab} onPick={setTab} onLocked={(text) => store.notify(text)} />
       {sheet === "prestige" && <PrestigePanel state={state} store={store} onClose={() => setSheet(null)} />}
       {sheet && sheet !== "prestige" && (
-        <Sheet title={t(SHEET_TITLES[sheet])} theme={SHEET_THEMES[sheet]} wallet={walletFor(sheet, state)} onClose={() => setSheet(null)}>
+        <Sheet title={t(SHEET_TITLES[sheet])} theme={SHEET_THEMES[sheet]} wallet={walletFor(sheet, state, () => { setSheet(null); setTab("shop"); })} onClose={() => setSheet(null)}>
           {sheet === "profile" && <ProfilePanel state={state} store={store} guest={guest} />}
           {sheet === "suits" && <CostumePanel state={state} store={store} />}
           {sheet === "apartment" && <ApartmentPanel state={state} store={store} />}
