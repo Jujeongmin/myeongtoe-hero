@@ -202,7 +202,7 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .buff-bar .buff.on { opacity: 1; }
 .buff-bar .buff small { position: absolute; left: 50%; top: 30px; transform: translateX(-50%); font-size: 12px; color: #ffd166; text-shadow: 1px 1px 0 #000, -1px 0 0 #000; white-space: nowrap; }
 .bottom-nav button.locked { color: #777; }
-.boss-need { color: #ffd166; }
+.boss-need { color: #ffd166; margin-top: 14px; text-align: center; }
 /* Nav tiles: icon and label stacked in the middle of the tile. */
 .bottom-nav button { height: 68px; align-items: center; justify-content: center; gap: 0; line-height: 1.2; }
 /* Top left: the three buffs and the 2x button, small, in one row. */
@@ -228,3 +228,14 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .costume-row .buttons button { min-width: 56px; }
 .costume-row { gap: 4px; }
 .costume-row .icon-box { width: 56px; height: 56px; border-width: 8px; border-image-width: 8px; }
+/* Buffs and 2x speed at 32px: the icons' own size, so they stay sharp. */
+.top-left .buff-bar .buff, .top-left .buff-bar .buff .icon-img { width: 32px; height: 32px; }
+.top-left .speed-btn { position: relative; top: auto; left: auto; width: 32px; height: 32px; padding: 0; border: none; border-image: none; background: none; opacity: 0.45; }
+.top-left .speed-btn.on { opacity: 1; }
+.top-left .speed-btn small { position: absolute; left: 50%; top: 30px; transform: translateX(-50%); font-size: 12px; color: #ffd166; text-shadow: 1px 1px 0 #000, -1px 0 0 #000; white-space: nowrap; }
+/* VX products: two cards a row, the 128px product picture on top. */
+.vx-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
+.vx-card { display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; border: 12px solid transparent; border-image: var(--ui-row-panel) 6 fill / 12px repeat; image-rendering: pixelated; }
+.vx-card .sub { flex: 1; }
+.vx-card button { width: 100%; border-image: var(--ui-button-gold-hot) 6 fill / 12px repeat; color: #ffd166; }
+.vx-img { width: 128px; height: 128px; max-width: 100%; height: auto; image-rendering: pixelated; border: 2px solid #000; }

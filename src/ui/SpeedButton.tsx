@@ -4,6 +4,7 @@ import { speedActive } from "../../shared/data/speed";
 import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
 import { showAd } from "../net/ads";
+import { Icon } from "./Icon";
 
 function clock(ms: number): string {
   const sec = Math.max(0, Math.ceil(ms / 1000));
@@ -35,8 +36,9 @@ export function SpeedButton({ state, store }: { state: GameState; store: GameSto
   };
 
   return (
-    <button className={`speed-btn${on ? " on" : ""}`} disabled={busy} onClick={() => void press()}>
-      {on && !(premium && state.speed.on) ? clock(left) : "x2"}
+    <button className={`speed-btn${on ? " on" : ""}`} disabled={busy} aria-label="2배속" onClick={() => void press()}>
+      <Icon name="speed" />
+      {on && !(premium && state.speed.on) && <small>{clock(left)}</small>}
     </button>
   );
 }

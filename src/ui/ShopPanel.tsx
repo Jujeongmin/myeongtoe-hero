@@ -7,6 +7,7 @@ import { VIP_STEPS, VIP_TEXT, vipLevel } from "../../shared/vip";
 import type { GameStore } from "../game/store";
 import { showAd } from "../net/ads";
 import { buyProduct, productPrice } from "../net/shop";
+import { imageUrl } from "../game/sprites";
 import { Amount } from "./Amount";
 import { Icon } from "./Icon";
 
@@ -27,13 +28,6 @@ const AD_ICONS: Record<string, string> = {
   ad_coupons: "coupon", ad_parking: "pass", ad_offline: "ad",
 };
 
-function productIcon(id: string): string {
-  if (id.startsWith("gems_")) return "gem";
-  if (id === "pack_rookie") return "rookie_pack";
-  if (id === "premium") return "premium";
-  if (id === "pass_salary") return "salary_pass";
-  return "promo_pack";
-}
 
 function clock(ms: number): string {
   const sec = Math.max(0, Math.ceil(ms / 1000));
@@ -137,18 +131,18 @@ function VxShop({ state, store }: { state: GameState; store: GameStore }) {
           </button>
         </div>
       )}
-      {PRODUCTS.filter((p) => productOffered(state, p)).map((p) => (
-        <div key={p.id} className="row">
-          <span className="icon-box"><Icon name={productIcon(p.id)} /></span>
-          <div className="grow">
+      <div className="vx-grid">
+        {PRODUCTS.filter((p) => productOffered(state, p)).map((p) => (
+          <div key={p.id} className="vx-card">
+            <img className="vx-img" src={imageUrl(`vx/src/${p.id}_128.png`)} width={128} height={128} alt="" draggable={false} />
             <b>{p.nameKo}</b>
             <div className="sub">{p.textKo}</div>
+            <button className="btn hot" onClick={() => buyProduct(p.id)}>
+              <Icon name="vx" size={16} /> {(productPrice(p.id) ?? p.vx).toLocaleString("en-US")}
+            </button>
           </div>
-          <button className="hot" onClick={() => buyProduct(p.id)}>
-            <Icon name="vx" size={16} /> {(productPrice(p.id) ?? p.vx).toLocaleString("en-US")}
-          </button>
-        </div>
-      ))}
+        ))}
+      </div>
     </>
   );
 }
