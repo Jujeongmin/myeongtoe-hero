@@ -211,6 +211,8 @@ describe("prestige", () => {
 
   test("tickets grow exponentially: 100 at floor 100, about 300,000 at floor 1000", () => {
     expect(prestigeReward(100, 0)).toEqual({ tickets: 100, gems: 5 });
+    expect(prestigeReward(70, 0)).toEqual({ tickets: Math.floor(100 * 1.009 ** -30), gems: 3 });
+    expect(prestigeReward(69, 0).tickets).toBe(0);
     expect(prestigeReward(1000, 0).tickets).toBeGreaterThan(250_000);
     expect(prestigeReward(1000, 0).tickets).toBeLessThan(400_000);
     expect(prestigeReward(300, 0).tickets).toBe(Math.floor(100 * 1.009 ** 200));

@@ -15,6 +15,7 @@ import { petsUnlocked } from "../shared/data/pets";
 import { relicsUnlocked } from "../shared/data/relics";
 import { SIDE_JOBS, sideJobCycle, sideJobIncome } from "../shared/data/sideJobs";
 import { Big } from "../shared/big";
+import { PRESTIGE_MIN_FLOOR } from "../shared/data/prestige";
 import { grantPurchase } from "../shared/data/shop";
 import { formatBig, formatCount } from "../shared/format";
 import { gearLevelCostFor, gearPriceFor, sideJobCostFor } from "../shared/prices";
@@ -160,7 +161,7 @@ function act(r: Run, profile: Profile, now: number): void {
   s = spendGems(s);
   s = spendCoupons(s);
   if (s.run.maxFloor > (r.s.run.maxFloor ?? 0)) r.runBestAt = now;
-  if (s.run.maxFloor >= 100 && now - r.runBestAt > STALL_MS) {
+  if (s.run.maxFloor >= PRESTIGE_MIN_FLOOR && now - r.runBestAt > STALL_MS) {
     const mode = s.gems >= 1500 && profile !== "free" ? "super" : "plain";
     const reward = jobChangeReward(s);
     const next = attempt(s, { k: "prestige", mode });
@@ -197,7 +198,34 @@ export function simulate(profile: Profile, days: number): Run {
   return r;
 }
 
+// The first session: a new free player plays FIRST_MIN minutes straight, watching only the 2× speed
+// ad (again whenever it is ready), upgrading every 5 seconds and retrying the boss when farming.
+// Run: FIRST=30 npm run sim
+export function firstSession(minutes: number): string[] {
+  let s = newState(START);
+  const out: string[] = [];
+  let shown = 0;
+  for (let now = START; now <= START + minutes * MIN; now += 5_000) {
+    s = settle(s, now);
+    if (!process.env.NOAD) s = attempt(s, { k: "watchAd", id: "ad_speed" }) ?? s;
+    s = claimAll(s);
+    s = spendGold(s);
+    s = spendTickets(s);
+    if (s.run.farming) s = attempt(s, { k: "challengeBoss" }) ?? s;
+    const min = Math.floor((now - START) / MIN);
+    if (min >= shown) {
+      out.push(`${min}분: ${s.run.maxFloor}층 · 장비 ${s.gear.tier + 1}단계 Lv${s.gear.level} · 골드 ${formatBig(s.gold)}${s.run.farming ? " (보스 막힘)" : ""}`);
+      shown += 5;
+    }
+  }
+  return out;
+}
+
 const days = Number(process.env.DAYS ?? 30);
+if (process.env.FIRST) {
+  for (const line of firstSession(Number(process.env.FIRST))) console.log(line);
+  process.exit(0);
+}
 for (const profile of (process.env.PROFILES ?? "free,ads,paid").split(",") as Profile[]) {
   const t0 = Date.now();
   const r = simulate(profile, days);
