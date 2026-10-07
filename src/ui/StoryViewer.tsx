@@ -1,53 +1,96 @@
-import { useEffect, useState } from "react";
-import { EPISODES, type Episode } from "../../shared/data/story";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { EPISODES, type Episode, type StoryPanel } from "../../shared/data/story";
 import type { GameState } from "../../shared/state";
 import { imageUrl } from "../game/sprites";
 import type { GameStore } from "../game/store";
-
-const PANEL_W = 192;
 
 // An episode can be shown once every panel's picture is in art/story.
 export function episodeReady(ep: Episode): boolean {
   return ep.panels.length > 0 && ep.panels.every((p) => imageUrl(`story/${p.img}.png`));
 }
 
-// The panels' on-screen width: the biggest whole multiple of the 192 px art that fits, in device
-// pixels, so the pixel art stays sharp.
-function panelWidth(): number {
-  const dpr = window.devicePixelRatio || 1;
-  const room = Math.min(440, window.innerWidth - 32) * dpr;
-  return Math.max(1, Math.floor(room / PANEL_W)) * PANEL_W / dpr;
+const PANEL_W = 192;
+
+// An episode's panels split into pages of up to three, as even as possible (7 → 3, 2, 2).
+function pagesOf(n: number): number[][] {
+  const count = Math.ceil(n / 3);
+  const pages: number[][] = [];
+  let i = 0;
+  for (let k = 0; k < count; k++) {
+    const size = Math.ceil((n - i) / (count - k));
+    pages.push(Array.from({ length: size }, (_, j) => i + j));
+    i += size;
+  }
+  return pages;
 }
 
-// The webtoon, scrolled down panel by panel: each picture with its lines under it (narration in a
-// dark box, speech in a bubble with the speaker's name). Closing marks it read.
+// The webtoon a page at a time, like a comic: up to three panels stacked to fill the screen, each
+// with its lines on it (speech bubbles over the speaker's head, narration in a caption box along
+// the bottom). Tap anywhere for the next page; after the last it closes and counts as read.
 export function StoryViewer({ episode, onClose }: { episode: Episode; onClose: () => void }) {
-  const [width, setWidth] = useState(panelWidth);
+  const [size, setSize] = useState({ w: window.innerWidth, h: window.innerHeight });
+  const [page, setPage] = useState(0);
   useEffect(() => {
-    const resize = () => setWidth(panelWidth());
+    const resize = () => setSize({ w: window.innerWidth, h: window.innerHeight });
     window.addEventListener("resize", resize);
     return () => window.removeEventListener("resize", resize);
   }, []);
+  const pages = pagesOf(episode.panels.length);
+  const panels = pages[page];
+  // Panel width: the screen width, unless three panels would be taller than the room left.
+  const width = Math.floor(Math.min(size.w, 720, ((size.h - 84) / panels.length - 4) * 1.5));
+  const last = page === pages.length - 1;
   return (
-    <div className="story">
-      <header>
+    <div className="story" onClick={() => (last ? onClose() : setPage(page + 1))}>
+      <header onClick={(e) => e.stopPropagation()}>
         <b>{episode.title}</b>
-        <button onClick={onClose}>닫기</button>
+        <button onClick={onClose}>건너뛰기</button>
       </header>
-      <div className="story-body">
-        {episode.panels.map((p, i) => (
-          <section key={i} className="story-cut" style={{ width }}>
-            <img src={imageUrl(`story/${p.img}.png`)} width={width} height={(width * 2) / 3} alt="" draggable={false} />
-            {p.lines.map((l, j) => (l.who ? (
-              <div key={j} className="story-say"><b>{l.who}</b>{l.text}</div>
-            ) : (
-              <div key={j} className="story-narration">{l.text}</div>
-            )))}
-          </section>
-        ))}
-        <button className="btn hot story-end" onClick={onClose}>다 읽었어요</button>
+      <div className="story-body" key={page}>
+        {panels.map((i) => <Panel key={i} panel={episode.panels[i]} width={width} />)}
       </div>
+      <div className="story-next">{page + 1} / {pages.length} · {last ? "눌러서 닫기" : "눌러서 다음"}</div>
     </div>
+  );
+}
+
+function Panel({ panel, width }: { panel: StoryPanel; width: number }) {
+  const ref = useRef<HTMLElement>(null);
+  const k = width / PANEL_W;
+  // Keep every bubble inside the panel (a bubble near an edge slides in; its tail stays put).
+  useLayoutEffect(() => {
+    const box = ref.current;
+    if (!box) return;
+    for (const el of box.querySelectorAll<HTMLElement>(".story-say")) {
+      el.style.marginLeft = "0px";
+      el.style.marginTop = "0px";
+      const r = el.getBoundingClientRect();
+      const b = box.getBoundingClientRect();
+      const dx = r.left < b.left + 2 ? b.left + 2 - r.left : r.right > b.right - 2 ? b.right - 2 - r.right : 0;
+      const dy = r.top < b.top + 2 ? b.top + 2 - r.top : 0;
+      el.style.marginLeft = `${dx}px`;
+      el.style.marginTop = `${dy}px`;
+    }
+  }, [panel, width]);
+  let free = 0;
+  return (
+    <section ref={ref} className="story-cut" style={{ width, height: (width * 2) / 3 }}>
+      <img src={imageUrl(`story/${panel.img}.png`)} width={width} height={(width * 2) / 3} alt="" draggable={false} />
+      {panel.lines.map((l, j) => {
+        if (!l.who) return null;
+        const [x, y] = l.at ?? [12 + 84 * (free++ % 2), 30];
+        return (
+          <div key={j} className={`story-say${l.flip ? " flip" : ""}`} style={{ left: x * k, top: y * k, maxWidth: width * 0.62 }}>
+            <b>{l.who}</b>{l.text}
+          </div>
+        );
+      })}
+      {panel.lines.some((l) => !l.who) && (
+        <div className="story-captions">
+          {panel.lines.filter((l) => !l.who).map((l, j) => <div key={j} className="story-narration">{l.text}</div>)}
+        </div>
+      )}
+    </section>
   );
 }
 

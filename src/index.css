@@ -245,14 +245,21 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .story { position: fixed; inset: 0; z-index: 15; display: flex; flex-direction: column; background: #0b0916; }
 .story header { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #0b0916; border-bottom: 2px solid #2b2440; }
 .story header button { border: 12px solid transparent; border-image: var(--ui-button-gold) 6 fill / 12px repeat; background: none; color: #fff; padding: 0 2px; min-width: 64px; min-height: 40px; text-shadow: 1px 1px 0 #000; }
-.story-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 12px 0 24px; }
-.story-cut { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
-.story-cut img { display: block; image-rendering: pixelated; border: 2px solid #000; }
-.story-narration { padding: 4px 8px; border: 12px solid transparent; border-image: var(--ui-row-panel) 6 fill / 12px repeat; color: #e9c46a; text-align: center; }
-.story-say { align-self: flex-start; max-width: 90%; padding: 0 4px 2px; border: 12px solid transparent; border-image: var(--ui-speech-bubble) 6 fill / 12px; color: #1b1a2e; image-rendering: pixelated; }
-.story-say b { display: block; color: #8d1c1c; }
-.story-say:nth-of-type(even) { align-self: flex-end; }
-.story-end { min-width: 160px; }
+.story-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 0; }
+.story-cut { position: relative; flex-shrink: 0; overflow: hidden; border: 2px solid #000; box-sizing: content-box; }
+.story-cut img { display: block; image-rendering: pixelated; }
+/* Speech: the tail's tip sits on the point over the speaker's head; the bubble grows up and to the
+   right, or up and to the left (flip, with the frame mirrored so the tail is on its right). */
+.story-say { position: absolute; z-index: 1; width: max-content; padding: 0 2px 1px; border: 8px solid transparent; color: #1b1a2e; font-size: 13px; line-height: 16px; word-break: keep-all; transform: translate(-4px, -100%); }
+.story-say::before { content: ""; position: absolute; inset: -8px; z-index: -1; border: 8px solid transparent; border-image: var(--ui-speech-bubble) 6 fill / 8px; image-rendering: pixelated; }
+.story-say.flip { transform: translate(calc(-100% + 4px), -100%); }
+.story-say.flip::before { transform: scaleX(-1); }
+.story-say b { color: #8d1c1c; margin-right: 4px; }
+.story-captions { position: absolute; left: 4px; right: 4px; bottom: 4px; display: flex; flex-direction: column; gap: 2px; }
+.story-narration { padding: 2px 6px; background: rgba(11, 9, 22, 0.85); border: 1px solid #000; color: #e9c46a; font-size: 13px; line-height: 16px; text-align: center; }
+.story-next { padding: 6px 0 10px; text-align: center; color: #b8b3d6; font-size: 12px; }
+.story-cut { animation: story-in 160ms steps(4); }
+@keyframes story-in { from { opacity: 0; } to { opacity: 1; } }
 /* 보스 도전: while farming, right side above the step mission. */
 .boss-btn { position: absolute; z-index: 2; right: 6px; bottom: 76px; display: flex; flex-direction: column; align-items: center; gap: 0; min-height: 40px; padding: 0 2px; font-size: 12px; line-height: 14px; border: 12px solid transparent; border-image: var(--ui-button-gold-hot) 6 fill / 12px repeat; background: none; color: #ffd166; text-shadow: 1px 1px 0 #000; image-rendering: pixelated; }
 /* The monster's name, centred just over its health bar. */
