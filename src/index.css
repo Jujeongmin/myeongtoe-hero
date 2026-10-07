@@ -476,3 +476,9 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
    stands out against the red. */
 .menu-btn .dot { top: -3px; right: auto; left: -3px; filter: drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff); animation: dot-blink 1.2s steps(1) infinite; }
 @keyframes dot-blink { 0%, 70% { opacity: 1; } 71%, 100% { opacity: 0.35; } }
+/* Phones: more of the screen for the battle (40%, at least 260px), and slimmer list rows — the
+   icon box 48px (8px frame around a 32px icon) instead of 72px, so a row is about 72px tall. */
+.battle { height: max(40%, 260px); }
+.row { min-height: 0; }
+.row > .icon-box { width: 48px; height: 48px; border-width: 8px; border-image-width: 8px; }
+.row > .icon-box .gear-img { width: 32px; height: 32px; }
