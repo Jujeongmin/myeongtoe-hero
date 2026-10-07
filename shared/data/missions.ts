@@ -34,7 +34,7 @@ export const STEP_MISSIONS: readonly MissionDef[] = [
   { id: "s09", text: "30층 도달", done: (s) => s.bestFloor >= 30, reward: { gems: 40 } },
   { id: "s10", text: "부업 3개 시작", done: (s) => jobsStarted(s) >= 3, reward: { gems: 40 } },
   { id: "s11", text: "50층 도달", done: (s) => s.bestFloor >= 50, reward: { gems: 50 } },
-  { id: "s12", text: "정장 1벌 구매", done: (s) => s.suits.length >= 1, reward: { gems: 50 } },
+  { id: "s12", text: "코스튬 1개 구매", done: (s) => s.suits.length >= 1, reward: { gems: 50 } },
   { id: "s13", text: "100층 도달", done: (s) => s.bestFloor >= 100, reward: { gems: 60, tickets: 5 } },
   { id: "s14", text: "첫 이직", done: (s) => s.prestiges >= 1, reward: { gems: 60 } },
   { id: "s15", text: "동료 레벨업", done: (s) => Object.values(s.pets).some((lv) => lv >= 2), reward: { gems: 80 } },

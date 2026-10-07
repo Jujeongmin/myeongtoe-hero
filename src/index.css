@@ -191,9 +191,9 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .modal .ad-btn { flex: 2; display: flex; align-items: center; justify-content: center; gap: 4px; line-height: 1.3; }
 .modal .plain-btn { flex: 1; border-image: var(--ui-button-gold) 6 fill / 12px repeat; color: #fff; }
 /* Compact battle-screen controls: one-line mission card, small 2x button. */
-.mission-card { max-width: 46%; }
+.mission-card { max-width: 62%; }
 .mission-card > div { margin: -8px 0; }
-.mission-card .mission-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mission-card .mission-line { white-space: nowrap; overflow: hidden; }
 .mission-card .claim { margin-top: 10px; padding: 0 4px; }
 .speed-btn { top: 38px; min-width: 0; padding: 0 2px; border-width: 8px; border-image-width: 8px; line-height: 16px; }
 /* The three buffs, top left under the icons: dim when off, lit with the time left when on. */
@@ -205,3 +205,26 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .boss-need { color: #ffd166; }
 /* Nav tiles: icon and label stacked in the middle of the tile. */
 .bottom-nav button { height: 68px; align-items: center; justify-content: center; gap: 0; line-height: 1.2; }
+/* Top left: the three buffs and the 2x button, small, in one row. */
+.top-left { position: absolute; left: 4px; top: 4px; z-index: 2; display: flex; gap: 2px; align-items: flex-start; }
+.top-left .buff-bar { position: static; gap: 2px; }
+.top-left .buff-bar .buff { width: 28px; height: 28px; }
+.top-left .buff-bar .buff .icon-img { width: 28px; height: 28px; }
+.top-left .speed-btn { position: static; height: 28px; }
+.menu-btn { position: relative; }
+.menu-btn .dot { position: absolute; top: 1px; right: 1px; width: 8px; height: 8px; background: #e63946; border: 1px solid #000; }
+.side-icons button { position: relative; }
+.side-icons { grid-template-columns: repeat(3, 52px); }
+.side-icons button { width: 52px; }
+/* 코스튬: Park big on the left of the summary; the eight tabs in two rows of four. */
+.costume-top { display: flex; gap: 8px; align-items: center; margin-bottom: 4px; }
+.costume-preview { width: 144px; height: 144px; flex: none; image-rendering: pixelated; background: rgba(0, 0, 0, 0.25); border: 2px solid #000; }
+.costume-summary { flex: 1; min-width: 0; }
+.costume-tabs { display: grid; grid-template-columns: repeat(4, 1fr); }
+.costume-tabs button { white-space: nowrap; }
+.part-thumb { width: 40px; height: 40px; image-rendering: pixelated; }
+/* Lists scroll; their rows never squash (squashed rows let text spill out of the panel art). */
+.sheet-body > *, .list > *, .row { flex-shrink: 0; }
+.costume-row .buttons button { min-width: 56px; }
+.costume-row { gap: 4px; }
+.costume-row .icon-box { width: 56px; height: 56px; border-width: 8px; border-image-width: 8px; }

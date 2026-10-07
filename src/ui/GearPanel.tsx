@@ -8,7 +8,7 @@ import type { GameStore } from "../game/store";
 import { Amount } from "./Amount";
 import { Icon } from "./Icon";
 
-// 정장 first (the way in to the costume panel), then every tier: the ones behind owned, the current
+// 코스튬 first (the way in to the costume panel), then every tier: the ones behind owned, the current
 // one to level up to 5, the next one to buy once the current is at 5, the rest waiting. A tier at
 // Lv5 that is next in line for 구매확정 shows 확정 on its button; pressing it opens a panel that
 // explains it and confirms.
@@ -22,8 +22,8 @@ export function GearPanel({ state, store, onSuits }: { state: GameState; store: 
       <div className="row">
         <span className="icon-box"><Icon name="side_suits" /></span>
         <div className="grow">
-          <b>정장</b>
-          <div className="sub">투구부터 장신구까지 갈아입으러 가요</div>
+          <b>코스튬</b>
+          <div className="sub">사기만 해도 효과가 적용돼요</div>
         </div>
         <button className="hot" onClick={onSuits}>입장하기</button>
       </div>

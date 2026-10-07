@@ -266,212 +266,221 @@
    "frames": [
     {
      "head": [
-      28,
-      13
-     ],
-     "neck": [
-      33,
-      39
-     ],
-     "torso": [
       30,
-      41
-     ],
-     "feet": [
-      30,
-      56
-     ],
-     "hand": [
-      32,
-      47
-     ],
-     "handAngle": -40,
-     "file": "attack_0.png",
-     "gearAboveHelmet": false
-    },
-    {
-     "head": [
-      27,
-      13
-     ],
-     "neck": [
-      32,
-      39
-     ],
-     "torso": [
-      29,
-      41
-     ],
-     "feet": [
-      30,
-      56
-     ],
-     "hand": [
-      22,
-      42
-     ],
-     "handAngle": -150,
-     "file": "attack_1.png",
-     "gearAboveHelmet": true
-    },
-    {
-     "head": [
-      27,
-      13
-     ],
-     "neck": [
-      32,
-      39
-     ],
-     "torso": [
-      29,
-      41
-     ],
-     "feet": [
-      30,
-      56
-     ],
-     "hand": [
-      26,
-      34
-     ],
-     "handAngle": -120,
-     "file": "attack_2.png",
-     "gearAboveHelmet": true
-    },
-    {
-     "head": [
-      28,
-      13
-     ],
-     "neck": [
-      33,
-      39
-     ],
-     "torso": [
-      30,
-      41
-     ],
-     "feet": [
-      30,
-      56
-     ],
-     "hand": [
-      34,
-      34
-     ],
-     "handAngle": -60,
-     "file": "attack_3.png",
-     "gearAboveHelmet": true
-    },
-    {
-     "head": [
-      30,
-      13
+      9
      ],
      "neck": [
       35,
-      39
-     ],
-     "torso": [
-      32,
-      41
-     ],
-     "feet": [
-      30,
-      56
-     ],
-     "hand": [
-      39,
-      42
-     ],
-     "handAngle": 30,
-     "file": "attack_4.png",
-     "gearAboveHelmet": false
-    },
-    {
-     "head": [
-      30,
-      13
-     ],
-     "neck": [
-      35,
-      39
-     ],
-     "torso": [
-      32,
-      41
-     ],
-     "feet": [
-      30,
-      56
-     ],
-     "hand": [
-      36,
-      46
-     ],
-     "handAngle": 60,
-     "file": "attack_5.png",
-     "gearAboveHelmet": false
-    },
-    {
-     "head": [
-      29,
-      13
-     ],
-     "neck": [
-      34,
-      39
+      36
      ],
      "torso": [
       31,
-      41
-     ],
-     "feet": [
-      30,
-      56
+      39
      ],
      "hand": [
-      36,
-      44
+      31,
+      45
      ],
-     "handAngle": 20,
-     "file": "attack_6.png",
+     "handAngle": -40,
+     "feet": [
+      32,
+      56
+     ],
+     "file": "attack_0.png",
+     "gearBehindBody": false,
      "gearAboveHelmet": false
     },
     {
      "head": [
-      28,
+      30,
+      11
+     ],
+     "neck": [
+      38,
+      36
+     ],
+     "torso": [
+      34,
+      40
+     ],
+     "hand": [
+      26,
+      30
+     ],
+     "handAngle": -120,
+     "feet": [
+      36,
+      56
+     ],
+     "file": "attack_1.png",
+     "gearBehindBody": false,
+     "gearAboveHelmet": true
+    },
+    {
+     "head": [
+      31,
+      10
+     ],
+     "neck": [
+      37,
+      36
+     ],
+     "torso": [
+      31,
+      36
+     ],
+     "hand": [
+      18,
+      18
+     ],
+     "handAngle": -160,
+     "feet": [
+      36,
+      56
+     ],
+     "file": "attack_2.png",
+     "gearBehindBody": false,
+     "gearAboveHelmet": true
+    },
+    {
+     "head": [
+      32,
+      10
+     ],
+     "neck": [
+      35,
+      37
+     ],
+     "torso": [
+      30,
+      38
+     ],
+     "hand": [
+      32,
+      20
+     ],
+     "handAngle": -70,
+     "feet": [
+      34,
+      56
+     ],
+     "file": "attack_3.png",
+     "gearBehindBody": false,
+     "gearAboveHelmet": true
+    },
+    {
+     "head": [
+      32,
+      11
+     ],
+     "neck": [
+      35,
+      37
+     ],
+     "torso": [
+      29,
+      39
+     ],
+     "hand": [
+      45,
+      37
+     ],
+     "handAngle": 0,
+     "feet": [
+      26,
+      56
+     ],
+     "file": "attack_4.png",
+     "gearBehindBody": false,
+     "gearAboveHelmet": false
+    },
+    {
+     "head": [
+      31,
       13
      ],
      "neck": [
-      33,
-      39
+      35,
+      38
      ],
      "torso": [
       30,
       41
      ],
+     "hand": [
+      43,
+      46
+     ],
+     "handAngle": 45,
      "feet": [
-      30,
+      28,
       56
      ],
+     "file": "attack_5.png",
+     "gearBehindBody": false,
+     "gearAboveHelmet": false
+    },
+    {
+     "head": [
+      30,
+      11
+     ],
+     "neck": [
+      35,
+      38
+     ],
+     "torso": [
+      30,
+      40
+     ],
      "hand": [
-      33,
+      31,
+      46
+     ],
+     "handAngle": 10,
+     "feet": [
+      32,
+      56
+     ],
+     "file": "attack_6.png",
+     "gearBehindBody": false,
+     "gearAboveHelmet": false
+    },
+    {
+     "head": [
+      30,
+      11
+     ],
+     "neck": [
+      35,
+      37
+     ],
+     "torso": [
+      31,
+      40
+     ],
+     "hand": [
+      31,
       46
      ],
      "handAngle": -30,
+     "feet": [
+      31,
+      56
+     ],
      "file": "attack_7.png",
+     "gearBehindBody": false,
      "gearAboveHelmet": false
     }
    ],
    "frameCount": 8,
-   "frameDurationMs": 70,
+   "frameDurationMs": 75,
    "loop": false,
    "strip": "attack_strip.png",
    "impactFrame": 4,
-   "gearAboveHelmetNote": "On frames with gearAboveHelmet=true the near arm passes in front of the head: draw gear and gloves after the helmet on those frames.",
-   "note": "near (viewer-side) hand holds the item in every frame; arm swings over the head into a forward-down slash"
+   "source": "sprite-gen image row (gen-set --provider codex) from the approved Park idle_0 (x8 nearest base), extracted with fit pixel_unfake (64x64 cell, logical 64, foot-centroid/bottom alignment, shared 32-colour palette), then each colour snapped to the nearest colour of Park's idle/walk palette where that colour was still free. No pixels were redrawn.",
+   "gearBehindBodyNote": "frames with gearBehindBody=true: draw the item before the body (none in this attack)",
+   "gearAboveHelmetNote": "frames with gearAboveHelmet=true: the near arm is raised in front of the head, draw the item and gloves after the helmet"
   }
  }
 }

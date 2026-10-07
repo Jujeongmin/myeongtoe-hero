@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef } from "react";
 import { SPECIAL_MISSIONS, STEP_MISSIONS } from "../../shared/data/missions";
 import type { GameState } from "../../shared/state";
 import { kstDay } from "../../shared/time";
@@ -23,6 +24,20 @@ export function missionsWaiting(state: GameState): boolean {
   return attend || SPECIAL_MISSIONS.some((m) => m.done(state) && !state.missions.special.includes(m.id));
 }
 
+// One line, never cut: the font steps down a pixel at a time until the text fits.
+function useFitText(text: string) {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    for (let px = 12; px >= 7; px--) {
+      el.style.fontSize = `${px}px`;
+      if (el.scrollWidth <= el.clientWidth) break;
+    }
+  }, [text]);
+  return ref;
+}
+
 // Bottom right of the battle screen: the current step mission. Done, it pays in place; not yet,
 // tapping it goes to where it is done.
 export function MissionCard({ state, store, onGo }: { state: GameState; store: GameStore; onGo: (p: MissionPlace) => void }) {
@@ -31,12 +46,13 @@ export function MissionCard({ state, store, onGo }: { state: GameState; store: G
   if (!m) return null;
   const done = m.done(state);
   const place = PLACES[m.id];
+  const line = useFitText(`${step + 1}단계 · ${m.text}`);
   return (
     <div
       className={`mission-card${done ? " done" : ""}`}
       onClick={() => (done ? store.do({ k: "claimStep" }) : place && onGo(place))}
     >
-      <div className="mission-line">{step + 1}단계 · {m.text}</div>
+      <div className="mission-line" ref={line}>{step + 1}단계 · {m.text}</div>
       {done && <div className="claim">받기 <RewardView reward={m.reward} /></div>}
     </div>
   );

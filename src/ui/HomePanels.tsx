@@ -1,4 +1,4 @@
-import { OFFICE_PARTS, SUIT_ITEMS, SUIT_PARTS, SUIT_SETS, apartmentCost, apartmentDamage, officeUpgradeCost, suitSetWorn } from "../../shared/data/home";
+import { OFFICE_PARTS, apartmentCost, apartmentDamage, officeUpgradeCost } from "../../shared/data/home";
 import { RELICS, relicLevelCost } from "../../shared/data/relics";
 import { relicLevel } from "../../shared/mods";
 import { OFFICE_MAX_GRADE, type GameState } from "../../shared/state";
@@ -49,50 +49,6 @@ export function RelicPanel({ state, store }: Props) {
           </div>
         );
       })}
-    </>
-  );
-}
-
-// Worn parts are what count (and what step 7 draws on Park).
-export function SuitPanel({ state, store }: Props) {
-  return (
-    <>
-      <div className="sub">
-        착용 중: {SUIT_PARTS.map((p) => SUIT_ITEMS.find((i) => i.id === state.wear[p.key])?.name ?? `${p.name} 없음`).join(" · ")}
-      </div>
-      {SUIT_SETS.map((set) => (
-        <div key={set.set} className="suit-set">
-          <div className="sub">
-            <b>{set.name} 세트</b> · 6부위 착용 시 {set.bonus} {suitSetWorn(state.wear, set.set) && "(적용 중)"}
-          </div>
-          <div className="suit-grid">
-            {SUIT_ITEMS.filter((i) => i.set === set.set).map((item) => {
-              const owned = state.suits.includes(item.id);
-              const worn = state.wear[item.part] === item.id;
-              const label = item.name.split(" ").pop();
-              if (worn) {
-                return (
-                  <button key={item.id} className="worn" disabled>
-                    {label}<br />착용 중
-                  </button>
-                );
-              }
-              if (owned) {
-                return (
-                  <button key={item.id} className="owned" onClick={() => store.do({ k: "wearSuit", id: item.id })}>
-                    {label}<br />착용
-                  </button>
-                );
-              }
-              return (
-                <button key={item.id} disabled={state.coupons < item.price} onClick={() => store.do({ k: "buySuit", id: item.id })}>
-                  {label}<br /><Amount icon="coupon" value={item.price} />
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      ))}
     </>
   );
 }

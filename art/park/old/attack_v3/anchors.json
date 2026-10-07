@@ -1,0 +1,477 @@
+{
+ "coordinateSystem": "pixel coords inside each frame's own 64x64 canvas; origin top-left; x right, y down",
+ "angleConvention": "degrees, screen space: 0 = pointing right (+x, facing direction), -90 = up, 90 = down",
+ "facing": "east (right)",
+ "frameWidth": 64,
+ "frameHeight": 64,
+ "baselineY": 56,
+ "animations": {
+  "idle": {
+   "frames": [
+    {
+     "head": [
+      28,
+      13
+     ],
+     "neck": [
+      33,
+      39
+     ],
+     "torso": [
+      30,
+      41
+     ],
+     "hand": [
+      30,
+      48
+     ],
+     "handAngle": -30,
+     "feet": [
+      30,
+      56
+     ],
+     "file": "idle_0.png"
+    },
+    {
+     "head": [
+      28,
+      12
+     ],
+     "neck": [
+      34,
+      39
+     ],
+     "torso": [
+      30,
+      40
+     ],
+     "hand": [
+      30,
+      48
+     ],
+     "handAngle": -32,
+     "feet": [
+      29,
+      56
+     ],
+     "file": "idle_1.png"
+    },
+    {
+     "head": [
+      28,
+      12
+     ],
+     "neck": [
+      27,
+      36
+     ],
+     "torso": [
+      29,
+      40
+     ],
+     "hand": [
+      30,
+      48
+     ],
+     "handAngle": -33,
+     "feet": [
+      29,
+      56
+     ],
+     "file": "idle_2.png"
+    },
+    {
+     "head": [
+      28,
+      12
+     ],
+     "neck": [
+      33,
+      40
+     ],
+     "torso": [
+      31,
+      40
+     ],
+     "hand": [
+      31,
+      49
+     ],
+     "handAngle": -28,
+     "feet": [
+      30,
+      56
+     ],
+     "file": "idle_3.png"
+    }
+   ],
+   "frameCount": 4,
+   "frameDurationMs": 250,
+   "loop": true,
+   "strip": "idle_strip.png"
+  },
+  "walk": {
+   "frames": [
+    {
+     "head": [
+      28,
+      14
+     ],
+     "neck": [
+      34,
+      41
+     ],
+     "torso": [
+      31,
+      42
+     ],
+     "hand": [
+      31,
+      49
+     ],
+     "handAngle": -31,
+     "feet": [
+      30,
+      56
+     ],
+     "file": "walk_0.png"
+    },
+    {
+     "head": [
+      29,
+      14
+     ],
+     "neck": [
+      34,
+      41
+     ],
+     "torso": [
+      30,
+      42
+     ],
+     "hand": [
+      33,
+      50
+     ],
+     "handAngle": -44,
+     "feet": [
+      28,
+      56
+     ],
+     "file": "walk_1.png"
+    },
+    {
+     "head": [
+      28,
+      15
+     ],
+     "neck": [
+      34,
+      41
+     ],
+     "torso": [
+      30,
+      42
+     ],
+     "hand": [
+      31,
+      49
+     ],
+     "handAngle": -37,
+     "feet": [
+      28,
+      56
+     ],
+     "file": "walk_2.png"
+    },
+    {
+     "head": [
+      29,
+      13
+     ],
+     "neck": [
+      33,
+      39
+     ],
+     "torso": [
+      31,
+      42
+     ],
+     "hand": [
+      30,
+      49
+     ],
+     "handAngle": -27,
+     "feet": [
+      30,
+      56
+     ],
+     "file": "walk_3.png"
+    },
+    {
+     "head": [
+      28,
+      15
+     ],
+     "neck": [
+      33,
+      40
+     ],
+     "torso": [
+      31,
+      42
+     ],
+     "hand": [
+      28,
+      49
+     ],
+     "handAngle": -17,
+     "feet": [
+      32,
+      56
+     ],
+     "file": "walk_4.png"
+    },
+    {
+     "head": [
+      28,
+      15
+     ],
+     "neck": [
+      33,
+      40
+     ],
+     "torso": [
+      30,
+      42
+     ],
+     "hand": [
+      29,
+      49
+     ],
+     "handAngle": -26,
+     "feet": [
+      32,
+      56
+     ],
+     "file": "walk_5.png"
+    }
+   ],
+   "frameCount": 6,
+   "frameDurationMs": 110,
+   "loop": true,
+   "strip": "walk_strip.png"
+  },
+  "attack": {
+   "frames": [
+    {
+     "head": [
+      28,
+      13
+     ],
+     "neck": [
+      33,
+      39
+     ],
+     "torso": [
+      30,
+      41
+     ],
+     "feet": [
+      30,
+      56
+     ],
+     "hand": [
+      32,
+      47
+     ],
+     "handAngle": -40,
+     "file": "attack_0.png",
+     "gearAboveHelmet": false
+    },
+    {
+     "head": [
+      27,
+      13
+     ],
+     "neck": [
+      32,
+      39
+     ],
+     "torso": [
+      29,
+      41
+     ],
+     "feet": [
+      30,
+      56
+     ],
+     "hand": [
+      22,
+      42
+     ],
+     "handAngle": -150,
+     "file": "attack_1.png",
+     "gearAboveHelmet": true
+    },
+    {
+     "head": [
+      27,
+      13
+     ],
+     "neck": [
+      32,
+      39
+     ],
+     "torso": [
+      29,
+      41
+     ],
+     "feet": [
+      30,
+      56
+     ],
+     "hand": [
+      26,
+      34
+     ],
+     "handAngle": -120,
+     "file": "attack_2.png",
+     "gearAboveHelmet": true
+    },
+    {
+     "head": [
+      28,
+      13
+     ],
+     "neck": [
+      33,
+      39
+     ],
+     "torso": [
+      30,
+      41
+     ],
+     "feet": [
+      30,
+      56
+     ],
+     "hand": [
+      34,
+      34
+     ],
+     "handAngle": -60,
+     "file": "attack_3.png",
+     "gearAboveHelmet": true
+    },
+    {
+     "head": [
+      30,
+      13
+     ],
+     "neck": [
+      35,
+      39
+     ],
+     "torso": [
+      32,
+      41
+     ],
+     "feet": [
+      30,
+      56
+     ],
+     "hand": [
+      39,
+      42
+     ],
+     "handAngle": 30,
+     "file": "attack_4.png",
+     "gearAboveHelmet": false
+    },
+    {
+     "head": [
+      30,
+      13
+     ],
+     "neck": [
+      35,
+      39
+     ],
+     "torso": [
+      32,
+      41
+     ],
+     "feet": [
+      30,
+      56
+     ],
+     "hand": [
+      36,
+      46
+     ],
+     "handAngle": 60,
+     "file": "attack_5.png",
+     "gearAboveHelmet": false
+    },
+    {
+     "head": [
+      29,
+      13
+     ],
+     "neck": [
+      34,
+      39
+     ],
+     "torso": [
+      31,
+      41
+     ],
+     "feet": [
+      30,
+      56
+     ],
+     "hand": [
+      36,
+      44
+     ],
+     "handAngle": 20,
+     "file": "attack_6.png",
+     "gearAboveHelmet": false
+    },
+    {
+     "head": [
+      28,
+      13
+     ],
+     "neck": [
+      33,
+      39
+     ],
+     "torso": [
+      30,
+      41
+     ],
+     "feet": [
+      30,
+      56
+     ],
+     "hand": [
+      33,
+      46
+     ],
+     "handAngle": -30,
+     "file": "attack_7.png",
+     "gearAboveHelmet": false
+    }
+   ],
+   "frameCount": 8,
+   "frameDurationMs": 70,
+   "loop": false,
+   "strip": "attack_strip.png",
+   "impactFrame": 4,
+   "gearAboveHelmetNote": "On frames with gearAboveHelmet=true the near arm passes in front of the head: draw gear and gloves after the helmet on those frames.",
+   "note": "near (viewer-side) hand holds the item in every frame; arm swings over the head into a forward-down slash"
+  }
+ }
+}

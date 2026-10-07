@@ -5,10 +5,8 @@ import { mods } from "../../shared/mods";
 import { targetSec } from "../../shared/settle";
 import type { GameState } from "../../shared/state";
 import { HERO_CRIT_CHANCE, heroPower } from "../../shared/stats";
-import {
-  ANIMS, ATTACK_IMPACT_FRAME, BASELINE_Y, FRAME, HP_BAR, LAYERS, LAYERS_ARM_FRONT, LAYERS_GEAR_BEHIND, SHINE, backgroundFile, gearSprite, image, monsterFor, parkStrip, partStrip,
-  type Anim, type MonsterSprite,
-} from "../game/sprites";
+import { ANIMS, ATTACK_IMPACT_FRAME, BASELINE_Y, HP_BAR, backgroundFile, image, monsterFor, type Anim, type MonsterSprite } from "../game/sprites";
+import { drawPark, visibleWear } from "../game/drawPark";
 
 // The battle scene in the screen's real (device) pixels, every picture drawn at a whole number of
 // them per art pixel so it stays crisp. The department background is scaled up until it covers
@@ -193,7 +191,7 @@ function draw(
     const phase = (into % interval) / interval;
     fi = Math.min(ANIMS.attack.frames.length - 1, Math.floor(phase * ANIMS.attack.frames.length));
   }
-  drawPark(ctx, state, anim, fi, parkX, floorY - BASELINE_Y, now);
+  drawPark(ctx, visibleWear(state), state.gear.tier, anim, fi, parkX, floorY - BASELINE_Y, now);
 
   if (monster) {
     const hurt = now < sim.hurtUntil;
@@ -213,7 +211,7 @@ function drawHpBar(ctx: CanvasRenderingContext2D, m: MonsterSprite, x: number, f
   const fill = image(HP_BAR.fill);
   const frame = image(HP_BAR.frame);
   if (!empty || !fill || !frame) return;
-  const w = Math.max(HP_BAR.w, Math.round(m.size * 0.5));
+  const w = Math.max(40, Math.round(m.size * 0.8));
   const left = Math.round(x + m.hpBar[0] - w / 2);
   const top = floorY - m.baseline - m.hover + m.hpBar[1] - HP_BAR.h - 1;
   const slice = (img: HTMLImageElement, width: number) => {
@@ -233,44 +231,4 @@ function drawMonster(ctx: CanvasRenderingContext2D, m: MonsterSprite, anim: "idl
   const img = image(m.anims[anim].file);
   if (!img) return;
   ctx.drawImage(img, f * m.size, 0, m.size, m.size, x, floorY - m.baseline - m.hover, m.size, m.size);
-}
-
-function drawPark(ctx: CanvasRenderingContext2D, state: GameState, anim: Anim, fi: number, x: number, y: number, now: number): void {
-  const frame = ANIMS[anim].frames[fi];
-  const worn = state.wear;
-  const order = frame.gearBehindBody ? LAYERS_GEAR_BEHIND : frame.gearAboveHelmet ? LAYERS_ARM_FRONT : LAYERS;
-  for (const layer of order) {
-    if (layer === "body") {
-      const body = image(parkStrip(anim));
-      if (body) ctx.drawImage(body, fi * FRAME, 0, FRAME, FRAME, x, y, FRAME, FRAME);
-      if (!worn.helmet) drawShine(ctx, anim, fi, frame.head, x, y, now);
-    } else if (layer === "gear") {
-      drawGear(ctx, state.gear.tier, frame.hand, frame.handAngle, x, y);
-    } else {
-      const id = worn[layer];
-      const strip = id ? image(partStrip(id, anim)) : null;
-      if (strip) ctx.drawImage(strip, fi * FRAME, 0, FRAME, FRAME, x, y, FRAME, FRAME);
-    }
-  }
-}
-
-function drawShine(ctx: CanvasRenderingContext2D, anim: Anim, fi: number, head: [number, number], x: number, y: number, now: number): void {
-  const img = image(SHINE.file);
-  if (!img) return;
-  const cell = Math.floor(((now % SHINE.everyMs) / 1000) * SHINE.fps);
-  if (cell >= SHINE.count) return;
-  const [ox, oy] = SHINE.offset[anim][fi] ?? [5, 2];
-  ctx.drawImage(img, cell * SHINE.size, 0, SHINE.size, SHINE.size,
-    x + head[0] + ox - SHINE.center[0], y + head[1] + oy - SHINE.center[1], SHINE.size, SHINE.size);
-}
-
-function drawGear(ctx: CanvasRenderingContext2D, tier: number, hand: [number, number], handAngle: number, x: number, y: number): void {
-  const g = gearSprite(tier);
-  const img = g && image(g.file);
-  if (!g || !img) return;
-  ctx.save();
-  ctx.translate(x + hand[0], y + hand[1]);
-  ctx.rotate(((handAngle - g.angle) * Math.PI) / 180);
-  ctx.drawImage(img, -g.grip[0], -g.grip[1]);
-  ctx.restore();
 }

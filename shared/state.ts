@@ -2,12 +2,12 @@ import { Big } from "./big";
 import { BUFF_KINDS, type BuffKind } from "./data/buffs";
 import { findCert } from "./data/certs";
 import { GEAR_MAX_LEVEL, GEAR_TIERS } from "./data/gear";
-import { findSuitItem } from "./data/home";
+import { LEGENDS, SUIT_SETS, findSuitItem, type LegendPart } from "./data/costumes";
 import { findPet } from "./data/pets";
 import { findRelic } from "./data/relics";
 import { findSideJob } from "./data/sideJobs";
 
-export const SAVE_VERSION = 8;
+export const SAVE_VERSION = 9;
 export const OFFLINE_CAP_SEC = 12 * 3600;
 export const START_GOLD = 10;
 export const OFFICE_MAX_GRADE = 17;
@@ -99,6 +99,18 @@ export interface GameState {
   offlineBonus: { gold: string; tickets: number; until: number } | null;
   // 배속: on until `until` (from an ad), or always while `on` for 프리미엄 buyers.
   speed: { until: number; on: boolean };
+  costume: CostumeState;
+}
+
+// Costumes beyond the owned list (suits) and what is worn (wear): rentals and when they end, the
+// ones ever rented (bought later they give the rent back), the 불꽃 owned and the one shown, and
+// the 전설 costumes' levels.
+export interface CostumeState {
+  rent: Record<string, number>;
+  rented: string[];
+  auras: number[];
+  aura: number;
+  legend: Partial<Record<LegendPart, number>>;
 }
 
 export interface SaveData extends Omit<GameState, "gold"> {
@@ -186,6 +198,8 @@ const MIGRATIONS: Record<number, (save: Record<string, unknown>) => Record<strin
   }),
   // v8: 배속.
   7: (save) => ({ ...save, v: 8, speed: { until: 0, on: false } }),
+  // v9: costumes work when owned; rentals, 불꽃, 전설 costumes.
+  8: (save) => ({ ...save, v: 9, costume: { rent: {}, rented: [], auras: [], aura: 0, legend: {} } }),
 };
 
 export function freshRun(): RunState {
@@ -227,6 +241,7 @@ export function newState(now: number): GameState {
     vx: { total: 0, premium: false, passUntil: 0, dailyClaimed: "", rookie: false, promos: [] },
     offlineBonus: null,
     speed: { until: 0, on: false },
+    costume: { rent: {}, rented: [], auras: [], aura: 0, legend: {} },
   };
 }
 
@@ -241,6 +256,10 @@ export function cloneState(s: GameState): GameState {
     buffs: { ...s.buffs }, ads: { ...s.ads }, vx: { ...s.vx, promos: [...s.vx.promos] },
     offlineBonus: s.offlineBonus && { ...s.offlineBonus },
     speed: { ...s.speed },
+    costume: {
+      rent: { ...s.costume.rent }, rented: [...s.costume.rented], auras: [...s.costume.auras], aura: s.costume.aura,
+      legend: { ...s.costume.legend },
+    },
   };
 }
 
@@ -287,7 +306,8 @@ export function fromSave(raw: unknown): GameState {
     : [];
   const wear: Record<string, string> = {};
   for (const [part, id] of Object.entries(obj(data.wear))) {
-    if (typeof id === "string" && suits.includes(id) && id.endsWith(`_${part}`)) wear[part] = id;
+    const rented = typeof id === "string" && id in obj(obj(data.costume).rent);
+    if (typeof id === "string" && (suits.includes(id) || rented) && id.endsWith(`_${part}`)) wear[part] = id;
   }
   const carry = data.ticketCarry;
   const parking = obj(data.parking);
@@ -359,5 +379,25 @@ export function fromSave(raw: unknown): GameState {
       ? { gold: gold(bonus.gold).toString(), tickets: int(bonus.tickets, 0, 0), until: seconds(bonus.until) }
       : null,
     speed: { until: seconds(obj(data.speed).until), on: obj(data.speed).on === true },
+    costume: costumeOf(obj(data.costume)),
+  };
+}
+
+function costumeOf(c: Record<string, unknown>): CostumeState {
+  const rent: Record<string, number> = {};
+  for (const [id, until] of Object.entries(obj(c.rent))) if (findSuitItem(id) && seconds(until) > 0) rent[id] = until as number;
+  const sets: number[] = SUIT_SETS.map((x) => x.set);
+  const auras = Array.isArray(c.auras) ? [...new Set(c.auras.filter((x): x is number => sets.includes(x as number)))] : [];
+  const legend: Partial<Record<LegendPart, number>> = {};
+  for (const l of LEGENDS) {
+    const lv = int(obj(c.legend)[l.part], 1, 0);
+    if (lv > 0) legend[l.part] = Math.min(5, lv);
+  }
+  return {
+    rent,
+    rented: strings(c.rented).filter((id) => findSuitItem(id)),
+    auras,
+    aura: auras.includes(c.aura as number) ? (c.aura as number) : 0,
+    legend,
   };
 }

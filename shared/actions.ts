@@ -1,7 +1,10 @@
 import { Big } from "./big";
 import { certLevelCost, certOpen, findCert } from "./data/certs";
 import { GEAR_MAX_LEVEL, GEAR_TIERS, gearConfirmCost } from "./data/gear";
-import { OFFICE_PARTS, apartmentCost, findSuitItem, officeUpgradeCost, type OfficePart } from "./data/home";
+import { OFFICE_PARTS, apartmentCost, officeUpgradeCost, type OfficePart } from "./data/home";
+import {
+  AURAS, LEGENDS, LEGEND_MAX_LEVEL, RENT_MS, SUIT_PARTS, auraOpen, findSuitItem, hasCostume, legendOpen, rentPrice,
+} from "./data/costumes";
 import { AD_BUFF_MS, AD_COUPONS, AD_GEMS_MAX, AD_GEMS_MIN, AD_GOLD_KILLS, adReadyAt, findAd } from "./data/ads";
 import { BUFF_KINDS, extendBuff } from "./data/buffs";
 import { SPEED_AD_MS } from "./data/speed";
@@ -45,6 +48,11 @@ export type Intent =
   | { k: "expandApartment" }
   | { k: "buySuit"; id: string }
   | { k: "wearSuit"; id: string }
+  | { k: "rentSuit"; id: string }
+  | { k: "takeOffSuit"; part: string }
+  | { k: "buyAura"; set: number }
+  | { k: "wearAura"; set: number }
+  | { k: "levelLegend"; part: string }
   | { k: "upgradeOffice"; part: OfficePart }
   | { k: "enterParking" }
   | { k: "claimDaily"; id: string }
@@ -89,9 +97,16 @@ export function readIntent(raw: unknown): Intent | null {
     case "levelRelic":
     case "buySuit":
     case "wearSuit":
+    case "rentSuit":
     case "claimDaily":
     case "claimSpecial":
       return typeof r.id === "string" && r.id.length <= 32 ? { k: r.k, id: r.id } : null;
+    case "takeOffSuit":
+    case "levelLegend":
+      return SUIT_PARTS.some((p) => p.key === r.part) ? { k: r.k, part: r.part as string } : null;
+    case "buyAura":
+    case "wearAura":
+      return Number.isInteger(r.set) && (r.set as number) >= 0 && (r.set as number) <= 6 ? { k: r.k, set: r.set as number } : null;
     case "upgradeOffice":
       return OFFICE_PARTS.some((p) => p.key === r.part) ? { k: "upgradeOffice", part: r.part as OfficePart } : null;
     default:
@@ -228,15 +243,63 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       const item = findSuitItem(intent.id);
       if (!item) throw new RuleError("unknown");
       if (s.suits.includes(item.id)) throw new RuleError("owned");
-      spendCoupons(s, item.price);
+      // Rented before: the rent comes off the price.
+      const refund = s.costume.rented.includes(item.id) ? rentPrice(item) : 0;
+      spendCoupons(s, item.price - refund);
       s.suits = [...s.suits, item.id];
+      const rent = { ...s.costume.rent };
+      delete rent[item.id];
+      s.costume = { ...s.costume, rent };
       if (!s.wear[item.part]) s.wear = { ...s.wear, [item.part]: item.id };
+      return s;
+    }
+    case "rentSuit": {
+      const item = findSuitItem(intent.id);
+      if (!item) throw new RuleError("unknown");
+      if (s.suits.includes(item.id)) throw new RuleError("owned");
+      spendCoupons(s, rentPrice(item));
+      s.costume = {
+        ...s.costume,
+        rent: { ...s.costume.rent, [item.id]: Math.max(s.costume.rent[item.id] ?? 0, s.lastTick) + RENT_MS },
+        rented: s.costume.rented.includes(item.id) ? s.costume.rented : [...s.costume.rented, item.id],
+      };
+      s.wear = { ...s.wear, [item.part]: item.id };
       return s;
     }
     case "wearSuit": {
       const item = findSuitItem(intent.id);
-      if (!item || !s.suits.includes(item.id)) throw new RuleError("not_owned");
+      if (!item || !hasCostume(s, item.id)) throw new RuleError("not_owned");
       s.wear = { ...s.wear, [item.part]: item.id };
+      return s;
+    }
+    case "takeOffSuit": {
+      const wear = { ...s.wear };
+      delete wear[intent.part];
+      s.wear = wear;
+      return s;
+    }
+    case "buyAura": {
+      const aura = AURAS.find((a) => a.set === intent.set);
+      if (!aura) throw new RuleError("unknown");
+      if (s.costume.auras.includes(aura.set)) throw new RuleError("owned");
+      if (!auraOpen(s.suits, aura.set)) throw new RuleError("locked");
+      spendGems(s, aura.gems);
+      s.costume = { ...s.costume, auras: [...s.costume.auras, aura.set], aura: aura.set };
+      return s;
+    }
+    case "wearAura": {
+      if (intent.set !== 0 && !s.costume.auras.includes(intent.set)) throw new RuleError("not_owned");
+      s.costume = { ...s.costume, aura: intent.set };
+      return s;
+    }
+    case "levelLegend": {
+      const legend = LEGENDS.find((l) => l.part === intent.part);
+      if (!legend) throw new RuleError("unknown");
+      if (!legendOpen(s.suits, legend.part)) throw new RuleError("locked");
+      const lv = s.costume.legend[legend.part] ?? 0;
+      if (lv >= LEGEND_MAX_LEVEL) throw new RuleError("max");
+      spendCoupons(s, legend.coupons);
+      s.costume = { ...s.costume, legend: { ...s.costume.legend, [legend.part]: lv + 1 } };
       return s;
     }
     case "enterParking": {

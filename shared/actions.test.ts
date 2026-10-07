@@ -3,7 +3,8 @@ import { applyIntent, readIntent, RuleError, type Intent } from "./actions";
 import { Big } from "./big";
 import { CERT_MAX_LEVEL, certLevelCost, findCert } from "./data/certs";
 import { GEAR_MAX_LEVEL, GEAR_TIERS, gearAtk, gearConfirmCost, gearLevelCost, gearPrice } from "./data/gear";
-import { SUIT_ITEMS, apartmentCost, officeUpgradeCost } from "./data/home";
+import { LEGENDS, SUIT_ITEMS, rentPrice } from "./data/costumes";
+import { apartmentCost, officeUpgradeCost } from "./data/home";
 import { PET_BOX_COUPONS, petLevelCost } from "./data/pets";
 import { PRESTIGE_MIN_FLOOR, prestigeReward } from "./data/prestige";
 import { relicLevelCost } from "./data/relics";
@@ -275,14 +276,49 @@ describe("permanent growth", () => {
     expect(codeOf(base(), { k: "buySuit", id: "s9_hat" })).toBe("unknown");
   });
 
-  test("suits: wear an owned part, swapping what was on", () => {
+  test("suits: wear an owned part, swapping what was on; take it off", () => {
     const a = SUIT_ITEMS.find((i) => i.set === 1 && i.part === "accessory")!;
     const b = SUIT_ITEMS.find((i) => i.set === 2 && i.part === "accessory")!;
     const s = base({ suits: [a.id, b.id], wear: { accessory: a.id } });
     expect(applyIntent(s, { k: "wearSuit", id: b.id }).wear).toEqual({ accessory: b.id });
+    expect(applyIntent(s, { k: "takeOffSuit", part: "accessory" }).wear).toEqual({});
     expect(codeOf(base(), { k: "wearSuit", id: b.id })).toBe("not_owned");
     const bought = applyIntent(base({ suits: [a.id], wear: { accessory: a.id } }), { k: "buySuit", id: b.id });
     expect(bought.wear).toEqual({ accessory: a.id });
+  });
+
+  test("suits: rent for a tenth for a day, worn at once; buying later takes the rent off", () => {
+    const item = SUIT_ITEMS[0];
+    const s = base({ lastTick: 1000 });
+    const rented = applyIntent(s, { k: "rentSuit", id: item.id });
+    expect(rented.coupons).toBe(10_000 - rentPrice(item));
+    expect(rented.costume.rent[item.id]).toBe(1000 + 24 * 3600_000);
+    expect(rented.wear[item.part]).toBe(item.id);
+    const bought = applyIntent(rented, { k: "buySuit", id: item.id });
+    expect(bought.coupons).toBe(10_000 - item.price);
+    expect(bought.costume.rent[item.id]).toBeUndefined();
+    expect(codeOf(bought, { k: "rentSuit", id: item.id })).toBe("owned");
+  });
+
+  test("불꽃: needs the set's five parts, bought with gems, shown at once", () => {
+    const five = SUIT_ITEMS.filter((i) => i.set === 1 && i.part !== "accessory").map((i) => i.id);
+    expect(codeOf(base(), { k: "buyAura", set: 1 })).toBe("locked");
+    const after = applyIntent(base({ suits: five }), { k: "buyAura", set: 1 });
+    expect(after.costume.auras).toEqual([1]);
+    expect(after.costume.aura).toBe(1);
+    expect(after.gems).toBe(10_000 - 300);
+    expect(applyIntent(after, { k: "wearAura", set: 0 }).costume.aura).toBe(0);
+    expect(codeOf(after, { k: "wearAura", set: 2 })).toBe("not_owned");
+  });
+
+  test("전설: all six of a slot open it; levels to 5 with coupons", () => {
+    const helmets = SUIT_ITEMS.filter((i) => i.part === "helmet").map((i) => i.id);
+    expect(codeOf(base(), { k: "levelLegend", part: "helmet" })).toBe("locked");
+    let s = base({ suits: helmets });
+    for (let i = 0; i < 5; i++) s = applyIntent(s, { k: "levelLegend", part: "helmet" });
+    expect(s.costume.legend.helmet).toBe(5);
+    expect(s.coupons).toBe(10_000 - 5 * LEGENDS[0].coupons);
+    expect(codeOf(s, { k: "levelLegend", part: "helmet" })).toBe("max");
   });
 
   test("office: upgrade a grade with coupons, up to 17", () => {

@@ -14,7 +14,8 @@ import { CertPanel } from "./ui/CertPanel";
 import { GearPanel } from "./ui/GearPanel";
 import { MissionSheet } from "./ui/MissionSheet";
 import { ParkingPanel } from "./ui/ParkingPanel";
-import { ApartmentPanel, OfficePanel, RelicPanel, SuitPanel } from "./ui/HomePanels";
+import { ApartmentPanel, OfficePanel, RelicPanel } from "./ui/HomePanels";
+import { CostumePanel } from "./ui/CostumePanel";
 import { OfflinePopup } from "./ui/OfflinePopup";
 import { PetPanel } from "./ui/PetPanel";
 import { PrestigePanel } from "./ui/PrestigePanel";
@@ -29,7 +30,7 @@ import { Toast } from "./ui/Toast";
 const SYNC_MS = 1500;
 
 const SHEET_TITLES: Record<SheetId, string> = {
-  prestige: "이직", suits: "정장", apartment: "아파트", relics: "퇴직 기념품", office: "사무용품",
+  prestige: "이직", suits: "코스튬", apartment: "아파트", relics: "퇴직 기념품", office: "사무용품",
   missions: "미션", ranking: "랭킹", settings: "설정",
 };
 
@@ -133,7 +134,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
       {sheet && (
         <Sheet title={SHEET_TITLES[sheet]} onClose={() => setSheet(null)}>
           {sheet === "prestige" && <PrestigePanel state={state} store={store} />}
-          {sheet === "suits" && <SuitPanel state={state} store={store} />}
+          {sheet === "suits" && <CostumePanel state={state} store={store} />}
           {sheet === "apartment" && <ApartmentPanel state={state} store={store} />}
           {sheet === "relics" && <RelicPanel state={state} store={store} />}
           {sheet === "office" && <OfficePanel state={state} store={store} />}

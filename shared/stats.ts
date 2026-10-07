@@ -59,12 +59,12 @@ export function heroPower(s: GameState): Power {
   return {
     dps,
     bossDps: dps.mulN(m.bossMult),
-    bossLimitSec: BOSS_LIMIT_SEC,
+    bossLimitSec: BOSS_LIMIT_SEC + m.bossTimeAdd,
     goldMult,
     killGold: q.mulN(KILL_GOLD_SHARE * goldMult),
     hpMult: m.hpMult,
     drainPerSec: m.drainPerSec,
-    walkSec: buffActive(s, "move") ? WALK_SEC / BUFFS.move.mult : WALK_SEC,
+    walkSec: (buffActive(s, "move") ? WALK_SEC / BUFFS.move.mult : WALK_SEC) / m.moveMult,
     hitSec: 1 / aspd,
   };
 }
@@ -84,7 +84,10 @@ export function heroDps(s: GameState): Big {
 export function jobChangeReward(s: GameState): { tickets: number; gems: number } {
   const m = mods(s);
   const floor = s.run.maxFloor;
-  return prestigeReward(floor, m.prestigeBonus, Math.floor(floor * m.prestigeFloorMult) + m.prestigeFloorAdd);
+  const base = prestigeReward(floor, m.prestigeBonus, Math.floor(floor * m.prestigeFloorMult) + m.prestigeFloorAdd);
+  let mult = m.prestigeTicketMult;
+  for (const [upTo, x] of m.prestigeBelow) if (floor <= upTo) mult *= x;
+  return { ...base, tickets: Math.floor(base.tickets * mult) };
 }
 
 export function offlineCapSec(s: GameState): number {

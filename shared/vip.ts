@@ -14,7 +14,7 @@ export const VIP_TEXT: readonly string[] = [
   "광고 버프 시간 2배",
   "오프라인 +2시간 (누적 +4시간)",
   "부업 수입 +20% (누적 +40%)",
-  "VIP 전용 정장 세트, 닉네임 칭호",
+  "VIP 전용 코스튬 세트, 닉네임 칭호",
 ];
 
 export function vipLevel(totalVx: number): number {

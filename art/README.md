@@ -11,10 +11,10 @@ Scale up only by an integer factor with nearest-neighbour.
 | `park/{idle,walk,attack}_strip.png` | The same frames in one horizontal strip per animation (frame *i* at x = 64·i). |
 | `park/anchors.json` | Per-frame anchors and timing. |
 | `park/park_ref_front.png` | Front-view reference sprite used to build the character (64×64). |
-| `park/old/` | The previous office-worker Park (68×68 frames, anchors, candidates, previews). Kept for reference only. |
+| `park/old/` | The previous office-worker Park (68×68 frames, anchors, candidates, previews). Kept for reference only. `park/old/attack_v3/` is the earlier hand-built attack and `park/old/attack_v4/` the PixelLab attack that came before the current one. |
 | `park/preview/` | Composited previews and contact sheets (see Previews). |
 | `parts/suits/s{set}_{slot}.png` | 36 costume parts: 6 sets × 6 slots, each on a 64×64 transparent canvas drawn on idle frame 0. |
-| `parts/suits/strips/s{set}_{slot}_{anim}.png` | The same parts redrawn for every frame of idle, walk and attack (108 strips). |
+| `parts/suits/strips/s{set}_{slot}_{anim}.png` | The same parts redrawn for every frame of idle, walk and attack (108 strips). **The 36 `_attack` strips still belong to an earlier attack and do not fit the current `park/attack_*` frames** (see Known issues). |
 | `parts/suits/parts.json` | Slot, anchor, offset, layer, bbox and strip paths of every part. |
 | `park/fx/head_shine.png`, `park/fx/head_shine.json` | Animated glint on Park's bald crown (6 frames, 11×11 each). |
 | `parts/old_suits/` | The first office-suit parts. They fit only `park/old/` and are kept for reference. |
@@ -23,7 +23,8 @@ Scale up only by an integer factor with nearest-neighbour.
 | `parts/gear/scaled/` | Pixel-clean, pre-shrunk copies of the bulky items (see `scale`). |
 | `parts/gear/gear.json` | Grip point, default angle and scale of each item. |
 | `backgrounds/*.png` | 7 department battle backgrounds (부서 배경), 320×96, opaque, tile horizontally. |
-| `icons/*.png` | 28 UI icons, 32×32. `icons/_sheet.png` is a labelled contact sheet. |
+| `icons/*.png` | UI icons, 32×32, plus 16×16 small icons named `*_s.png`. `icons/_sheet.png`, `_sheet_ui.png` and `_sheet_small.png` are contact sheets. |
+| `vx/*.png` | 13 VX shop product images, 512×512 (128×128 pixel art scaled ×4 nearest-neighbour). The 128 px sources are in `vx/src/`, and `vx/_sheet.png` shows all of them. |
 | `icons/extra/`, `parts/gear/extra/` | Unused extras left over from generation. They can be deleted. |
 
 ## Park
@@ -35,24 +36,23 @@ Scale up only by an integer factor with nearest-neighbour.
   |---|---|---|---|
   | `idle` | 4 | 250 ms | yes |
   | `walk` | 6 | 110 ms | yes |
-  | `attack` | 8 | 70 ms | no |
+  | `attack` | 8 | 75 ms | no |
 
-- The attack is a one-handed overhead-to-forward slash with the **near (viewer-side) hand**, the same hand that holds the item in idle and walk. The arm travels along the arc frame by frame and the body leans into the strike.
+- The attack is a one-handed overhead-to-forward slash with the **near (viewer-side) hand**, the same hand that holds the item in idle and walk. The far arm stays relaxed behind the torso in every frame. The body leans back on the wind-up and forward into the strike.
 
-  | Frame | Pose | `handAngle` |
-  |---|---|---|
-  | 0 | ready | −40 |
-  | 1 | anticipation, arm drawn back | −150 |
-  | 2 | overhead | −120 |
-  | 3 | swing start | −60 |
-  | 4 | impact (`impactFrame`) | 30 |
-  | 5 | follow-through | 60 |
-  | 6 | recoil | 20 |
-  | 7 | recovery | −30 |
+  | Frame | Pose | `hand` | `handAngle` |
+  |---|---|---|---|
+  | 0 | ready, fist at the belly | 31, 45 | −40 |
+  | 1 | anticipation, fist pulled up beside the ear | 26, 30 | −120 |
+  | 2 | wind-up, fist high behind the head | 18, 18 | −160 |
+  | 3 | swing start, fist in front of the forehead | 32, 20 | −70 |
+  | 4 | impact, arm straight forward (`impactFrame: 4`) | 45, 37 | 0 |
+  | 5 | follow-through, fist low in front | 43, 46 | 45 |
+  | 6 | recoil | 31, 46 | 10 |
+  | 7 | recovery | 31, 46 | −30 |
 
-- In frames 2–5 Park squints with effort.
-- Frames 1–3 have `gearAboveHelmet: true`: there the arm passes in front of the head, so draw gear and gloves after the helmet on those frames.
-- The previous 6-frame attack is kept in `park/old/attack_v2/`.
+- Frames 1–3 have `gearAboveHelmet: true`: the raised arm is in front of the head, so draw the item and gloves after the helmet there. No frame needs `gearBehindBody`.
+- The previous attacks are kept in `park/old/attack_v2/`, `attack_v3/` and `attack_v4/` (`attack_v4/anchors_attack.json` holds the anchors that went with v4).
 
 ### `park/anchors.json`
 
@@ -67,7 +67,7 @@ Each frame has:
 - `hand`: the front fist, which is the item's grip point.
 - `handAngle`: the direction the held item points.
   - Idle and walk: measured from the shoulder→fist direction, about −30° (item tilted up and forward).
-  - Attack: set by hand to make a sword swing: `[-40, -125, 5, 20, 10, -30]` (wind-up behind the head, then slash forward, then recover).
+  - Attack: set by hand along the swing arc (see the table above): up and back on the wind-up, forward at impact, down-forward on the follow-through.
 - `feet`: ground contact centre.
 
 The anchors were measured with Pillow from the PNGs by segmenting skin, tunic, necktie and outline.
@@ -165,6 +165,9 @@ No image contains text.
   - `mixA` = helmet 4, armor 6, cape 3, gloves 2, boots 1, accessory 3, holding a keyboard.
   - `mixB` = helmet 2, armor 5, cape 6, gloves 3, boots 4, accessory 1, holding a laptop.
 - `park_strips_x3.png`: bare Park idle/walk/attack, then set 2 holding a pen.
+- `attack_bare_gear_x1.png` / `_x4.png`: the current attack, bare, with an item drawn on `hand` at `handAngle` (rows: pen, putter, keyboard, briefcase), following `gearAboveHelmet`.
+- `attack_s2_spritegen_registration_test_x4.png`: the set 2 registration test described in Known issues.
+- Every other preview that shows attack frames (`anim_*`, `park_strips_x3.png`, `attack_bare_pen_*`, `hand_check_x4.png`) was made with an earlier attack and is out of date.
 - `attack_bare_pen_x1.png` / `_x4.png`: the 8-frame slash holding the pen. `hand_check_x4.png`: every idle/walk/attack frame with the pen and a red dot on `hand`, showing that it is always the same near hand.
 - `head_shine_x4.png`: the glint playing on bare Park's idle loop. `head_shine_strip_x8.png` shows the 6 shine cells.
 - `on_backgrounds_x3.png`: Park in a costume standing on each of the 7 backgrounds.
@@ -176,8 +179,7 @@ No image contains text.
   - Codex image generation (sprite-gen, provider codex) made a front-view reference. It was reduced to a 64×64 sprite with a kCentroid pixel-art downscaler and a 21-colour palette.
   - PixelLab `create_character` (v3 with that reference) rotated it into 8 directions. The east direction was animated:
     - idle and walk from templates;
-    - attack: built from idle frame 0, with the near forearm repainted and a new sleeve and fist drawn per frame along the swing arc. The upper body leans 1–2 px into the strike.
-  - The costume attack strips use the same transforms on each set's idle-0 layers. The sleeve and fist are re-shaded onto that set's armour and glove ramps, so the armour sleeve and glove travel with the arm.
+    - attack (current): made with the sprite-gen image-row pipeline (`prepare` → `gen-set --provider codex` → `extract` → `compose-atlas`). The base was `park/idle_0.png` scaled ×8 nearest-neighbour. Extraction used `fit` pixel_unfake (64×64 cell, logical 64, foot-centroid / bottom alignment, so the soles sit on y = 56, shared 32-colour palette). Two rows were generated and the more readable one was kept whole (all 8 frames from one row). Each colour was then snapped to the nearest colour of Park's idle/walk palette where that colour was not already taken. No pixel was redrawn. The run is in `sprite-gen/runs/park-attack/run1`.
 - **Costume parts:**
   1. For each set, PixelLab Pro Flash inpaint dressed Park's idle frame 0. The mask covered the scalp, ears, body, hands, legs and a band behind the back; the face stayed pixel-exact. The outfit was therefore drawn on Park's real silhouette, with his light direction (upper left) and black outline.
   2. Each dressed frame was split into slots by comparing it with the bare frame, by region: head → helmet, back band → cape, torso and arms → armor, below the waist → boots, hands → gloves.
@@ -191,6 +193,9 @@ No image contains text.
 
 ## Generation budget
 
+- **Attack remake, small icons, VX images:**
+  - sprite-gen (Codex): 4 row generations (2 bare attack rows, 2 set 2 dressing tests).
+  - PixelLab: the balance went from 512 to 388, so **124 generations** were used: 2 × 64-candidate icon batches (20 each) and 14 × Pro Flash 128×128 images (6 each, one of them a size test).
 - **Costume redo (PixelLab):** the balance went from 720 to 689, so **31 generations** were used:
   - 1 × Pixen edit test (rejected: it redrew Park's proportions);
   - 6 × Pro Flash inpaint (5 each), one per set.
@@ -207,6 +212,9 @@ No image contains text.
 - Park's hands are tiny in idle and walk, so gloves read mostly in the attack frames.
 - The ranger hood (set 4) was drawn together with its cloak. Without the set 4 cape the hood still works, but its shoulder drape is gone.
 - The swinging arm is short (chibi proportions), so in the overhead frames the fist stays at head height. The item itself provides the overhead reach.
+- **Costume attack strips are out of date.** `parts/suits/strips/s*_*_attack.png` were fitted to an earlier attack. They do not line up with the current sprite-gen attack, so a worn costume looks wrong during the attack until they are remade.
+  - A test dressed set 2 with sprite-gen: the dressed idle-0 was the base and the bare attack row was attached as a motion reference. The poses follow closely, but the dressed figure comes out about 4 px taller and the limbs differ by 1–3 px. After the best shift, 8–30 bare-body pixels per frame still stick out from under the dressed silhouette. A slot split by diff against the bare frame therefore does not register. See `park/preview/attack_s2_spritegen_registration_test_x4.png` (top: bare, bottom: dressed).
+- Frame 1 of the attack (`anticipation`) turns the face slightly toward the viewer, so the eye reads a little wider than in idle.
 - Office items are drawn in a 24 px box. Use `scale` or `scaledFile` to keep bulky ones small.
 
 ## Monsters (`monsters/`)
@@ -246,3 +254,56 @@ No image contains text.
 - Previews (`monsters/preview/`):
   - `battle_{department}_x1.png` / `_x3.png`: Park next to each monster on its department background;
   - `anims_{department}_x2.png`: every idle, hurt and death frame.
+
+## UI icons (second batch, `icons/`)
+
+- 20 icons at 32×32, no text:
+  - `rank`, `settings`, `missions`, `timer`, `pass`, `check`, `go`, `ad`, `vip`, `vx`;
+  - `buff_atk`, `buff_gold`, `buff_move`, `gear_boost`;
+  - `gold_charge`, `gold_charge_big`, `premium`, `salary_pass`, `rookie_pack`, `promo_pack`.
+- They were generated with PixelLab (`create_1_direction_object`, one 64-candidate batch styled from `nav_shop.png`).
+- Small cleanups:
+  - stray candidate-index digits removed;
+  - letter-like marks on `gear_boost` and `salary_pass` painted out.
+- `icons/_sheet_ui.png` is the contact sheet. `icons/extra/x_*.png` holds unused candidates.
+
+## Small icons and third batch (`icons/`)
+
+- 16×16 small icons, drawn for that size (bold silhouette, outline, 5–14 colours): `gold_s`, `ticket_s` (cream slip with a big red stamp), `gem_s`, `coupon_s`, `pass_s` (blue pass with a gold star), `check_s`, `vx_s` (gold token with a V-shaped mark).
+- 32×32: `ticket` was redone simpler and bolder (cream slip with notched ends and one big red stamp; the previous one is `icons/extra/ticket_prev.png`), `speed` (2× game speed: two yellow fast-forward chevrons) and `shop_gems` (a basket of blue gems).
+- Made with PixelLab `create_1_direction_object`: one 64-candidate batch at 16 px styled from 16 px reductions of `gold` and `gem`, and one at 32 px styled from `gem` and `go`. Near-identical colours of the 16 px picks were merged; nothing was redrawn.
+- `icons/_sheet_small.png` (×4) shows the 32 px currencies with the new icons, and the 16 px set below them.
+
+## VX shop images (`vx/`)
+
+- Square 512×512 product images without text, one per product id. They were drawn at 128×128 with PixelLab Pro Flash on a plain deep-indigo background with a soft glow, then scaled ×4 nearest-neighbour.
+
+  | File | Picture |
+  |---|---|
+  | `gems_xs` | a handful of blue gems |
+  | `gems_s` | a leather pouch of gems |
+  | `gems_m` | an office envelope stuffed with gems |
+  | `gems_l` | an open briefcase full of gems |
+  | `gems_xl` | an open steel safe full of gems |
+  | `gems_xxl` | the head-office vault door open on a mountain of gems and gold bars |
+  | `pack_rookie` | a blue gift box with a red ribbon, a coin and a gem peeking out |
+  | `premium` | a golden ticket with a star |
+  | `pass_salary` | an open green bankbook with coins and a gem |
+  | `pack_promo_100` | a plain white envelope with a red seal and ribbon |
+  | `pack_promo_300` | a cream envelope with a red bow, a few gems and coins |
+  | `pack_promo_500` | a golden envelope with a red bow and ruby seal on gems and coins |
+  | `pack_promo_1000` | a jewelled royal envelope with a crown seal on a big heap of gems, coins and gold bars |
+
+## UI frames (`ui/`)
+
+All UI frames were generated with PixelLab (Pixen) at native size and cropped. `ui.json` holds the slice insets.
+
+- **9-slice** (`ui.json → nineSlice`): `row_panel` (96×32, inset 6), `icon_box` (36×36, 12), `button_gold` / `button_gold_hot` / `button_disabled` (72×40, 6), `nav_tile` (56×56, 13), `nav_tile_on` (52×52, 14), `mission_panel` (48×48, 14).
+  - Use CSS `border-image` with `repeat` for the centre and edges, because the fills have a fine dither texture.
+- **3-slice bars** (`ui.json → threeSlice`):
+  - `hp_bar_*` is 24×5. `progress_bar_*` is 80×6.
+  - Each bar has three layers: `empty`, `fill` and `frame`. Left and right caps are 3 px; stretch the middle column.
+  - Draw empty, then the fill clipped to the value, then the frame on top.
+  - The bars were cut from one generated 3-bar sheet, keeping its outline, highlight, body and shade rows.
+- **Fixed size:** `menu_button` (32×32), crimson with gold corners and a three-line menu mark.
+- `_preview_x1.png` / `_preview_x3.png`: a mock list (row panel + icon box + progress bar + the three button states), the HP bar, mission panel, both nav tiles and the menu button.

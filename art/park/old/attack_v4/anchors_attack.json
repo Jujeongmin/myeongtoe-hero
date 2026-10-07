@@ -1,0 +1,220 @@
+{
+ "frames": [
+  {
+   "head": [
+    28,
+    13
+   ],
+   "neck": [
+    33,
+    35
+   ],
+   "torso": [
+    30,
+    41
+   ],
+   "hand": [
+    33,
+    48
+   ],
+   "handAngle": -40,
+   "feet": [
+    30,
+    56
+   ],
+   "file": "attack_0.png",
+   "gearBehindBody": false,
+   "gearAboveHelmet": false
+  },
+  {
+   "head": [
+    26,
+    13
+   ],
+   "neck": [
+    32,
+    40
+   ],
+   "torso": [
+    29,
+    44
+   ],
+   "hand": [
+    38,
+    33
+   ],
+   "handAngle": -110,
+   "feet": [
+    30,
+    56
+   ],
+   "file": "attack_1.png",
+   "gearBehindBody": false,
+   "gearAboveHelmet": true
+  },
+  {
+   "head": [
+    24,
+    13
+   ],
+   "neck": [
+    31,
+    34
+   ],
+   "torso": [
+    28,
+    40
+   ],
+   "hand": [
+    40,
+    25
+   ],
+   "handAngle": -130,
+   "feet": [
+    30,
+    56
+   ],
+   "file": "attack_2.png",
+   "gearBehindBody": true,
+   "gearAboveHelmet": false
+  },
+  {
+   "head": [
+    24,
+    14
+   ],
+   "neck": [
+    32,
+    35
+   ],
+   "torso": [
+    29,
+    41
+   ],
+   "hand": [
+    35,
+    25
+   ],
+   "handAngle": -120,
+   "feet": [
+    30,
+    56
+   ],
+   "file": "attack_3.png",
+   "gearBehindBody": true,
+   "gearAboveHelmet": false
+  },
+  {
+   "head": [
+    31,
+    17
+   ],
+   "neck": [
+    35,
+    37
+   ],
+   "torso": [
+    32,
+    43
+   ],
+   "hand": [
+    44,
+    46
+   ],
+   "handAngle": -10,
+   "feet": [
+    30,
+    56
+   ],
+   "file": "attack_4.png",
+   "gearBehindBody": false,
+   "gearAboveHelmet": false
+  },
+  {
+   "head": [
+    32,
+    17
+   ],
+   "neck": [
+    36,
+    37
+   ],
+   "torso": [
+    33,
+    43
+   ],
+   "hand": [
+    42,
+    49
+   ],
+   "handAngle": 30,
+   "feet": [
+    30,
+    56
+   ],
+   "file": "attack_5.png",
+   "gearBehindBody": false,
+   "gearAboveHelmet": false
+  },
+  {
+   "head": [
+    34,
+    18
+   ],
+   "neck": [
+    35,
+    41
+   ],
+   "torso": [
+    32,
+    45
+   ],
+   "hand": [
+    40,
+    49
+   ],
+   "handAngle": 55,
+   "feet": [
+    30,
+    56
+   ],
+   "file": "attack_6.png",
+   "gearBehindBody": false,
+   "gearAboveHelmet": false
+  },
+  {
+   "head": [
+    29,
+    13
+   ],
+   "neck": [
+    34,
+    35
+   ],
+   "torso": [
+    31,
+    41
+   ],
+   "hand": [
+    32,
+    48
+   ],
+   "handAngle": -30,
+   "feet": [
+    30,
+    56
+   ],
+   "file": "attack_7.png",
+   "gearBehindBody": false,
+   "gearAboveHelmet": false
+  }
+ ],
+ "frameCount": 8,
+ "frameDurationMs": 75,
+ "loop": false,
+ "strip": "attack_strip.png",
+ "impactFrame": 5,
+ "source": "PixelLab pixminimax animation of the approved Park (8 of 12 generated frames), translated onto the 64x64 grid; only stray slash-trail pixels were removed by hand, and the skin-coloured arm smear on frame 4 was erased (the head and fist outlines it covered were closed with the outline colour)",
+ "gearBehindBodyNote": "frames with gearBehindBody=true: the item is raised behind the head, draw gear before the body",
+ "gearAboveHelmetNote": "frames with gearAboveHelmet=true: the fist is in front of the face, draw gear and gloves after the helmet"
+}
