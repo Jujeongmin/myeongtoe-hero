@@ -232,9 +232,12 @@ function draw(
     for (let k = sim.hits; k < landed; k++) {
       const crit = Math.random() < critChance;
       pop(formatBig(hp.mulN(1 / n)), monsterX + monster.size / 2 + (k % 3) * 3 - 3, top, crit);
-      // The burst where the swing lands: the monster's front edge, at about chest height.
-      const body = floorY - monster.baseline - monster.hover + (monster.baseline - monster.hpBar[1]) * 0.45;
-      sim.fx.push({ crit, x: monsterX + monster.size * 0.32 + (k % 2) * 3, y: body + monster.hpBar[1] * 0.2, since: now });
+      // The burst where the swing lands: the monster's front edge, halfway down its body (from the
+      // top of its pixels, just under the HP bar anchor, to its feet).
+      const spriteTop = floorY - monster.baseline - monster.hover;
+      const bodyTop = spriteTop + monster.hpBar[1] + 4;
+      const y = bodyTop + (floorY - monster.hover - bodyTop) * 0.5;
+      sim.fx.push({ crit, x: monsterX + monster.size * 0.32 + (k % 2) * 3, y, since: now });
       if (crit) sim.shakeUntil = now + SHAKE_MS;
     }
     sim.hits = landed;
