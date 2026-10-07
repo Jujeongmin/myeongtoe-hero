@@ -8,6 +8,7 @@ import type { GameStore } from "../game/store";
 import { Amount } from "./Amount";
 import { Icon } from "./Icon";
 import { HoldButton } from "./HoldButton";
+import { LevelUpFx } from "./LevelUpFx";
 
 function pct(v: number): string {
   return v >= 1000 ? formatCount(v) : String(Math.round(v * 100) / 100);
@@ -28,7 +29,8 @@ function CertRow({ def, state, store }: { def: CertDef; state: GameState; store:
   const cost = maxed ? 0 : certLevelCost(def, level);
   const have = def.currency === "gems" ? state.gems : state.tickets;
   return (
-    <div className="row">
+    <div className="row levelled">
+      <LevelUpFx level={level} label={level === 1 ? t("취득!") : "LV UP"} />
       <div className="grow">
         <b>{t(def.name)}</b>
         {def.grade > 0 && <> <span className={`tier t${def.grade}`}>{t("{n}차", { n: def.grade })}</span></>} Lv{level}/{def.maxLevel}

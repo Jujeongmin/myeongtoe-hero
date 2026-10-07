@@ -9,6 +9,7 @@ import type { GameStore } from "../game/store";
 import { Amount } from "./Amount";
 import { Icon } from "./Icon";
 import { HoldButton } from "./HoldButton";
+import { LevelUpFx } from "./LevelUpFx";
 
 // 코스튬 first (the way in to the costume panel), then every tier: the ones behind owned, the current
 // one to level up to 5, the next one to buy once the current is at 5, the rest waiting. A tier at
@@ -59,7 +60,8 @@ export function GearPanel({ state, store, onSuits }: { state: GameState; store: 
         const sprite = gearSprite(tier);
         const src = sprite && imageUrl(`parts/gear/g${String(tier).padStart(2, "0")}.png`);
         return (
-          <div key={g.id} className={`row${tier === current ? " current" : tier > current + 1 ? " far" : ""}`}>
+          <div key={g.id} className={`row levelled${tier === current ? " current" : tier > current + 1 ? " far" : ""}`}>
+            {tier <= current + 1 && <LevelUpFx level={tier <= current ? shownLevel + 1 : 0} label={tier === current && level === 0 && tier > 0 ? t("새 장비!") : "LV UP"} />}
             <span className="icon-box">{src && <img className="icon-img gear-img" src={src} alt="" draggable={false} />}</span>
             <div className="grow">
               <b>{t(g.name)}</b>

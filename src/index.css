@@ -457,3 +457,5 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .theme-profile .row, .theme-profile .row b { color: #2a1d1a; text-shadow: none; }
 .theme-profile .row .sub { color: #5a4636; }
 .theme-profile .row button { color: #fff4e0; }
+/* LV UP on a gear or certificate row: over the row's top edge, toward the right. */
+.lv-up.row-lv-up { left: auto; right: 84px; top: -4px; margin: 0; }
