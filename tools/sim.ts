@@ -12,13 +12,14 @@ import { OFFICE_PARTS, SUIT_ITEMS } from "../shared/data/home";
 import { SPECIAL_MISSIONS } from "../shared/data/missions";
 import { petsUnlocked } from "../shared/data/pets";
 import { relicsUnlocked } from "../shared/data/relics";
-import { SIDE_JOBS } from "../shared/data/sideJobs";
+import { SIDE_JOBS, sideJobCycle, sideJobIncome } from "../shared/data/sideJobs";
+import { Big } from "../shared/big";
 import { grantPurchase } from "../shared/data/shop";
 import { formatBig, formatCount } from "../shared/format";
 import { gearLevelCostFor, gearPriceFor, sideJobCostFor } from "../shared/prices";
 import { settle } from "../shared/settle";
 import { newState, type GameState } from "../shared/state";
-import { jobChangeReward } from "../shared/stats";
+import { incomePerSec, jobChangeReward } from "../shared/stats";
 
 type Profile = "free" | "ads" | "paid";
 
@@ -28,7 +29,7 @@ const MIN = 60_000;
 const SESSIONS: readonly [number, number][] = [[8, 15], [12.5, 10], [19, 20], [22.5, 15]];
 const STEP_MS = 30_000;
 // Job change once the run has not gained a floor for this long online, past floor 100.
-const STALL_MS = 8 * MIN;
+const STALL_MS = 120 * MIN;
 const START = Date.UTC(2026, 9, 5, 15, 0, 0); // 00:00 KST
 
 function attempt(s: GameState, intent: Intent): GameState | null {
@@ -40,21 +41,30 @@ function attempt(s: GameState, intent: Intent): GameState | null {
   }
 }
 
-// Spends gold on the cheapest next upgrade (gear level, next gear, side job) until none fits.
+// Spends gold: the side-job level with the best income gained per gold, or the next gear step when
+// that is no dearer (gear first while a boss blocks the run), until nothing fits.
 function spendGold(s: GameState): GameState {
-  for (let i = 0; i < 400; i++) {
-    const options: { cost: number; intent: Intent }[] = [];
-    if (s.gear.level < GEAR_MAX_LEVEL) options.push({ cost: Math.log10(Math.max(1e-9, gearLevelCostFor(s, s.gear.tier, s.gear.level).toNumber())), intent: { k: "levelGear" } });
-    else if (s.gear.tier + 1 < GEAR_TIERS.length) options.push({ cost: Math.log10(gearPriceFor(s, s.gear.tier + 1).toNumber()) - 0.5, intent: { k: "buyGear" } });
-    for (const job of SIDE_JOBS) {
-      if (s.run.maxFloor < job.unlockFloor) continue;
-      const lv = s.sideJobs[job.id]?.level ?? 0;
-      options.push({ cost: Math.log10(sideJobCostFor(s, job, lv).toNumber()) + 0.3, intent: { k: "levelSideJob", id: job.id } });
+  for (let i = 0; i < 2000; i++) {
+    let job: { id: string; cost: Big; ratio: number } | null = null;
+    for (const j of SIDE_JOBS) {
+      const lv = s.sideJobs[j.id]?.level ?? 0;
+      const cost = sideJobCostFor(s, j, lv);
+      const gain = sideJobIncome(j, lv + 1).sub(sideJobIncome(j, lv)).mulN(1 / sideJobCycle(j, lv + 1));
+      const ratio = gain.div(cost).toNumber();
+      if (!job || ratio > job.ratio) job = { id: j.id, cost, ratio };
     }
-    options.sort((a, b) => a.cost - b.cost);
+    const gearIntent: Intent | null = s.gear.level < GEAR_MAX_LEVEL ? { k: "levelGear" } : s.gear.tier + 1 < GEAR_TIERS.length ? { k: "buyGear" } : null;
+    const gearCost = s.gear.level < GEAR_MAX_LEVEL ? gearLevelCostFor(s, s.gear.tier, s.gear.level) : gearPriceFor(s, Math.min(s.gear.tier + 1, GEAR_TIERS.length - 1));
+    const gearFirst = gearIntent && (s.run.farming || !job || gearCost.cmp(job.cost) <= 0);
+    const order: Intent[] = [];
+    if (gearFirst && gearIntent) order.push(gearIntent);
+    // Blocked by a boss: save for the gear, buying only side-job levels that are small change next to it.
+    const saving = s.run.farming && gearIntent && job && job.cost.mulN(100).cmp(gearCost) > 0;
+    if (job && !saving) order.push({ k: "levelSideJob", id: job.id });
+    if (!gearFirst && gearIntent) order.push(gearIntent);
     let next: GameState | null = null;
-    for (const o of options.slice(0, 3)) {
-      next = attempt(s, o.intent);
+    for (const o of order) {
+      next = attempt(s, o);
       if (next) break;
     }
     if (!next) return s;
@@ -180,6 +190,7 @@ export function simulate(profile: Profile, days: number): Run {
       for (let t = from; t <= from + minutes * MIN; t += STEP_MS) act(r, profile, t);
     }
     const s2 = r.s;
+    if (process.env.DEBUG) r.log.push(`   q=${formatBig(incomePerSec(s2))}/s jobs=${Object.entries(s2.sideJobs).map(([id, j]) => `${id}:${j.level}`).join(",")} certs=${JSON.stringify(s2.certs)} pets=${JSON.stringify(s2.pets)} apt=${s2.apartment}`);
     r.log.push(`D${d + 1}: 최고 ${s2.bestFloor}층 · 이번 회차 ${s2.run.maxFloor}층 · 이직 ${s2.prestiges}회 · 장비 ${s2.gear.tier + 1}단계 · 타격기능사 Lv${s2.certs.atk1 ?? 0} · 골드 ${formatBig(s2.gold)} · 보석 ${s2.gems}`);
   }
   return r;

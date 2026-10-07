@@ -1,4 +1,5 @@
 import { MONSTERS_PER_FLOOR, departmentOf, isBoss } from "../../shared/data/floors";
+import { targetSec } from "../../shared/settle";
 import { PRESTIGE_MIN_FLOOR } from "../../shared/data/prestige";
 import { useState } from "react";
 import { formatCount } from "../../shared/format";
@@ -43,6 +44,11 @@ export function Battle({ state, store, onOpen, onGo }: {
       <header className="battle-head">
         <div>마왕그룹 {departmentOf(floor)}</div>
         <div className="floor-no">{floor}층{farming ? " · 파밍 중" : ""}</div>
+        {farming && (
+          <div className="boss-need">
+            보스까지 공격력 ×{Math.max(1.01, targetSec(floor, MONSTERS_PER_FLOOR - 1, power) / power.bossLimitSec).toFixed(1)} 필요
+          </div>
+        )}
         <PixelBar kind="progress" value={Math.min(target, MONSTERS_PER_FLOOR) / MONSTERS_PER_FLOOR} />
         {boss && <div className="boss-timer"><Icon name="timer" size={16} /> 보스 {bossLeft}초</div>}
       </header>
