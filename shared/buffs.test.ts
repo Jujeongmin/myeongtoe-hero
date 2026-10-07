@@ -75,3 +75,14 @@ describe("buffs", () => {
     expect(s.offlineBonus).toBeNull();
   });
 });
+
+describe("프리미엄 buffs", () => {
+  test("all three are always on for premium buyers", async () => {
+    const { newState } = await import("./state");
+    const { buffActive, BUFF_KINDS } = await import("./data/buffs");
+    const s = newState(0);
+    expect(BUFF_KINDS.some((k) => buffActive(s, k))).toBe(false);
+    s.vx.premium = true;
+    expect(BUFF_KINDS.every((k) => buffActive(s, k))).toBe(true);
+  });
+});

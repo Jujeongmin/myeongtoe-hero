@@ -8,7 +8,7 @@ import {
 import { findEpisode } from "./data/story";
 import { MONSTERS_PER_FLOOR } from "./data/floors";
 import { AD_BUFF_MS, AD_COUPONS, AD_GEMS_MAX, AD_GEMS_MIN, AD_GOLD_KILLS, adReadyAt, findAd } from "./data/ads";
-import { BUFF_KINDS, extendBuff } from "./data/buffs";
+import { BUFF_KINDS, extendBuff, type BuffKind } from "./data/buffs";
 import { SPEED_AD_MS } from "./data/speed";
 import { dailyQuestReward, findDailyQuest } from "./data/dailyQuests";
 import { BUFF_MS, findGemItem } from "./data/gemShop";
@@ -354,12 +354,11 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
         case "ad_gold":
           s.gold = s.gold.add(killGoldNow(s).mulN(AD_GOLD_KILLS));
           break;
-        case "ad_buff": {
-          const draw = nextRandom(s.rngSeed);
-          s.rngSeed = draw.seed;
-          extendBuff(s, BUFF_KINDS[Math.floor(draw.value * BUFF_KINDS.length)], AD_BUFF_MS * vipPerks(s).adBuffMult);
+        case "ad_buff_atk":
+        case "ad_buff_gold":
+        case "ad_buff_move":
+          extendBuff(s, ad.id.slice("ad_buff_".length) as BuffKind, AD_BUFF_MS * vipPerks(s).adBuffMult);
           break;
-        }
         case "ad_coupons":
           s.coupons += AD_COUPONS;
           break;

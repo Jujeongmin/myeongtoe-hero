@@ -24,20 +24,10 @@ function codeOf(s: GameState, intent: Intent): string {
 }
 
 describe("gem shop", () => {
-  test("six items with their prices", () => {
-    expect(GEM_ITEMS.map((i) => [i.id, i.gems])).toEqual([
-      ["buff_atk", 100], ["buff_gold", 100], ["buff_move", 250], ["gold_100", 100], ["gold_1000", 500], ["gear_boost", 20],
-    ]);
-    expect(readIntent({ k: "buyGemItem", id: "buff_atk" })).toEqual({ k: "buyGemItem", id: "buff_atk" });
+  test("three items with their prices (buffs come from ads, not gems)", () => {
+    expect(GEM_ITEMS.map((i) => [i.id, i.gems])).toEqual([["gold_100", 100], ["gold_1000", 500], ["gear_boost", 20]]);
+    expect(readIntent({ k: "buyGemItem", id: "gold_100" })).toEqual({ k: "buyGemItem", id: "gold_100" });
     expect(readIntent({ k: "buyGemItem" })).toBeNull();
-  });
-
-  test("a buff runs 30 minutes, and buying again adds on", () => {
-    const once = applyIntent(withGems(1000), { k: "buyGemItem", id: "buff_atk" });
-    expect(once.buffs.atk).toBe(T0 + 30 * MIN);
-    expect(once.gems).toBe(900);
-    const twice = applyIntent(once, { k: "buyGemItem", id: "buff_atk" });
-    expect(twice.buffs.atk).toBe(T0 + 60 * MIN);
   });
 
   test("gold charges pay N kills of the current floor", () => {
@@ -61,7 +51,7 @@ describe("gem shop", () => {
   });
 
   test("not enough gems, unknown items", () => {
-    expect(codeOf(withGems(99), { k: "buyGemItem", id: "buff_gold" })).toBe("not_enough_gems");
+    expect(codeOf(withGems(99), { k: "buyGemItem", id: "gold_100" })).toBe("not_enough_gems");
     expect(codeOf(withGems(999), { k: "buyGemItem", id: "nope" })).toBe("unknown");
   });
 });

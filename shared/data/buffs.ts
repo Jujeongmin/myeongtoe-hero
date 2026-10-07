@@ -11,8 +11,9 @@ export const BUFFS: Record<BuffKind, { name: string; text: string; mult: number 
   move: { name: "칼퇴 걸음", text: "이동 속도 2배", mult: 2 },
 };
 
-export function buffActive(s: Pick<GameState, "buffs" | "lastTick">, kind: BuffKind): boolean {
-  return s.buffs[kind] > s.lastTick;
+// 프리미엄 (no-ads) buyers have all three on for good.
+export function buffActive(s: Pick<GameState, "buffs" | "lastTick" | "vx">, kind: BuffKind): boolean {
+  return s.vx.premium || s.buffs[kind] > s.lastTick;
 }
 
 // A buff bought or earned while one is running adds on after it.

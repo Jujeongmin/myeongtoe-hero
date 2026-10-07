@@ -58,7 +58,7 @@ export function Battle({ state, store, onOpen, onGo }: {
       </header>
       <div className="atk-now">{t("공격력 {atk}", { atk: formatBig(atk) })}</div>
       <div className="top-left">
-        <BuffBar state={state} store={store} onShop={() => onGo({ tab: "shop" })} />
+        <BuffBar state={state} store={store} />
         <SpeedButton state={state} store={store} />
       </div>
       <div className="side-menu">

@@ -25,9 +25,9 @@ function codeOf(s: GameState, intent: Intent): string {
 }
 
 describe("rewarded ads", () => {
-  test("seven placements with cooldowns, no daily limit", () => {
+  test("nine placements with cooldowns, no daily limit", () => {
     expect(AD_PLACEMENTS.map((a) => [a.id, a.cooldownMs / MIN])).toEqual([
-      ["ad_speed", 30], ["ad_gems", 15], ["ad_gold", 15], ["ad_buff", 30], ["ad_coupons", 60], ["ad_parking", 120], ["ad_offline", 0],
+      ["ad_speed", 30], ["ad_gems", 15], ["ad_gold", 15], ["ad_buff_atk", 30], ["ad_buff_gold", 30], ["ad_buff_move", 30], ["ad_coupons", 60], ["ad_parking", 120], ["ad_offline", 0],
     ]);
   });
 
@@ -57,13 +57,16 @@ describe("rewarded ads", () => {
     expect(a.rngSeed).not.toBe(s.rngSeed);
   });
 
-  test("gold is 50 kills of the current floor; a buff is one of three for 3 minutes", () => {
+  test("gold is 50 kills of the current floor; a buff ad turns that buff on for 3 minutes", () => {
     const s = at(T0);
     s.run = { ...s.run, floor: 30, maxFloor: 30 };
     const gold = applyIntent(s, { k: "watchAd", id: "ad_gold" });
     expect(gold.gold.sub(s.gold).div(killGoldNow(s)).toNumber()).toBeCloseTo(50);
-    const buff = applyIntent(s, { k: "watchAd", id: "ad_buff" });
-    expect(Object.values(buff.buffs).filter((t) => t === T0 + 3 * MIN)).toHaveLength(1);
+    const buff = applyIntent(s, { k: "watchAd", id: "ad_buff_gold" });
+    expect(buff.buffs.gold).toBe(T0 + 3 * MIN);
+    expect(buff.buffs.atk).toBe(s.buffs.atk);
+    // Each buff has its own cooldown.
+    expect(applyIntent(buff, { k: "watchAd", id: "ad_buff_atk" }).buffs.atk).toBe(T0 + 3 * MIN);
   });
 
   test("a parking pass, but not past a full stack", () => {

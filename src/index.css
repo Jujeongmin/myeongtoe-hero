@@ -96,7 +96,7 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .row button.hot { background: #8d1c1c; color: #ffd166; }
 .row .buttons button { min-width: 56px; }
 
-.battle-head { position: absolute; top: 4px; left: 142px; right: 40px; height: 32px; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 6px; white-space: nowrap; text-shadow: 1px 1px 0 #000; pointer-events: none; }
+.battle-head { position: absolute; top: 4px; left: 140px; right: 140px; height: 32px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0; line-height: 14px; white-space: nowrap; text-shadow: 1px 1px 0 #000; pointer-events: none; }
 .battle-head .floor-no { }
 /* Pixel-art bars (art/ui, 3-slice, drawn at 2 CSS px per art pixel). */
 .pbar { position: relative; display: block; image-rendering: pixelated; }

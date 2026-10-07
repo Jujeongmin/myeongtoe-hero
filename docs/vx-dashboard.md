@@ -15,7 +15,7 @@
 | `gems_xl` | 보석 금고 | Gem Safe | 보석 8,000개 | 8,000 gems | 5,000 | 반복 구매 | `art/vx/gems_xl.png` |
 | `gems_xxl` | 보석 본사 금고 | Gem HQ Vault | 보석 17,000개 | 17,000 gems | 10,000 | 반복 구매 | `art/vx/gems_xxl.png` |
 | `pack_rookie` | 신입 패키지 | Rookie Pack | 시작 7일 안 1회: 보석 1,000, 응시권 5,000, 상품권 300, 버프 3종 30분 | Once, within 7 days of starting: 1,000 gems, 5,000 exam tickets, 300 coupons, all 3 buffs for 30 min | 500 | 1회 구매 | `art/vx/pack_rookie.png` |
-| `premium` | 프리미엄 | Premium | 광고 없이 보상, 오프라인 +4시간, 매일 보석 100 | Ad rewards without ads, +4 h offline, 100 gems daily | 1,000 | 1회 구매 | `art/vx/premium.png` |
+| `premium` | 프리미엄 | Premium | 광고 없이 보상, 버프 3종 항상 켜짐, 오프라인 +4시간, 매일 보석 100 | Ad rewards without ads, all 3 buffs always on, +4 h offline, 100 gems daily | 1,000 | 1회 구매 | `art/vx/premium.png` |
 | `pass_salary` | 월급 통장 | Salary Account | 30일 동안 매일 보석 300, 광고 쿨다운 절반 (다시 사면 30일 연장) | 300 gems daily and half ad cooldowns for 30 days (buying again adds 30 days) | 1,000 | 반복 구매 (기간 연장) | `art/vx/pass_salary.png` |
 | `pack_promo_100` | 승진 패키지 100층 | Promotion Pack 100F | 100층 도달 기념: 보석 500, 응시권 1000, 상품권 200 | For reaching floor 100: 500 gems, 1000 exam tickets, 200 coupons | 500 | 1회 구매 | `art/vx/pack_promo_100.png` |
 | `pack_promo_300` | 승진 패키지 300층 | Promotion Pack 300F | 300층 도달 기념: 보석 1000, 응시권 30000, 상품권 400 | For reaching floor 300: 1000 gems, 30000 exam tickets, 400 coupons | 1,000 | 1회 구매 | `art/vx/pack_promo_300.png` |

@@ -69,9 +69,9 @@ export const PRODUCTS: readonly Product[] = [
   },
   {
     id: "premium", vx: 1_000, kind: "once",
-    ...ko({ key: "프리미엄" }, { key: "광고 없이 보상, 오프라인 +4시간, 매일 보석 {gems}", vars: { gems: PREMIUM_DAILY_GEMS } }),
+    ...ko({ key: "프리미엄" }, { key: "광고 없이 보상, 버프 3종 항상 켜짐, 오프라인 +4시간, 매일 보석 {gems}", vars: { gems: PREMIUM_DAILY_GEMS } }),
     nameEn: "Premium",
-    textEn: `Ad rewards without ads, +4 h offline, ${PREMIUM_DAILY_GEMS} gems daily`,
+    textEn: `Ad rewards without ads, all 3 buffs always on, +4 h offline, ${PREMIUM_DAILY_GEMS} gems daily`,
   },
   {
     id: "pass_salary", vx: 1_000, kind: "timed",
