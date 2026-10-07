@@ -2,10 +2,9 @@ import { useEffect, useRef } from "react";
 import { MONSTERS_PER_FLOOR, departmentOf, isBoss, targetHp } from "../../shared/data/floors";
 import { BOSS_LINES, PARK_QUIPS, bossKind, pickLine } from "../../shared/data/quips";
 import { formatBig } from "../../shared/format";
-import { mods } from "../../shared/mods";
 import { targetSec } from "../../shared/settle";
 import type { GameState } from "../../shared/state";
-import { HERO_CRIT_CHANCE, heroPower } from "../../shared/stats";
+import { heroCrit, heroPower } from "../../shared/stats";
 import { PARK_CHEST_EVERY, PARK_RUN_SEC, PARK_STEP_SEC, parkHp } from "../../shared/data/parking";
 import { ANIMS, ATTACK_IMPACT_FRAME, BASELINE_Y, HP_BAR, backgroundFile, image, monsterFor, type Anim, type MonsterSprite } from "../game/sprites";
 import { drawPark, visibleWear } from "../game/drawPark";
@@ -43,6 +42,7 @@ interface Snapshot {
 interface Sim {
   kill: string;
   hits: number;
+  crits: boolean[]; // which of this kill's hits are crits, rolled when the kill starts
   hurtUntil: number;
   dying: { monster: MonsterSprite; x: number; since: number } | null;
   current: MonsterSprite | null;
@@ -81,7 +81,7 @@ export function BattleCanvas({ state }: { state: GameState }) {
     let scroll = 0;
     let last = performance.now();
     const sim: Sim = {
-      kill: "", hits: 0, hurtUntil: 0, dying: null, current: null, currentX: 0, floor: 0, boss: false,
+      kill: "", hits: 0, crits: [], hurtUntil: 0, dying: null, current: null, currentX: 0, floor: 0, boss: false,
       quipAt: performance.now() + QUIP_MIN_MS * Math.random(), fx: [], shakeUntil: 0, chest: null,
     };
     const loop = (now: number) => {
@@ -247,6 +247,7 @@ function draw(
     sim.boss = boss;
     sim.kill = kill;
     sim.hits = 0;
+    sim.crits = [];
     sim.current = monsterFor(department, floor, place, boss) ?? null;
   }
 
@@ -295,11 +296,15 @@ function draw(
 
   if (landed > sim.hits && monster) {
     const hp = parking ? parkHp(parking.meter).mulN(power.hpMult) : targetHp(floor, current).mulN(power.hpMult);
-    const critChance = Math.min(1, HERO_CRIT_CHANCE + mods(state).critChanceAdd);
+    // The kill's HP split over its hits, a crit hit taking (1 + bonus) shares of a normal one, so a
+    // crit's number is that much bigger and the hits still add up to the monster's HP.
+    const { chance, bonus } = heroCrit(state);
+    if (sim.crits.length !== n) sim.crits = Array.from({ length: n }, (_, i) => sim.crits[i] ?? Math.random() < chance);
+    const shares = sim.crits.reduce((sum, c) => sum + (c ? 1 + bonus : 1), 0);
     const top = floorY - monster.baseline + monster.hpBar[1] - monster.hover;
     for (let k = sim.hits; k < landed; k++) {
-      const crit = Math.random() < critChance;
-      pop(formatBig(hp.mulN(1 / n)), monsterX + monster.size / 2 + (k % 3) * 3 - 3, top, crit);
+      const crit = sim.crits[k];
+      pop(formatBig(hp.mulN((crit ? 1 + bonus : 1) / shares)), monsterX + monster.size / 2 + (k % 3) * 3 - 3, top, crit);
       // The burst where the swing lands: the monster's front edge, halfway down its body (from the
       // top of its pixels, just under the HP bar anchor, to its feet).
       const spriteTop = floorY - monster.baseline - monster.hover;

@@ -4,9 +4,14 @@ import { fill } from "./text";
 import { newState } from "./state";
 
 describe("nicknames", () => {
-  test("2 to 8 Korean letters, English letters or digits, trimmed", () => {
+  test("2 to 8 Korean, English, Japanese kana, Chinese characters or digits, trimmed", () => {
     expect(readNickname("  박부장  ")).toBe("박부장");
     expect(readNickname("Park52")).toBe("Park52");
+    expect(readNickname("パク部長")).toBe("パク部長");
+    expect(readNickname("さとう")).toBe("さとう");
+    expect(readNickname("朴部长")).toBe("朴部长");
+    expect(readNickname("朴部長ー")).toBe("朴部長ー");
+    expect(readNickname("パク・部長")).toBeNull();
     expect(readNickname("박")).toBeNull();
     expect(readNickname("박부장박부장박부장")).toBeNull();
     expect(readNickname("박 부장")).toBeNull();

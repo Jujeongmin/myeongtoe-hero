@@ -43,6 +43,15 @@ let current: Locale = initial();
 if (typeof document !== "undefined") document.documentElement.lang = current;
 const listeners = new Set<() => void>();
 
+// Whether a language was picked (and remembered) yet: the first launch asks for one.
+export function localeChosen(): boolean {
+  try {
+    return localStorage.getItem(KEY) !== null;
+  } catch {
+    return true; // storage blocked: don't ask on every launch
+  }
+}
+
 export function locale(): Locale {
   return current;
 }

@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { displayName, readNickname, type Board, type RankRow, type RankingView } from "../../shared/ranking";
+import { displayName, type Board, type RankRow, type RankingView } from "../../shared/ranking";
 import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
 import { t } from "../i18n";
-import { errorText } from "./text";
 
 const BOARDS: { id: Board; label: string }[] = [
   { id: "floor", label: "최고 층" },
@@ -19,7 +18,7 @@ function nameOf(row: RankRow): string {
   return t(name.key, name.vars);
 }
 
-// Top 50 per board and the player's own row; the nickname is set here too.
+// Top 50 per board and the player's own row (the nickname is set in the profile).
 export function RankingSheet({ state, store }: { state: GameState; store: GameStore }) {
   const [board, setBoard] = useState<Board>("floor");
   const [view, setView] = useState<RankingView | null>(null);
@@ -40,7 +39,6 @@ export function RankingSheet({ state, store }: { state: GameState; store: GameSt
 
   return (
     <>
-      <NicknameRow state={state} store={store} />
       <div className="tabs">
         {BOARDS.map((b) => (
           <button key={b.id} className={b.id === board ? "on" : ""} onClick={() => setBoard(b.id)}>{t(b.label)}</button>
@@ -67,44 +65,5 @@ export function RankingSheet({ state, store }: { state: GameState; store: GameSt
         </>
       )}
     </>
-  );
-}
-
-function NicknameRow({ state, store }: { state: GameState; store: GameStore }) {
-  const [name, setName] = useState(state.nickname);
-  const [message, setMessage] = useState("");
-  const [busy, setBusy] = useState(false);
-
-  const save = async () => {
-    if (!readNickname(name)) {
-      setMessage(errorText("bad_nickname"));
-      return;
-    }
-    setBusy(true);
-    try {
-      await store.setNickname(name);
-      setMessage(t("닉네임을 바꿨어요"));
-    } catch (error) {
-      setMessage(errorText(error instanceof Error ? error.message : ""));
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <div className="row">
-      <div className="grow">
-        {t("닉네임")}
-        <input
-          className="text-input"
-          value={name}
-          maxLength={8}
-          placeholder={t("2~8자")}
-          onChange={(e) => setName(e.target.value)}
-        />
-        {message && <div className="sub">{message}</div>}
-      </div>
-      <button disabled={busy || name.trim() === state.nickname} onClick={() => void save()}>{t("저장")}</button>
-    </div>
   );
 }

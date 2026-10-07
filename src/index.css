@@ -394,3 +394,27 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .mission-card { max-width: 220px; }
 /* The small coupon drawing has a red rim that melts into red buttons: give it a dark outline. */
 .icon-img[data-icon="coupon"] { filter: drop-shadow(1px 0 0 #1b1a2e) drop-shadow(-1px 0 0 #1b1a2e) drop-shadow(0 1px 0 #1b1a2e) drop-shadow(0 -1px 0 #1b1a2e); }
+/* 프로필: Park's employee ID card (art/ui/profile_*). */
+.theme-profile { border-image: var(--ui-profile-panel, var(--ui-row-panel)) 12 fill / 12px; }
+.theme-profile .row { border: 10px solid transparent; border-image: var(--ui-profile-row, var(--ui-row-panel)) 10 fill / 10px; }
+.theme-profile .row button { border: 8px solid transparent; border-image: var(--ui-profile-button, var(--ui-button-gold)) 8 fill / 8px; }
+.theme-profile .row button.hot { border-image: var(--ui-profile-button-hot, var(--ui-button-gold-hot)) 8 fill / 8px; }
+.theme-profile .row button:disabled { filter: grayscale(0.7) brightness(0.8); }
+.theme-profile .sub { color: #c9c3e0; }
+.profile-card { gap: 10px; align-items: center; }
+.profile-card b { font-size: 16px; }
+.profile-label { margin: 8px 2px 2px; font-size: 12px; color: #f2d67a; }
+.nickname-field .text-input { width: 100%; box-sizing: border-box; }
+
+/* First launch: 마왕그룹's 입사지원서 (art/ui/apply_*), over everything until it is sent. */
+.welcome { position: fixed; inset: 0; z-index: 30; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(8, 6, 18, 0.92); }
+.welcome-form { width: min(320px, 100%); box-sizing: border-box; padding: 6px 8px 10px; border: 12px solid transparent; border-image: var(--ui-apply-panel, var(--ui-row-panel)) 12 fill / 12px; color: #2a1d1a; text-align: center; image-rendering: pixelated; }
+.welcome-form h2 { margin: 2px 0; font-size: 20px; color: #7a1420; }
+.welcome-form .sub { color: #5a4636; }
+.welcome-label { margin: 12px 0 6px; font-size: 13px; text-align: left; }
+.welcome-langs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.welcome-form button { min-height: 34px; border: 8px solid transparent; border-image: var(--ui-apply-button, var(--ui-button-gold)) 8 fill / 8px; color: #fff4e0; }
+.welcome-form button.hot, .welcome-form .welcome-go { border-image: var(--ui-apply-button-hot, var(--ui-button-gold-hot)) 8 fill / 8px; }
+.welcome-go { width: 100%; margin-top: 10px; }
+.welcome-form .row { border: 8px solid transparent; border-image: var(--ui-apply-row, var(--ui-row-panel)) 8 fill / 8px; color: #2a1d1a; }
+.welcome-form .row .sub { text-align: left; }

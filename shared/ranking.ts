@@ -18,7 +18,8 @@ export interface RankingView {
   mine: RankRow | null;
 }
 
-const NICKNAME = /^[가-힣a-zA-Z0-9]{2,8}$/;
+// 2–8 of: Hangul, Latin letters, digits, Japanese kana (and ー), CJK ideographs (Chinese/Japanese).
+const NICKNAME = /^[가-힣a-zA-Z0-9ぁ-ゖァ-ヺー一-鿿]{2,8}$/;
 
 export function readNickname(raw: unknown): string | null {
   if (typeof raw !== "string") return null;

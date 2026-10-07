@@ -45,13 +45,18 @@ export function incomePerSec(s: GameState): Big {
   return q.mulN(mods(s).sideJobMult);
 }
 
+// Park's crit: the chance per hit and the extra damage a crit adds (0.5 = +50%).
+export function heroCrit(s: GameState): { chance: number; bonus: number } {
+  const m = mods(s);
+  return { chance: Math.min(1, HERO_CRIT_CHANCE + m.critChanceAdd), bonus: (HERO_CRIT_BONUS + m.critDmgAdd) * m.critDmgMult };
+}
+
 export function heroPower(s: GameState): Power {
   const m = mods(s);
   const atk = heroAtk(s);
   const aspd = HERO_ASPD * m.aspdMult;
-  const critBonus = (HERO_CRIT_BONUS + m.critDmgAdd) * m.critDmgMult;
-  const critChance = Math.min(1, HERO_CRIT_CHANCE + m.critChanceAdd);
-  const hits = atk.mulN(aspd * (1 + critChance * critBonus));
+  const crit = heroCrit(s);
+  const hits = atk.mulN(aspd * (1 + crit.chance * crit.bonus));
   const dps = m.extraHitPerSec > 0 ? hits.add(atk.mulN(m.extraHitPerSec)) : hits;
   const goldMult = m.goldMult * (buffActive(s, "gold") ? BUFFS.gold.mult : 1);
   const income = incomePerSec(s);

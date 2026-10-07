@@ -18,13 +18,14 @@ import { SpeedButton } from "./SpeedButton";
 import { Amount } from "./Amount";
 import { CurrencyBar } from "./CurrencyBar";
 
-export type SheetId = "prestige" | "suits" | "apartment" | "relics" | "office" | "missions" | "ranking" | "settings" | "story";
+export type SheetId = "profile" | "prestige" | "suits" | "apartment" | "relics" | "office" | "missions" | "ranking" | "settings" | "story";
 
 // The battle scene (BattleCanvas) with the screen's controls over it: the three buffs and 2× speed
 // small in a row top left, title and floor top centre, a MENU button top right that opens
 // everything else, the job-change button bottom left and the step mission bottom right. The
 // monster's health bar is drawn over the monster by the canvas.
 const SIDE: { id: SheetId; icon: string; label: string }[] = [
+  { id: "profile", icon: "side_profile", label: "프로필" },
   { id: "missions", icon: "missions", label: "미션" },
   { id: "ranking", icon: "rank", label: "랭킹" },
   { id: "settings", icon: "settings", label: "설정" },

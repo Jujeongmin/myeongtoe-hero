@@ -26,6 +26,8 @@ import { PrestigePanel } from "./ui/PrestigePanel";
 import { RankingSheet } from "./ui/RankingSheet";
 import { ShopPanel } from "./ui/ShopPanel";
 import { ScreenLock, SettingsPanel } from "./ui/ScreenLock";
+import { ProfilePanel } from "./ui/ProfilePanel";
+import { Welcome, welcomeNeeded } from "./ui/Welcome";
 import { Sheet } from "./ui/Sheet";
 import { SideJobPanel } from "./ui/SideJobPanel";
 import { StatusBanner } from "./ui/StatusBanner";
@@ -36,7 +38,7 @@ import { Toast } from "./ui/Toast";
 const SYNC_MS = 1500;
 
 const SHEET_THEMES: Partial<Record<SheetId, string>> = {
-  suits: "costume", apartment: "apartment", relics: "relics", office: "office",
+  profile: "profile", suits: "costume", apartment: "apartment", relics: "relics", office: "office",
   missions: "missions", ranking: "ranking", settings: "settings", story: "story",
 };
 
@@ -52,7 +54,7 @@ function walletFor(sheet: SheetId, state: GameState): ReactNode {
 }
 
 const SHEET_TITLES: Record<SheetId, string> = {
-  prestige: "이직", suits: "코스튬", apartment: "아파트", relics: "퇴직 기념품", office: "사무용품",
+  profile: "프로필", prestige: "이직", suits: "코스튬", apartment: "아파트", relics: "퇴직 기념품", office: "사무용품",
   missions: "미션", ranking: "랭킹", settings: "설정", story: "스토리",
 };
 
@@ -113,16 +115,18 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
   const [locked, setLocked] = useState(false);
   const [reading, setReading] = useState<Episode | null>(null);
   const [shown, setShown] = useState<string[]>([]);
+  const [welcomed, setWelcomed] = useState(false);
+  const welcome = !!state && !welcomed && welcomeNeeded(state, guest);
 
   // A new episode opens by itself once (over the battle, when no panel is open).
   useEffect(() => {
-    if (!state || reading || sheet || locked) return;
+    if (!state || welcome || reading || sheet || locked) return;
     const ep = storyToShow(state);
     if (ep && !shown.includes(ep.id)) {
       setShown([...shown, ep.id]);
       setReading(ep);
     }
-  }, [state, reading, sheet, locked, shown]);
+  }, [state, welcome, reading, sheet, locked, shown]);
 
   useEffect(() => {
     const tick = () => void store.flush().catch(() => undefined);
@@ -169,6 +173,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
       {sheet === "prestige" && <PrestigePanel state={state} store={store} onClose={() => setSheet(null)} />}
       {sheet && sheet !== "prestige" && (
         <Sheet title={t(SHEET_TITLES[sheet])} theme={SHEET_THEMES[sheet]} wallet={walletFor(sheet, state)} onClose={() => setSheet(null)}>
+          {sheet === "profile" && <ProfilePanel state={state} store={store} guest={guest} />}
           {sheet === "suits" && <CostumePanel state={state} store={store} />}
           {sheet === "apartment" && <ApartmentPanel state={state} store={store} />}
           {sheet === "relics" && <RelicPanel state={state} store={store} />}
@@ -197,6 +202,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
           }}
         />
       )}
+      {welcome && <Welcome state={state} store={store} guest={guest} onDone={() => setWelcomed(true)} />}
       {locked && <ScreenLock state={state} onClose={() => setLocked(false)} />}
     </div>
   );
