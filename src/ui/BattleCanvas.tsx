@@ -59,6 +59,7 @@ export function BattleCanvas({ state }: { state: GameState }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const layer = useRef<HTMLDivElement>(null);
   const talk = useRef<HTMLDivElement>(null);
+  const tag = useRef<HTMLDivElement>(null);
   const snap = useRef<Snapshot>({ state, at: performance.now() });
   snap.current = { state, at: performance.now() };
 
@@ -93,6 +94,8 @@ export function BattleCanvas({ state }: { state: GameState }) {
         popDamage(layer.current, text, (x * cw) / w, (y * ch) / h, crit);
       }, (text, x, y) => {
         say(talk.current, text, (x * cw) / w, (y * ch) / h);
+      }, (text, x, y) => {
+        nameTag(tag.current, text, (x * cw) / w, (y * ch) / h);
       });
       raf = requestAnimationFrame(loop);
     };
@@ -105,8 +108,18 @@ export function BattleCanvas({ state }: { state: GameState }) {
       <canvas ref={canvas} width={160} height={96} />
       <div ref={layer} className="damage-layer" />
       <div ref={talk} className="bubble" hidden />
+      <div ref={tag} className="monster-name" hidden />
     </div>
   );
+}
+
+// The monster's name over its health bar (empty text hides it).
+function nameTag(el: HTMLDivElement | null, text: string, x: number, y: number): void {
+  if (!el) return;
+  if (el.textContent !== text) el.textContent = text;
+  el.hidden = text === "";
+  el.style.left = `${Math.round(x)}px`;
+  el.style.top = `${Math.round(y)}px`;
 }
 
 // Park's speech bubble over his head: one at a time, gone after a few seconds.
@@ -136,6 +149,7 @@ function popDamage(layer: HTMLDivElement | null, text: string, x: number, y: num
 function draw(
   ctx: CanvasRenderingContext2D, w: number, h: number, bgScale: number, { state, at }: Snapshot, now: number, dt: number, scroll: number,
   sim: Sim, pop: (text: string, x: number, y: number, crit: boolean) => void, talk: (text: string, x: number, y: number) => void,
+  tag: (text: string, x: number, y: number) => void,
 ): number {
   ctx.imageSmoothingEnabled = false;
   const { floor, target, carrySec, farming } = state.run;
@@ -243,7 +257,8 @@ function draw(
       : Math.floor(now / a.ms) % a.frames;
     drawMonster(ctx, monster, hurt ? "hurt" : "idle", f, monsterX, floorY);
     drawHpBar(ctx, monster, monsterX, floorY, 1 - landed / n);
-  }
+    tag(monster.name, monsterX + monster.hpBar[0], floorY - monster.baseline - monster.hover + monster.hpBar[1] - HP_BAR.h - 1);
+  } else tag("", 0, 0);
   return nextScroll;
 }
 

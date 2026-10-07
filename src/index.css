@@ -255,3 +255,5 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .story-end { min-width: 160px; }
 /* 보스 도전: while farming, right side above the step mission. */
 .boss-btn { position: absolute; z-index: 2; right: 6px; bottom: 76px; min-height: 40px; padding: 0 4px; border: 12px solid transparent; border-image: var(--ui-button-gold-hot) 6 fill / 12px repeat; background: none; color: #ffd166; text-shadow: 1px 1px 0 #000; image-rendering: pixelated; }
+/* The monster's name, centred just over its health bar. */
+.monster-name { position: absolute; z-index: 1; transform: translate(-50%, -100%); font-size: 12px; line-height: 14px; color: #fff; white-space: nowrap; text-shadow: 1px 1px 0 #000, -1px 0 0 #000, 0 -1px 0 #000, 1px 0 0 #000; pointer-events: none; }
