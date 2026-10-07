@@ -122,7 +122,7 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .mission-card { position: absolute; right: 6px; bottom: 38px; max-width: 44%; padding: 4px 6px; border: 2px solid #000; background: rgba(43, 36, 64, 0.92); box-shadow: inset 2px 2px 0 #4a4370; text-shadow: 1px 1px 0 #000; cursor: pointer; }
 .mission-card.done { border-color: #e9c46a; }
 .mission-card .claim { margin-top: 2px; padding: 2px 4px; border: 2px solid #000; background: #e9c46a; color: #1b1a2e; text-shadow: none; text-align: center; }
-.mission-card .dot, .side-icons .dot, .top-icons .dot { position: absolute; top: 1px; right: 1px; width: 8px; height: 8px; background: #e63946; border: 1px solid #000; }
+.mission-card .dot, .side-icons .dot, .top-icons .dot { position: absolute; top: 0; right: 0; width: 10px; height: 10px; background: var(--ui-red-dot) center / 10px 10px no-repeat; image-rendering: pixelated; }
 .tabs { display: flex; gap: 4px; }
 .tabs button { flex: 1; padding: 4px 0; border: 2px solid #0b0916; background: #2b2440; color: #b8b3d6; }
 .tabs button.on { background: #4a4370; color: #e9c46a; }
@@ -212,7 +212,7 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .top-left .buff-bar .buff .icon-img { width: 28px; height: 28px; }
 .top-left .speed-btn { position: static; height: 28px; }
 .menu-btn { position: relative; }
-.menu-btn .dot { position: absolute; top: 1px; right: 1px; width: 8px; height: 8px; background: #e63946; border: 1px solid #000; }
+.menu-btn .dot { position: absolute; top: 0; right: 0; width: 10px; height: 10px; background: var(--ui-red-dot) center / 10px 10px no-repeat; image-rendering: pixelated; }
 .side-icons button { position: relative; }
 .side-icons { grid-template-columns: repeat(3, 52px); }
 .side-icons button { width: 52px; }
@@ -239,3 +239,5 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .vx-card .sub { flex: 1; }
 .vx-card button { width: 100%; border-image: var(--ui-button-gold-hot) 6 fill / 12px repeat; color: #ffd166; }
 .vx-img { width: 128px; height: 128px; max-width: 100%; height: auto; image-rendering: pixelated; border: 2px solid #000; }
+/* Park's speech bubble (art/ui/speech_bubble, 9-slice, tail bottom left), its tail over his head. */
+.bubble { position: absolute; z-index: 1; transform: translate(-6px, -100%); max-width: 60%; padding: 0 2px 2px; border: 12px solid transparent; border-image: var(--ui-speech-bubble) 6 fill / 12px; color: #1b1a2e; font-size: 12px; line-height: 14px; width: max-content; word-break: keep-all; pointer-events: none; image-rendering: pixelated; }

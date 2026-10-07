@@ -108,7 +108,7 @@ function Auras({ state, store }: { state: GameState; store: GameStore }) {
         const on = state.costume.aura === aura.set;
         return (
           <div key={aura.set} className={`row costume-row${!own && !open ? " far" : ""}`}>
-            <span className="icon-box"><Icon name="buff_atk" /></span>
+            <span className="icon-box"><Icon name={`aura_${aura.set}`} /></span>
             <div className="grow">
               <b>{aura.name}</b>
               <div className="sub">{auraEffectText(aura.effect)}</div>
@@ -139,7 +139,7 @@ function Legends({ state, store }: { state: GameState; store: GameStore }) {
         const maxed = lv >= LEGEND_MAX_LEVEL;
         return (
           <div key={legend.part} className={`row costume-row${lv === 0 && !open ? " far" : ""}`}>
-            <span className="icon-box"><Icon name="vip" /></span>
+            <span className="icon-box"><Icon name={`legend_${legend.part}`} /></span>
             <div className="grow">
               <b>{legend.name}</b> Lv{lv}/{LEGEND_MAX_LEVEL}
               <div className="sub">{lv > 0 ? legendEffectText(legend, lv) : `Lv1: ${legendEffectText(legend, 1)}`}</div>

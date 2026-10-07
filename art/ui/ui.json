@@ -128,6 +128,22 @@
    "css": "border-image: url(mission_panel.png) 14 fill / calc(14px * var(--px)) repeat;",
    "use": "mission card panel",
    "centerRepeat": "repeat"
+  },
+  "speech_bubble": {
+   "file": "speech_bubble.png",
+   "size": [
+    24,
+    24
+   ],
+   "slice": {
+    "top": 6,
+    "right": 6,
+    "bottom": 6,
+    "left": 6
+   },
+   "css": "border-image: url(speech_bubble.png) 6 fill / calc(6px * var(--px)) stretch;",
+   "use": "speech bubble; the tail (down-left) lives in the bottom-left corner slice, so it never repeats. The body's bottom outline is 3 px above the canvas bottom, so the bubble's visible box ends 3 px (x scale) above the element box.",
+   "centerRepeat": "stretch"
   }
  },
  "threeSlice": {
@@ -172,6 +188,14 @@
     32
    ],
    "use": "top-right 메뉴 toggle, crimson + gold"
+  },
+  "red_dot": {
+   "file": "red_dot.png",
+   "size": [
+    10,
+    10
+   ],
+   "use": "notification dot on an icon corner (replaces the CSS-drawn dot); draw at an integer scale"
   }
  }
 }

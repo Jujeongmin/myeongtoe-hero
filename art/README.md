@@ -23,7 +23,7 @@ Scale up only by an integer factor with nearest-neighbour.
 | `parts/gear/scaled/` | Pixel-clean, pre-shrunk copies of the bulky items (see `scale`). |
 | `parts/gear/gear.json` | Grip point, default angle and scale of each item. |
 | `backgrounds/*.png` | 7 department battle backgrounds (부서 배경), 320×96, opaque, tile horizontally. |
-| `icons/*.png` | UI icons, 32×32, plus 16×16 small icons named `*_s.png`. `icons/_sheet.png`, `_sheet_ui.png` and `_sheet_small.png` are contact sheets. |
+| `icons/*.png` | UI icons, 32×32, plus 16×16 small icons named `*_s.png`. `icons/_sheet.png`, `_sheet_ui.png`, `_sheet_small.png` and `_sheet_aura_legend.png` are contact sheets. |
 | `vx/*.png` | 13 VX shop product images, 512×512 (128×128 pixel art scaled ×4 nearest-neighbour). The 128 px sources are in `vx/src/`, and `vx/_sheet.png` shows all of them. |
 | `icons/extra/`, `parts/gear/extra/` | Unused extras left over from generation. They can be deleted. |
 
@@ -151,6 +151,8 @@ The floor strip is the bottom 27–34 px; the floor starts at about y 62–69. T
 - Side menu: `side_suits`, `side_apartment`, `side_relics`, `side_office`, `prestige`
 - Relics: `r_badge`, `r_plaque`, `r_watch`, `r_cards`, `r_pin`, `r_stamp`, `r_pas`, `r_fan`
 - Office gear: `o_keyboard`, `o_mouse`, `o_chair`, `o_monitor`
+- Costume auras (불꽃 tab): `aura_1` … `aura_6`
+- Legend costume pieces (전설 tab): `legend_helmet`, `legend_armor`, `legend_cape`, `legend_gloves`, `legend_boots`
 
 No image contains text.
 
@@ -193,6 +195,7 @@ No image contains text.
 
 ## Generation budget
 
+- **Aura / legend icons, speech bubble, red dot (PixelLab):** **43 generations**: 2 × 64-candidate batches (20 each; 32 px icons, 24 px UI), 2 × Pixen 16×16 red dots and 1 × Pixen edit test that tried to add a glow to the helmet (rejected: it only added noise).
 - **Attack remake, small icons, VX images:**
   - sprite-gen (Codex): 4 row generations (2 bare attack rows, 2 set 2 dressing tests).
   - PixelLab: the balance went from 512 to 388, so **124 generations** were used: 2 × 64-candidate icon batches (20 each) and 14 × Pro Flash 128×128 images (6 each, one of them a size test).
@@ -208,6 +211,8 @@ No image contains text.
 
 ## Known issues
 
+- The legend pieces have no separate glow halo: their "glow" is the pink-violet light on the metal. A Pixen edit to add a halo only produced noise. If a halo is wanted, draw it in CSS (`drop-shadow`) or generate another batch.
+- `aura_1` is outlined in dark orange rather than near-black, so it is a little softer than the other five auras (which suits the starter tier).
 - Each set was dressed by AI only on idle frame 0. The other 15 frames are fitted from that drawing, so fine details (straps, rivets) are sharpest at idle and simplified on body parts that move a lot. In the attack, the swinging sleeve and glove are re-shaded from the set's colours rather than drawn by AI.
 - Park's hands are tiny in idle and walk, so gloves read mostly in the attack frames.
 - The ranger hood (set 4) was drawn together with its cloak. Without the set 4 cape the hood still works, but its shoulder drape is gone.
@@ -267,6 +272,24 @@ No image contains text.
   - letter-like marks on `gear_boost` and `salary_pass` painted out.
 - `icons/_sheet_ui.png` is the contact sheet. `icons/extra/x_*.png` holds unused candidates.
 
+## Aura and legend icons (`icons/`)
+
+- 32×32, transparent, no text. `icons/_sheet_aura_legend.png` (×3) shows them, plus the speech bubble (raw and stretched as a 9-slice) and the red dot on `nav_shop`.
+- Auras, one flame emblem per costume set's aura:
+
+  | File | Aura | Picture |
+  |---|---|---|
+  | `aura_1` | 수습의 불꽃 | plain orange flame |
+  | `aura_2` | 영업왕의 불꽃 | crimson flame with gold tips, dark outline |
+  | `aura_3` | 흑기사의 불꽃 | dark purple flame with a black outline and core |
+  | `aura_4` | 레인저의 불꽃 | emerald green flame |
+  | `aura_5` | 성기사의 불꽃 | white holy flame with a pale blue rim and a blue sparkle |
+  | `aura_6` | 회장님의 불꽃 | golden flame wearing a small crown, with sparkles |
+
+- Legend pieces, gold and violet: `legend_helmet` (winged great helm with a violet-lit visor), `legend_armor` (gold cuirass with a violet gem and pauldrons), `legend_cape` (violet cloak with gold trim and a gem clasp), `legend_gloves` (pair of gold gauntlets with violet gems), `legend_boots` (winged gold boots with violet bands).
+- Made with PixelLab `create_1_direction_object`: one 64-candidate batch at 32 px styled from `buff_atk`, `gem` and `prestige` (about 5 candidates per icon). Cleanup: binary alpha, no stray pixels were found, and near-identical colours were merged (auras 4–19 colours, legend pieces 24). Nothing was redrawn.
+- The speech bubble came from a 64-candidate 24 px batch (candidate cropped, re-paletted to 5 colours, and its flat middle band extended to 24×24 exactly as a 9-slice would). The red dot is a PixelLab Pixen 16×16 image cropped to its 10×10 dot and reduced to 5 colours.
+
 ## Small icons and third batch (`icons/`)
 
 - 16×16 small icons, drawn for that size (bold silhouette, outline, 5–14 colours): `gold_s`, `ticket_s` (cream slip with a big red stamp), `gem_s`, `coupon_s`, `pass_s` (blue pass with a gold star), `check_s`, `vx_s` (gold token with a V-shaped mark).
@@ -305,5 +328,11 @@ All UI frames were generated with PixelLab (Pixen) at native size and cropped. `
   - Each bar has three layers: `empty`, `fill` and `frame`. Left and right caps are 3 px; stretch the middle column.
   - Draw empty, then the fill clipped to the value, then the frame on top.
   - The bars were cut from one generated 3-bar sheet, keeping its outline, highlight, body and shade rows.
+- **Speech bubble** (`speech_bubble.png`, 24×24, 9-slice, inset **6** on all four sides):
+  - A white/cream bubble (fill `#fffdf6`, soft shade `#d6cdbb`) with a 1 px `#14110f` outline and rounded corners. The body is the full 24 px wide and 21 px tall.
+  - The tail points down-left and sits entirely inside the **bottom-left 6×6 corner slice**, below the body's bottom outline. The corners never stretch, so the tail never repeats; the edges and centre are flat and stretch or repeat cleanly.
+  - CSS: `border: 12px solid transparent; border-image: var(--ui-speech-bubble) 6 fill / 12px stretch;` (12px = 6 px at ×2). The body's bottom outline is 3 px above the canvas bottom, so leave that much (×scale) for the tail under the text.
+  - `applyUiSkin` exposes it as `--ui-speech-bubble`.
 - **Fixed size:** `menu_button` (32×32), crimson with gold corners and a three-line menu mark.
+- **Notification dot** (`red_dot.png`, 10×10, fixed size): a red dot with a `#14110f` outline, darker red lower-right shade and a short white highlight at the upper left (5 colours). It replaces the CSS-drawn red dot; place it on the icon's top-right corner at an integer scale. `applyUiSkin` exposes it as `--ui-red-dot`.
 - `_preview_x1.png` / `_preview_x3.png`: a mock list (row panel + icon box + progress bar + the three button states), the HP bar, mission panel, both nav tiles and the menu button.

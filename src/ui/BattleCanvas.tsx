@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { MONSTERS_PER_FLOOR, departmentOf, isBoss, targetHp } from "../../shared/data/floors";
+import { BOSS_LINES, PARK_QUIPS, bossKind, pickLine } from "../../shared/data/quips";
 import { formatBig } from "../../shared/format";
 import { mods } from "../../shared/mods";
 import { targetSec } from "../../shared/settle";
@@ -43,11 +44,21 @@ interface Sim {
   dying: { monster: MonsterSprite; x: number; since: number } | null;
   current: MonsterSprite | null;
   currentX: number;
+  // The floor and whether the monster being fought is its boss (to know when a boss falls), and
+  // when Park next says something on his own.
+  floor: number;
+  boss: boolean;
+  quipAt: number;
 }
+
+const QUIP_MIN_MS = 25_000;
+const QUIP_MORE_MS = 25_000;
+const BUBBLE_MS = 3_000;
 
 export function BattleCanvas({ state }: { state: GameState }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const layer = useRef<HTMLDivElement>(null);
+  const talk = useRef<HTMLDivElement>(null);
   const snap = useRef<Snapshot>({ state, at: performance.now() });
   snap.current = { state, at: performance.now() };
 
@@ -59,7 +70,10 @@ export function BattleCanvas({ state }: { state: GameState }) {
     let raf = 0;
     let scroll = 0;
     let last = performance.now();
-    const sim: Sim = { kill: "", hits: 0, hurtUntil: 0, dying: null, current: null, currentX: 0 };
+    const sim: Sim = {
+      kill: "", hits: 0, hurtUntil: 0, dying: null, current: null, currentX: 0, floor: 0, boss: false,
+      quipAt: performance.now() + QUIP_MIN_MS * Math.random(),
+    };
     const loop = (now: number) => {
       const dt = Math.min(0.1, (now - last) / 1000);
       last = now;
@@ -77,6 +91,8 @@ export function BattleCanvas({ state }: { state: GameState }) {
       }
       scroll = draw(ctx, w, h, Math.max(1, Math.ceil(h / BG_H)), snap.current, now, dt, scroll, sim, (text, x, y, crit) => {
         popDamage(layer.current, text, (x * cw) / w, (y * ch) / h, crit);
+      }, (text, x, y) => {
+        say(talk.current, text, (x * cw) / w, (y * ch) / h);
       });
       raf = requestAnimationFrame(loop);
     };
@@ -88,8 +104,21 @@ export function BattleCanvas({ state }: { state: GameState }) {
     <div className="scene">
       <canvas ref={canvas} width={160} height={96} />
       <div ref={layer} className="damage-layer" />
+      <div ref={talk} className="bubble" hidden />
     </div>
   );
+}
+
+// Park's speech bubble over his head: one at a time, gone after a few seconds.
+let bubbleTimer = 0;
+function say(el: HTMLDivElement | null, text: string, x: number, y: number): void {
+  if (!el) return;
+  el.textContent = text;
+  el.style.left = `${Math.round(x)}px`;
+  el.style.top = `${Math.round(y)}px`;
+  el.hidden = false;
+  window.clearTimeout(bubbleTimer);
+  bubbleTimer = window.setTimeout(() => (el.hidden = true), BUBBLE_MS);
 }
 
 // A damage number that rises and fades over the monster (pixel font text, not a picture).
@@ -106,7 +135,7 @@ function popDamage(layer: HTMLDivElement | null, text: string, x: number, y: num
 
 function draw(
   ctx: CanvasRenderingContext2D, w: number, h: number, bgScale: number, { state, at }: Snapshot, now: number, dt: number, scroll: number,
-  sim: Sim, pop: (text: string, x: number, y: number, crit: boolean) => void,
+  sim: Sim, pop: (text: string, x: number, y: number, crit: boolean) => void, talk: (text: string, x: number, y: number) => void,
 ): number {
   ctx.imageSmoothingEnabled = false;
   const { floor, target, carrySec, farming } = state.run;
@@ -131,11 +160,24 @@ function draw(
   // Which monster this is; a new one means the last one was killed.
   const place = target + kills;
   const kill = `${floor}:${farming}:${place}`;
+  const head: [number, number] = [parkX + 32, floorY - BASELINE_Y + 4];
   if (kill !== sim.kill) {
     if (sim.current && sim.kill !== "") sim.dying = { monster: sim.current, x: sim.currentX, since: now };
+    // The boss fell: the floor went up past it.
+    if (sim.kill !== "" && sim.boss && floor > sim.floor) {
+      talk(pickLine(BOSS_LINES[bossKind(sim.floor)], Math.random()), ...head);
+      sim.quipAt = now + QUIP_MIN_MS;
+    }
+    sim.floor = floor;
+    sim.boss = boss;
     sim.kill = kill;
     sim.hits = 0;
     sim.current = monsterFor(department, floor, place, boss) ?? null;
+  }
+
+  if (now >= sim.quipAt) {
+    talk(pickLine(PARK_QUIPS, Math.random()), ...head);
+    sim.quipAt = now + QUIP_MIN_MS + QUIP_MORE_MS * Math.random();
   }
 
   ctx.clearRect(0, 0, w, h);
