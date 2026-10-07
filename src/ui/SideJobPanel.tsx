@@ -4,6 +4,7 @@ import { sideJobCostFor } from "../../shared/prices";
 import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
 import { t } from "../i18n";
+import { Amount } from "./Amount";
 import { Icon } from "./Icon";
 
 export function SideJobPanel({ state, store }: { state: GameState; store: GameStore }) {
@@ -28,14 +29,14 @@ export function SideJobPanel({ state, store }: { state: GameState; store: GameSt
             <div className="grow">
               <b>{t(job.name)}</b> Lv{level}
               <div className="sub">
-                {t("{gold} / {sec}초", { gold: formatBig(sideJobIncome(job, Math.max(1, level))), sec: cycle.toFixed(1) })}
+                <Amount icon="gold" value={formatBig(sideJobIncome(job, Math.max(1, level)))} /> {t("/ {sec}초", { sec: cycle.toFixed(1) })}
               </div>
               <div className="bar">
                 <i style={{ width: `${Math.min(1, progress) * 100}%` }} />
               </div>
             </div>
             <button className={state.gold.lt(cost) ? "poor" : "hot"} disabled={state.gold.lt(cost)} onClick={() => store.do({ k: "levelSideJob", id: job.id })}>
-              {level === 0 ? t("시작") : t("레벨업")}<br />{formatBig(cost)}
+              {level === 0 ? t("시작") : t("레벨업")}<br /><Amount icon="gold" value={formatBig(cost)} />
             </button>
           </div>
         );
