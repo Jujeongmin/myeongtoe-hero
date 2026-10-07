@@ -61,7 +61,7 @@ describe("rewarded ads", () => {
     const s = at(T0);
     s.run = { ...s.run, floor: 30, maxFloor: 30 };
     const gold = applyIntent(s, { k: "watchAd", id: "ad_gold" });
-    expect(gold.gold.div(killGoldNow(s)).toNumber()).toBeCloseTo(50);
+    expect(gold.gold.sub(s.gold).div(killGoldNow(s)).toNumber()).toBeCloseTo(50);
     const buff = applyIntent(s, { k: "watchAd", id: "ad_buff" });
     expect(Object.values(buff.buffs).filter((t) => t === T0 + 3 * MIN)).toHaveLength(1);
   });

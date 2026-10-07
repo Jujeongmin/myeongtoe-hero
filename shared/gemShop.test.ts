@@ -46,7 +46,7 @@ describe("gem shop", () => {
     expect(after.gold.sub(s.gold).div(killGoldNow(s)).toNumber()).toBeCloseTo(100);
     const big = applyIntent(s, { k: "buyGemItem", id: "gold_1000" });
     expect(big.gems).toBe(500);
-    expect(big.gold.div(killGoldNow(s)).toNumber()).toBeCloseTo(1000);
+    expect(big.gold.sub(s.gold).div(killGoldNow(s)).toNumber()).toBeCloseTo(1000);
   });
 
   test("the gear boost stacks and is gone after a job change", () => {

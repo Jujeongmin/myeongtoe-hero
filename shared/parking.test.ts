@@ -9,7 +9,7 @@ import { newState, type GameState } from "./state";
 import { heroPower, type Power } from "./stats";
 import { kstDay } from "./time";
 
-const P = (dps: Big): Power => ({ dps, bossDps: dps, bossLimitSec: BOSS_LIMIT_SEC, goldMult: 1, hpMult: 1, drainPerSec: 0, walkSec: 1, hitSec: 0.5 });
+const P = (dps: Big): Power => ({ dps, bossDps: dps, bossLimitSec: BOSS_LIMIT_SEC, goldMult: 1, hpMult: 1, drainPerSec: 0, walkSec: 1, hitSec: 0.5, killGold: Big.of(1) });
 
 function code(s: GameState): string {
   try {

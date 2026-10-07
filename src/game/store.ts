@@ -11,7 +11,8 @@ import type { Transport } from "../net/transport";
 export class GameStore {
   static readonly HEARTBEAT_MS = 10_000;
 
-  error: { code: string; at: number } | null = null;
+  // The last message for the toast: a turned-down action's code, or a plain line of text.
+  error: { code: string; text?: string; at: number } | null = null;
   // What the last sync said happened while the player was away, until the popup is closed.
   offline: OfflineReport | null = null;
   private confirmed: GameState | null = null;
@@ -88,6 +89,12 @@ export class GameStore {
       this.busy = false;
       this.emit();
     }
+  }
+
+  // Shows a line of text in the toast (no action involved).
+  notify(text: string): void {
+    this.error = { code: "", text, at: this.clock() };
+    this.emit();
   }
 
   dismissOffline(): void {

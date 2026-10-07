@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { departmentOf, isBossFloor, targetHp } from "../../shared/data/floors";
+import { MONSTERS_PER_FLOOR, departmentOf, isBoss, targetHp } from "../../shared/data/floors";
 import { formatBig } from "../../shared/format";
 import { mods } from "../../shared/mods";
 import { targetSec } from "../../shared/settle";
@@ -113,7 +113,9 @@ function draw(
   ctx.imageSmoothingEnabled = false;
   const { floor, target, carrySec, farming } = state.run;
   const power = heroPower(state);
-  const fight = targetSec(floor, power);
+  // The monster being fought: farming repeats the floor's normal ones.
+  const current = farming ? 0 : Math.min(target, MONSTERS_PER_FLOOR - 1);
+  const fight = targetSec(floor, current, power);
   const perKill = fight + power.walkSec;
   const elapsed = carrySec + (now - at) / 1000;
   const fighting = Number.isFinite(perKill) && perKill > 0;
@@ -123,7 +125,8 @@ function draw(
   const nextScroll = walking ? scroll + (WALK_PX_PER_SEC * dt) / power.walkSec : scroll;
   const floorY = h - (BG_H - BG_FLOOR) * bgScale;
   const department = departmentOf(floor);
-  const boss = isBossFloor(floor) && !farming;
+  const placeNow = current + (fighting ? Math.floor(elapsed / perKill) : 0);
+  const boss = !farming && isBoss(placeNow % MONSTERS_PER_FLOOR);
   const parkX = Math.round(w * 0.38) - 34;
   const contactX = parkX + 44;
 
@@ -161,7 +164,7 @@ function draw(
   sim.currentX = monsterX;
 
   if (landed > sim.hits && monster) {
-    const hp = targetHp(floor).mulN(power.hpMult);
+    const hp = targetHp(floor, current).mulN(power.hpMult);
     const critChance = Math.min(1, HERO_CRIT_CHANCE + mods(state).critChanceAdd);
     const top = floorY - monster.baseline + monster.hpBar[1] - monster.hover;
     for (let k = sim.hits; k < landed; k++) {

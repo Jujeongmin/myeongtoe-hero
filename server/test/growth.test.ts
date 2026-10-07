@@ -22,14 +22,14 @@ describe("permanent growth on the server", () => {
     expect(r.save.wear.accessory).toBe("s1_accessory");
   });
 
-  test("a version 2 save with gear above 5 comes down to 5", async (server) => {
+  test("a version 2 save with gear above the top level comes down to it", async (server) => {
     server.connect({ account: "test-g2" });
     const v2 = { ...toSave(newState(Date.now())), v: 2, gear: { tier: 1, level: 9 }, stats: { atk: 2, crit: 0, critDmg: 0, aspd: 0 } } as Record<string, unknown>;
     for (const k of ["coupons", "ticketCarry", "pets", "relics", "apartment", "suits", "office", "wear"]) delete v2[k];
     await $global.updateUserState("test-g2", { save: v2 });
     const r = await server.sync([]);
     expect(r.save.v).toBe(SAVE_VERSION);
-    expect(r.save.gear.level).toBe(5);
+    expect(r.save.gear.level).toBe(4);
     expect(r.save.stats).toBe(undefined);
   });
 });

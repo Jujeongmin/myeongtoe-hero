@@ -9,6 +9,7 @@ import { findSideJob } from "./data/sideJobs";
 
 export const SAVE_VERSION = 8;
 export const OFFLINE_CAP_SEC = 12 * 3600;
+export const START_GOLD = 10;
 export const OFFICE_MAX_GRADE = 17;
 // 지하주차장 passes stored at most. Re-exported by data/parking.ts.
 export const PARK_PASS_MAX = 16;
@@ -195,7 +196,8 @@ export function newState(now: number): GameState {
   return {
     v: SAVE_VERSION,
     lastTick: now,
-    gold: Big.ZERO,
+    // Enough to start the first side job.
+    gold: Big.of(START_GOLD),
     run: freshRun(),
     bestFloor: 1,
     gear: { tier: 0, level: 0, confirmed: 0 },

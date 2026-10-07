@@ -1,6 +1,5 @@
 import { describe, expect, test } from "vitest";
 import { Big } from "./big";
-import { gearLevelCost } from "./data/gear";
 import { newState, toSave } from "./state";
 import { MAX_INTENTS_PER_SYNC, syncSave } from "./sync";
 
@@ -14,11 +13,11 @@ describe("syncSave", () => {
   });
 
   test("settles up to now before applying intents", () => {
-    const save = toSave({ ...newState(0), gold: gearLevelCost(0, 0).mulN(0.5) });
-    // Too poor at t=0, rich enough after 60 s of fighting.
-    const r = syncSave(save, [{ k: "levelGear" }], 60_000);
+    const save = toSave({ ...newState(0), gold: Big.of(5) });
+    // Too poor for the first side job (10) at t=0, rich enough after 60 s of fighting.
+    const r = syncSave(save, [{ k: "levelSideJob", id: "j00" }], 60_000);
     expect(r.rejected).toEqual([]);
-    expect(r.save.gear.level).toBe(1);
+    expect(r.save.sideJobs.j00.level).toBe(1);
   });
 
   test("reports bad and refused intents by index and keeps going", () => {
@@ -54,7 +53,7 @@ describe("syncSave", () => {
     expect(r.offline!.seconds).toBeCloseTo(600, 6);
     expect(r.offline!.floorFrom).toBe(1);
     expect(r.offline!.floorTo).toBe(r.save.run.floor);
-    expect(r.offline!.gold).toBe(r.save.gold);
+    expect(Big.from(r.offline!.gold).add(Big.of(10)).toString()).toBe(r.save.gold);
     expect(syncSave(undefined, [], 600_000).offline).toBeNull();
   });
 });

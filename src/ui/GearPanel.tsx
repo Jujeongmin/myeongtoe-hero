@@ -61,7 +61,7 @@ export function GearPanel({ state, store, onSuits }: { state: GameState; store: 
             <span className="icon-box">{src && <img className="icon-img gear-img" src={src} alt="" draggable={false} />}</span>
             <div className="grow">
               <b>{g.name}</b>
-              <div className="sub">LV.{shownLevel}/{GEAR_MAX_LEVEL} · ATK {formatBig(atk)}</div>
+              <div className="sub">LV.{tier <= current ? shownLevel + 1 : 0}/{GEAR_MAX_LEVEL + 1} · ATK {formatBig(atk)}</div>
             </div>
             {button}
           </div>

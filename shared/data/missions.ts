@@ -1,5 +1,6 @@
 import type { GameState } from "../state";
 import { CERTS } from "./certs";
+import { GEAR_MAX_LEVEL } from "./gear";
 import { awakenStage } from "./pets";
 
 // Missions: 단계 미션 (one guided step at a time, shown on the battle screen —
@@ -23,7 +24,7 @@ const jobsStarted = (s: GameState) => Object.values(s.sideJobs).filter((j) => j.
 
 export const STEP_MISSIONS: readonly MissionDef[] = [
   { id: "s01", text: "부업 [편의점 알바] 시작", done: (s) => (s.sideJobs.j00?.level ?? 0) >= 1, reward: { gems: 20 } },
-  { id: "s02", text: "업무 장비 [볼펜] Lv5", done: (s) => s.gear.tier > 0 || s.gear.level >= 5, reward: { gems: 20 } },
+  { id: "s02", text: "업무 장비 [볼펜] Lv5", done: (s) => s.gear.tier > 0 || s.gear.level >= GEAR_MAX_LEVEL, reward: { gems: 20 } },
   { id: "s03", text: "업무 장비 [2. 형광펜] 구매", done: (s) => s.gear.tier >= 1, reward: { gems: 25 } },
   { id: "s04", text: "업무 장비 [3. 스테이플러] 구매", done: (s) => s.gear.tier >= 2, reward: { gems: 25 } },
   { id: "s05", text: "5층 도달", done: (s) => s.bestFloor >= 5, reward: { gems: 30 } },

@@ -38,10 +38,10 @@ describe("GameStore", () => {
     advance(60_000);
     const before = store.view()!;
     expect(before.gold.isZero()).toBe(false);
-    expect(store.do({ k: "levelGear" })).toBe(true);
-    expect(store.view()!.gear.level).toBe(1);
+    expect(store.do({ k: "levelSideJob", id: "j00" })).toBe(true);
+    expect(store.view()!.sideJobs.j00?.level).toBe(1);
     await store.flush();
-    expect(store.view()!.gear.level).toBe(1);
+    expect(store.view()!.sideJobs.j00?.level).toBe(1);
   });
 
   test("skips the heartbeat until it is due", async () => {
@@ -64,7 +64,7 @@ describe("GameStore", () => {
     const { store, transport, advance } = setup();
     await store.flush();
     advance(60_000);
-    store.do({ k: "levelGear" });
+    store.do({ k: "levelSideJob", id: "j00" });
     let fail = true;
     const flaky: Transport = {
       ...OFFLINE,
@@ -72,10 +72,10 @@ describe("GameStore", () => {
     };
     (store as unknown as { transport: Transport }).transport = flaky;
     await expect(store.flush()).rejects.toThrow("offline");
-    expect(store.view()!.gear.level).toBe(1); // still predicted
+    expect(store.view()!.sideJobs.j00?.level).toBe(1); // still predicted
     fail = false;
     await store.flush();
-    expect(store.view()!.gear.level).toBe(1);
+    expect(store.view()!.sideJobs.j00?.level).toBe(1);
   });
 
   test("switching transport sends the queued intents over the new one", async () => {
@@ -83,11 +83,11 @@ describe("GameStore", () => {
     await store.flush();
     advance(60_000);
     store.setTransport(OFFLINE);
-    store.do({ k: "levelGear" });
+    store.do({ k: "levelSideJob", id: "j00" });
     await expect(store.flush()).rejects.toThrow("offline");
     store.setTransport(transport);
     await store.flush();
-    expect(store.view()!.gear.level).toBe(1);
+    expect(store.view()!.sideJobs.j00?.level).toBe(1);
   });
 
   test("knows whether it has heard from the server yet", async () => {

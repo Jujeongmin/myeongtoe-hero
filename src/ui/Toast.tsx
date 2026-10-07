@@ -7,5 +7,5 @@ const SHOW_MS = 2000;
 export function Toast({ store }: { store: GameStore }) {
   const error = store.error;
   if (!error || Date.now() - error.at > SHOW_MS) return null;
-  return <div className="toast">{errorText(error.code)}</div>;
+  return <div className="toast">{error.text ?? errorText(error.code)}</div>;
 }

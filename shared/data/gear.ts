@@ -15,17 +15,16 @@ const NAMES = [
 
 export const GEAR_TIERS: readonly GearTier[] = NAMES.map((name, i) => ({ id: `g${String(i).padStart(2, "0")}`, name }));
 
-// Each tier levels up to 5, and only a tier at 5 lets the next one be bought. ATK starts at 50 and
-// triples per tier; the second tier costs 600 gold and each next one six times more.
-export const GEAR_MAX_LEVEL = 5;
+// A tier is bought at Lv1 and upgraded to Lv5; only a tier at Lv5 lets the next one be bought.
+// `level` counts the upgrades (0 = Lv1 … GEAR_MAX_LEVEL = Lv5). Write a tier's price as 2a: the
+// upgrades cost 3a, 4a, 5a, 6a, and the next tier 12a (×6). Attack goes 5b, 6b, 7b, 8b, 9b, and the
+// next tier starts at 15b (×3).
+export const GEAR_MAX_LEVEL = 4;
 export const GEAR_ATK_BASE = 50;
 export const GEAR_ATK_GROWTH = 3;
-export const GEAR_LEVEL_ATK = 0.15;
+export const GEAR_LEVEL_ATK = 0.2;
 export const GEAR_PRICE_BASE = 100;
 export const GEAR_PRICE_GROWTH = 6;
-export const GEAR_LEVEL_COST_BASE = 10;
-export const GEAR_LEVEL_COST_TIER_GROWTH = 7;
-export const GEAR_LEVEL_COST_GROWTH = 1.09;
 
 export function gearAtk(tier: number, level: number): Big {
   return Big.pow(GEAR_ATK_GROWTH, tier).mulN(GEAR_ATK_BASE * (1 + GEAR_LEVEL_ATK * level));
@@ -43,7 +42,7 @@ export function gearConfirmCost(tier: number): { gold: Big; gems: number } {
   return { gold, gems: 10 * (tier + 1) };
 }
 
-// The cost of going from `level` to `level + 1` on this tier.
+// The cost of going from `level` to `level + 1` on this tier: (level + 3) halves of its price.
 export function gearLevelCost(tier: number, level: number): Big {
-  return Big.pow(GEAR_LEVEL_COST_TIER_GROWTH, tier).mulN(GEAR_LEVEL_COST_BASE).mul(Big.pow(GEAR_LEVEL_COST_GROWTH, level));
+  return Big.pow(GEAR_PRICE_GROWTH, tier).mulN((GEAR_PRICE_BASE / 2) * (level + 3));
 }

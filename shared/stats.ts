@@ -1,6 +1,7 @@
-import type { Big } from "./big";
+import { Big } from "./big";
 import { BUFFS, buffActive } from "./data/buffs";
-import { BOSS_LIMIT_SEC, WALK_SEC, killGold } from "./data/floors";
+import { BOSS_LIMIT_SEC, KILL_GOLD_SHARE, MIN_INCOME_PER_SEC, WALK_SEC } from "./data/floors";
+import { findSideJob, sideJobCycle, sideJobIncome } from "./data/sideJobs";
 import { prestigeReward } from "./data/prestige";
 import { gearAtk } from "./data/gear";
 import { mods } from "./mods";
@@ -24,11 +25,24 @@ export interface Power {
   walkSec: number;
   // Seconds between Park's own hits (the screen times one swing to it).
   hitSec: number;
+  // Gold for one normal kill (a boss pays a multiple): a share of the side jobs' income per second.
+  killGold: Big;
 }
 
 export function heroAtk(s: GameState): Big {
   const buff = buffActive(s, "atk") ? BUFFS.atk.mult : 1;
   return gearAtk(s.gear.tier, s.gear.level + s.run.gearBoost).mulN(mods(s).dmgMult * buff);
+}
+
+// The side jobs' income per second right now (what kills pay a share of).
+export function incomePerSec(s: GameState): Big {
+  let q = Big.ZERO;
+  for (const [id, own] of Object.entries(s.sideJobs)) {
+    const job = findSideJob(id);
+    if (!job || own.level <= 0) continue;
+    q = q.add(sideJobIncome(job, own.level).mulN(1 / sideJobCycle(job, own.level)));
+  }
+  return q.mulN(mods(s).sideJobMult);
 }
 
 export function heroPower(s: GameState): Power {
@@ -39,11 +53,15 @@ export function heroPower(s: GameState): Power {
   const critChance = Math.min(1, HERO_CRIT_CHANCE + m.critChanceAdd);
   const hits = atk.mulN(aspd * (1 + critChance * critBonus));
   const dps = m.extraHitPerSec > 0 ? hits.add(atk.mulN(m.extraHitPerSec)) : hits;
+  const goldMult = m.goldMult * (buffActive(s, "gold") ? BUFFS.gold.mult : 1);
+  const income = incomePerSec(s);
+  const q = income.lt(Big.of(MIN_INCOME_PER_SEC)) ? Big.of(MIN_INCOME_PER_SEC) : income;
   return {
     dps,
     bossDps: dps.mulN(m.bossMult),
     bossLimitSec: BOSS_LIMIT_SEC,
-    goldMult: m.goldMult * (buffActive(s, "gold") ? BUFFS.gold.mult : 1),
+    goldMult,
+    killGold: q.mulN(KILL_GOLD_SHARE * goldMult),
     hpMult: m.hpMult,
     drainPerSec: m.drainPerSec,
     walkSec: buffActive(s, "move") ? WALK_SEC / BUFFS.move.mult : WALK_SEC,
@@ -54,7 +72,7 @@ export function heroPower(s: GameState): Power {
 // The gold one kill on the current floor pays right now (buffs and all): what gold rewards from the
 // shop and ads are measured in.
 export function killGoldNow(s: GameState): Big {
-  return killGold(s.run.floor).mulN(heroPower(s).goldMult);
+  return heroPower(s).killGold;
 }
 
 export function heroDps(s: GameState): Big {

@@ -1,13 +1,14 @@
 import { describe, expect, test } from "vitest";
 import { Big } from "./big";
 import { SAVE_VERSION, cloneState, fromSave, newState, toSave } from "./state";
+import { GEAR_MAX_LEVEL } from "./data/gear";
 
 describe("state", () => {
-  test("a new state starts on floor 1 with the ballpoint pen and no gold", () => {
+  test("a new state starts on floor 1 with the ballpoint pen and 10 gold", () => {
     const s = newState(1000);
     expect(s.v).toBe(SAVE_VERSION);
     expect(s.lastTick).toBe(1000);
-    expect(s.gold.isZero()).toBe(true);
+    expect(s.gold.toNumber()).toBe(10);
     expect(s.run).toEqual({ floor: 1, target: 0, carrySec: 0, farming: false, maxFloor: 1, gearBoost: 0 });
     expect(s.gear).toEqual({ tier: 0, level: 0, confirmed: 0 });
     expect(s.sideJobs).toEqual({});
@@ -83,13 +84,13 @@ describe("state", () => {
     expect(s.certs).toEqual({});
   });
 
-  test("a version 2 save migrates, and gear above level 5 comes down to 5", () => {
+  test("a version 2 save migrates, and gear above the top level comes down to it", () => {
     const v2 = { ...toSave(newState(0)), v: 2, gear: { tier: 3, level: 12 } } as Record<string, unknown>;
     for (const k of ["coupons", "ticketCarry", "pets", "relics", "apartment", "suits", "office", "wear"]) delete v2[k];
     v2.stats = { atk: 3, crit: 0, critDmg: 0, aspd: 0 };
     const s = fromSave(v2);
     expect(s.v).toBe(SAVE_VERSION);
-    expect(s.gear).toEqual({ tier: 3, level: 5, confirmed: 0 });
+    expect(s.gear).toEqual({ tier: 3, level: GEAR_MAX_LEVEL, confirmed: 0 });
     expect(s.office).toEqual({ keyboard: 1, mouse: 1, chair: 1, monitor: 1 });
     expect(s.suits).toEqual([]);
     expect("stats" in s).toBe(false);

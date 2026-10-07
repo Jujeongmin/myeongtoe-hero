@@ -100,10 +100,10 @@ describe("side jobs", () => {
     });
   });
 
-  test("locked until the run reaches its floor, and costs gold", () => {
-    expect(codeOf(rich(), { k: "levelSideJob", id: second.id })).toBe("locked");
-    const there = { ...rich(), run: { ...newState(0).run, floor: second.unlockFloor, maxFloor: second.unlockFloor } };
-    expect(codeOf(there, { k: "levelSideJob", id: second.id })).toBe("");
+  test("open from the start, cost gold, stop at level 999", () => {
+    expect(codeOf(rich(), { k: "levelSideJob", id: second.id })).toBe("");
+    const maxed = { ...rich(), sideJobs: { [first.id]: { level: 999, progressSec: 0, running: true } } };
+    expect(codeOf(maxed, { k: "levelSideJob", id: first.id })).toBe("max");
     expect(codeOf(rich(sideJobCost(first, 0).mulN(0.5)), { k: "levelSideJob", id: first.id })).toBe("not_enough_gold");
     expect(codeOf(rich(), { k: "levelSideJob", id: "nope" })).toBe("unknown");
   });

@@ -129,7 +129,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
         {tab === "dungeon" && <ParkingPanel state={state} store={store} />}
         {tab === "shop" && <ShopPanel state={state} store={store} />}
       </main>
-      <BottomNav state={state} tab={tab} onPick={setTab} />
+      <BottomNav state={state} tab={tab} onPick={setTab} onLocked={(text) => store.notify(text)} />
       {sheet && (
         <Sheet title={SHEET_TITLES[sheet]} onClose={() => setSheet(null)}>
           {sheet === "prestige" && <PrestigePanel state={state} store={store} />}

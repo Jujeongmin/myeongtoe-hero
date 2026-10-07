@@ -1,4 +1,4 @@
-import { departmentOf, isBossFloor, targetsOn } from "../../shared/data/floors";
+import { MONSTERS_PER_FLOOR, departmentOf, isBoss } from "../../shared/data/floors";
 import { PRESTIGE_MIN_FLOOR } from "../../shared/data/prestige";
 import { useState } from "react";
 import { formatCount } from "../../shared/format";
@@ -32,7 +32,7 @@ export function Battle({ state, store, onOpen, onGo }: {
   const [menuOpen, setMenuOpen] = useState(false);
   const { floor, target, carrySec, farming, maxFloor } = state.run;
   const power = heroPower(state);
-  const boss = isBossFloor(floor) && !farming;
+  const boss = isBoss(target) && !farming;
   const bossLeft = Math.max(0, Math.ceil(power.bossLimitSec - carrySec));
   const ready = maxFloor >= PRESTIGE_MIN_FLOOR;
   const reward = jobChangeReward(state);
@@ -43,7 +43,7 @@ export function Battle({ state, store, onOpen, onGo }: {
       <header className="battle-head">
         <div>마왕그룹 {departmentOf(floor)}</div>
         <div className="floor-no">{floor}층{farming ? " · 파밍 중" : ""}</div>
-        <PixelBar kind="progress" value={Math.min(target, targetsOn(floor)) / targetsOn(floor)} />
+        <PixelBar kind="progress" value={Math.min(target, MONSTERS_PER_FLOOR) / MONSTERS_PER_FLOOR} />
         {boss && <div className="boss-timer"><Icon name="timer" size={16} /> 보스 {bossLeft}초</div>}
       </header>
       <div className="top-icons">

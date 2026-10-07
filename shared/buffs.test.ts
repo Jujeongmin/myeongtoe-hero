@@ -59,7 +59,7 @@ describe("buffs", () => {
     const base = heroAtk(s);
     s.run.gearBoost = 2;
     expect(heroAtk(s).cmp(base)).toBe(1);
-    expect(heroAtk(s).div(base).toNumber()).toBeCloseTo((1 + 0.15 * 7) / (1 + 0.15 * 5), 6);
+    expect(heroAtk(s).div(base).toNumber()).toBeCloseTo((1 + 0.2 * 7) / (1 + 0.2 * 5), 6);
   });
 
   test("a version 6 save gets empty buffs, ads and VX fields", () => {

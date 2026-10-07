@@ -122,7 +122,7 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .mission-card { position: absolute; right: 6px; bottom: 38px; max-width: 44%; padding: 4px 6px; border: 2px solid #000; background: rgba(43, 36, 64, 0.92); box-shadow: inset 2px 2px 0 #4a4370; text-shadow: 1px 1px 0 #000; cursor: pointer; }
 .mission-card.done { border-color: #e9c46a; }
 .mission-card .claim { margin-top: 2px; padding: 2px 4px; border: 2px solid #000; background: #e9c46a; color: #1b1a2e; text-shadow: none; text-align: center; }
-.mission-card .dot, .side-icons .dot, .top-icons .dot { position: absolute; top: -4px; right: -4px; width: 8px; height: 8px; background: #e63946; border: 1px solid #000; }
+.mission-card .dot, .side-icons .dot, .top-icons .dot { position: absolute; top: 1px; right: 1px; width: 8px; height: 8px; background: #e63946; border: 1px solid #000; }
 .tabs { display: flex; gap: 4px; }
 .tabs button { flex: 1; padding: 4px 0; border: 2px solid #0b0916; background: #2b2440; color: #b8b3d6; }
 .tabs button.on { background: #4a4370; color: #e9c46a; }
@@ -201,3 +201,4 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .buff-bar .buff { position: relative; width: 32px; height: 32px; padding: 0; border: none; background: none; opacity: 0.45; }
 .buff-bar .buff.on { opacity: 1; }
 .buff-bar .buff small { position: absolute; left: 50%; top: 30px; transform: translateX(-50%); font-size: 12px; color: #ffd166; text-shadow: 1px 1px 0 #000, -1px 0 0 #000; white-space: nowrap; }
+.bottom-nav button.locked { color: #777; }

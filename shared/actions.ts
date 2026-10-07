@@ -14,7 +14,7 @@ import { dailyOf } from "./daily";
 import { PET_BOX_COUPONS, findPet, petLevelCost, petsUnlocked } from "./data/pets";
 import { PRESTIGE_MIN_FLOOR, PRESTIGE_MODES, type PrestigeMode } from "./data/prestige";
 import { findRelic, relicLevelCost } from "./data/relics";
-import { findSideJob } from "./data/sideJobs";
+import { SIDE_JOB_MAX_LEVEL, findSideJob } from "./data/sideJobs";
 import { parkPassMax, petLevel, relicLevel } from "./mods";
 import { vipPerks } from "./vip";
 import { nextRandom } from "./rng";
@@ -148,6 +148,7 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       if (!job) throw new RuleError("unknown");
       if (s.run.maxFloor < job.unlockFloor) throw new RuleError("locked");
       const own = s.sideJobs[job.id] ?? { level: 0, progressSec: 0, running: false };
+      if (own.level >= SIDE_JOB_MAX_LEVEL) throw new RuleError("max");
       spend(s, sideJobCostFor(s, job, own.level));
       s.sideJobs[job.id] = own.level === 0
         ? { level: 1, progressSec: 0, running: true }

@@ -6,7 +6,7 @@ describe("sync", () => {
     server.connect({ account: "test-a" });
     const r = await server.sync([]);
     expect(r.save.run.floor).toBe(1);
-    expect(r.save.gold).toBe("0e0");
+    expect(r.save.gold).toBe("1e1");
     expect(r.rejected.length).toBe(0);
     const stored = await $global.getUserState("test-a");
     expect(stored.save.lastTick).toBe(r.now);

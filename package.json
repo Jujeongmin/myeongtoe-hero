@@ -11,7 +11,8 @@
     "server:install": "npm --prefix server install",
     "server:test": "npm --prefix server test",
     "server:typecheck": "npm --prefix server run typecheck",
-    "vx-sheet": "vite-node tools/vx-sheet.ts"
+    "vx-sheet": "vite-node tools/vx-sheet.ts",
+    "sim": "vite-node tools/sim.ts"
   },
   "dependencies": {
     "@agent8/gameserver": "^2.0.1",
