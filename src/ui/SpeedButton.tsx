@@ -36,8 +36,7 @@ export function SpeedButton({ state, store }: { state: GameState; store: GameSto
 
   return (
     <button className={`speed-btn${on ? " on" : ""}`} disabled={busy} onClick={() => void press()}>
-      2배속
-      <small>{on ? (premium && state.speed.on ? "켜짐" : clock(left)) : premium ? "꺼짐" : "광고 보기"}</small>
+      {on && !(premium && state.speed.on) ? clock(left) : "x2"}
     </button>
   );
 }

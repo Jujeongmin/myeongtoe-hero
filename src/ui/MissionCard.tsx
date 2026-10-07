@@ -36,9 +36,8 @@ export function MissionCard({ state, store, onGo }: { state: GameState; store: G
       className={`mission-card${done ? " done" : ""}`}
       onClick={() => (done ? store.do({ k: "claimStep" }) : place && onGo(place))}
     >
-      <div className="sub">{step + 1}단계 미션</div>
-      <div>{m.text}</div>
-      {done ? <div className="claim">받기 <RewardView reward={m.reward} /></div> : <div className="sub"><RewardView reward={m.reward} /> 이동</div>}
+      <div className="mission-line">{step + 1}단계 · {m.text}</div>
+      {done && <div className="claim">받기 <RewardView reward={m.reward} /></div>}
     </div>
   );
 }
