@@ -241,7 +241,7 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .vx-card button { width: 100%; border-image: var(--ui-button-gold-hot) 6 fill / 12px repeat; color: #ffd166; }
 .vx-img { width: 128px; height: 128px; max-width: 100%; height: auto; image-rendering: pixelated; border: 2px solid #000; }
 /* Park's speech bubble (art/ui/speech_bubble, 9-slice, tail bottom left), its tail over his head. */
-.bubble { position: absolute; z-index: 1; transform: translate(-6px, -100%); max-width: 60%; padding: 0 2px 2px; border: 12px solid transparent; border-image: var(--ui-speech-bubble) 6 fill / 12px; color: #1b1a2e; font-size: 12px; line-height: 14px; width: max-content; word-break: keep-all; pointer-events: none; image-rendering: pixelated; }
+.bubble { position: absolute; z-index: 2; transform: translate(-6px, -100%); max-width: 60%; padding: 0 2px 2px; border: 12px solid transparent; border-image: var(--ui-speech-bubble) 6 fill / 12px; color: #1b1a2e; font-size: 12px; line-height: 14px; width: max-content; word-break: keep-all; pointer-events: none; image-rendering: pixelated; }
 /* 스토리: the webtoon over everything, panels down the middle with their lines under them. */
 .story { position: fixed; inset: 0; z-index: 15; display: flex; flex-direction: column; background: #0b0916; }
 .story header { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #0b0916; border-bottom: 2px solid #2b2440; }
