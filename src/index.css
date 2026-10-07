@@ -353,3 +353,9 @@ html[lang="ja"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional J
 .theme-office .row button { color: #1d1d1d; text-shadow: none; }
 .theme-office .row button.hot { color: #3a2000; }
 .sheet-wallet { margin-left: auto; margin-right: 8px; display: flex; gap: 8px; font-size: 12px; }
+.theme-missions, .theme-story { color: #2a1d12; }
+.theme-missions .sub, .theme-story .sub { color: #5a4630; }
+.theme-missions b, .theme-story b { color: #7a1d12; }
+.theme-story .row button { color: #1d1a2e; text-shadow: none; }
+.theme-story .row button.hot { color: #3a1500; }
+.theme-ranking .sub, .theme-settings .sub { color: #c9c3e0; }

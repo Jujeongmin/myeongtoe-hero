@@ -26,7 +26,7 @@ describe("state", () => {
     expect(s.office).toEqual({ keyboard: 1, mouse: 1, chair: 1, monitor: 1 });
     expect("stats" in s).toBe(false);
     expect(Number.isInteger(s.rngSeed)).toBe(true);
-    expect(s.parking).toEqual({ passes: 16, passCarrySec: 0, best: 0 });
+    expect(s.parking).toEqual({ passes: 16, passCarrySec: 0, best: 0, runUntil: 0, last: null, claimed: true });
     expect(s.daily).toEqual({ day: "", entries: 0, bestDepth: 0, claimed: [] });
     expect(s.missions).toEqual({ step: 0, special: [] });
     expect(s.attendance).toEqual({ lastDay: "", count: 0 });
@@ -132,7 +132,7 @@ describe("state", () => {
     save.missions = { step: 4, special: ["f500", "f500"] };
     save.nickname = "박부장최고".repeat(10);
     const s = fromSave(save);
-    expect(s.parking).toEqual({ passes: 18, passCarrySec: 0, best: 12 });
+    expect(s.parking).toEqual({ passes: 18, passCarrySec: 0, best: 12, runUntil: 0, last: null, claimed: true });
     expect(s.daily.claimed).toEqual(["e1"]);
     expect(s.missions.special).toEqual(["f500"]);
     expect(s.nickname).toBe("");

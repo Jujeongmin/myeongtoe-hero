@@ -496,6 +496,262 @@
    "css": "border-image: url(office_button_hot.png) 8 8 11 8 fill / calc(8px * var(--px)) calc(8px * var(--px)) calc(11px * var(--px)) calc(8px * var(--px)) repeat;",
    "use": "office button, affordable: lit amber keycap, same shape and slices as office_button; flat top face #fcb73c (dark text)",
    "centerRepeat": "repeat"
+  },
+  "missions_panel": {
+   "file": "missions_panel.png",
+   "size": [
+    48,
+    48
+   ],
+   "slice": {
+    "top": 12,
+    "right": 12,
+    "bottom": 12,
+    "left": 12
+   },
+   "css": "border-image: url(missions_panel.png) 12 fill / calc(12px * var(--px)) repeat;",
+   "use": "whole 미션 sheet: brown wooden clipboard with a steel clip in the top-left corner slice (it rises 2 px above the board, so rows 0-1 are transparent elsewhere); cream paper centre #f1e5c3 with 1 px ruled lines every 6 rows (#cfb895), period 6 so it repeats cleanly (light, use dark text)",
+   "centerRepeat": "repeat"
+  },
+  "missions_row": {
+   "file": "missions_row.png",
+   "size": [
+    36,
+    36
+   ],
+   "slice": {
+    "top": 10,
+    "right": 10,
+    "bottom": 10,
+    "left": 10
+   },
+   "css": "border-image: url(missions_row.png) 10 fill / calc(10px * var(--px)) repeat;",
+   "use": "mission row: cream checklist note with an empty checkbox in the top-left corner slice, a ruled line along the bottom and a dog-ear in the bottom-right corner; flat cream centre #f1e5c3 (dark text)",
+   "centerRepeat": "repeat"
+  },
+  "missions_button": {
+   "file": "missions_button.png",
+   "size": [
+    32,
+    24
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+   },
+   "css": "border-image: url(missions_button.png) 8 fill / calc(8px * var(--px)) repeat;",
+   "use": "mission action button: dark crimson approval-stamp plate with a lighter inner border; flat centre #9a1f2e (light text)",
+   "centerRepeat": "repeat"
+  },
+  "missions_button_hot": {
+   "file": "missions_button_hot.png",
+   "size": [
+    32,
+    24
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+   },
+   "css": "border-image: url(missions_button_hot.png) 8 fill / calc(8px * var(--px)) repeat;",
+   "use": "mission button, claimable: bright red stamp plate with white corner glints; flat centre #fb1c1a (light text)",
+   "centerRepeat": "repeat"
+  },
+  "ranking_panel": {
+   "file": "ranking_panel.png",
+   "size": [
+    48,
+    48
+   ],
+   "slice": {
+    "top": 12,
+    "right": 12,
+    "bottom": 12,
+    "left": 12
+   },
+   "css": "border-image: url(ranking_panel.png) 12 fill / calc(12px * var(--px)) repeat;",
+   "use": "whole 랭킹 sheet: polished navy-black trophy board with bronze trim and gold laurel sprigs in each corner slice; flat dark centre #131522 (light text)",
+   "centerRepeat": "repeat"
+  },
+  "ranking_row": {
+   "file": "ranking_row.png",
+   "size": [
+    36,
+    36
+   ],
+   "slice": {
+    "top": 10,
+    "right": 10,
+    "bottom": 10,
+    "left": 10
+   },
+   "css": "border-image: url(ranking_row.png) 10 fill / calc(10px * var(--px)) repeat;",
+   "use": "ranking row: engraved dark navy plate with a gold-bronze bevel and gold screws in the corners; flat centre #2a2e41 (light text)",
+   "centerRepeat": "repeat"
+  },
+  "ranking_button": {
+   "file": "ranking_button.png",
+   "size": [
+    32,
+    24
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+   },
+   "css": "border-image: url(ranking_button.png) 8 fill / calc(8px * var(--px)) repeat;",
+   "use": "ranking action button: burnished gold medal plate; flat centre #c98c3e (dark text)",
+   "centerRepeat": "repeat"
+  },
+  "ranking_button_hot": {
+   "file": "ranking_button_hot.png",
+   "size": [
+    32,
+    24
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+   },
+   "css": "border-image: url(ranking_button_hot.png) 8 fill / calc(8px * var(--px)) repeat;",
+   "use": "ranking button, highlighted: bright polished gold plate; flat centre #fde94e (dark text)",
+   "centerRepeat": "repeat"
+  },
+  "settings_panel": {
+   "file": "settings_panel.png",
+   "size": [
+    48,
+    48
+   ],
+   "slice": {
+    "top": 12,
+    "right": 12,
+    "bottom": 12,
+    "left": 12
+   },
+   "css": "border-image: url(settings_panel.png) 12 fill / calc(12px * var(--px)) repeat;",
+   "use": "whole 설정 sheet: matte charcoal control-panel plastic with a screw in each corner and a tiny green LED in the top-right corner slice; flat dark centre #2d313c (light text)",
+   "centerRepeat": "repeat"
+  },
+  "settings_row": {
+   "file": "settings_row.png",
+   "size": [
+    36,
+    36
+   ],
+   "slice": {
+    "top": 10,
+    "right": 10,
+    "bottom": 10,
+    "left": 10
+   },
+   "css": "border-image: url(settings_row.png) 10 fill / calc(10px * var(--px)) repeat;",
+   "use": "settings row: recessed charcoal switch strip with an inner shadow at the top and a lighter lip along the bottom; flat centre #2d313c (light text)",
+   "centerRepeat": "repeat"
+  },
+  "settings_button": {
+   "file": "settings_button.png",
+   "size": [
+    32,
+    24
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+   },
+   "css": "border-image: url(settings_button.png) 8 fill / calc(8px * var(--px)) repeat;",
+   "use": "settings action button: grey plastic rocker switch in a charcoal bezel; flat face #808a99 (dark text)",
+   "centerRepeat": "repeat"
+  },
+  "settings_button_hot": {
+   "file": "settings_button_hot.png",
+   "size": [
+    32,
+    24
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+   },
+   "css": "border-image: url(settings_button_hot.png) 8 fill / calc(8px * var(--px)) repeat;",
+   "use": "settings button, on: green-lit rocker switch, same bezel; flat face #9df78d (dark text)",
+   "centerRepeat": "repeat"
+  },
+  "story_panel": {
+   "file": "story_panel.png",
+   "size": [
+    48,
+    48
+   ],
+   "slice": {
+    "top": 12,
+    "right": 12,
+    "bottom": 12,
+    "left": 12
+   },
+   "css": "border-image: url(story_panel.png) 12 fill / calc(12px * var(--px)) repeat;",
+   "use": "whole 스토리 sheet: comic-book cover, cream paper with a bold 2 px black ink border and halftone-dot triangles in each corner slice; flat cream centre #f5eddb (light, use dark text)",
+   "centerRepeat": "repeat"
+  },
+  "story_row": {
+   "file": "story_row.png",
+   "size": [
+    36,
+    36
+   ],
+   "slice": {
+    "top": 10,
+    "right": 10,
+    "bottom": 10,
+    "left": 10
+   },
+   "css": "border-image: url(story_row.png) 10 fill / calc(10px * var(--px)) repeat;",
+   "use": "story row: comic panel strip, double black ink border with a white gutter between, small halftone triangle in the top-left corner slice; flat cream centre #f5eddb (dark text)",
+   "centerRepeat": "repeat"
+  },
+  "story_button": {
+   "file": "story_button.png",
+   "size": [
+    32,
+    24
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+   },
+   "css": "border-image: url(story_button.png) 8 fill / calc(8px * var(--px)) repeat;",
+   "use": "story action button: white comic speech bubble; the small tail lives in the bottom-left corner slice (x 4-7), the body ends 3 px above the canvas bottom, so rows 21-23 are transparent elsewhere; flat white centre #ffffff (dark text)",
+   "centerRepeat": "repeat"
+  },
+  "story_button_hot": {
+   "file": "story_button_hot.png",
+   "size": [
+    32,
+    24
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+   },
+   "css": "border-image: url(story_button_hot.png) 8 fill / calc(8px * var(--px)) repeat;",
+   "use": "story button, highlighted: yellow POW burst, orange-red rim, black spikes only in the four corner slices; flat centre #fde203 (dark text)",
+   "centerRepeat": "repeat"
   }
  },
  "threeSlice": {

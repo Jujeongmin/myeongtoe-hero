@@ -23,18 +23,6 @@ describe("costumes", () => {
     expect(mods(s).dmgMult / base).toBeCloseTo(want, 6);
   });
 
-  test("a rental works until it ends", () => {
-    const s = newState(0);
-    const item = SUIT_ITEMS.find((i) => i.effect.k === "gold")!;
-    s.costume.rent[item.id] = 5000;
-    s.lastTick = 4000;
-    expect(hasCostume(s, item.id)).toBe(true);
-    const on = mods(s).goldMult;
-    s.lastTick = 6000;
-    expect(hasCostume(s, item.id)).toBe(false);
-    expect(on / mods(s).goldMult).toBeCloseTo(1 + item.effect.v, 6);
-  });
-
   test("boots make walking faster, and a 전설 set of one adds kill gold", () => {
     const s = newState(0);
     const walk = heroPower(s).walkSec;

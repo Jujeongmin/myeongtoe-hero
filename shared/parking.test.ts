@@ -39,7 +39,7 @@ describe("a parking run", () => {
 describe("parking passes", () => {
   test("recharge one per 15 minutes, up to 16", () => {
     const s = newState(0);
-    s.parking = { passes: 10, passCarrySec: 0, best: 0 };
+    s.parking = { passes: 10, passCarrySec: 0, best: 0, runUntil: 0, last: null, claimed: true };
     const later = settle(s, (PARK_RECHARGE_SEC * 2 + 60) * 1000);
     expect(later.parking.passes).toBe(12);
     expect(later.parking.passCarrySec).toBeCloseTo(60, 6);
@@ -52,19 +52,23 @@ describe("parking passes", () => {
 describe("entering the parking garage", () => {
   const now = Date.UTC(2026, 9, 6, 3, 0);
 
-  test("spends a pass, pays the run's tickets, records the day and the best", () => {
+  test("spends a pass, records the day and the best; the tickets come when the result is claimed", () => {
     const s = newState(now);
     const preview = runParking(heroPower(s));
     const after = applyIntent(s, { k: "enterParking" });
     expect(after.parking.passes).toBe(PARK_PASS_MAX - 1);
-    expect(after.tickets - s.tickets).toBe(preview.tickets);
+    expect(after.tickets).toBe(s.tickets);
+    expect(() => applyIntent(after, { k: "claimParking" })).toThrow();
+    const done = settle(after, now + 31_000);
+    const claimed = applyIntent(done, { k: "claimParking" });
+    expect(claimed.tickets - s.tickets).toBe(preview.tickets);
     expect(after.parking.best).toBe(preview.depth);
     expect(after.daily).toEqual({ day: kstDay(now), entries: 1, bestDepth: preview.depth, claimed: [] });
   });
 
   test("no pass, no entry", () => {
     const s = newState(now);
-    s.parking = { passes: 0, passCarrySec: 0, best: 0 };
+    s.parking = { passes: 0, passCarrySec: 0, best: 0, runUntil: 0, last: null, claimed: true };
     expect(code(s)).toBe("no_pass");
   });
 
@@ -73,5 +77,36 @@ describe("entering the parking garage", () => {
     s.daily = { day: "2000-01-01", entries: 9, bestDepth: 99, claimed: ["e1"] };
     expect(dailyOf(s)).toEqual({ day: kstDay(now), entries: 0, bestDepth: 0, claimed: [] });
     expect(applyIntent(s, { k: "enterParking" }).daily.entries).toBe(1);
+  });
+});
+
+describe("a parking run takes 30 seconds", () => {
+  test("the tower waits while it runs; side jobs and the rest go on", async () => {
+    const { applyIntent } = await import("./actions");
+    const s = newState(1000);
+    s.run = { ...s.run, floor: 1, target: 0, carrySec: 0 };
+    const entered = applyIntent(s, { k: "enterParking" });
+    expect(entered.parking.runUntil).toBe(1000 + 30_000);
+    expect(entered.parking.last).not.toBeNull();
+    const during = settle(entered, 1000 + 29_000);
+    expect(during.run).toEqual(entered.run);
+    // Over, but unclaimed: still waiting.
+    expect(settle(entered, 1000 + 60_000).run).toEqual(entered.run);
+    const after = settle(applyIntent(settle(entered, 1000 + 31_000), { k: "claimParking" }), 1000 + 60_000);
+    expect(after.run.carrySec + after.run.target + after.run.floor).toBeGreaterThan(entered.run.carrySec + entered.run.target + entered.run.floor);
+    expect(() => applyIntent(settle(entered, 1000 + 10_000), { k: "enterParking" })).toThrow();
+  });
+});
+
+describe("an unclaimed parking result", () => {
+  test("pays itself after 5 minutes and the tower goes on", async () => {
+    const { applyIntent } = await import("./actions");
+    const s = newState(1000);
+    const entered = applyIntent(s, { k: "enterParking" });
+    const later = settle(entered, 1000 + 30_000 + 5 * 60_000 + 60_000);
+    expect(later.parking.claimed).toBe(true);
+    // (the tower's own boss tickets come on top once it moves again)
+    expect(later.tickets - s.tickets).toBeGreaterThanOrEqual(entered.parking.last!.tickets);
+    expect(later.run).not.toEqual(entered.run);
   });
 });

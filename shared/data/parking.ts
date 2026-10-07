@@ -8,6 +8,13 @@ import type { Power } from "../stats";
 export { PARK_PASS_MAX };
 export const PARK_RECHARGE_SEC = 900;
 export const PARK_RUN_SEC = 30;
+// A result left unclaimed this long after its run pays itself, so an idle tower never waits forever.
+export const PARK_AUTO_CLAIM_MS = 5 * 60_000;
+
+// The tower waits from entering until the result is claimed (or claims itself).
+export function parkingHolds(parking: GameState["parking"], at: number): boolean {
+  return at < parking.runUntil || (!parking.claimed && at < parking.runUntil + PARK_AUTO_CLAIM_MS);
+}
 export const PARK_STEP_SEC = 0.2;
 export const PARK_CHEST_EVERY = 20;
 export const PARK_HP_BASE = 100;

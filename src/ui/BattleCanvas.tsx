@@ -6,6 +6,7 @@ import { mods } from "../../shared/mods";
 import { targetSec } from "../../shared/settle";
 import type { GameState } from "../../shared/state";
 import { HERO_CRIT_CHANCE, heroPower } from "../../shared/stats";
+import { PARK_CHEST_EVERY, PARK_RUN_SEC, PARK_STEP_SEC, parkHp } from "../../shared/data/parking";
 import { ANIMS, ATTACK_IMPACT_FRAME, BASELINE_Y, HP_BAR, backgroundFile, image, monsterFor, type Anim, type MonsterSprite } from "../game/sprites";
 import { drawPark, visibleWear } from "../game/drawPark";
 import { t } from "../i18n";
@@ -53,6 +54,8 @@ interface Sim {
   // Hit bursts still playing, and a short screen shake after a critical hit.
   fx: { crit: boolean; x: number; y: number; since: number }[];
   shakeUntil: number;
+  // A parking chest opening where the 20th, 40th… meter's monster fell.
+  chest: { x: number; since: number } | null;
 }
 
 const QUIP_MIN_MS = 25_000;
@@ -77,7 +80,7 @@ export function BattleCanvas({ state }: { state: GameState }) {
     let last = performance.now();
     const sim: Sim = {
       kill: "", hits: 0, hurtUntil: 0, dying: null, current: null, currentX: 0, floor: 0, boss: false,
-      quipAt: performance.now() + QUIP_MIN_MS * Math.random(), fx: [], shakeUntil: 0,
+      quipAt: performance.now() + QUIP_MIN_MS * Math.random(), fx: [], shakeUntil: 0, chest: null,
     };
     const loop = (now: number) => {
       const dt = Math.min(0.1, (now - last) / 1000);
@@ -159,29 +162,37 @@ function draw(
   ctx.imageSmoothingEnabled = false;
   const { floor, target, carrySec, farming } = state.run;
   const power = heroPower(state);
+  const serverNow = state.lastTick + (now - at);
+  // 지하주차장 run in progress: the same fight, one monster a meter, deeper each kill.
+  const parking = state.parking.runUntil > serverNow ? parkingView(state, power, serverNow) : null;
   // The monster being fought: farming repeats the floor's normal ones.
   const current = farming ? 0 : Math.min(target, MONSTERS_PER_FLOOR - 1);
-  const fight = targetSec(floor, current, power);
-  const perKill = fight + power.walkSec;
+  const walkSec = parking ? PARK_STEP_SEC : power.walkSec;
+  const fight = parking ? parking.fight : targetSec(floor, current, power);
+  const perKill = fight + walkSec;
   const elapsed = carrySec + (now - at) / 1000;
   const fighting = Number.isFinite(perKill) && perKill > 0;
-  const kills = fighting ? Math.floor(elapsed / perKill) : 0;
-  const t = fighting ? elapsed - kills * perKill : 0;
-  const walking = t < power.walkSec || !Number.isFinite(fight);
-  const nextScroll = walking ? scroll + (WALK_PX_PER_SEC * dt) / power.walkSec : scroll;
+  const kills = parking ? 0 : fighting ? Math.floor(elapsed / perKill) : 0;
+  const t = parking ? parking.t : fighting ? elapsed - kills * perKill : 0;
+  const walking = t < walkSec || !Number.isFinite(fight);
+  const nextScroll = walking ? scroll + (WALK_PX_PER_SEC * dt) / walkSec : scroll;
   const floorY = h - (BG_H - BG_FLOOR) * bgScale;
-  const department = departmentOf(floor);
+  const department = parking ? PARKING_DEPARTMENT : departmentOf(floor);
   const placeNow = current + (fighting ? Math.floor(elapsed / perKill) : 0);
-  const boss = !farming && isBoss(placeNow % MONSTERS_PER_FLOOR);
+  const boss = !parking && !farming && isBoss(placeNow % MONSTERS_PER_FLOOR);
   const parkX = Math.round(w * 0.38) - 34;
   const contactX = parkX + 44;
 
   // Which monster this is; a new one means the last one was killed.
-  const place = target + kills;
-  const kill = `${floor}:${farming}:${place}`;
+  const place = parking ? parking.meter : target + kills;
+  const kill = parking ? `p:${parking.start}:${parking.meter}` : `${floor}:${farming}:${place}`;
   const head: [number, number] = [parkX + 32, floorY - BASELINE_Y + 4];
   if (kill !== sim.kill) {
     if (sim.current && sim.kill !== "") sim.dying = { monster: sim.current, x: sim.currentX, since: now };
+    // Every 20 m down the garage a chest pops open.
+    if (parking && sim.kill.startsWith("p:") && (parking.meter - 1) % PARK_CHEST_EVERY === 0 && parking.meter > 1) {
+      sim.chest = { x: sim.currentX + 16, since: now };
+    }
     // The boss fell: the floor went up past it.
     if (sim.kill !== "" && sim.boss && floor > sim.floor) {
       talk(pickLine(BOSS_LINES[bossKind(sim.floor)], Math.random()), ...head);
@@ -217,16 +228,16 @@ function draw(
   // Hits: n of them over the fight, each landing at the impact point of its own swing.
   const n = Number.isFinite(fight) ? Math.max(1, Math.round(fight / Math.max(MIN_SWING_SEC, power.hitSec))) : 1;
   const interval = Number.isFinite(fight) && n > 0 ? fight / n : 1;
-  const into = walking ? 0 : t - power.walkSec;
+  const into = walking ? 0 : t - walkSec;
   const landed = walking ? 0 : Math.min(n, Math.floor(into / interval + (1 - IMPACT_AT)));
   const monster = sim.current;
   const monsterX = walking
-    ? Math.round(w + 8 + (contactX - (w + 8)) * Math.min(1, t / Math.max(0.001, power.walkSec * 0.9)))
+    ? Math.round(w + 8 + (contactX - (w + 8)) * Math.min(1, t / Math.max(0.001, walkSec * 0.9)))
     : contactX;
   sim.currentX = monsterX;
 
   if (landed > sim.hits && monster) {
-    const hp = targetHp(floor, current).mulN(power.hpMult);
+    const hp = parking ? parkHp(parking.meter).mulN(power.hpMult) : targetHp(floor, current).mulN(power.hpMult);
     const critChance = Math.min(1, HERO_CRIT_CHANCE + mods(state).critChanceAdd);
     const top = floorY - monster.baseline + monster.hpBar[1] - monster.hover;
     for (let k = sim.hits; k < landed; k++) {
@@ -274,8 +285,36 @@ function draw(
     drawHpBar(ctx, monster, monsterX, floorY, 1 - landed / n);
     tag(monster.name, monsterX + monster.hpBar[0], floorY - monster.baseline - monster.hover + monster.hpBar[1] - HP_BAR.h - 1);
     drawHitFx(ctx, sim, now);
+  }
+  if (sim.chest) {
+    const img = image("parking/chest.png");
+    const f = Math.floor((now - sim.chest.since) / CHEST_MS);
+    if (f >= 6) sim.chest = null;
+    else if (img) ctx.drawImage(img, Math.min(3, f) * 32, 0, 32, 32, Math.round(sim.chest.x), floorY - 32, 32, 32);
   } else tag("", 0, 0);
   return nextScroll;
+}
+
+// ---- 지하주차장 ----
+
+const PARKING_DEPARTMENT = "지하주차장";
+const CHEST_MS = 160;
+
+// Where a parking run is now: which meter's monster (1-based), how long it takes to beat, and the
+// time into it, replaying the run's own schedule (runParking: each meter is its fight plus a step).
+function parkingView(state: GameState, power: ReturnType<typeof heroPower>, serverNow: number) {
+  const start = state.parking.runUntil - PARK_RUN_SEC * 1000;
+  let left = Math.max(0, (serverNow - start) / 1000);
+  const depth = state.parking.last?.depth ?? 0;
+  for (let meter = 1; ; meter++) {
+    const hp = parkHp(meter).mulN(power.hpMult);
+    const rate = (hp.isZero() ? 0 : power.dps.div(hp).toNumber()) + power.drainPerSec;
+    const fight = rate > 0 ? 1 / rate : Number.POSITIVE_INFINITY;
+    const sec = fight + PARK_STEP_SEC;
+    // The last monster (the one the time runs out on) stays until the run ends.
+    if (left < sec || meter > depth) return { start, meter, fight, t: left };
+    left -= sec;
+  }
 }
 
 // Hit bursts (art/fx/hit_spark.png, crit_spark.png: one row of frames each), drawn over the monster.

@@ -8,7 +8,7 @@ import { findPet } from "./data/pets";
 import { findRelic } from "./data/relics";
 import { findSideJob } from "./data/sideJobs";
 
-export const SAVE_VERSION = 10;
+export const SAVE_VERSION = 11;
 export const OFFLINE_CAP_SEC = 12 * 3600;
 export const START_GOLD = 10;
 export const OFFICE_MAX_GRADE = 17;
@@ -82,7 +82,12 @@ export interface GameState {
   wear: Record<string, string>;
   office: OfficeGrades;
   // 지하주차장: passes held, seconds toward the next one, the deepest run ever.
-  parking: { passes: number; passCarrySec: number; best: number };
+  // A run lasts until runUntil (server ms) and its result waits in `last` until claimed (`claimed`);
+  // the tower waits through both (see PARK_AUTO_CLAIM_MS).
+  parking: {
+    passes: number; passCarrySec: number; best: number; runUntil: number;
+    last: { depth: number; chests: number; tickets: number } | null; claimed: boolean;
+  };
   // Today's parking record for the daily quests (a new day starts fresh when read; see dailyOf).
   daily: { day: string; entries: number; bestDepth: number; claimed: string[] };
   // Step missions done so far, and the special missions already paid.
@@ -105,12 +110,9 @@ export interface GameState {
   story: string[];
 }
 
-// Costumes beyond the owned list (suits) and what is worn (wear): rentals and when they end, the
-// ones ever rented (bought later they give the rent back), the 불꽃 owned and the one shown, and
-// the 전설 costumes' levels.
+// Costumes beyond the owned list (suits) and what is worn (wear): the 불꽃 owned and the one
+// shown, and the 전설 costumes' levels.
 export interface CostumeState {
-  rent: Record<string, number>;
-  rented: string[];
   auras: number[];
   aura: number;
   legend: Partial<Record<LegendPart, number>>;
@@ -202,9 +204,11 @@ const MIGRATIONS: Record<number, (save: Record<string, unknown>) => Record<strin
   // v8: 배속.
   7: (save) => ({ ...save, v: 8, speed: { until: 0, on: false } }),
   // v9: costumes work when owned; rentals, 불꽃, 전설 costumes.
-  8: (save) => ({ ...save, v: 9, costume: { rent: {}, rented: [], auras: [], aura: 0, legend: {} } }),
+  8: (save) => ({ ...save, v: 9, costume: { auras: [], aura: 0, legend: {} } }),
   // v10: 스토리.
   9: (save) => ({ ...save, v: 10, story: [] }),
+  // v11: a parking run takes 30 s of real time.
+  10: (save) => ({ ...save, v: 11, parking: { ...obj(save.parking), runUntil: 0, last: null, claimed: true } }),
 };
 
 export function freshRun(): RunState {
@@ -235,7 +239,7 @@ export function newState(now: number): GameState {
     suits: [],
     wear: {},
     office: { keyboard: 1, mouse: 1, chair: 1, monitor: 1 },
-    parking: { passes: PARK_PASS_MAX, passCarrySec: 0, best: 0 },
+    parking: { passes: PARK_PASS_MAX, passCarrySec: 0, best: 0, runUntil: 0, last: null, claimed: true },
     daily: { day: "", entries: 0, bestDepth: 0, claimed: [] },
     missions: { step: 0, special: [] },
     attendance: { lastDay: "", count: 0 },
@@ -246,7 +250,7 @@ export function newState(now: number): GameState {
     vx: { total: 0, premium: false, passUntil: 0, dailyClaimed: "", rookie: false, promos: [] },
     offlineBonus: null,
     speed: { until: 0, on: false },
-    costume: { rent: {}, rented: [], auras: [], aura: 0, legend: {} },
+    costume: { auras: [], aura: 0, legend: {} },
     story: [],
   };
 }
@@ -263,7 +267,7 @@ export function cloneState(s: GameState): GameState {
     offlineBonus: s.offlineBonus && { ...s.offlineBonus },
     speed: { ...s.speed },
     costume: {
-      rent: { ...s.costume.rent }, rented: [...s.costume.rented], auras: [...s.costume.auras], aura: s.costume.aura,
+      auras: [...s.costume.auras], aura: s.costume.aura,
       legend: { ...s.costume.legend },
     },
     story: [...s.story],
@@ -313,8 +317,7 @@ export function fromSave(raw: unknown): GameState {
     : [];
   const wear: Record<string, string> = {};
   for (const [part, id] of Object.entries(obj(data.wear))) {
-    const rented = typeof id === "string" && id in obj(obj(data.costume).rent);
-    if (typeof id === "string" && (suits.includes(id) || rented) && id.endsWith(`_${part}`)) wear[part] = id;
+    if (typeof id === "string" && suits.includes(id) && id.endsWith(`_${part}`)) wear[part] = id;
   }
   const carry = data.ticketCarry;
   const parking = obj(data.parking);
@@ -361,6 +364,9 @@ export function fromSave(raw: unknown): GameState {
       passes: Math.min(PARK_PASS_MAX + 2, int(parking.passes, 0, 0)),
       passCarrySec: seconds(parking.passCarrySec),
       best: int(parking.best, 0, 0),
+      runUntil: seconds(parking.runUntil),
+      last: parkingRunOf(obj(parking.last)),
+      claimed: parking.claimed !== false,
     },
     daily: {
       day: text(daily.day, 10),
@@ -391,9 +397,11 @@ export function fromSave(raw: unknown): GameState {
   };
 }
 
+function parkingRunOf(l: Record<string, unknown>): GameState["parking"]["last"] {
+  return typeof l.depth === "number" ? { depth: int(l.depth, 0, 0), chests: int(l.chests, 0, 0), tickets: int(l.tickets, 0, 0) } : null;
+}
+
 function costumeOf(c: Record<string, unknown>): CostumeState {
-  const rent: Record<string, number> = {};
-  for (const [id, until] of Object.entries(obj(c.rent))) if (findSuitItem(id) && seconds(until) > 0) rent[id] = until as number;
   const sets: number[] = SUIT_SETS.map((x) => x.set);
   const auras = Array.isArray(c.auras) ? [...new Set(c.auras.filter((x): x is number => sets.includes(x as number)))] : [];
   const legend: Partial<Record<LegendPart, number>> = {};
@@ -402,8 +410,6 @@ function costumeOf(c: Record<string, unknown>): CostumeState {
     if (lv > 0) legend[l.part] = Math.min(5, lv);
   }
   return {
-    rent,
-    rented: strings(c.rented).filter((id) => findSuitItem(id)),
     auras,
     aura: auras.includes(c.aura as number) ? (c.aura as number) : 0,
     legend,

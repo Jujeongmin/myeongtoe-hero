@@ -24,6 +24,7 @@ Scale up only by an integer factor with nearest-neighbour.
 | `parts/gear/scaled/` | Pixel-clean, pre-shrunk copies of the bulky items (see `scale`). |
 | `parts/gear/gear.json` | Grip point, default angle and scale of each item. |
 | `backgrounds/*.png` | 7 department battle backgrounds (부서 배경), 320×96, opaque, tile horizontally. |
+| `parking/chest.png`, `parking/_sheet.png`, `parking/old/` | The 지하주차장 dungeon: the treasure-toolbox strip, a preview sheet, and the previous `bg_parking.png`. See Parking dungeon. |
 | `icons/*.png` | UI icons, 32×32, plus 16×16 small icons named `*_s.png`. `icons/_sheet.png`, `_sheet_ui.png`, `_sheet_small.png` and `_sheet_aura_legend.png` are contact sheets. |
 | `vx/*.png` | 13 VX shop product images, 512×512 (128×128 pixel art scaled ×4 nearest-neighbour). The 128 px sources are in `vx/src/`, and `vx/_sheet.png` shows all of them. |
 | `icons/extra/`, `parts/gear/extra/` | Unused extras left over from generation. They can be deleted. |
@@ -164,6 +165,8 @@ Each set was dressed once on Park's idle frame 0 (see How it was made). The shap
 | `bg_executive.png` | 임원실 |
 | `bg_parking.png` | 지하주차장 |
 
+`bg_parking.png` was redrawn for the 지하주차장 dungeon (see Parking dungeon); its floor starts at about y 64.
+
 The floor strip is the bottom 27–34 px; the floor starts at about y 62–69. To stand Park on floor line F, draw his frame at y = F − 56 (the previews use F = 82). Draw each background again at x + 320 to scroll it forever.
 
 ## Icons
@@ -231,6 +234,7 @@ No image contains text.
 
 ## Generation budget
 
+- **Parking dungeon (PixelLab):** about **161 generations**: 4 × Pro text-to-image 320×96 / 320×64 backgrounds (25 each, all rejected for perspective or zoomed-in framing), 4 × Pixflux img2img (1 each, one used), 2 × Pro Flash background inpaints (6 each), 1 × 16-candidate monster batch (20), 1 × 64-candidate chest batch (20) and 1 × Pro Flash chest inpaint (5). Other sessions used the same account at the same time, so the balance drop was larger.
 - **Hit sparks (PixelLab Pro Flash):** **60 generations**, 10 images at 6 each. Hit: 4 images at 160×32 (one more failed in background removal and was not charged); the first two had frames crossing their cells or no flash, the third had no speed lines, the fourth was used. Crit: 6 images, a 144×96 3×2 grid that came back as treasure chests, then 144×48 halves: a swirl, a blue burst (palette not copied), the used first half, and two second halves that were both used in part.
 - **Office-object monster redo (PixelLab):** **40 generations**: 2 × 16-candidate `create_1_direction_object` batches at 64×64 (20 each). Another session drew webtoon panels on the same account at the same time, so the balance drop over that period is larger.
 - **Aura / legend icons, speech bubble, red dot (PixelLab):** **43 generations**: 2 × 64-candidate batches (20 each; 32 px icons, 24 px UI), 2 × Pixen 16×16 red dots and 1 × Pixen edit test that tried to add a glow to the helmet (rejected: it only added noise).
@@ -273,7 +277,7 @@ No image contains text.
 
 ## Monsters (`monsters/`)
 
-- There are 36 monsters, 6 per department background. Each department has:
+- There are 36 floor monsters, 6 per department background, plus the 4 normal monsters of the 지하주차장 dungeon (see Parking dungeon). Each floor department has:
   - 3 normal monsters;
   - 1 team-leader boss;
   - 1 executive boss;
@@ -384,6 +388,31 @@ Five more bosses were redrawn the same way, as cursed office workers first. They
   - The miser's money sack carries a small `$` sign.
   - The team leaders are narrower (43–50 px) than the blocky bosses they replace (54–60 px).
 
+### Parking dungeon (지하주차장)
+
+The 지하주차장 dungeon uses the same battle screen as the floors: a new `bg_parking.png`, four normal monsters and a treasure chest. In `monsters.json` the department is `parking` (`departments[6]`, after 임원실). It has no bosses of its own, so `teamLeader` is `tire_golem` and `executive` is `car_mimic`, only to keep the shape.
+
+| id | Name | Flying | Picture | Body (w×h) |
+|---|---|---|---|---|
+| `cone_slime` | 고깔 슬라임 | no | a teal jelly slime wearing a tilted orange-and-white traffic cone, eyes looking west | 27×34 |
+| `tire_golem` | 타이어 골렘 | no | a squat golem of stacked black tires with stubby tire arms and yellow eyes in the gap | 37×34 |
+| `ticket_ghost` | 주차딱지 유령 | yes (`hoverPx` 6) | a ghost made of a yellow parking ticket with blank print lines, a curled top and a grey wisp tail | 30×34 |
+| `car_mimic` | 경차 미믹 | no | a tiny boxy light-green city car facing west, headlight eyes and a toothy grille mouth with a red tongue | 41×31 |
+
+- **Background (`backgrounds/bg_parking.png`, 320×96, 40 colours):** a flat side view of the garage: a ceiling pipe, four pillars with a coloured round or triangular marker (shapes and arrows, no letters or numbers) and yellow-black hazard stripes, two dim ceiling lights with pale light cones, a red and a teal car parked side-on in two bays, one empty bay with an oil stain, and a dark concrete floor from about y 64 with yellow bay marks and a yellow lane line.
+  - Made with PixelLab Pixflux img2img (init strength 100) from a hand-drawn flat layout sketch, because Pro text-to-image kept zooming in (pillars to the bottom edge, floor only 6–16 px tall). The colours were cut to 40 (median cut) and graded darker and bluer (value ×0.84, saturation ×0.88, 10 % toward a dark blue-grey; the tube highlights were kept).
+  - Two Pro Flash inpaints on 128×96 crops then fixed it: one removed a third (green) car, leaving the empty bay, and one redrew the band across the left/right edge (with the image rolled by 160 px) as a ceiling light with a centred cone, so the picture tiles seamlessly. Outside both masks the pixels are unchanged.
+  - The warning-triangle marker had a dark `!`-like mark inside; it was filled with the triangle's own yellow by script.
+  - The previous background is kept in `parking/old/bg_parking.png`.
+- **Monsters:** one PixelLab `create_1_direction_object` batch (sidescroller, 16 candidates at 64×64, four descriptions per monster), with `keyboard_mimic` and `calc_crab` idle frame 0 as style references. The picks already faced west. Downscale, palette and strips are the same as the office-object redo, with two differences:
+  - The palette is the pick's own colours merged pairwise down to 25 plus `#0C0B0A` (as in boss batch A), because a median cut lost the tire golem's yellow eyes.
+  - The death puff and cloud come from the nearest body-width group with at least two normal monsters (31 for the slime and the ghost, 36 for the golem, 41 for the car), because a one-member group would carry that monster's own body.
+- **Chest (`parking/chest.png`):** a strip of 4 frames, 32×32 each (frame *i* at x = 32·i): closed, lid half open with gold light leaking, lid open with a golden burst and sparkles, open and empty. Anchor: bottom centre (16, 32); the box sits on the bottom row (y 31) in every frame. 40 colours, binary alpha.
+  - The closed red toolbox (gold latch, black handle) was picked from one 64-candidate `create_1_direction_object` batch at 32 px (the candidates came back on a 10×10 grid, so the sheet was stitched back together and the toolbox cut out). Stray pixels were cleaned and the palette merged to 16 colours.
+  - The other three frames are one Pro Flash inpaint of a 2×2 sheet of the closed box, masking only the lid and the space above it in three cells. The box body below the lid seam is pixel-identical in all four frames.
+- **Preview:** `parking/_sheet.png` (×3): Park and the four monsters (idle frame 0) on the background, floor line 82, and under it the four chest frames on the floor.
+- **Known weak points:** the tire golem is dark on a dark background (its grey rims and yellow eyes carry it).
+
 ## UI icons (second batch, `icons/`)
 
 - 20 icons at 32×32, no text:
@@ -487,12 +516,22 @@ Each menu has its own frame set instead of the shared blue row panel. Every them
 | `apartment` | honey-wood trim, beige wallpaper, tiny door in the bottom-right corner | cream card, honey-wood edge | wooden door-plate / warm orange door-plate | light beige `#d2be99` |
 | `relics` (memento cabinet) | dark mahogany, brass corner plates, glass shine top-left | brass-rimmed dark wood slot | dull brass nameplate / polished gold nameplate with screws | dark `#321717` |
 | `office` | steel desk metal, bolts in the corners, dark green desk mat | thin steel frame, paperclip on the top-left corner | grey keycap / lit amber keycap | dark green `#446951` |
+| `missions` (clipboard checklist) | brown wooden clipboard, steel clip in the top-left corner, cream ruled paper, dog-ear bottom-right | cream checklist note, empty checkbox top-left, ruled line along the bottom, dog-ear | dark crimson approval-stamp plate / bright red stamp plate with white glints | light cream `#f1e5c3` with ruled lines |
+| `ranking` (trophy board) | navy-black board, bronze trim, gold laurel sprigs in the corners | engraved navy plate, gold-bronze bevel, gold screws | burnished gold medal plate / bright polished gold plate | dark `#131522` |
+| `settings` (control panel) | matte charcoal plastic, screw in each corner, tiny green LED top-right | recessed charcoal switch strip with a lighter bottom lip | grey rocker switch in a bezel / green-lit rocker switch | dark charcoal `#2d313c` |
+| `story` (comic book) | cream cover, bold 2 px black ink border, halftone triangles in the corners | comic panel strip: double ink border, white gutter, halftone top-left | white speech bubble (tail in the bottom-left corner) / yellow POW burst, spikes in the corners | light cream `#f5eddb` |
 
 - Odd ones: `office_button` / `office_button_hot` use a **bottom slice of 11** (top/left/right 8), because the keycap's front bevel lives at the bottom. `office_row`'s paperclip rises 3 px above the frame, so its top 3 rows are transparent apart from the clip. `relics_panel`'s brass plates stick out 1 px past the wood, so each edge has a 1 px transparent margin.
 - Made with PixelLab `create_1_direction_object` (sidescroller view, 48 px, 16 candidates per batch, one item description per candidate). 7 batches, **140 generations**: costume 1, apartment 3 (the first had no outlines; one of the re-rolls was styled from the costume picks, the used one was not), relics 2 (the re-roll styled from the first batch), office 2 (the panel/row re-roll styled from the first batch's keycaps).
 - Cleanup (scripts not kept): alpha binarised, near-black outline set to `#0c0b0a`, enclosed transparent gaps filled from the inside colour, frames cut to size by removing or repeating middle rows/columns, edges made uniform and centres flattened.
 - Hand fixes: `apartment_panel`'s door was moved 1 px down (one door row dropped) to fit the corner; `office_row`'s paperclip lost its 1 px shadow column to fit the 10 px corner; the office keycaps ran off the canvas, so each is its complete right half mirrored, with pin-holes filled and the front bevel shortened; the relics cabinet ran off the canvas, so `relics_panel` is its top-right quadrant mirrored both ways, with a short glass-shine streak redrawn in the top-left corner in the generated shine colours.
 - Previews: `_sheet_costume.png`, `_sheet_apartment.png`, `_sheet_relics.png`, `_sheet_office.png`, each frame at ×1 and ×4, then stretched at 1 px per pixel (panel 300×360, row 300×56, buttons 90×40), the whole sheet at ×2.
+- `missions`, `ranking`, `settings`, `story` (all plain slices 12 / 10 / 8 / 8):
+  - Odd ones: `missions_panel`'s clip rises 2 px above the board, so its top 2 rows are transparent apart from the clip; its centre is not flat but cream with 1 px ruled lines every 6 rows (period 6, so the 24 px centre and the side edges repeat without seams). `story_button`'s body ends 3 px above the canvas bottom; the small tail sits in the bottom-left corner slice (x 4–7), like `speech_bubble`. `story_button_hot`'s spikes poke out only in the corner slices.
+  - Made with PixelLab `create_1_direction_object` (sidescroller view, 40 px, 64 candidates per batch, 32 item descriptions per batch). 6 batches, **150 generations**: missions 1, ranking 1, settings 1, story 3 (the first two drew comic frames that ran across the cell borders; the third was styled from three clean picks of the first two and is the one used).
+  - Cleanup (script not kept): alpha binarised, frames cut to size by keeping the corners and repeating or trimming the middle, each edge band set to its most common cross-section and each centre to one flat colour, the outer outline set to `#0c0b0a`.
+  - Hand fixes: the clipboard's clip was moved from the top centre into the top-left corner (2 middle columns dropped so it fits in 12 px) and the board under it filled from the plain top edge; the paper's uneven ruled lines were redrawn every 6 rows in the generated line colour. `story_panel` got a second inner black line for a bold border, and its paper specks were merged into the cream. `story_row`'s transparent gap between the two borders was filled with white and its halftone cut to a triangle inside the 10 px corner. `story_button`'s tail was too wide for the 8 px corner, so it was redrawn smaller in the bubble's own colours.
+  - Previews: `_sheet_missions.png`, `_sheet_ranking.png`, `_sheet_settings.png`, `_sheet_story.png`: each frame at ×4 on the left; on the right, stretched to panel 300×360, row 300×56, buttons 90×40 at 2 px per pixel (a 150×180 / 150×28 / 45×20 frame drawn ×2).
 
 ## Story panels (`story/`)
 

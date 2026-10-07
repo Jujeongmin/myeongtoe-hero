@@ -90,6 +90,20 @@
    ],
    "teamLeader": "nakhasan_jeonmu",
    "executive": "chairman_demon_king"
+  },
+  {
+   "id": "parking",
+   "name": "지하주차장",
+   "background": "bg_parking.png",
+   "normal": [
+    "cone_slime",
+    "tire_golem",
+    "ticket_ghost",
+    "car_mimic"
+   ],
+   "spareNormal": [],
+   "teamLeader": "tire_golem",
+   "executive": "car_mimic"
   }
  ],
  "monsters": {
@@ -1527,6 +1541,166 @@
     },
     "death": {
      "file": "golfball_wisp_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "cone_slime": {
+   "id": "cone_slime",
+   "name": "고깔 슬라임",
+   "department": "parking",
+   "departmentName": "지하주차장",
+   "background": "bg_parking.png",
+   "role": "normal",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 34,
+   "bodyWidth": 27,
+   "hpBarAnchor": [
+    31,
+    18
+   ],
+   "animations": {
+    "idle": {
+     "file": "cone_slime_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "cone_slime_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "cone_slime_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "tire_golem": {
+   "id": "tire_golem",
+   "name": "타이어 골렘",
+   "department": "parking",
+   "departmentName": "지하주차장",
+   "background": "bg_parking.png",
+   "role": "normal",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 34,
+   "bodyWidth": 37,
+   "hpBarAnchor": [
+    31,
+    18
+   ],
+   "animations": {
+    "idle": {
+     "file": "tire_golem_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "tire_golem_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "tire_golem_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "ticket_ghost": {
+   "id": "ticket_ghost",
+   "name": "주차딱지 유령",
+   "department": "parking",
+   "departmentName": "지하주차장",
+   "background": "bg_parking.png",
+   "role": "normal",
+   "spare": false,
+   "flying": true,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 6,
+   "bodyHeight": 34,
+   "bodyWidth": 30,
+   "hpBarAnchor": [
+    32,
+    11
+   ],
+   "animations": {
+    "idle": {
+     "file": "ticket_ghost_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "ticket_ghost_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "ticket_ghost_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "car_mimic": {
+   "id": "car_mimic",
+   "name": "경차 미믹",
+   "department": "parking",
+   "departmentName": "지하주차장",
+   "background": "bg_parking.png",
+   "role": "normal",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 31,
+   "bodyWidth": 41,
+   "hpBarAnchor": [
+    31,
+    21
+   ],
+   "animations": {
+    "idle": {
+     "file": "car_mimic_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "car_mimic_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "car_mimic_death.png",
      "frameCount": 4,
      "frameDurationMs": 100,
      "loop": false

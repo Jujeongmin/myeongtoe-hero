@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   AURAS, LEGENDS, LEGEND_MAX_LEVEL, LEGEND_SET, SUIT_ITEMS, SUIT_PARTS, auraEffectText, auraOpen, costumeEffectText,
-  hasCostume, legendEffectText, legendOpen, rentPrice, type SuitItem, type SuitPart,
+  hasCostume, legendEffectText, legendOpen, type SuitItem, type SuitPart,
 } from "../../shared/data/costumes";
 import type { GameState } from "../../shared/state";
 import type { Text } from "../../shared/text";
@@ -19,11 +19,6 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "aura", label: "불꽃" },
   { id: "legend", label: "전설" },
 ];
-
-function hours(ms: number): string {
-  const h = Math.max(0, ms) / 3_600_000;
-  return h >= 1 ? t("{h}시간", { h: Math.floor(h) }) : t("{m}분", { m: Math.max(1, Math.ceil(h * 60)) });
-}
 
 const fx = (x: Text) => t(x.key, x.vars);
 
@@ -71,17 +66,15 @@ function CostumeRow({ item, state, store, trying, onTry }: {
   item: SuitItem; state: GameState; store: GameStore; trying: boolean; onTry: () => void;
 }) {
   const own = state.suits.includes(item.id);
-  const rentLeft = (state.costume.rent[item.id] ?? 0) - state.lastTick;
   const usable = hasCostume(state, item.id);
   const worn = state.wear[item.part] === item.id;
-  const refund = state.costume.rented.includes(item.id) ? rentPrice(item) : 0;
   return (
     <div className={`row costume-row${trying ? " current" : ""}`} onClick={onTry}>
       <span className="icon-box"><SpriteThumb path={partStrip(item.id, "idle")} frame={FRAME} className="part-thumb" /></span>
       <div className="grow">
         <b>{t(item.name)}</b>
         <div className="sub">{fx(costumeEffectText(item.effect))}</div>
-        {(own || rentLeft > 0) && <div className="sub">{own ? t("보유") : t("대여 {time} 남음", { time: hours(rentLeft) })}</div>}
+        {own && <div className="sub">{t("보유")}</div>}
       </div>
       <div className="buttons" onClick={(e) => e.stopPropagation()}>
         {usable ? (
@@ -89,13 +82,8 @@ function CostumeRow({ item, state, store, trying, onTry }: {
             {worn ? t("벗기") : t("입기")}
           </button>
         ) : (
-          <button disabled={state.coupons < rentPrice(item)} onClick={() => store.do({ k: "rentSuit", id: item.id })}>
-            {t("대여")}<br /><Amount icon="coupon" value={rentPrice(item)} />
-          </button>
-        )}
-        {!own && (
-          <button className="hot" disabled={state.coupons < item.price - refund} onClick={() => store.do({ k: "buySuit", id: item.id })}>
-            {t("구매")}<br /><Amount icon="coupon" value={item.price - refund} />
+          <button className="hot" disabled={state.coupons < item.price} onClick={() => store.do({ k: "buySuit", id: item.id })}>
+            {t("구매")}<br /><Amount icon="coupon" value={item.price} />
           </button>
         )}
       </div>

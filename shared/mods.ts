@@ -104,7 +104,7 @@ function applyHome(s: GameState, m: Mods): void {
   m.goldMult *= 1 + 0.1 * (s.office.monitor - 1);
 }
 
-// Every costume owned (or rented) works, worn or not; effects multiply. Then the 불꽃 and the 전설
+// Every costume owned works, worn or not; effects multiply. Then the 불꽃 and the 전설
 // costumes with their set effects.
 function applyCostumes(s: GameState, m: Mods): void {
   let owned = 0;

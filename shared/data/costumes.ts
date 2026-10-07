@@ -2,7 +2,7 @@ import type { GameState } from "../state";
 import type { Text } from "../text";
 
 // 코스튬 (정장): six slots, six sets of hero gear with an office joke in each set. Every costume has
-// its own effect, which works from the moment it is owned (or while it is rented) — wearing one only
+// its own effect, which works from the moment it is owned — wearing one only
 // changes how Park looks. Effects multiply with each other.
 // - 불꽃 (aura) of a set: on sale once the set's 투구·갑옷·망토·장갑·신발 are all owned.
 // - 전설 코스튬: one per slot (no 장신구), on sale once all six of that slot are owned, levelled 1–5;
@@ -193,18 +193,9 @@ export function legendValue(legend: Legend, level: number): number {
   return level <= 0 ? 0 : legend.effect.v * legend.effect.growth ** (level - 1);
 }
 
-// ---- rental ----
-
-export const RENT_SHARE = 0.1;
-export const RENT_MS = 24 * 3600_000;
-
-export function rentPrice(item: SuitItem): number {
-  return Math.max(1, Math.round(item.price * RENT_SHARE));
-}
-
-// Owned, or rented and not yet back.
-export function hasCostume(s: Pick<GameState, "suits" | "costume" | "lastTick">, id: string): boolean {
-  return s.suits.includes(id) || (s.costume.rent[id] ?? 0) > s.lastTick;
+// Owned (costumes work from the moment they are bought).
+export function hasCostume(s: Pick<GameState, "suits">, id: string): boolean {
+  return s.suits.includes(id);
 }
 
 // ---- text ----

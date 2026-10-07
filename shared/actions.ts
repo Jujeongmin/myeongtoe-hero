@@ -3,7 +3,7 @@ import { certLevelCost, certOpen, findCert } from "./data/certs";
 import { GEAR_MAX_LEVEL, GEAR_TIERS, gearConfirmCost } from "./data/gear";
 import { OFFICE_PARTS, apartmentCost, officeUpgradeCost, type OfficePart } from "./data/home";
 import {
-  AURAS, LEGENDS, LEGEND_MAX_LEVEL, RENT_MS, SUIT_PARTS, auraOpen, findSuitItem, hasCostume, legendOpen, rentPrice,
+  AURAS, LEGENDS, LEGEND_MAX_LEVEL, SUIT_PARTS, auraOpen, findSuitItem, hasCostume, legendOpen,
 } from "./data/costumes";
 import { findEpisode } from "./data/story";
 import { MONSTERS_PER_FLOOR } from "./data/floors";
@@ -13,7 +13,7 @@ import { SPEED_AD_MS } from "./data/speed";
 import { dailyQuestReward, findDailyQuest } from "./data/dailyQuests";
 import { BUFF_MS, findGemItem } from "./data/gemShop";
 import { ATTENDANCE_REWARDS, STEP_MISSIONS, findSpecialMission, type Reward } from "./data/missions";
-import { runParking } from "./data/parking";
+import { PARK_RUN_SEC, runParking } from "./data/parking";
 import { dailyVxClaimed, dailyVxGems } from "./data/shop";
 import { dailyOf } from "./daily";
 import { PET_BOX_COUPONS, findPet, petLevelCost, petsUnlocked } from "./data/pets";
@@ -50,13 +50,13 @@ export type Intent =
   | { k: "expandApartment" }
   | { k: "buySuit"; id: string }
   | { k: "wearSuit"; id: string }
-  | { k: "rentSuit"; id: string }
   | { k: "takeOffSuit"; part: string }
   | { k: "buyAura"; set: number }
   | { k: "wearAura"; set: number }
   | { k: "levelLegend"; part: string }
   | { k: "readStory"; id: string }
   | { k: "challengeBoss" }
+  | { k: "claimParking" }
   | { k: "upgradeOffice"; part: OfficePart }
   | { k: "enterParking" }
   | { k: "claimDaily"; id: string }
@@ -97,12 +97,12 @@ export function readIntent(raw: unknown): Intent | null {
     case "claimDailyVx":
     case "toggleSpeed":
     case "challengeBoss":
+    case "claimParking":
       return { k: r.k };
     case "levelPet":
     case "levelRelic":
     case "buySuit":
     case "wearSuit":
-    case "rentSuit":
     case "claimDaily":
     case "claimSpecial":
     case "readStory":
@@ -249,27 +249,9 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       const item = findSuitItem(intent.id);
       if (!item) throw new RuleError("unknown");
       if (s.suits.includes(item.id)) throw new RuleError("owned");
-      // Rented before: the rent comes off the price.
-      const refund = s.costume.rented.includes(item.id) ? rentPrice(item) : 0;
-      spendCoupons(s, item.price - refund);
+      spendCoupons(s, item.price);
       s.suits = [...s.suits, item.id];
-      const rent = { ...s.costume.rent };
-      delete rent[item.id];
-      s.costume = { ...s.costume, rent };
       if (!s.wear[item.part]) s.wear = { ...s.wear, [item.part]: item.id };
-      return s;
-    }
-    case "rentSuit": {
-      const item = findSuitItem(intent.id);
-      if (!item) throw new RuleError("unknown");
-      if (s.suits.includes(item.id)) throw new RuleError("owned");
-      spendCoupons(s, rentPrice(item));
-      s.costume = {
-        ...s.costume,
-        rent: { ...s.costume.rent, [item.id]: Math.max(s.costume.rent[item.id] ?? 0, s.lastTick) + RENT_MS },
-        rented: s.costume.rented.includes(item.id) ? s.costume.rented : [...s.costume.rented, item.id],
-      };
-      s.wear = { ...s.wear, [item.part]: item.id };
       return s;
     }
     case "wearSuit": {
@@ -310,10 +292,13 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
     }
     case "enterParking": {
       if (s.parking.passes <= 0) throw new RuleError("no_pass");
+      if (s.parking.runUntil > s.lastTick || !s.parking.claimed) throw new RuleError("busy");
       const run = runParking(heroPower(s));
       const today = dailyOf(s);
-      s.parking = { ...s.parking, passes: s.parking.passes - 1, best: Math.max(s.parking.best, run.depth) };
-      s.tickets += run.tickets;
+      s.parking = {
+        ...s.parking, passes: s.parking.passes - 1, best: Math.max(s.parking.best, run.depth),
+        runUntil: s.lastTick + PARK_RUN_SEC * 1000, last: run, claimed: false,
+      };
       s.daily = { ...today, claimed: [...today.claimed], entries: today.entries + 1, bestDepth: Math.max(today.bestDepth, run.depth) };
       return s;
     }
@@ -381,6 +366,14 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
     case "toggleSpeed": {
       if (!s.vx.premium) throw new RuleError("locked");
       s.speed = { ...s.speed, on: !s.speed.on };
+      return s;
+    }
+    case "claimParking": {
+      // The run is over: its 응시권, and the tower goes on.
+      if (s.parking.claimed || !s.parking.last) throw new RuleError("claimed");
+      if (s.parking.runUntil > s.lastTick) throw new RuleError("busy");
+      s.tickets += s.parking.last.tickets;
+      s.parking = { ...s.parking, claimed: true };
       return s;
     }
     case "challengeBoss": {

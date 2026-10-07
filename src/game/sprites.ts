@@ -21,6 +21,7 @@ const URLS = import.meta.glob(
     "../../art/vx/src/*.png",
     "../../art/story/*.png",
     "../../art/fx/*.png",
+    "../../art/parking/*.png",
     "../../art/story/src/ref_headhunter_cat.png",
   ],
   { eager: true, query: "?url", import: "default" },
