@@ -17,7 +17,7 @@ import { MissionCard, missionsWaiting, type MissionPlace } from "./MissionCard";
 import { BuffBar } from "./BuffBar";
 import { SpeedButton } from "./SpeedButton";
 import { Amount } from "./Amount";
-import { CurrencyBar } from "./CurrencyBar";
+import { CurrencyBar, type GetMore } from "./CurrencyBar";
 
 export type SheetId = "profile" | "prestige" | "suits" | "apartment" | "relics" | "office" | "missions" | "ranking" | "settings" | "story";
 
@@ -37,8 +37,8 @@ const SIDE: { id: SheetId; icon: string; label: string }[] = [
   { id: "story", icon: "story", label: "스토리" },
 ];
 
-export function Battle({ state, store, onOpen, onGo }: {
-  state: GameState; store: GameStore; onOpen: (id: SheetId) => void; onGo: (p: MissionPlace) => void;
+export function Battle({ state, store, onOpen, onGo, getMore }: {
+  state: GameState; store: GameStore; onOpen: (id: SheetId) => void; onGo: (p: MissionPlace) => void; getMore: GetMore;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { floor, target, carrySec, farming, maxFloor } = state.run;
@@ -123,7 +123,7 @@ export function Battle({ state, store, onOpen, onGo }: {
         </div>
       )}
       <MissionCard state={state} store={store} onGo={onGo} />
-      <CurrencyBar state={state} onShop={() => onGo({ tab: "shop" })} />
+      <CurrencyBar state={state} getMore={getMore} />
     </section>
   );
 }

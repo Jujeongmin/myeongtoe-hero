@@ -825,4 +825,4 @@ Each menu has its own frame set instead of the shared blue row panel. Every them
 ## Profile icon and the shop "+"
 
 - `icons/side_profile.png` (32x32): Park's face for the side menu's 프로필. PixelLab Pixflux img2img (strength 300, 1 generation) from the head of `park/idle_0.png`; raw in `icons/src/side_profile_raw.png`, alpha cut at 128.
-- `ui/plus_button.png` (26x26, drawn 1:1): the green "+" at the end of the gem and coupon counters, opening the shop. PixelLab Pixflux 32x32 (1 generation), cropped to its pixels; raw in `ui/src/plus_button_raw.png`.
+- `ui/plus_button.png` (18x18, drawn 1:1; nearest-neighbour from the 26 px crop): the green "+" at the end of the gem and coupon counters, opening the shop. PixelLab Pixflux 32x32 (1 generation), cropped to its pixels; raw in `ui/src/plus_button_raw.png`.

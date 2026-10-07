@@ -16,7 +16,7 @@ import { Icon } from "./Icon";
 
 type Tab = "gems" | "ads" | "vx";
 const TABS: { id: Tab; label: string }[] = [
-  { id: "gems", label: "보석 상점" },
+  { id: "gems", label: "보석 교환" },
   { id: "ads", label: "광고 보상" },
   { id: "vx", label: "VX 상품" },
 ];
@@ -39,8 +39,8 @@ function clock(ms: number): string {
 }
 
 // 상점 tab: what gems buy, the rewarded ads with their cooldowns, and the VX products with VIP.
-export function ShopPanel({ state, store }: { state: GameState; store: GameStore }) {
-  const [tab, setTab] = useState<Tab>("gems");
+export function ShopPanel({ state, store, initial = "gems" }: { state: GameState; store: GameStore; initial?: Tab }) {
+  const [tab, setTab] = useState<Tab>(initial);
   return (
     <>
       <div className="tabs">

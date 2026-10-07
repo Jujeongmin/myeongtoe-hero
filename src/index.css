@@ -429,6 +429,6 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .welcome-go { width: 100%; margin-top: 10px; }
 .welcome-form .row { border: 8px solid transparent; border-image: var(--ui-apply-row, var(--ui-row-panel)) 8 fill / 8px; color: #2a1d1a; }
 .welcome-form .row .sub { text-align: left; }
-/* "+" to the shop at the end of a gem or coupon counter (art/ui/plus_button.png, 26px, drawn 1:1). */
-.plus-btn { width: 26px; height: 26px; min-height: 0; margin-left: 3px; padding: 0; border: 0; background: var(--ui-plus-button) center / 26px 26px no-repeat; image-rendering: pixelated; pointer-events: auto; cursor: pointer; flex: none; }
-.wallet-pill .plus-btn { margin: -5px -6px -5px 4px; }
+/* "+" to the shop at the end of a gold, gem or coupon counter (art/ui/plus_button.png, 18px, 1:1). */
+.plus-btn { width: 18px; height: 18px; min-height: 0; margin-left: 3px; padding: 0; border: 0; background: var(--ui-plus-button) center / 18px 18px no-repeat; image-rendering: pixelated; pointer-events: auto; cursor: pointer; flex: none; }
+.wallet-pill .plus-btn { margin: -1px -4px -1px 4px; }
