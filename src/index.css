@@ -459,3 +459,16 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .theme-profile .row button { color: #fff4e0; }
 /* LV UP on a gear or certificate row: over the row's top edge, toward the right. */
 .lv-up.row-lv-up { left: auto; right: 84px; top: -4px; margin: 0; }
+/* 이직 button: icon on the left, text and a progress bar (or the reward) on the right; once open it
+   glows gold and bobs now and then, with a red "!" badge. */
+.prestige-btn { flex-direction: row; gap: 4px; align-items: center; padding: 0 6px 0 0; }
+.prestige-btn > .icon-img { width: 32px; height: 32px; margin: -10px 0 -10px -10px; }
+.prestige-text { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; }
+.prestige-text b { font-size: 13px; }
+.prestige-text small { font-size: 11px; }
+.prestige-text .pbar { width: 100%; min-width: 60px; }
+.prestige-line { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+.prestige-btn.ready { animation: prestige-bob 2.4s steps(1) infinite, prestige-glow 1.2s steps(3) infinite alternate; }
+@keyframes prestige-bob { 0%, 80% { transform: translateY(0); } 85% { transform: translateY(-3px); } 90% { transform: translateY(0); } 95% { transform: translateY(-2px); } }
+@keyframes prestige-glow { from { filter: drop-shadow(0 0 0 rgba(255, 209, 102, 0)); } to { filter: drop-shadow(0 0 4px rgba(255, 209, 102, 0.9)); } }
+.prestige-btn .dot { position: absolute; right: -6px; top: -6px; }

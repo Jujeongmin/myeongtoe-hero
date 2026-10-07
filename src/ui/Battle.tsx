@@ -101,9 +101,18 @@ export function Battle({ state, store, onOpen, onGo, getMore }: {
           </div>
         )}
       </div>
+      {/* 이직: the offer-letter icon popping out of the button. Before floor 70 a bar fills toward it;
+          once open the button glows and bobs, with the 응시권 a job change would bring and the menu's red dot. */}
       <button className={`prestige-btn${ready ? " ready" : ""}`} onClick={() => onOpen("prestige")}>
-        {t("이직")}
-        <small>{ready ? <Amount icon="ticket" value={`+${formatCount(reward.tickets)}`} /> : t("{floor}층부터", { floor: PRESTIGE_MIN_FLOOR })}</small>
+        <Icon name="prestige" />
+        <span className="prestige-text">
+          <span className="prestige-line">
+            <b>{t("이직")}</b>
+            {ready ? <small><Amount icon="ticket" value={`+${formatCount(reward.tickets)}`} /></small> : <small>{t("{n}/{floor}층", { n: maxFloor, floor: PRESTIGE_MIN_FLOOR })}</small>}
+          </span>
+          {!ready && <PixelBar kind="progress" value={maxFloor / PRESTIGE_MIN_FLOOR} />}
+        </span>
+        {ready && <i className="dot" />}
       </button>
       {farming && !parked && (
         <button className="boss-btn" onClick={() => store.do({ k: "challengeBoss" })}>
