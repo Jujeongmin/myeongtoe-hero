@@ -146,11 +146,11 @@
    "frameHeight": 64,
    "feetBaselineY": 56,
    "hoverPx": 6,
-   "bodyHeight": 28,
-   "bodyWidth": 46,
+   "bodyHeight": 32,
+   "bodyWidth": 41,
    "hpBarAnchor": [
-    32,
-    17
+    31,
+    13
    ],
    "animations": {
     "idle": {
@@ -186,11 +186,11 @@
    "frameHeight": 64,
    "feetBaselineY": 56,
    "hoverPx": 0,
-   "bodyHeight": 34,
+   "bodyHeight": 29,
    "bodyWidth": 46,
    "hpBarAnchor": [
     32,
-    18
+    23
    ],
    "animations": {
     "idle": {
@@ -426,11 +426,11 @@
    "frameHeight": 64,
    "feetBaselineY": 56,
    "hoverPx": 0,
-   "bodyHeight": 34,
-   "bodyWidth": 40,
+   "bodyHeight": 32,
+   "bodyWidth": 36,
    "hpBarAnchor": [
     32,
-    18
+    20
    ],
    "animations": {
     "idle": {
@@ -535,7 +535,7 @@
   },
   "card_pixie": {
    "id": "card_pixie",
-   "name": "명함 요정",
+   "name": "명함 종이학",
    "department": "sales",
    "departmentName": "영업팀",
    "background": "bg_sales.png",
@@ -546,11 +546,11 @@
    "frameHeight": 64,
    "feetBaselineY": 56,
    "hoverPx": 6,
-   "bodyHeight": 34,
-   "bodyWidth": 36,
+   "bodyHeight": 32,
+   "bodyWidth": 41,
    "hpBarAnchor": [
-    32,
-    11
+    31,
+    13
    ],
    "animations": {
     "idle": {
@@ -786,11 +786,11 @@
    "frameHeight": 64,
    "feetBaselineY": 56,
    "hoverPx": 0,
-   "bodyHeight": 34,
-   "bodyWidth": 41,
+   "bodyHeight": 29,
+   "bodyWidth": 46,
    "hpBarAnchor": [
-    31,
-    18
+    32,
+    23
    ],
    "animations": {
     "idle": {
@@ -1386,11 +1386,11 @@
    "frameHeight": 64,
    "feetBaselineY": 56,
    "hoverPx": 6,
-   "bodyHeight": 33,
+   "bodyHeight": 27,
    "bodyWidth": 46,
    "hpBarAnchor": [
     32,
-    12
+    18
    ],
    "animations": {
     "idle": {
