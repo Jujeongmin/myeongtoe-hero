@@ -36,10 +36,19 @@ export const CERT_LINES: readonly { line: CertLine; name: string; text: string }
 export const CERT_MAX_LEVEL = 99999;
 export const GRIT_FIRST_MAX_LEVEL = 200;
 
-const MAIN: CertDef[] = CERT_LINES.flatMap(({ line, name }) =>
-  CERT_GRADES.map((g, i) => ({
+// Each name written out whole (line + grade), so each is its own translation key.
+const MAIN_NAMES: Record<CertLine, readonly string[]> = {
+  atk: ["타격기능사", "타격산업기사", "타격기사", "타격기능장", "타격기술사"],
+  crit: ["급소공략기능사", "급소공략산업기사", "급소공략기사", "급소공략기능장", "급소공략기술사"],
+  side: ["투잡관리기능사", "투잡관리산업기사", "투잡관리기사", "투잡관리기능장", "투잡관리기술사"],
+  gold: ["수금기능사", "수금산업기사", "수금기사", "수금기능장", "수금기술사"],
+  grit: ["근성기능사", "근성산업기사", "근성기사", "근성기능장", "근성기술사"],
+};
+
+const MAIN: CertDef[] = CERT_LINES.flatMap(({ line }) =>
+  CERT_GRADES.map((_, i) => ({
     id: `${line}${i + 1}`,
-    name: name + g,
+    name: MAIN_NAMES[line][i],
     group: "main" as const,
     kind: line,
     grade: i + 1,

@@ -1,3 +1,4 @@
+import { t } from "../i18n";
 import { MONSTERS_PER_FLOOR, departmentOf, isBoss } from "../../shared/data/floors";
 import { monsterFor } from "../game/sprites";
 import { SpriteThumb } from "./SpriteThumb";
@@ -51,17 +52,17 @@ export function Battle({ state, store, onOpen, onGo }: {
     <section className="battle">
       <BattleCanvas state={state} />
       <header className="battle-head">
-        <span>{departmentOf(floor)} {floor}층</span>
-        {farming && <span className="floor-no">파밍 중</span>}
+        <span>{t("{dept} {floor}층", { dept: t(departmentOf(floor)), floor })}</span>
+        {farming && <span className="floor-no">{t("파밍 중")}</span>}
         {boss && <span className="boss-timer"><Icon name="timer" size={16} /><PixelBar kind="progress" value={bossLeft / power.bossLimitSec} /></span>}
       </header>
-      <div className="atk-now">공격력 {formatBig(atk)}</div>
+      <div className="atk-now">{t("공격력 {atk}", { atk: formatBig(atk) })}</div>
       <div className="top-left">
         <BuffBar state={state} store={store} onShop={() => onGo({ tab: "shop" })} />
         <SpeedButton state={state} store={store} />
       </div>
       <div className="side-menu">
-        <button className={`menu-btn${menuOpen ? " on" : ""}`} aria-label="메뉴" onClick={() => setMenuOpen(!menuOpen)}>
+        <button className={`menu-btn${menuOpen ? " on" : ""}`} aria-label={t("메뉴")} onClick={() => setMenuOpen(!menuOpen)}>
           {missionsWaiting(state) && <i className="dot" />}
         </button>
         {menuOpen && (
@@ -75,7 +76,7 @@ export function Battle({ state, store, onOpen, onGo }: {
                 }}
               >
                 <Icon name={s.icon} />
-                {s.label}
+                {t(s.label)}
                 {s.id === "missions" && missionsWaiting(state) && <i className="dot" />}
               </button>
             ))}
@@ -83,13 +84,13 @@ export function Battle({ state, store, onOpen, onGo }: {
         )}
       </div>
       <button className="prestige-btn" onClick={() => onOpen("prestige")}>
-        이직
-        <small>{ready ? <Amount icon="ticket" value={`+${formatCount(reward.tickets)}`} /> : `${PRESTIGE_MIN_FLOOR}층부터`}</small>
+        {t("이직")}
+        <small>{ready ? <Amount icon="ticket" value={`+${formatCount(reward.tickets)}`} /> : t("{floor}층부터", { floor: PRESTIGE_MIN_FLOOR })}</small>
       </button>
       {farming && (
         <button className="boss-btn" onClick={() => store.do({ k: "challengeBoss" })}>
           <span className="boss-face">{bossSprite && <SpriteThumb path={bossSprite.anims.idle.file} frame={bossSprite.size} res={20} size={20} head />}</span>
-          <span>보스 도전!</span>
+          <span>{t("보스 도전!")}</span>
         </button>
       )}
       <MissionCard state={state} store={store} onGo={onGo} />

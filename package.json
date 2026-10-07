@@ -12,10 +12,14 @@
     "server:test": "npm --prefix server test",
     "server:typecheck": "npm --prefix server run typecheck",
     "vx-sheet": "vite-node tools/vx-sheet.ts",
-    "sim": "vite-node tools/sim.ts"
+    "sim": "vite-node tools/sim.ts",
+    "i18n": "vite-node tools/i18n.ts"
   },
   "dependencies": {
     "@agent8/gameserver": "^2.0.1",
+    "@fontsource/fusion-pixel-12px-proportional-jp": "^5.3.0",
+    "@fontsource/fusion-pixel-12px-proportional-sc": "^5.3.0",
+    "@fontsource/fusion-pixel-12px-proportional-tc": "^5.3.0",
     "@verse8/ads": "^0.5.0",
     "@verse8/platform": "^2.1.0",
     "galmuri": "^2.40.3",

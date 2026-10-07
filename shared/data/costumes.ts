@@ -1,4 +1,5 @@
 import type { GameState } from "../state";
+import type { Text } from "../text";
 
 // 코스튬 (정장): six slots, six sets of hero gear with an office joke in each set. Every costume has
 // its own effect, which works from the moment it is owned (or while it is rented) — wearing one only
@@ -207,47 +208,49 @@ export function hasCostume(s: Pick<GameState, "suits" | "costume" | "lastTick">,
 }
 
 // ---- text ----
+// Each effect as a pattern for the client to translate (t(key, vars)); see shared/text.ts.
 
 const PCT = (v: number) => `${Math.round(v * 100)}%`;
+const pct = (key: string, v: number): Text => ({ key, vars: { v: PCT(v) } });
 
-export function costumeEffectText(e: CostumeEffect): string {
+export function costumeEffectText(e: CostumeEffect): Text {
   switch (e.k) {
-    case "dmg": return `공격력 +${PCT(e.v)}`;
-    case "critDmg": return `치명타 데미지 +${PCT(e.v)}`;
-    case "aspd": return `공격 속도 +${PCT(e.v)}`;
-    case "gold": return `처치 골드 +${PCT(e.v)}`;
-    case "sideJob": return `부업 수입 +${PCT(e.v)}`;
-    case "boss": return `보스 데미지 +${PCT(e.v)}`;
-    case "move": return `이동 속도 +${PCT(e.v)}`;
-    case "prestige": return `이직 응시권 +${PCT(e.v)}`;
-    case "critChance": return `치명타 확률 +${PCT(e.v)}`;
-    case "cost": return `장비·부업 비용 -${PCT(e.v)}`;
-    case "bossTime": return `보스 제한시간 +${e.v}초`;
-    case "offline": return `오프라인 시간 +${e.v / 3600}시간`;
-    case "prestigeFloors": return `이직 시 +${e.v}층으로 계산`;
-    case "dmgBelow": return `${e.floor}층 이하에서 공격력 +${PCT(e.v)}`;
-    case "prestigeBelow": return `${e.floor}층 이하 이직 시 응시권 +${PCT(e.v)}`;
+    case "dmg": return pct("공격력 +{v}", e.v);
+    case "critDmg": return pct("치명타 데미지 +{v}", e.v);
+    case "aspd": return pct("공격 속도 +{v}", e.v);
+    case "gold": return pct("처치 골드 +{v}", e.v);
+    case "sideJob": return pct("부업 수입 +{v}", e.v);
+    case "boss": return pct("보스 데미지 +{v}", e.v);
+    case "move": return pct("이동 속도 +{v}", e.v);
+    case "prestige": return pct("이직 응시권 +{v}", e.v);
+    case "critChance": return pct("치명타 확률 +{v}", e.v);
+    case "cost": return pct("장비·부업 비용 -{v}", e.v);
+    case "bossTime": return { key: "보스 제한시간 +{v}초", vars: { v: e.v } };
+    case "offline": return { key: "오프라인 시간 +{v}시간", vars: { v: e.v / 3600 } };
+    case "prestigeFloors": return { key: "이직 시 +{v}층으로 계산", vars: { v: e.v } };
+    case "dmgBelow": return { key: "{floor}층 이하에서 공격력 +{v}", vars: { floor: e.floor, v: PCT(e.v) } };
+    case "prestigeBelow": return { key: "{floor}층 이하 이직 시 응시권 +{v}", vars: { floor: e.floor, v: PCT(e.v) } };
   }
 }
 
-export function auraEffectText(e: AuraEffect): string {
+export function auraEffectText(e: AuraEffect): Text {
   switch (e.k) {
-    case "apartment": return `아파트 +${e.v}평 효과`;
-    case "coachLevels": return `커리어코치 +${e.v}레벨 효과`;
-    case "perAura": return `보유한 불꽃 1개당 공격력 +${PCT(e.v)}`;
-    case "perCostume": return `보유한 코스튬 1개당 공격력 +${PCT(e.v)}`;
-    case "per1000Floors": return `최고 1000층마다 공격력 +${PCT(e.v)}`;
-    case "goldPerVip": return `VIP 1단계당 처치 골드 +${PCT(e.v)}`;
+    case "apartment": return { key: "아파트 +{v}평 효과", vars: { v: e.v } };
+    case "coachLevels": return { key: "커리어코치 +{v}레벨 효과", vars: { v: e.v } };
+    case "perAura": return pct("보유한 불꽃 1개당 공격력 +{v}", e.v);
+    case "perCostume": return pct("보유한 코스튬 1개당 공격력 +{v}", e.v);
+    case "per1000Floors": return pct("최고 1000층마다 공격력 +{v}", e.v);
+    case "goldPerVip": return pct("VIP 1단계당 처치 골드 +{v}", e.v);
   }
 }
 
-export function legendEffectText(l: Legend, level: number): string {
+export function legendEffectText(l: Legend, level: number): Text {
   const v = legendValue(l, Math.max(1, level));
   switch (l.effect.k) {
-    case "dmg": return `공격력 +${PCT(v)}`;
-    case "prestige": return `이직 응시권 +${PCT(v)}`;
-    case "critDmg": return `치명타 데미지 +${PCT(v)}`;
-    case "gold": return `처치 골드 +${PCT(v)}`;
-    case "perConfirmed": return `구매확정한 장비 1개당 공격력 +${PCT(v)}`;
+    case "dmg": return pct("공격력 +{v}", v);
+    case "prestige": return pct("이직 응시권 +{v}", v);
+    case "critDmg": return pct("치명타 데미지 +{v}", v);
+    case "gold": return pct("처치 골드 +{v}", v);
+    case "perConfirmed": return pct("구매확정한 장비 1개당 공격력 +{v}", v);
   }
 }

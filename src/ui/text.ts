@@ -1,3 +1,5 @@
+import { t } from "../i18n";
+
 const ERRORS: Record<string, string> = {
   not_enough_gold: "골드가 부족해요",
   locked: "아직 잠겨 있어요",
@@ -16,5 +18,6 @@ const ERRORS: Record<string, string> = {
 };
 
 export function errorText(code: string): string {
-  return ERRORS[code] ?? "잠시 후 다시 시도해 주세요";
+  const text = ERRORS[code];
+  return text ? t(text) : t("잠시 후 다시 시도해 주세요");
 }

@@ -1,4 +1,5 @@
 import type { GameState } from "../state";
+import type { Text, TextVars } from "../text";
 import { CERTS } from "./certs";
 import { GEAR_MAX_LEVEL } from "./gear";
 import { awakenStage } from "./pets";
@@ -14,7 +15,9 @@ export interface Reward {
 
 export interface MissionDef {
   id: string;
+  // A pattern the client shows as t(text, vars); vars only where it has numbers in it.
   text: string;
+  vars?: TextVars;
   done: (s: GameState) => boolean;
   reward: Reward;
 }
@@ -54,7 +57,7 @@ export const SPECIAL_MISSIONS: readonly MissionDef[] = [
   { id: "p10", text: "이직 10회", done: (s) => s.prestiges >= 10, reward: { gems: 200 } },
   { id: "p30", text: "이직 30회", done: (s) => s.prestiges >= 30, reward: { gems: 500 } },
   { id: "c20", text: "자격증 20개", done: (s) => owned(s.certs) >= 20, reward: { gems: 200 } },
-  { id: "c40", text: `자격증 ${CERTS.length}개 전부`, done: (s) => owned(s.certs) >= CERTS.length, reward: { gems: 500 } },
+  { id: "c40", text: "자격증 {n}개 전부", vars: { n: CERTS.length }, done: (s) => owned(s.certs) >= CERTS.length, reward: { gems: 500 } },
   { id: "k100", text: "지하주차장 100m", done: (s) => s.parking.best >= 100, reward: { gems: 100 } },
   { id: "k500", text: "지하주차장 500m", done: (s) => s.parking.best >= 500, reward: { gems: 300 } },
   { id: "k1000", text: "지하주차장 1000m", done: (s) => s.parking.best >= 1000, reward: { gems: 600 } },
@@ -74,6 +77,11 @@ export function findSpecialMission(id: string): MissionDef | undefined {
   return SPECIAL_BY_ID.get(id);
 }
 
-export function rewardText(r: Reward): string {
-  return [r.gems && `보석 ${r.gems}`, r.tickets && `응시권 ${r.tickets}`, r.coupons && `상품권 ${r.coupons}`].filter(Boolean).join(" · ");
+// The reward's parts, each a pattern for t() (shown joined with " · ").
+export function rewardText(r: Reward): Text[] {
+  const parts: Text[] = [];
+  if (r.gems) parts.push({ key: "보석 {n}", vars: { n: r.gems } });
+  if (r.tickets) parts.push({ key: "응시권 {n}", vars: { n: r.tickets } });
+  if (r.coupons) parts.push({ key: "상품권 {n}", vars: { n: r.coupons } });
+  return parts;
 }

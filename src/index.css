@@ -7,7 +7,7 @@ html, body, #root {
   height: 100%;
   background: #120f20;
   color: #fff;
-  font-family: "Mulmaru", "Galmuri11", monospace;
+  font-family: "Mulmaru", "Galmuri11", "Fusion Pixel 12px Proportional SC", monospace;
   font-synthesis: none;
   font-size: 12px;
   line-height: 1.5;
@@ -268,3 +268,8 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .boss-face::after { content: ""; position: absolute; inset: 0; background: var(--ui-boss-frame) 0 0 / 40px 40px no-repeat; image-rendering: pixelated; }
 /* The monster's name, centred just over its health bar. */
 .monster-name { position: absolute; z-index: 1; transform: translate(-50%, -100%); font-size: 12px; line-height: 14px; color: #fff; white-space: nowrap; text-shadow: 1px 1px 0 #000, -1px 0 0 #000, 0 -1px 0 #000, 1px 0 0 #000; pointer-events: none; }
+.lang-select { font: inherit; color: #fff; background: #1b1a2e; border: 2px solid #000; padding: 4px; }
+/* Chinese and Japanese: Fusion Pixel's regional glyphs before Galmuri's Korean-form hanja. */
+html[lang="zh-Hans"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional SC", "Galmuri11", monospace; }
+html[lang="zh-Hant"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional TC", "Galmuri11", monospace; }
+html[lang="ja"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional JP", "Galmuri11", monospace; }

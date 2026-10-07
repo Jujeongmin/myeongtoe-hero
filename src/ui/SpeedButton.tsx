@@ -3,6 +3,7 @@ import { adReadyAt, findAd } from "../../shared/data/ads";
 import { speedActive } from "../../shared/data/speed";
 import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
+import { t } from "../i18n";
 import { showAd } from "../net/ads";
 import { Icon } from "./Icon";
 
@@ -36,7 +37,7 @@ export function SpeedButton({ state, store }: { state: GameState; store: GameSto
   };
 
   return (
-    <button className={`speed-btn${on ? " on" : ""}`} disabled={busy} aria-label="2배속" onClick={() => void press()}>
+    <button className={`speed-btn${on ? " on" : ""}`} disabled={busy} aria-label={t("2배속")} onClick={() => void press()}>
       <Icon name="speed" />
       {on && !(premium && state.speed.on) && <small>{clock(left)}</small>}
     </button>

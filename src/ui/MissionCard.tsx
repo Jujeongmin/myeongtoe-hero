@@ -3,6 +3,7 @@ import { SPECIAL_MISSIONS, STEP_MISSIONS } from "../../shared/data/missions";
 import type { GameState } from "../../shared/state";
 import { kstDay } from "../../shared/time";
 import type { GameStore } from "../game/store";
+import { t } from "../i18n";
 import type { NavTab } from "./BottomNav";
 import { RewardView } from "./Amount";
 
@@ -46,14 +47,15 @@ export function MissionCard({ state, store, onGo }: { state: GameState; store: G
   if (!m) return null;
   const done = m.done(state);
   const place = PLACES[m.id];
-  const line = useFitText(`${step + 1}단계 · ${m.text}`);
+  const text = t("{step}단계 · {mission}", { step: step + 1, mission: t(m.text, m.vars) });
+  const line = useFitText(text);
   return (
     <div
       className={`mission-card${done ? " done" : ""}`}
       onClick={() => (done ? store.do({ k: "claimStep" }) : place && onGo(place))}
     >
-      <div className="mission-line" ref={line}>{step + 1}단계 · {m.text}</div>
-      {done && <div className="claim">받기 <RewardView reward={m.reward} /></div>}
+      <div className="mission-line" ref={line}>{text}</div>
+      {done && <div className="claim">{t("받기")} <RewardView reward={m.reward} /></div>}
     </div>
   );
 }

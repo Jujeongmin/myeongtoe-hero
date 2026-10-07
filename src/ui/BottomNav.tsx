@@ -1,3 +1,4 @@
+import { t } from "../i18n";
 import type { GameState } from "../../shared/state";
 import { Icon } from "./Icon";
 
@@ -24,10 +25,10 @@ export function BottomNav({ state, tab, onPick, onLocked }: {
           <button
             key={item.id}
             className={`${item.id === tab ? "on" : ""}${open ? "" : " locked"}`}
-            onClick={() => (open ? onPick(item.id) : onLocked(`${item.label}은(는) ${item.openAt}층에서 해금돼요`))}
+            onClick={() => (open ? onPick(item.id) : onLocked(t("{name}은(는) {floor}층에서 해금돼요", { name: t(item.label), floor: item.openAt })))}
           >
             <span className="icon"><Icon name={open ? item.icon : "lock"} /></span>
-            {item.label}
+            {t(item.label)}
           </button>
         );
       })}

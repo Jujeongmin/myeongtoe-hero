@@ -4,6 +4,8 @@ import {
   hasCostume, legendEffectText, legendOpen, rentPrice, type SuitItem, type SuitPart,
 } from "../../shared/data/costumes";
 import type { GameState } from "../../shared/state";
+import type { Text } from "../../shared/text";
+import { t } from "../i18n";
 import { ANIMS, BASELINE_Y, FRAME, partStrip } from "../game/sprites";
 import { drawPark, visibleWear } from "../game/drawPark";
 import type { GameStore } from "../game/store";
@@ -20,8 +22,10 @@ const TABS: { id: Tab; label: string }[] = [
 
 function hours(ms: number): string {
   const h = Math.max(0, ms) / 3_600_000;
-  return h >= 1 ? `${Math.floor(h)}시간` : `${Math.max(1, Math.ceil(h * 60))}분`;
+  return h >= 1 ? t("{h}시간", { h: Math.floor(h) }) : t("{m}분", { m: Math.max(1, Math.ceil(h * 60)) });
 }
+
+const fx = (x: Text) => t(x.key, x.vars);
 
 // 코스튬: Park in what he wears (or is trying on) on top, then a tab per slot and for 불꽃 and 전설.
 // Tapping a costume tries it on in the preview; buying it makes its effect work at once, worn or not.
@@ -38,15 +42,15 @@ export function CostumePanel({ state, store }: { state: GameState; store: GameSt
       <div className="costume-top">
         <Preview wear={wear} gearTier={state.gear.tier} />
         <div className="costume-summary">
-          <b>보유 코스튬 {owned}/{SUIT_ITEMS.length}</b>
-          <div className="sub">사면 입지 않아도 효과가 바로 적용돼요. 입으면 겉모습만 바뀌어요.</div>
-          <div className="sub">코스튬을 누르면 미리 입어볼 수 있어요.</div>
-          {tryItem && <div className="sub">입어보는 중: {tryItem.name}</div>}
+          <b>{t("보유 코스튬 {owned}/{total}", { owned, total: SUIT_ITEMS.length })}</b>
+          <div className="sub">{t("사면 입지 않아도 효과가 바로 적용돼요. 입으면 겉모습만 바뀌어요.")}</div>
+          <div className="sub">{t("코스튬을 누르면 미리 입어볼 수 있어요.")}</div>
+          {tryItem && <div className="sub">{t("입어보는 중: {name}", { name: t(tryItem.name) })}</div>}
         </div>
       </div>
       <div className="tabs costume-tabs">
-        {TABS.map((t) => (
-          <button key={t.id} className={t.id === tab ? "on" : ""} onClick={() => setTab(t.id)}>{t.label}</button>
+        {TABS.map((x) => (
+          <button key={x.id} className={x.id === tab ? "on" : ""} onClick={() => setTab(x.id)}>{t(x.label)}</button>
         ))}
       </div>
       {tab === "aura" ? (
@@ -75,23 +79,23 @@ function CostumeRow({ item, state, store, trying, onTry }: {
     <div className={`row costume-row${trying ? " current" : ""}`} onClick={onTry}>
       <span className="icon-box"><SpriteThumb path={partStrip(item.id, "idle")} frame={FRAME} className="part-thumb" /></span>
       <div className="grow">
-        <b>{item.name}</b>
-        <div className="sub">{costumeEffectText(item.effect)}</div>
-        {(own || rentLeft > 0) && <div className="sub">{own ? "보유" : `대여 ${hours(rentLeft)} 남음`}</div>}
+        <b>{t(item.name)}</b>
+        <div className="sub">{fx(costumeEffectText(item.effect))}</div>
+        {(own || rentLeft > 0) && <div className="sub">{own ? t("보유") : t("대여 {time} 남음", { time: hours(rentLeft) })}</div>}
       </div>
       <div className="buttons" onClick={(e) => e.stopPropagation()}>
         {usable ? (
           <button className={worn ? "" : "hot"} onClick={() => store.do(worn ? { k: "takeOffSuit", part: item.part } : { k: "wearSuit", id: item.id })}>
-            {worn ? "벗기" : "입기"}
+            {worn ? t("벗기") : t("입기")}
           </button>
         ) : (
           <button disabled={state.coupons < rentPrice(item)} onClick={() => store.do({ k: "rentSuit", id: item.id })}>
-            대여<br /><Amount icon="coupon" value={rentPrice(item)} />
+            {t("대여")}<br /><Amount icon="coupon" value={rentPrice(item)} />
           </button>
         )}
         {!own && (
           <button className="hot" disabled={state.coupons < item.price - refund} onClick={() => store.do({ k: "buySuit", id: item.id })}>
-            구매<br /><Amount icon="coupon" value={item.price - refund} />
+            {t("구매")}<br /><Amount icon="coupon" value={item.price - refund} />
           </button>
         )}
       </div>
@@ -102,7 +106,7 @@ function CostumeRow({ item, state, store, trying, onTry }: {
 function Auras({ state, store }: { state: GameState; store: GameStore }) {
   return (
     <>
-      <div className="group-title">세트의 투구·갑옷·망토·장갑·신발을 모두 가지면 불꽃을 살 수 있어요</div>
+      <div className="group-title">{t("세트의 투구·갑옷·망토·장갑·신발을 모두 가지면 불꽃을 살 수 있어요")}</div>
       {AURAS.map((aura) => {
         const own = state.costume.auras.includes(aura.set);
         const open = auraOpen(state.suits, aura.set);
@@ -111,15 +115,15 @@ function Auras({ state, store }: { state: GameState; store: GameStore }) {
           <div key={aura.set} className={`row costume-row${!own && !open ? " far" : ""}`}>
             <span className="icon-box"><Icon name={`aura_${aura.set}`} /></span>
             <div className="grow">
-              <b>{aura.name}</b>
-              <div className="sub">{auraEffectText(aura.effect)}</div>
-              {!open && !own && <div className="sub">세트 5부위 필요</div>}
+              <b>{t(aura.name)}</b>
+              <div className="sub">{fx(auraEffectText(aura.effect))}</div>
+              {!open && !own && <div className="sub">{t("세트 5부위 필요")}</div>}
             </div>
             {own ? (
-              <button className={on ? "" : "hot"} onClick={() => store.do({ k: "wearAura", set: on ? 0 : aura.set })}>{on ? "끄기" : "켜기"}</button>
+              <button className={on ? "" : "hot"} onClick={() => store.do({ k: "wearAura", set: on ? 0 : aura.set })}>{on ? t("끄기") : t("켜기")}</button>
             ) : (
               <button className="hot" disabled={!open || state.gems < aura.gems} onClick={() => store.do({ k: "buyAura", set: aura.set })}>
-                구매<br /><Amount icon="gem" value={aura.gems} />
+                {t("구매")}<br /><Amount icon="gem" value={aura.gems} />
               </button>
             )}
           </div>
@@ -133,7 +137,7 @@ function Legends({ state, store }: { state: GameState; store: GameStore }) {
   const count = LEGENDS.filter((l) => (state.costume.legend[l.part] ?? 0) > 0).length;
   return (
     <>
-      <div className="group-title">한 부위의 코스튬 6종을 모두 가지면 그 부위의 전설 코스튬이 열려요</div>
+      <div className="group-title">{t("한 부위의 코스튬 6종을 모두 가지면 그 부위의 전설 코스튬이 열려요")}</div>
       {LEGENDS.map((legend) => {
         const lv = state.costume.legend[legend.part] ?? 0;
         const open = legendOpen(state.suits, legend.part);
@@ -142,21 +146,21 @@ function Legends({ state, store }: { state: GameState; store: GameStore }) {
           <div key={legend.part} className={`row costume-row${lv === 0 && !open ? " far" : ""}`}>
             <span className="icon-box"><Icon name={`legend_${legend.part}`} /></span>
             <div className="grow">
-              <b>{legend.name}</b> Lv{lv}/{LEGEND_MAX_LEVEL}
-              <div className="sub">{lv > 0 ? legendEffectText(legend, lv) : `Lv1: ${legendEffectText(legend, 1)}`}</div>
-              {!maxed && lv > 0 && <div className="sub">다음: {legendEffectText(legend, lv + 1)}</div>}
-              {!open && <div className="sub">{SUIT_PARTS.find((p) => p.key === legend.part)!.name} 6종 모두 필요</div>}
+              <b>{t(legend.name)}</b> Lv{lv}/{LEGEND_MAX_LEVEL}
+              <div className="sub">{lv > 0 ? fx(legendEffectText(legend, lv)) : `Lv1: ${fx(legendEffectText(legend, 1))}`}</div>
+              {!maxed && lv > 0 && <div className="sub">{t("다음: {effect}", { effect: fx(legendEffectText(legend, lv + 1)) })}</div>}
+              {!open && <div className="sub">{t("{part} 6종 모두 필요", { part: t(SUIT_PARTS.find((p) => p.key === legend.part)!.name) })}</div>}
             </div>
             <button className="hot" disabled={maxed || !open || state.coupons < legend.coupons} onClick={() => store.do({ k: "levelLegend", part: legend.part })}>
-              {maxed ? "MAX" : <>{lv === 0 ? "구매" : "강화"}<br /><Amount icon="coupon" value={legend.coupons} /></>}
+              {maxed ? "MAX" : <>{lv === 0 ? t("구매") : t("강화")}<br /><Amount icon="coupon" value={legend.coupons} /></>}
             </button>
           </div>
         );
       })}
-      <div className="group-title">전설 세트 효과 (보유 {count}개)</div>
+      <div className="group-title">{t("전설 세트 효과 (보유 {n}개)", { n: count })}</div>
       {LEGEND_SET.map((x) => (
         <div key={x.count} className={`row${count >= x.count ? " current" : " far"}`}>
-          <div className="grow">{x.count}개 보유: {x.text}</div>
+          <div className="grow">{t("{n}개 보유: {text}", { n: x.count, text: t(x.text) })}</div>
         </div>
       ))}
     </>

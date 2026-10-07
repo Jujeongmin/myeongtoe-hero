@@ -1,3 +1,4 @@
+import { t } from "../i18n";
 import { PETS, PET_BOX_COUPONS, awakenStage, petLevelCost } from "../../shared/data/pets";
 import { petLevel } from "../../shared/mods";
 import type { GameState } from "../../shared/state";
@@ -12,19 +13,19 @@ export function PetPanel({ state, store }: { state: GameState; store: GameStore 
     <>
       <div className="row">
         <div className="grow">
-          <b>동료 상자</b> 함께하는 동료 {joined}/{PETS.length}
-          <div className="sub">랜덤 동료 1명 레벨 +1 · 각성 {stage}단계</div>
+          <b>{t("동료 상자")}</b> {t("함께하는 동료 {n}/{total}", { n: joined, total: PETS.length })}
+          <div className="sub">{t("랜덤 동료 1명 레벨 +1 · 각성 {n}단계", { n: stage })}</div>
         </div>
         <button disabled={joined === 0 || state.coupons < PET_BOX_COUPONS} onClick={() => store.do({ k: "petBox" })}>
-          열기<br /><Amount icon="coupon" value={PET_BOX_COUPONS} />
+          {t("열기")}<br /><Amount icon="coupon" value={PET_BOX_COUPONS} />
         </button>
       </div>
       {PETS.map((pet) => {
         if (state.bestFloor < pet.unlockFloor) {
           return (
             <div key={pet.id} className="row locked">
-              <span className="locked-name"><Icon name="lock" size={16} /> {pet.name}</span>
-              <span className="sub">{pet.unlockFloor}층 도달 시 합류</span>
+              <span className="locked-name"><Icon name="lock" size={16} /> {t(pet.name)}</span>
+              <span className="sub">{t("{floor}층 도달 시 합류", { floor: pet.unlockFloor })}</span>
             </div>
           );
         }
@@ -33,11 +34,11 @@ export function PetPanel({ state, store }: { state: GameState; store: GameStore 
         return (
           <div key={pet.id} className="row">
             <div className="grow">
-              <b>{pet.name}</b> Lv{level}
-              <div className="sub">{pet.text}</div>
+              <b>{t(pet.name)}</b> Lv{level}
+              <div className="sub">{t(pet.text)}</div>
             </div>
             <button disabled={state.gems < cost} onClick={() => store.do({ k: "levelPet", id: pet.id })}>
-              레벨업<br /><Amount icon="gem" value={cost} />
+              {t("레벨업")}<br /><Amount icon="gem" value={cost} />
             </button>
           </div>
         );

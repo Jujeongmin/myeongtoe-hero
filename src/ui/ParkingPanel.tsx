@@ -7,6 +7,7 @@ import type { GameState } from "../../shared/state";
 import { heroPower } from "../../shared/stats";
 import { isSaturday } from "../../shared/time";
 import type { GameStore } from "../game/store";
+import { t } from "../i18n";
 import { Amount } from "./Amount";
 
 function clock(seconds: number): string {
@@ -22,6 +23,8 @@ export function ParkingPanel({ state, store }: { state: GameState; store: GameSt
   const { passes, passCarrySec, best } = state.parking;
   const today = dailyOf(state);
   const saturday = isSaturday(state.lastTick);
+  // The depth is bold in the sentence: the translation's text either side of {depth}.
+  const wentDown = t("30초 동안 {depth}까지 내려갔어요").split("{depth}");
 
   const enter = () => {
     const preview = runParking(heroPower(state));
@@ -32,16 +35,16 @@ export function ParkingPanel({ state, store }: { state: GameState; store: GameSt
     <>
       <div className="row">
         <div className="grow">
-          <b>지하주차장</b> 주차권 {passes}/{PARK_PASS_MAX}
+          <b>{t("지하주차장")}</b> {t("주차권 {n}/{max}", { n: passes, max: PARK_PASS_MAX })}
           <div className="sub">
-            {passes >= PARK_PASS_MAX ? "주차권이 가득 찼어요" : `다음 주차권까지 ${clock(PARK_RECHARGE_SEC - passCarrySec)}`}
-            {" · "}최고 B{best}m
+            {passes >= PARK_PASS_MAX ? t("주차권이 가득 찼어요") : t("다음 주차권까지 {time}", { time: clock(PARK_RECHARGE_SEC - passCarrySec) })}
+            {" · "}{t("최고 B{m}m", { m: best })}
           </div>
         </div>
-        <button disabled={passes <= 0} onClick={enter}>입장<br />주차권 1장</button>
+        <button disabled={passes <= 0} onClick={enter}>{t("입장")}<br />{t("주차권 1장")}</button>
       </div>
       <div className="group-title">
-        오늘의 주차장 퀘스트 · 입장 {today.entries}회 · 최고 B{today.bestDepth}m{saturday ? " · 토요일 2배!" : ""}
+        {t("오늘의 주차장 퀘스트 · 입장 {n}회 · 최고 B{m}m", { n: today.entries, m: today.bestDepth })}{saturday ? t(" · 토요일 2배!") : ""}
       </div>
       {DAILY_QUESTS.map((q) => {
         const have = q.kind === "entries" ? today.entries : today.bestDepth;
@@ -50,11 +53,11 @@ export function ParkingPanel({ state, store }: { state: GameState; store: GameSt
         return (
           <div key={q.id} className="row">
             <div className="grow">
-              {q.kind === "entries" ? `주차장 ${q.goal}회 입장` : `B${q.goal}m 도달`}
+              {q.kind === "entries" ? t("주차장 {n}회 입장", { n: q.goal }) : t("B{m}m 도달", { m: q.goal })}
               <div className="sub">{Math.min(have, q.goal)}/{q.goal}</div>
             </div>
             <button disabled={!done || claimed} onClick={() => store.do({ k: "claimDaily", id: q.id })}>
-              {claimed ? "받음" : <>받기<br /><Amount icon="coupon" value={dailyQuestReward(q, state.lastTick)} /></>}
+              {claimed ? t("받음") : <>{t("받기")}<br /><Amount icon="coupon" value={dailyQuestReward(q, state.lastTick)} /></>}
             </button>
           </div>
         );
@@ -62,11 +65,11 @@ export function ParkingPanel({ state, store }: { state: GameState; store: GameSt
       {result && (
         <div className="modal-back" onClick={() => setResult(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>주차장 탐사 끝</h3>
-            <p>30초 동안 <b>B{result.depth}m</b>까지 내려갔어요</p>
-            <p className="sub">상자 {result.chests}개</p>
-            {result.tickets > 0 ? <p>응시권 <Amount icon="ticket" value={formatCount(result.tickets)} /></p> : <p className="sub">20m마다 상자가 있어요</p>}
-            <button onClick={() => setResult(null)}>확인</button>
+            <h3>{t("주차장 탐사 끝")}</h3>
+            <p>{wentDown[0]}<b>B{result.depth}m</b>{wentDown[1]}</p>
+            <p className="sub">{t("상자 {n}개", { n: result.chests })}</p>
+            {result.tickets > 0 ? <p>{t("응시권")} <Amount icon="ticket" value={formatCount(result.tickets)} /></p> : <p className="sub">{t("20m마다 상자가 있어요")}</p>}
+            <button onClick={() => setResult(null)}>{t("확인")}</button>
           </div>
         </div>
       )}

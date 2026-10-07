@@ -1,3 +1,4 @@
+import { t } from "../i18n";
 import {
   CERTS, CERT_KIND_TEXT, CERT_LINES, certLevelCost, certOpen, certPrerequisite, certValue, certsOwned, type CertDef,
 } from "../../shared/data/certs";
@@ -13,10 +14,10 @@ function pct(v: number): string {
 
 function effectText(def: CertDef, level: number): string {
   const v = certValue(def, level);
-  const what = CERT_KIND_TEXT[def.kind];
-  if (def.kind === "aspd") return `공격 간격 -${(0.04 * level).toFixed(2)}초`;
+  const what = t(CERT_KIND_TEXT[def.kind]);
+  if (def.kind === "aspd") return t("공격 간격 -{sec}초", { sec: (0.04 * level).toFixed(2) });
   if (def.kind === "discount") return `${what} -${v}%`;
-  if (def.kind === "prestigeFloors") return `${what} +${v}층`;
+  if (def.kind === "prestigeFloors") return t("{what} +{v}층", { what, v });
   return `${what} +${pct(v)}%`;
 }
 
@@ -28,8 +29,8 @@ function CertRow({ def, state, store }: { def: CertDef; state: GameState; store:
   return (
     <div className="row">
       <div className="grow">
-        <b>{def.name}</b>
-        {def.grade > 0 && <> <span className={`tier t${def.grade}`}>{def.grade}차</span></>} Lv{level}/{def.maxLevel}
+        <b>{t(def.name)}</b>
+        {def.grade > 0 && <> <span className={`tier t${def.grade}`}>{t("{n}차", { n: def.grade })}</span></>} Lv{level}/{def.maxLevel}
         <div className="sub">{effectText(def, level)}</div>
       </div>
       {maxed ? (
@@ -37,10 +38,10 @@ function CertRow({ def, state, store }: { def: CertDef; state: GameState; store:
       ) : (
         <div className="buttons">
           <button disabled={have < cost} onClick={() => store.do({ k: "levelCert", id: def.id, bulk: false })}>
-            {level === 0 ? "취득" : "+1"}<br /><Amount icon={def.currency === "gems" ? "gem" : "ticket"} value={formatCount(cost)} />
+            {level === 0 ? t("취득") : "+1"}<br /><Amount icon={def.currency === "gems" ? "gem" : "ticket"} value={formatCount(cost)} />
           </button>
           <button disabled={have < cost} onClick={() => store.do({ k: "levelCert", id: def.id, bulk: true })}>
-            최대<br />한번에
+            {t("최대")}<br />{t("한번에")}
           </button>
         </div>
       )}
@@ -53,7 +54,7 @@ function CertRow({ def, state, store }: { def: CertDef; state: GameState; store:
 export function CertPanel({ state, store }: { state: GameState; store: GameStore }) {
   return (
     <>
-      <div className="group-title">본업 자격증 · 보유 {certsOwned(state.certs)}/{CERTS.length}</div>
+      <div className="group-title">{t("본업 자격증 · 보유 {owned}/{total}", { owned: certsOwned(state.certs), total: CERTS.length })}</div>
       {CERT_LINES.map(({ line }) => {
         const grades = CERTS.filter((c) => c.kind === line);
         const top = [...grades].reverse().find((c) => certOpen(c, state.certs))!;
@@ -63,16 +64,16 @@ export function CertPanel({ state, store }: { state: GameState; store: GameStore
             <CertRow def={top} state={state} store={store} />
             {after && (
               <div className="row locked">
-                <span className="locked-name"><Icon name="lock" size={16} /> {after.name}</span>
-                <span className="sub">{certPrerequisite(after)!.name} MAX 시</span>
+                <span className="locked-name"><Icon name="lock" size={16} /> {t(after.name)}</span>
+                <span className="sub">{t("{name} MAX 시", { name: t(certPrerequisite(after)!.name) })}</span>
               </div>
             )}
           </div>
         );
       })}
-      <div className="group-title">필수 자격증</div>
+      <div className="group-title">{t("필수 자격증")}</div>
       {CERTS.filter((c) => c.group === "basic").map((def) => <CertRow key={def.id} def={def} state={state} store={store} />)}
-      <div className="group-title">이직 자격증 (보석)</div>
+      <div className="group-title">{t("이직 자격증 (보석)")}</div>
       {CERTS.filter((c) => c.group === "career").map((def) => <CertRow key={def.id} def={def} state={state} store={store} />)}
     </>
   );

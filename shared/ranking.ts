@@ -1,4 +1,5 @@
 import type { GameState, SaveData } from "./state";
+import type { Text } from "./text";
 
 // Rankings: by best floor, and by deepest parking run. Each account has one row, kept by the server whenever its record goes up.
 export type Board = "floor" | "depth";
@@ -29,8 +30,9 @@ export function readBoard(raw: unknown): Board | null {
   return raw === "floor" || raw === "depth" ? raw : null;
 }
 
-export function displayName(row: RankRow): string {
-  return row.nickname || `직원 ${row.account.slice(-4)}`;
+// As a pattern for t(): the nickname as it is, or 직원 and the account's last 4.
+export function displayName(row: RankRow): Text {
+  return row.nickname ? { key: "{name}", vars: { name: row.nickname } } : { key: "직원 {id}", vars: { id: row.account.slice(-4) } };
 }
 
 export function rankRowOf(account: string, s: Pick<GameState | SaveData, "nickname" | "bestFloor" | "parking">): RankRow {

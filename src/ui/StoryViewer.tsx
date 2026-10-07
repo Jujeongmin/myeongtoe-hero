@@ -3,6 +3,7 @@ import { EPISODES, type Episode, type StoryPanel } from "../../shared/data/story
 import type { GameState } from "../../shared/state";
 import { imageUrl } from "../game/sprites";
 import type { GameStore } from "../game/store";
+import { t } from "../i18n";
 
 // An episode can be shown once every panel's picture is in art/story.
 export function episodeReady(ep: Episode): boolean {
@@ -43,13 +44,13 @@ export function StoryViewer({ episode, onClose }: { episode: Episode; onClose: (
   return (
     <div className="story" onClick={() => (last ? onClose() : setPage(page + 1))}>
       <header onClick={(e) => e.stopPropagation()}>
-        <b>{episode.title}</b>
-        <button onClick={onClose}>건너뛰기</button>
+        <b>{t(episode.title)}</b>
+        <button onClick={onClose}>{t("건너뛰기")}</button>
       </header>
       <div className="story-body" key={page}>
         {panels.map((i) => <Panel key={i} panel={episode.panels[i]} width={width} />)}
       </div>
-      <div className="story-next">{page + 1} / {pages.length} · {last ? "눌러서 닫기" : "눌러서 다음"}</div>
+      <div className="story-next">{page + 1} / {pages.length} · {last ? t("눌러서 닫기") : t("눌러서 다음")}</div>
     </div>
   );
 }
@@ -81,13 +82,13 @@ function Panel({ panel, width }: { panel: StoryPanel; width: number }) {
         const [x, y] = l.at ?? [12 + 84 * (free++ % 2), 30];
         return (
           <div key={j} className={`story-say${l.flip ? " flip" : ""}`} style={{ left: x * k, top: y * k, maxWidth: width * 0.62 }}>
-            <b>{l.who}</b>{l.text}
+            <b>{t(l.who)}</b>{t(l.text)}
           </div>
         );
       })}
       {panel.lines.some((l) => !l.who) && (
         <div className="story-captions">
-          {panel.lines.filter((l) => !l.who).map((l, j) => <div key={j} className="story-narration">{l.text}</div>)}
+          {panel.lines.filter((l) => !l.who).map((l, j) => <div key={j} className="story-narration">{t(l.text)}</div>)}
         </div>
       )}
     </section>
@@ -103,10 +104,10 @@ export function StoryList({ state, onRead }: { state: GameState; onRead: (ep: Ep
         return (
           <div key={ep.id} className={`row${open ? "" : " far"}`}>
             <div className="grow">
-              <b>{ep.title}</b>
-              <div className="sub">{open ? (state.story.includes(ep.id) ? "읽음" : "새 이야기") : `${ep.floor}층에서 열려요`}</div>
+              <b>{t(ep.title)}</b>
+              <div className="sub">{open ? (state.story.includes(ep.id) ? t("읽음") : t("새 이야기")) : t("{floor}층에서 열려요", { floor: ep.floor })}</div>
             </div>
-            <button disabled={!open} onClick={() => onRead(ep)}>보기</button>
+            <button disabled={!open} onClick={() => onRead(ep)}>{t("보기")}</button>
           </div>
         );
       })}

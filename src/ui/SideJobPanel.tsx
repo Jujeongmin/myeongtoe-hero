@@ -3,6 +3,7 @@ import { formatBig } from "../../shared/format";
 import { sideJobCostFor } from "../../shared/prices";
 import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
+import { t } from "../i18n";
 import { Icon } from "./Icon";
 
 export function SideJobPanel({ state, store }: { state: GameState; store: GameStore }) {
@@ -12,8 +13,8 @@ export function SideJobPanel({ state, store }: { state: GameState; store: GameSt
         if (state.run.maxFloor < job.unlockFloor) {
           return (
             <div key={job.id} className="row locked">
-              <span className="locked-name"><Icon name="lock" size={16} /> {job.name}</span>
-              <span className="sub">{job.unlockFloor}층 도달 시</span>
+              <span className="locked-name"><Icon name="lock" size={16} /> {t(job.name)}</span>
+              <span className="sub">{t("{floor}층 도달 시", { floor: job.unlockFloor })}</span>
             </div>
           );
         }
@@ -25,16 +26,16 @@ export function SideJobPanel({ state, store }: { state: GameState; store: GameSt
         return (
           <div key={job.id} className="row">
             <div className="grow">
-              <b>{job.name}</b> Lv{level}
+              <b>{t(job.name)}</b> Lv{level}
               <div className="sub">
-                {formatBig(sideJobIncome(job, Math.max(1, level)))} / {cycle.toFixed(1)}초
+                {t("{gold} / {sec}초", { gold: formatBig(sideJobIncome(job, Math.max(1, level))), sec: cycle.toFixed(1) })}
               </div>
               <div className="bar">
                 <i style={{ width: `${Math.min(1, progress) * 100}%` }} />
               </div>
             </div>
             <button disabled={state.gold.lt(cost)} onClick={() => store.do({ k: "levelSideJob", id: job.id })}>
-              {level === 0 ? "시작" : "레벨업"}<br />{formatBig(cost)}
+              {level === 0 ? t("시작") : t("레벨업")}<br />{formatBig(cost)}
             </button>
           </div>
         );

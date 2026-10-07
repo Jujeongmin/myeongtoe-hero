@@ -3,6 +3,7 @@ import { ATTENDANCE_REWARDS, SPECIAL_MISSIONS } from "../../shared/data/missions
 import type { GameState } from "../../shared/state";
 import { kstDay } from "../../shared/time";
 import type { GameStore } from "../game/store";
+import { t } from "../i18n";
 import { RewardView } from "./Amount";
 
 type Tab = "special" | "attendance";
@@ -16,8 +17,8 @@ export function MissionSheet({ state, store }: { state: GameState; store: GameSt
   return (
     <>
       <div className="tabs">
-        {TABS.map((t) => (
-          <button key={t.id} className={t.id === tab ? "on" : ""} onClick={() => setTab(t.id)}>{t.label}</button>
+        {TABS.map((x) => (
+          <button key={x.id} className={x.id === tab ? "on" : ""} onClick={() => setTab(x.id)}>{t(x.label)}</button>
         ))}
       </div>
       {tab === "special" && <Specials state={state} store={store} />}
@@ -34,11 +35,11 @@ function Specials({ state, store }: { state: GameState; store: GameStore }) {
         return (
           <div key={m.id} className="row">
             <div className="grow">
-              {m.text}
+              {t(m.text, m.vars)}
               <div className="sub"><RewardView reward={m.reward} /></div>
             </div>
             <button disabled={claimed || !m.done(state)} onClick={() => store.do({ k: "claimSpecial", id: m.id })}>
-              {claimed ? "받음" : "받기"}
+              {claimed ? t("받음") : t("받기")}
             </button>
           </div>
         );
@@ -56,15 +57,15 @@ function Attendance({ state, store }: { state: GameState; store: GameStore }) {
     <>
       <div className="row">
         <div className="grow">
-          출석 {count}일째
-          <div className="sub">7일마다 처음부터 다시 돌아요</div>
+          {t("출석 {n}일째", { n: count })}
+          <div className="sub">{t("7일마다 처음부터 다시 돌아요")}</div>
         </div>
-        <button disabled={today} onClick={() => store.do({ k: "claimAttendance" })}>{today ? "받음" : "출석"}</button>
+        <button disabled={today} onClick={() => store.do({ k: "claimAttendance" })}>{today ? t("받음") : t("출석")}</button>
       </div>
       <div className="attendance">
         {ATTENDANCE_REWARDS.map((r, i) => (
           <div key={i} className={`day${i === now ? " now" : ""}${i < now || (today && i === now) ? " got" : ""}`}>
-            <div className="sub">{i + 1}일</div>
+            <div className="sub">{t("{n}일", { n: i + 1 })}</div>
             <div><RewardView reward={r} /></div>
           </div>
         ))}

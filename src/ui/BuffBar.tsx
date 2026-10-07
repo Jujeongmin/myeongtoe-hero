@@ -3,6 +3,7 @@ import { adReadyAt, findAd } from "../../shared/data/ads";
 import { BUFFS, BUFF_KINDS, buffActive, type BuffKind } from "../../shared/data/buffs";
 import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
+import { t } from "../i18n";
 import { showAd } from "../net/ads";
 import { Icon } from "./Icon";
 
@@ -34,7 +35,7 @@ export function BuffBar({ state, store, onShop }: { state: GameState; store: Gam
       {BUFF_KINDS.map((kind) => {
         const on = buffActive(state, kind);
         return (
-          <button key={kind} className={`buff${on ? " on" : ""}`} disabled={busy} aria-label={BUFFS[kind].name} onClick={() => void press()}>
+          <button key={kind} className={`buff${on ? " on" : ""}`} disabled={busy} aria-label={t(BUFFS[kind].name)} onClick={() => void press()}>
             <Icon name={ICON[kind]} />
             {on && <small>{clock(state.buffs[kind] - state.lastTick)}</small>}
           </button>

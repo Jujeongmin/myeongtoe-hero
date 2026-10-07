@@ -8,6 +8,7 @@ import type { GameState } from "../../shared/state";
 import { HERO_CRIT_CHANCE, heroPower } from "../../shared/stats";
 import { ANIMS, ATTACK_IMPACT_FRAME, BASELINE_Y, HP_BAR, backgroundFile, image, monsterFor, type Anim, type MonsterSprite } from "../game/sprites";
 import { drawPark, visibleWear } from "../game/drawPark";
+import { t } from "../i18n";
 
 // The battle scene in the screen's real (device) pixels, every picture drawn at a whole number of
 // them per art pixel so it stays crisp. The department background is scaled up until it covers
@@ -93,9 +94,10 @@ export function BattleCanvas({ state }: { state: GameState }) {
       scroll = draw(ctx, w, h, Math.max(1, Math.ceil(h / BG_H)), snap.current, now, dt, scroll, sim, (text, x, y, crit) => {
         popDamage(layer.current, text, (x * cw) / w, (y * ch) / h, crit);
       }, (text, x, y) => {
-        say(talk.current, text, (x * cw) / w, (y * ch) / h);
+        // Park's quips and boss lines, and the monster's name, shown in the player's language.
+        say(talk.current, t(text), (x * cw) / w, (y * ch) / h);
       }, (text, x, y) => {
-        nameTag(tag.current, text, (x * cw) / w, (y * ch) / h);
+        nameTag(tag.current, t(text), (x * cw) / w, (y * ch) / h);
       });
       raf = requestAnimationFrame(loop);
     };

@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { displayName, readBoard, readNickname, rankRowOf } from "./ranking";
+import { fill } from "./text";
 import { newState } from "./state";
 
 describe("nicknames", () => {
@@ -14,8 +15,8 @@ describe("nicknames", () => {
   });
 
   test("a row without a nickname shows as 직원 + the account's last 4", () => {
-    expect(displayName({ account: "0xabcdef1234", nickname: "", floor: 1, depth: 0 })).toBe("직원 1234");
-    expect(displayName({ account: "0xabcdef1234", nickname: "박부장", floor: 1, depth: 0 })).toBe("박부장");
+    expect(fill(displayName({ account: "0xabcdef1234", nickname: "", floor: 1, depth: 0 }))).toBe("직원 1234");
+    expect(fill(displayName({ account: "0xabcdef1234", nickname: "박부장", floor: 1, depth: 0 }))).toBe("박부장");
   });
 });
 

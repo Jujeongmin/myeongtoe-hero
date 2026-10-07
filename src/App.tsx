@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useGameServer } from "@agent8/gameserver";
 import { GameStore } from "./game/store";
 import { useGameView } from "./game/useGameView";
+import { t, useLocale } from "./i18n";
 import { connectionOf, shouldPlayLocally, type Connection } from "./net/connection";
 import { loginState } from "./net/login";
 import { LocalTransport, OFFLINE } from "./net/transport";
@@ -86,6 +87,7 @@ export function OnlineApp() {
 }
 
 function Game({ store, connection, guest }: { store: GameStore; connection: Connection; guest: boolean }) {
+  useLocale(); // a language change re-renders every screen
   const state = useGameView(store);
   const [tab, setTab] = useState<NavTab>("gear");
   const [sheet, setSheet] = useState<SheetId | null>(null);
@@ -114,12 +116,12 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
     if (connection === "failed") {
       return (
         <div className="screen">
-          <p>서버에 연결하지 못했어요</p>
-          <button onClick={() => window.location.reload()}>다시 시도</button>
+          <p>{t("서버에 연결하지 못했어요")}</p>
+          <button onClick={() => window.location.reload()}>{t("다시 시도")}</button>
         </div>
       );
     }
-    return <div className="screen">{connection === "trying" ? "서버에 연결하는 중…" : "출근 중…"}</div>;
+    return <div className="screen">{connection === "trying" ? t("서버에 연결하는 중…") : t("출근 중…")}</div>;
   }
 
   return (
@@ -146,7 +148,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
       </main>
       <BottomNav state={state} tab={tab} onPick={setTab} onLocked={(text) => store.notify(text)} />
       {sheet && (
-        <Sheet title={SHEET_TITLES[sheet]} onClose={() => setSheet(null)}>
+        <Sheet title={t(SHEET_TITLES[sheet])} onClose={() => setSheet(null)}>
           {sheet === "prestige" && <PrestigePanel state={state} store={store} />}
           {sheet === "suits" && <CostumePanel state={state} store={store} />}
           {sheet === "apartment" && <ApartmentPanel state={state} store={store} />}

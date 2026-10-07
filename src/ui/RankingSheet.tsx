@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { displayName, readNickname, type Board, type RankingView } from "../../shared/ranking";
+import { displayName, readNickname, type Board, type RankRow, type RankingView } from "../../shared/ranking";
 import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
+import { t } from "../i18n";
 import { errorText } from "./text";
 
 const BOARDS: { id: Board; label: string }[] = [
@@ -10,7 +11,12 @@ const BOARDS: { id: Board; label: string }[] = [
 ];
 
 function score(board: Board, row: { floor: number; depth: number }): string {
-  return board === "floor" ? `${row.floor}층` : `B${row.depth}m`;
+  return board === "floor" ? t("{floor}층", { floor: row.floor }) : `B${row.depth}m`;
+}
+
+function nameOf(row: RankRow): string {
+  const name = displayName(row);
+  return t(name.key, name.vars);
 }
 
 // Top 50 per board and the player's own row; the nickname is set here too.
@@ -37,24 +43,24 @@ export function RankingSheet({ state, store }: { state: GameState; store: GameSt
       <NicknameRow state={state} store={store} />
       <div className="tabs">
         {BOARDS.map((b) => (
-          <button key={b.id} className={b.id === board ? "on" : ""} onClick={() => setBoard(b.id)}>{b.label}</button>
+          <button key={b.id} className={b.id === board ? "on" : ""} onClick={() => setBoard(b.id)}>{t(b.label)}</button>
         ))}
       </div>
-      {failed && <div className="row">랭킹은 서버에 연결됐을 때 볼 수 있어요</div>}
-      {!failed && !view && <div className="row">불러오는 중…</div>}
+      {failed && <div className="row">{t("랭킹은 서버에 연결됐을 때 볼 수 있어요")}</div>}
+      {!failed && !view && <div className="row">{t("불러오는 중…")}</div>}
       {view && (
         <>
           {view.mine && (
             <div className="row current">
-              <span className="grow">내 기록 · {displayName(view.mine)}</span>
+              <span className="grow">{t("내 기록 · {name}", { name: nameOf(view.mine) })}</span>
               <span>{score(board, view.mine)}</span>
             </div>
           )}
-          {view.rows.length === 0 && <div className="row">아직 기록이 없어요</div>}
+          {view.rows.length === 0 && <div className="row">{t("아직 기록이 없어요")}</div>}
           {view.rows.map((row, i) => (
             <div key={row.account} className={`row${row.account === view.mine?.account ? " current" : ""}`}>
               <span className="rank">{i + 1}</span>
-              <span className="grow">{displayName(row)}</span>
+              <span className="grow">{nameOf(row)}</span>
               <span>{score(board, row)}</span>
             </div>
           ))}
@@ -77,7 +83,7 @@ function NicknameRow({ state, store }: { state: GameState; store: GameStore }) {
     setBusy(true);
     try {
       await store.setNickname(name);
-      setMessage("닉네임을 바꿨어요");
+      setMessage(t("닉네임을 바꿨어요"));
     } catch (error) {
       setMessage(errorText(error instanceof Error ? error.message : ""));
     } finally {
@@ -88,17 +94,17 @@ function NicknameRow({ state, store }: { state: GameState; store: GameStore }) {
   return (
     <div className="row">
       <div className="grow">
-        닉네임
+        {t("닉네임")}
         <input
           className="text-input"
           value={name}
           maxLength={8}
-          placeholder="2~8자"
+          placeholder={t("2~8자")}
           onChange={(e) => setName(e.target.value)}
         />
         {message && <div className="sub">{message}</div>}
       </div>
-      <button disabled={busy || name.trim() === state.nickname} onClick={() => void save()}>저장</button>
+      <button disabled={busy || name.trim() === state.nickname} onClick={() => void save()}>{t("저장")}</button>
     </div>
   );
 }
