@@ -67,6 +67,7 @@ export function BattleCanvas({ state }: { state: GameState }) {
   const layer = useRef<HTMLDivElement>(null);
   const talk = useRef<HTMLDivElement>(null);
   const tag = useRef<HTMLDivElement>(null);
+  const depth = useRef<HTMLDivElement>(null);
   const snap = useRef<Snapshot>({ state, at: performance.now() });
   snap.current = { state, at: performance.now() };
 
@@ -104,6 +105,12 @@ export function BattleCanvas({ state }: { state: GameState }) {
         say(talk.current, t(text), (x * cw) / w, (y * ch) / h);
       }, (text, x, y) => {
         nameTag(tag.current, t(text), (x * cw) / w, (y * ch) / h);
+      }, (meter) => {
+        const el = depth.current;
+        if (!el) return;
+        el.hidden = meter === null;
+        const text = meter === null ? "" : `B${meter}m`;
+        if (el.textContent !== text) el.textContent = text;
       });
       raf = requestAnimationFrame(loop);
     };
@@ -117,6 +124,7 @@ export function BattleCanvas({ state }: { state: GameState }) {
       <div ref={layer} className="damage-layer" />
       <div ref={talk} className="bubble" hidden />
       <div ref={tag} className="monster-name" hidden />
+      <div ref={depth} className="parking-depth" hidden />
     </div>
   );
 }
@@ -157,7 +165,7 @@ function popDamage(layer: HTMLDivElement | null, text: string, x: number, y: num
 function draw(
   ctx: CanvasRenderingContext2D, w: number, h: number, bgScale: number, { state, at }: Snapshot, now: number, dt: number, scroll: number,
   sim: Sim, pop: (text: string, x: number, y: number, crit: boolean) => void, talk: (text: string, x: number, y: number) => void,
-  tag: (text: string, x: number, y: number) => void,
+  tag: (text: string, x: number, y: number) => void, showDepth: (meter: number | null) => void,
 ): number {
   ctx.imageSmoothingEnabled = false;
   const { floor, target, carrySec, farming } = state.run;
@@ -188,6 +196,8 @@ function draw(
   // Which monster this is; a new one means the last one was killed.
   const place = parking ? parking.meter : target + kills;
   const kill = parking ? `p:${parking.start}:${parking.meter}` : `${floor}:${farming}:${place}`;
+  // How deep the run is: the meters already cleared.
+  showDepth(parking ? parking.meter - 1 : null);
   const head: [number, number] = [parkX + 32, floorY - BASELINE_Y + 4];
   if (kill !== sim.kill) {
     if (sim.current && sim.kill !== "") sim.dying = { monster: sim.current, x: sim.currentX, since: now };
