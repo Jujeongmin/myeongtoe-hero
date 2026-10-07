@@ -14,7 +14,7 @@ Scale up only by an integer factor with nearest-neighbour.
 | `park/old/` | The previous office-worker Park (68×68 frames, anchors, candidates, previews). Kept for reference only. `park/old/attack_v3/` is the earlier hand-built attack and `park/old/attack_v4/` the PixelLab attack that came before the current one. |
 | `park/preview/` | Composited previews and contact sheets (see Previews). |
 | `parts/suits/s{set}_{slot}.png` | 36 costume parts: 6 sets × 6 slots, each on a 64×64 transparent canvas drawn on idle frame 0. |
-| `parts/suits/strips/s{set}_{slot}_{anim}.png` | The same parts redrawn for every frame of idle, walk and attack (108 strips). **The 36 `_attack` strips still belong to an earlier attack and do not fit the current `park/attack_*` frames** (see Known issues). |
+| `parts/suits/strips/s{set}_{slot}_{anim}.png` | The same parts redrawn for every frame of idle, walk and attack (108 strips). The 36 `_attack` strips were redone for the current attack by inpainting each set onto the bare attack frames (see How it was made); the previous ones are in `parts/old_suits_v2/attack_v4_strips/`. |
 | `parts/suits/parts.json` | Slot, anchor, offset, layer, bbox and strip paths of every part. |
 | `park/fx/head_shine.png`, `park/fx/head_shine.json` | Animated glint on Park's bald crown (6 frames, 11×11 each). |
 | `parts/old_suits/` | The first office-suit parts. They fit only `park/old/` and are kept for reference. |
@@ -26,7 +26,7 @@ Scale up only by an integer factor with nearest-neighbour.
 | `icons/*.png` | UI icons, 32×32, plus 16×16 small icons named `*_s.png`. `icons/_sheet.png`, `_sheet_ui.png`, `_sheet_small.png` and `_sheet_aura_legend.png` are contact sheets. |
 | `vx/*.png` | 13 VX shop product images, 512×512 (128×128 pixel art scaled ×4 nearest-neighbour). The 128 px sources are in `vx/src/`, and `vx/_sheet.png` shows all of them. |
 | `icons/extra/`, `parts/gear/extra/` | Unused extras left over from generation. They can be deleted. |
-| `story/prologue_1..7.png` | The 7 webtoon prologue panels, 192×128, opaque, no text. `story/_sheet_prologue.png` shows them ×2 in reading order; `story/src/` holds the raw picks, unused alternates and the office-Park reference. See Story panels. |
+| `story/prologue_1..7.png`, `story/ep0_1..4.png`, `story/ep1_1..6.png`, `story/hunter_1..4.png`, `story/ep2_1..4.png`, `story/ep3_1..4.png`, `story/ep4_1..4.png`, `story/ep5_1..5.png` | Webtoon panels (prologue, episodes 0.5–5, headhunter), 192×128, opaque, no text. `story/_sheet_prologue.png`, `_sheet_ep0.png`, `_sheet_ep1.png`, `_sheet_hunter.png`, `_sheet_ep2.png`, `_sheet_ep3.png`, `_sheet_ep4.png` and `_sheet_ep5.png` show them ×2 in reading order; `story/src/` holds the raw picks, unused alternates and the character references. See Story panels. |
 
 ## Park
 
@@ -169,7 +169,8 @@ No image contains text.
   - `mixB` = helmet 2, armor 5, cape 6, gloves 3, boots 4, accessory 1, holding a laptop.
 - `park_strips_x3.png`: bare Park idle/walk/attack, then set 2 holding a pen.
 - `attack_bare_gear_x1.png` / `_x4.png`: the current attack, bare, with an item drawn on `hand` at `handAngle` (rows: pen, putter, keyboard, briefcase), following `gearAboveHelmet`.
-- `attack_s2_spritegen_registration_test_x4.png`: the set 2 registration test described in Known issues.
+- `attack_costumes_inpaint_x4.png` (1×: `attack_costumes_inpaint_x1.png`): the current attack with the new costume strips, one row per outfit: bare (pen), sets 1–6 fully worn (each holding a different item), then `mixA` (keyboard) and `mixB` (laptop). Items are drawn on `hand` at `handAngle` with `gearAboveHelmet` layering.
+- `attack_s2_spritegen_registration_test_x4.png`: the set 2 sprite-gen registration test (why the costume attack was inpainted instead; see Known issues).
 - Every other preview that shows attack frames (`anim_*`, `park_strips_x3.png`, `attack_bare_pen_*`, `hand_check_x4.png`) was made with an earlier attack and is out of date.
 - `attack_bare_pen_x1.png` / `_x4.png`: the 8-frame slash holding the pen. `hand_check_x4.png`: every idle/walk/attack frame with the pen and a red dot on `hand`, showing that it is always the same near hand.
 - `head_shine_x4.png`: the glint playing on bare Park's idle loop. `head_shine_strip_x8.png` shows the 6 shine cells.
@@ -192,11 +193,32 @@ No image contains text.
      - Boots and gloves are rebuilt on each frame's real legs and hands.
      - Capes hang from the back of the collar, sway in walk and attack, and are tucked under the body so there are no gaps.
   4. Accessories are small hand-placed pixel items on the chest or belt.
+  5. **Attack strips (current):** each set was inpainted onto the 8 bare attack frames with PixelLab Pro Flash. Pixel registration is exact: outside the mask every pixel is the bare frame's own pixel.
+     - **Mask:** the body dilated by 3 px, plus a band above the head (plumes, crowns) and a band behind the back (capes). The face (eye, nose, moustache, cheek) was left out of the mask, so it stays pixel-exact.
+     - **Reference:** the set's dressed idle frame 0 sat in the same image, in one cell of a 2×2 sheet with three attack frames (set 1: a 3×3 sheet with all eight).
+     - **Extra passes:** set 1 needed a second pass over the head only, because the first pass left the scalp bare. For set 2, frame 3 lost its raised arm and got one repair pass with the bare arm pasted back as a guide.
+     - **Slot split:** each dressed frame was diffed against the bare frame and assigned by region, as for idle:
+       - pixels above the neck → helmet;
+       - the fist plus 1 px → gloves;
+       - colours closest to the set's accessory palette on the chest or belt → accessory (grown into touching off-ramp colours);
+       - new pixels behind the back → cape;
+       - below y 49 → boots;
+       - everything else → armor.
+     - **Skipped pixels:** where both the bare and the dressed pixel are skin, nothing is stored, so Park's own face and hand show.
+     - **Gap fill:** where the dressed silhouette came out 1–3 px narrower than the bare body (mostly outline pixels at the belly, back and face edge), the gap was filled automatically from the neighbouring dressed pixels: the darkest neighbour on the silhouette edge, otherwise a light neighbour. This keeps bare pixels from showing through. It was done by script and was not hand-drawn.
 - **Office items, backgrounds and icons:** unchanged from the previous delivery, except for the new `scale` data and the scaled copies.
 
 ## Generation budget
 
+- **Office-object monster redo (PixelLab):** **40 generations**: 2 × 16-candidate `create_1_direction_object` batches at 64×64 (20 each). Another session drew webtoon panels on the same account at the same time, so the balance drop over that period is larger.
 - **Aura / legend icons, speech bubble, red dot (PixelLab):** **43 generations**: 2 × 64-candidate batches (20 each; 32 px icons, 24 px UI), 2 × Pixen 16×16 red dots and 1 × Pixen edit test that tried to add a glow to the helmet (rejected: it only added noise).
+- **Costume attack strips (PixelLab Pro Flash inpaint):**
+  - 22 calls in total:
+    - 2 at 192×192 (set 1, both passes);
+    - 18 at 128×128 (three per set for sets 2–6, plus three set 3 attempts that the content filter blocked);
+    - 1 repair at 128×64;
+    - 1 call rejected because its upload was truncated.
+  - The balance went from 388 to 146 during this work. That figure includes at least 8 jobs from another session sharing the account, so it overstates the cost. By call count, this work used roughly 160–200 generations.
 - **Attack remake, small icons, VX images:**
   - sprite-gen (Codex): 4 row generations (2 bare attack rows, 2 set 2 dressing tests).
   - PixelLab: the balance went from 512 to 388, so **124 generations** were used: 2 × 64-candidate icon batches (20 each) and 14 × Pro Flash 128×128 images (6 each, one of them a size test).
@@ -218,8 +240,12 @@ No image contains text.
 - Park's hands are tiny in idle and walk, so gloves read mostly in the attack frames.
 - The ranger hood (set 4) was drawn together with its cloak. Without the set 4 cape the hood still works, but its shoulder drape is gone.
 - The swinging arm is short (chibi proportions), so in the overhead frames the fist stays at head height. The item itself provides the overhead reach.
-- **Costume attack strips are out of date.** `parts/suits/strips/s*_*_attack.png` were fitted to an earlier attack. They do not line up with the current sprite-gen attack, so a worn costume looks wrong during the attack until they are remade.
-  - A test dressed set 2 with sprite-gen: the dressed idle-0 was the base and the bare attack row was attached as a motion reference. The poses follow closely, but the dressed figure comes out about 4 px taller and the limbs differ by 1–3 px. After the best shift, 8–30 bare-body pixels per frame still stick out from under the dressed silhouette. A slot split by diff against the bare frame therefore does not register. See `park/preview/attack_s2_spritegen_registration_test_x4.png` (top: bare, bottom: dressed).
+- Costume attack strips:
+  - **Why not sprite-gen:** a sprite-gen test dressed set 2 from its idle 0 with the bare attack row as a motion reference. The dressed figure came out about 4 px taller and its limbs were 1–3 px off, so a split by diff would not register (`park/preview/attack_s2_spritegen_registration_test_x4.png`). The strips were therefore made by inpainting instead.
+  - **Gap fill:** the inpainted silhouettes were sometimes narrower than the bare body. Per frame, 0–114 such pixels were filled automatically from neighbouring dressed pixels; most were single outline pixels. The worst frames are set 3 frame 2, set 5 frames 1 and 3, and set 4 frames 3 and 6, where the front outline is a little thicker.
+  - **Missing capes:** set 1 frame 1 has no cape, and in a few frames the cape is narrower than at idle.
+  - **Raised arms:** on frames 1–3 (raised arm) the armour sleeve sometimes covers less of the upper arm than at idle. The tan tunic sleeve then shows under the gauntlet; set 1 is sleeveless by design.
+  - **Accessories:** the slot was found by colour, so on some frames part of a lanyard, chain or mug is in the armor layer. If you mix outfits, the accessory can be incomplete on those frames.
 - Frame 1 of the attack (`anticipation`) turns the face slightly toward the viewer, so the eye reads a little wider than in idle.
 - Office items are drawn in a 24 px box. Use `scale` or `scaledFile` to keep bulky ones small.
 
@@ -260,6 +286,29 @@ No image contains text.
 - Previews (`monsters/preview/`):
   - `battle_{department}_x1.png` / `_x3.png`: Park next to each monster on its department background;
   - `anims_{department}_x2.png`: every idle, hurt and death frame.
+- `_sheet.png`: all 36 monsters on idle frame 0 at ×2, one row per department (normal and spare, then team leader, then executive).
+
+### Office-object redo (6 normal monsters)
+
+Six normal monsters did not read as office monsters, so they were redrawn with the office object as the first read. The ids and file names are unchanged. The old strips are kept in `monsters/old/`.
+
+| id | Name | Flying | Picture | Body (w×h) |
+|---|---|---|---|---|
+| `stapler_bat` | 스테이플러 박쥐 | yes | a black desk stapler whose open jaw has staple teeth, with purple bat wings | 41×32 |
+| `clip_rat` | 클립 쥐 | no | a grey rat whose body and tail are bent silver paperclip wire, with a big paperclip tail loop | 46×29 |
+| `phone_imp` | 전화 임프 | no | a red imp with a headset, clutching a huge beige desk-phone receiver, with a coiled beige phone-cord tail | 36×32 |
+| `card_pixie` | 명함 종이학 (renamed from 명함 요정) | yes | a paper crane folded from white business cards with grey print lines and blue logo corners | 41×32 |
+| `redtape_worm` | 레드테이프 웜 | no | a grey tape-dispenser head with cutter teeth and a tape roll, and a red tape body unrolling behind it | 46×29 |
+| `card_bat` | 법인카드 박쥐 | yes | a black bat whose wings are a gold card and a black card, with a gold chip on its belly | 46×27 |
+
+- **Generation:** PixelLab `create_1_direction_object` (sidescroller view), two batches of 16 candidates at 64×64, one per-item description each. The style references were `keyboard_mimic` and `calc_crab` idle frame 0. The best candidate of each was kept.
+- **Downscale:** the candidate was cropped, scaled ×4 nearest-neighbour, and reduced with the same kCentroid downscaler (`sprite-gen`) to its body size. Alpha was made binary, the colours were reduced to at most 26 (median cut), and the darkest colours were snapped to `#0C0B0A`. Each sprite sits centred on the 64×64 canvas with its feet on y 56, or on y 50 for flyers (`hoverPx` 6).
+- **Strips:** frame edits of that sprite, measured from the existing strips:
+  - idle: ground monsters are frame 0, 1 px wider and 1 px shorter, frame 0, then 1 px narrower and 1 px taller (bottom-anchored); flyers bob 0, −1, −2, −1 px.
+  - hurt: 75 % toward white with a 3 px recoil to the right, then a 35 % blend toward red (230, 38, 38) with a 1 px recoil. Outline pixels stay `#0C0B0A`.
+  - death: frame 0 is the sprite 85 % white, 2 px wider and squashed to 85 % height. Frame 1 is the sprite 55 % toward light grey, 110 % wide and 52 % high, with the same small puff and sparkles as the other monsters of that body width. Frames 2 and 3 are the shared big cloud and fading puffs of a monster of the same width, moved to the new body centre. The widths were chosen (36, 41, 46) so that these puffs exist at exactly that size.
+- `monsters.json`: only `name` (card_pixie), `bodyHeight`, `bodyWidth` and `hpBarAnchor` changed for these six; `flying`, `hoverPx` and the animation timings are as before.
+- `sticky_moth` stays in the files and in the 총무팀 previews, but it is not in 총무팀's `spareNormal`.
 
 ## UI icons (second batch, `icons/`)
 
@@ -344,11 +393,11 @@ All UI frames were generated with PixelLab (Pixen) at native size and cropped. `
 
   | File | Panel |
   |---|---|
-  | `prologue_1` | Park at his desk in 총무부: monitor covered in sticky notes, framed certificate, fluorescent glint on his head |
+  | `prologue_1` | Park at his desk in 총무부: the back of his monitor (plain, no notes), framed certificate, fluorescent glint on his head |
   | `prologue_2` | An HR employee in a vest and glasses hands Park a white envelope; Park laughs naively |
   | `prologue_3` | Night office: an empty desk with one box (plant, mug, pen); Park from behind, slumped |
   | `prologue_4` | Evening street at sunset: Park on the phone, sweating, forcing a smile |
-  | `prologue_5` | Park bench by a pond: Park reads the newspaper, his jacket folded beside him, pigeons |
+  | `prologue_5` | Park bench by a pond: Park reads the newspaper, a small brown briefcase beside him, pigeons |
   | `prologue_6` | Close-up: Park's hand holds the turned-over envelope; a small red horned-circle emblem on it matches the one on the newspaper; his eyes narrow |
   | `prologue_7` | A tower piercing the clouds with the red horned emblem on top; tiny Park from behind raises one pen at the entrance, a security guard beside him |
 
@@ -358,7 +407,108 @@ All UI frames were generated with PixelLab (Pixen) at native size and cropped. `
   3. Cleanup: near-identical colours (RGB distance ≤ 6) merged, and faint lone specks inside flat areas replaced by their surroundings (4 to 32 per panel). Nothing was redrawn. Panels keep 36–86 colours each; they share the reference's outline and skin and shirt colours, but each scene keeps its own lighting (office, night, sunset, day, dusk).
   4. Raw picks are `story/src/prologue_N_raw_*.png`. Unused alternates: `alt_p2a` (plain background), `alt_p6a` (face cropped above the eyes, no bald head), `alt_p7a` (squat tower that does not reach the clouds).
 - Credits: **70 generations** (1 × Pro Flash edit at 64×64 = 5, 10 × Pro Flash 192×128 = 6 each, 1 × Pro Flash 32×32 = 5 for the story icon). Panels 2, 6 and 7 were generated twice.
+- Fixes after review (PixelLab Pro Flash inpaint on a crop, masked pixels only; every other pixel is unchanged). The originals are `story/src/prologue_1_v1.png` and `prologue_5_v1.png`; the inpaint outputs are `story/src/prologue_*_fix_inpaint*.png`.
+  - `prologue_1`: the sticky notes were stuck on the back of the monitor. Two inpaints (96×76 crop over the notes, then a 40×64 crop over two leftovers) made it a plain dark monitor back. 1,434 pixels changed; 8 leftover yellow pixels (one speck and a small light on the base) were set to the neighbouring dark grey.
+  - `prologue_5`: the dark clothes pile on the bench read as pulled-off trousers. One inpaint (64×64 crop, 28×28 mask) replaced it with a small closed brown briefcase standing on the bench. 493 pixels changed.
 - Known issues: in `prologue_7` the emblem at the top of the tower is cut by the top edge, and the clouds there are busy, so text reads better at the bottom-left or over a dark box. In `prologue_3` Park is seen from behind with more side hair than usual. `prologue_6` is a larger close-up and looks coarser than the other panels.
+
+### Episode 0.5 (`ep0_*`)
+
+- "0.5화 — 월급만큼만 (3층)", 4 panels, same format. Setting: an early floor in the style of the 총무팀 office (grey filing cabinets, water cooler, boxes, checkered floor) with a faint purple dungeon glow at the edges.
+
+  | File | Panel |
+  |---|---|
+  | `ep0_1` | Park in a tense stance, sweating, aims his pen at a big 서류 슬라임 (crumpled documents, binder clip, angry face) |
+  | `ep0_2` | The slime sits at a desk staring at a small monitor with bored half-closed eyes; Park stands by, confused |
+  | `ep0_3` | Close-up: Park's arm (white sleeve) bonks the slime with his pen, with an impact star; the slime's flat face doesn't care, its eyes rolled up to the wall clock |
+  | `ep0_4` | Wide shot of the open-plan floor: paper slimes, a stapler bat and a clip rat each idle at their spot, zoned out; Park in the middle, deadpan |
+
+- Monster references: frame 0 of `monsters/paper_slime_idle.png` (and of `stapler_bat_idle.png` and `clip_rat_idle.png`, described in the prompt for `ep0_4`). The style image was `park_office_ref.png` next to the paper slime frame, cropped and reduced to 24 colours so the image stays small enough to send.
+- Cleanup as before (colours merged, 12–75 faint specks per panel). Nothing was redrawn. Raw picks: `story/src/ep0_N_raw_*.png`. Rejected for `ep0_3`: `alt_ep0_3_a` (both eyes squeezed shut, so the clock gag is lost) and `alt_ep0_3_b` (the slime's face and the hit are too small to read).
+- Credits: **36 generations** (6 Pro Flash panels at 192×128, 6 each; `ep0_3` was generated three times). Two calls were rejected before generating because the reference image was cut off in transit, so they cost nothing.
+- Known issues: `ep0_3` shows only Park's arm, not his face. The wall clock in `ep0_3` has tick marks but no hands. In `ep0_4` the stapler bat and the clip rat come from the prompt only, so they look a little different from their game sprites.
+
+### Episode 1 and the headhunter (`ep1_*`, `hunter_*`)
+
+- Episode "1화 — 상무님은 부재중 (100층)" (6 panels) and "1화 뒤 — 헤드헌터 (100층)" (4 panels), same format as the prologue.
+
+  | File | Panel |
+  |---|---|
+  | `ep1_1` | Floor 100 boss room (an executive office turned dungeon: wood panels, filing cabinets, green torches, purple runes); a huge shadow with red eyes looms over the desk; tiny Park from behind |
+  | `ep1_2` | Park trembles, sweat flying, and points his pen at the shadow falling across the room |
+  | `ep1_3` | Reveal: a flat cardboard standee of a stern grey-haired executive with a blank scribbled sign on a string; a lit phone on the floor behind it; Park stares, blank-faced |
+  | `ep1_4` | Park leaps in and smacks the standee with his pen: impact star, action lines, the standee folds back, the phone flies |
+  | `ep1_5` | Beside a photocopier in a cobwebbed corner, gaunt 김인턴 crawls out on all fours; Park looks down in surprise |
+  | `ep1_6` | 김인턴 with starry hopeful eyes and clasped hands; Park looks away with a sweat drop and a guilty smile (his name badge is blank) |
+  | `hunter_1` | Concrete stairwell landing: 헤드헌터 냥 (grey tabby in sunglasses and a navy suit) leans on the rail and holds out a blank business card; Park, from behind, stops on the stairs |
+  | `hunter_2` | Close-up: Park, jaw dropped, eyes bulging, an anger mark on his head, pointing at himself |
+  | `hunter_3` | The cat spreads a hand of exam tickets (cream cards, each with a red stamp, like `icons/ticket.png`) like playing cards; Park leans in |
+  | `hunter_4` | Park holds a few tickets and studies them with a deadly serious frown |
+
+- Character references (64×64, transparent, in `story/src/`), made first so they can be reused in later episodes:
+  - `ref_kim_intern.png`: 김인턴, gaunt, messy black hair, eye bags, wrinkled light blue shirt, lanyard ID (Pro Flash with `park_office_ref.png` as the style image).
+  - `ref_headhunter_cat.png`: 헤드헌터 냥, grey tabby standing upright, black sunglasses, navy suit, white shirt, thin black tie (Pro Flash, same style image).
+  - `ref_executive_standee.png`: the stern grey-haired executive on the standee (Pixen, 1 generation). It is a plain figure, not a cardboard cutout; the panels draw the cutout from the prompt.
+- Panels with two characters used a composite style image: `park_office_ref.png` placed next to the other reference (and `icons/ticket.png` for `hunter_3` and `hunter_4`), labelled "left: Park, right: …". Single-Park panels used the Park reference alone.
+- Cleanup as for the prologue (colours merged, 13–47 faint specks per panel). In `hunter_1` the green emergency sign had letter-like white marks; those 46 pixels were painted the sign's green. Nothing else was redrawn.
+- Raw picks: `story/src/{ep1,hunter}_N_raw_*.png`. Rejected: `alt_ep1_2a` (Park in a jacket, and a horned demon sat at the desk, which spoils the cardboard reveal) and `alt_hunter_3a` (the tickets read as a paper hand fan).
+- Credits: **98 generations** in this batch: 3 references (5 + 5 + 1), 12 Pro Flash panels at 192×128 (6 each; `ep1_2` and `hunter_3` were generated twice) and 3 Pro Flash inpaints for the prologue fixes (5 each).
+- Known issues: `ep1_6` is lit like a plain beige office rather than the dark dungeon room, so it differs from `ep1_1`–`ep1_5`. In `ep1_1` and `hunter_1` Park is small and seen from behind. In `ep1_3` Park is cut by the left edge.
+
+### Episodes 2 and 3 (`ep2_*`, `ep3_*`)
+
+- "2화 — 네트워크 마케팅 아닙니다 (300층)" and "3화 — 내용증명 (600층)", 4 panels each, same format as the prologue. `story/_sheet_ep2.png` and `_sheet_ep3.png` show them ×2 in reading order (same layout as `_sheet_prologue.png`).
+
+  | File | Panel |
+  |---|---|
+  | `ep2_1` | 영업팀 floor (desks, rising bar-chart posters): Park in front of a glowing gear vending machine (giant stapler, pen, mug), his face and head drained pale blue-white, jaw dropped |
+  | `ep2_2` | Park, arms crossed and unimpressed, as 박주임 bursts in with a big sparkling showman pose |
+  | `ep2_3` | Close-up: 박주임 grins and waves a fan of green banknotes, bills fluttering, his gold watch glinting |
+  | `ep2_4` | Park and 박주임 arm in arm, grinning, 박주임 giving a thumbs up; 김인턴 peeks from behind a partition with narrowed, suspicious eyes |
+  | `ep3_1` | Floor 600 courtroom (judge's bench, candles, purple gloom): the 법무 상무 lich in wig and robe leans over the bench with its gavel; small Park at the bottom left, sweating, gripping his pen |
+  | `ep3_2` | A sheet of paper slaps flat onto the lich's face; motion lines, the gavel flies up, the lich flails (the sheet has only grey scribble lines) |
+  | `ep3_3` | Close-up: 최대리 pushes up her glasses (white glint hides her eyes), a folder and a fan of papers in her other arm, papers drifting |
+  | `ep3_4` | Paper blades shred the lich and the red health bar above it; in front, Park with starry eyes and clasped hands, 최대리 cool with arms folded and eyes closed |
+
+- New character references (64×64, transparent, binary alpha, in `story/src/`), for later episodes:
+  - `ref_park_jumim.png`: 박주임, gelled swept-back black hair, big grin, shiny grey suit, dark tie, gold watch, a fan of green banknotes (Pro Flash, `park_office_ref.png` as the style image).
+  - `ref_choi_daeri.png`: 최대리, black chin-length bob, rectangular glasses, navy blazer and skirt, white blouse, a dark blue folder at her chest. Pro Flash with the same style image, then one Pro Flash text edit to add the folder (the first try had none; a second fresh try had the folder but a muddier face).
+  - The lich has no separate reference: the panels used `monsters/judge_lich_idle.png` frame 0 (80×80).
+- Style images: the same composite approach as episode 1. Each reference was cropped to its bounding box and placed side by side, bottom-aligned, 4 px apart: Park + 박주임 (`ep2_2`), Park + 박주임 + 김인턴 (`ep2_4`), Park + lich (`ep3_1`), Park + 최대리 + lich (`ep3_4`). Single-character panels used that character's reference alone. Prompts repeat the same description of Park.
+- Two panels were fixed with a Pro Flash text edit of the whole 192×128 panel:
+  - `ep2_1`: the first roll had Park shocked but not pale, and a plain white strip across the top. The edit made his face pale and continued the ceiling. A second fresh roll (`src/alt_ep2_1b.png`) was paler but showed "$$$" on the price display and lost Park's tie.
+  - `ep2_4`: 김인턴 looked neutral; the edit gave him the suspicious squint.
+- Cleanup as for the prologue (colours merged at RGB distance ≤ 6, 0–36 faint specks per panel; 29–79 colours per panel). `ep3_2` and `ep3_4` came back with a flat grey bottom row (a grid-recovery artefact), which was replaced by a copy of the row above. Nothing was redrawn.
+- Raw picks: `story/src/{ep2,ep3}_N_raw_*.png`. Rejected: `alt_ep2_1b` (see above) and `alt_ep3_4a` (Park and 최대리 tiny at the left, expressions hard to read).
+- Credits: **92 generations**: 박주임 reference 5; 최대리 reference 15 (2 Pro Flash 64×64 creates and 1 edit, 5 each); 10 Pro Flash panels at 192×128 (6 each; `ep2_1` and `ep3_4` rolled twice); 2 Pro Flash edits at 192×128 (6 each).
+- Known issues: `ep3_3` is a large close-up with longer, less chibi proportions than the 최대리 reference, like `prologue_6`. In `ep3_1` Park is small and cut by the bottom edge. In `ep3_4` the lich is half hidden by the paper storm and reads mainly by its wig. The mug in `ep2_1` has a small blue logo mark (no letters).
+
+### Episodes 4 and 5 (`ep4_*`, `ep5_*`)
+
+- "4화 — 구독과 좋아요 (900층)" (4 panels) and "5화 — 김팀장 (1000층, 근속 25년 금배지)" (5 panels), same format as the prologue. `story/_sheet_ep4.png` shows episode 4 ×2 in one row (like `_sheet_ep2.png`); `_sheet_ep5.png` shows episode 5 ×2 in rows of three (like `_sheet_ep1.png`).
+
+  | File | Panel |
+  |---|---|
+  | `ep4_1` | Dungeon floor with torches and broken cubicles: Park punches a purple slime (impact star) while a selfie stick with a phone pokes in from the top right; Park glances at it, startled |
+  | `ep4_2` | 공주임 intro: winking idol pose, peace sign, selfie stick up, in front of a pink burst with stars and sparkles |
+  | `ep4_3` | Park, eyes squeezed shut and crying out, waves both hands at the camera, sweat drops and motion lines; the phone on its stick in the right foreground |
+  | `ep4_4` | Close-up of a phone held sideways by two hands in pink sleeves: on screen, a blushing Park with three buff icons above his head (red sword, blue shield, green up arrow) and a column of blank comment bubbles, each with only a small heart; hearts and sparkles float out of the screen |
+  | `ep5_1` | Floor 1000 boss room (red torches, banners with a horned emblem): a mountain of approval papers, folders and binders, sheets flying; on top, the boss with grey hair from behind; tiny Park from behind at the bottom left |
+  | `ep5_2` | Reveal on the paper piles: 김팀장 in his brown suit, glasses, pauldron, bracers and blank badge stands calm and weary; Park recoils, shocked |
+  | `ep5_3` | After the fight, papers all over the floor: 김팀장 sits on the floor, hair messed up, and holds out the small round gold pin on his palm; Park kneels and reaches for it |
+  | `ep5_4` | Chest-up Park, stern, the gold pin in his fist at his chest; 김팀장 sits at the right edge, looking away |
+  | `ep5_5` | From behind, Park and 김팀장 (hand on Park's shoulder) at the foot of a zigzag stone staircase that climbs into darkness, a few torches along it |
+
+- New character references (64×64, transparent, binary alpha, in `story/src/`), for later episodes:
+  - `ref_gong_jumim.png`: 공주임, long dark brown hair with a pink ribbon clip, bright open smile, pastel pink cardigan over a white blouse, grey skirt, blue ID lanyard, a selfie stick with a black phone.
+  - `ref_kim_teamjang.png`: 김팀장 as the floor 1000 boss, grey slicked-back hair, heavy jowls, black-framed glasses, rumpled brown suit and dark tie, a dull iron pauldron on one shoulder and iron bracers, a blank contract-worker ID badge on the chest pocket.
+  - Both are Pro Flash 64×64 with `park_office_ref.png` as the style image (proportions, outline and shading only). Each was rolled twice and the clearer one kept.
+  - The 금배지 has no separate reference: it is a small round gold pin with no letters in `ep5_3` and `ep5_4`.
+- Style images: Park's reference and the new character's reference side by side in one 128×64 image, labelled "left: Park, right: 공주임" or "right: 김팀장". Episode 4 used Park + 공주임 and episode 5 used Park + 김팀장 for every panel. Prompts repeat the same description of Park.
+- Cleanup as for the prologue (colours merged at RGB distance ≤ 6, 9–38 faint specks per panel; 89 in `ep4_3`, all in the carpet noise; 28–84 colours per panel). `ep5_3` and `ep5_4` came back with a flat light bottom row (the grid-recovery artefact), which was replaced by a copy of the row above. Nothing was redrawn.
+- Raw picks: `story/src/{ep4,ep5}_N_raw_*.png`. Rejected rolls were not kept: one `ep4_1` with no characters at all and one with Park running from the slime; three `ep4_4` with Park and the buff icons but no phone.
+- Credits: **110 generations**: 4 Pro Flash 64×64 references (5 each) and 15 Pro Flash panels at 192×128 (6 each; `ep4_1` was rolled 3 times and `ep4_4` 5 times; the other panels once).
+- Known issues: in `ep5_1` and `ep5_5` Park is seen from behind, and in `ep5_1` he is small and tinted red by the torchlight. `ep5_3`, `ep5_4` and `ep5_5` have a flat dark band across the top (asked for as caption space), and `ep4_4` a nearly flat one. `ep5_4` is a larger close-up of Park, so it looks coarser, like `prologue_6`. In `ep5_3` 김팀장's hair is messier than in his reference (after the fight).
 
 ## Story icon (`icons/story.png`)
 
