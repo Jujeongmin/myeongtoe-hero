@@ -40,6 +40,8 @@ export interface Frame {
   feet: Point;
   // The swinging arm passes in front of the head: the item and gloves go over the helmet.
   gearAboveHelmet?: boolean;
+  // The item is raised behind the head: it goes under the body (and the cape).
+  gearBehindBody?: boolean;
 }
 
 export const FRAME = 64;
@@ -57,6 +59,8 @@ export const ATTACK_IMPACT_FRAME: number = (anchorsJson.animations.attack as { i
 export const LAYERS = partsJson.layerOrder as readonly string[];
 // The same with the item and gloves moved over the helmet (frames with gearAboveHelmet).
 export const LAYERS_ARM_FRONT: readonly string[] = [...LAYERS.filter((l) => l !== "gear" && l !== "gloves"), "gear", "gloves"];
+// The same with the item first of all (frames with gearBehindBody).
+export const LAYERS_GEAR_BEHIND: readonly string[] = ["gear", ...LAYERS.filter((l) => l !== "gear")];
 
 export interface GearSprite {
   file: string;

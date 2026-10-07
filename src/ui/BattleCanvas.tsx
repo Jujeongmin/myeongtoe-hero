@@ -6,7 +6,7 @@ import { targetSec } from "../../shared/settle";
 import type { GameState } from "../../shared/state";
 import { HERO_CRIT_CHANCE, heroPower } from "../../shared/stats";
 import {
-  ANIMS, ATTACK_IMPACT_FRAME, BASELINE_Y, FRAME, HP_BAR, LAYERS, LAYERS_ARM_FRONT, SHINE, backgroundFile, gearSprite, image, monsterFor, parkStrip, partStrip,
+  ANIMS, ATTACK_IMPACT_FRAME, BASELINE_Y, FRAME, HP_BAR, LAYERS, LAYERS_ARM_FRONT, LAYERS_GEAR_BEHIND, SHINE, backgroundFile, gearSprite, image, monsterFor, parkStrip, partStrip,
   type Anim, type MonsterSprite,
 } from "../game/sprites";
 
@@ -235,7 +235,8 @@ function drawMonster(ctx: CanvasRenderingContext2D, m: MonsterSprite, anim: "idl
 function drawPark(ctx: CanvasRenderingContext2D, state: GameState, anim: Anim, fi: number, x: number, y: number, now: number): void {
   const frame = ANIMS[anim].frames[fi];
   const worn = state.wear;
-  for (const layer of frame.gearAboveHelmet ? LAYERS_ARM_FRONT : LAYERS) {
+  const order = frame.gearBehindBody ? LAYERS_GEAR_BEHIND : frame.gearAboveHelmet ? LAYERS_ARM_FRONT : LAYERS;
+  for (const layer of order) {
     if (layer === "body") {
       const body = image(parkStrip(anim));
       if (body) ctx.drawImage(body, fi * FRAME, 0, FRAME, FRAME, x, y, FRAME, FRAME);
