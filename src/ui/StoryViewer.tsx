@@ -99,7 +99,7 @@ function Panel({ panel, width }: { panel: StoryPanel; width: number }) {
   }, [panel, width]);
   let free = 0;
   return (
-    <section ref={ref} className="story-cut" style={{ width, height: (width * 2) / 3 }}>
+    <section ref={ref} className="story-cut" style={{ width, height: (width * 2) / 3, ["--k" as string]: k }}>
       <img src={imageUrl(`story/${panel.img}.png`)} width={width} height={(width * 2) / 3} alt="" draggable={false} />
       {panel.lines.map((l, j) => {
         if (!l.who) return null;

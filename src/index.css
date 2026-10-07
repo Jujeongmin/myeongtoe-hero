@@ -370,3 +370,8 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .wallet-pill { display: inline-flex; align-items: center; gap: 2px; height: 28px; padding: 0 4px 0 0; border: 8px solid transparent; border-width: 4px 8px; border-image: var(--ui-wallet-pill, var(--ui-icon-box)) 8 fill / 4px 8px; image-rendering: pixelated; }
 .wallet-pill .icon-img { width: 32px; height: 32px; margin: -6px 0 -6px -8px; }
 .wallet-pill b { color: #ffd166; font-size: 12px; text-shadow: 1px 1px 0 #000, -1px 0 0 #000, 0 -1px 0 #000, 1px 0 0 #000; }
+/* Webtoon text scales with the panel (--k = screen pixels per art pixel), so bubbles keep the same
+   size against the picture on a phone and on a wide screen. */
+.story-cut .story-say { font-size: calc(6.6px * var(--k, 2)); line-height: 1.25; border-width: calc(4px * var(--k, 2)); padding: 0 calc(1px * var(--k, 2)); }
+.story-cut .story-say::before { inset: calc(-4px * var(--k, 2)); border-width: calc(4px * var(--k, 2)); border-image-width: calc(4px * var(--k, 2)); }
+.story-cut .story-narration { font-size: calc(6.6px * var(--k, 2)); line-height: 1.25; }

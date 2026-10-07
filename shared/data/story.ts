@@ -60,13 +60,13 @@ export const EPISODES: readonly Episode[] = [
         img: "prologue_6",
         lines: [
           { who: "박부장", text: "…용사라니? 내가?", at: [72, 22] },
-          { who: "인사팀", text: "회장실까지 올라오시면 정규직 전환입니다. 만 층이에요.", at: [150, 60] },
+          { who: "인사팀", text: "회장실까지 올라오시면 정규직 전환입니다. 만 층이에요.", at: [146, 26], w: 70 },
         ],
       },
       {
         img: "prologue_7",
         lines: [
-          { who: "아내", text: "여보, 회사는 별일 없지?", at: [70, 77], flip: true },
+          { who: "아내", text: "여보, 회사는 별일 없지?", at: [98, 28] },
           { who: "박부장", text: "지금 회의 중이야! 바빠! 끊어!", at: [53, 40] },
           { text: "명퇴용사 박부장" },
         ],
