@@ -87,8 +87,8 @@ function AdRewards({ state, store }: { state: GameState; store: GameStore }) {
   return (
     <>
       {premium && <div className="group-title">{t("프리미엄: 광고 없이 바로 받아요")}</div>}
-      {/* Buff ads live on the buff bar top left, the welcome-back one in its popup. */}
-      {AD_PLACEMENTS.filter((ad) => ad.id !== "ad_offline" && !ad.id.startsWith("ad_buff_")).map((ad) => {
+      {/* Buff and 2배속 ads live top left, the welcome-back one in its popup. */}
+      {AD_PLACEMENTS.filter((ad) => ad.id !== "ad_offline" && ad.id !== "ad_speed" && !ad.id.startsWith("ad_buff_")).map((ad) => {
         const wait = adReadyAt(state, ad) - state.lastTick;
         return (
           <div key={ad.id} className="row">

@@ -43,7 +43,10 @@ export function PrestigePanel({ state, store, onClose }: { state: GameState; sto
         </header>
         <div className="prestige-pitch">
           <img src={imageUrl("story/src/ref_headhunter_cat.png")} width={64} height={64} alt="" draggable={false} />
-          <div className="prestige-say">{t("박부장님, 연봉은 올려 드리죠. 대신 1층부터 다시 시작입니다.")}</div>
+          <div className="prestige-say">
+            {/* One sentence a line: the pitch, then the catch. */}
+            {t("박부장님, 연봉은 올려 드리죠. 대신 1층부터 다시 시작입니다.").split(/(?<=[.。!?！？])\s*/).filter(Boolean).map((line, i) => <div key={i}>{line}</div>)}
+          </div>
         </div>
         <div className="prestige-terms">
           <div>{t("이번 회차 최고 {floor}층", { floor })}</div>

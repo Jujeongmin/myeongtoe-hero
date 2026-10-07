@@ -361,3 +361,6 @@ html[lang="ja"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional J
 .theme-ranking .sub, .theme-settings .sub { color: #c9c3e0; }
 .ad-confirm-buttons { display: flex; gap: 6px; }
 .ad-confirm-buttons button { flex: 1; }
+/* Korean wraps between words, not inside them (Japanese and Chinese have no spaces, so they keep
+   the normal per-character wrapping); a word too long for its box may still break. */
+html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
