@@ -241,3 +241,15 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .vx-img { width: 128px; height: 128px; max-width: 100%; height: auto; image-rendering: pixelated; border: 2px solid #000; }
 /* Park's speech bubble (art/ui/speech_bubble, 9-slice, tail bottom left), its tail over his head. */
 .bubble { position: absolute; z-index: 1; transform: translate(-6px, -100%); max-width: 60%; padding: 0 2px 2px; border: 12px solid transparent; border-image: var(--ui-speech-bubble) 6 fill / 12px; color: #1b1a2e; font-size: 12px; line-height: 14px; width: max-content; word-break: keep-all; pointer-events: none; image-rendering: pixelated; }
+/* 스토리: the webtoon over everything, panels down the middle with their lines under them. */
+.story { position: fixed; inset: 0; z-index: 15; display: flex; flex-direction: column; background: #0b0916; }
+.story header { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #0b0916; border-bottom: 2px solid #2b2440; }
+.story header button { border: 12px solid transparent; border-image: var(--ui-button-gold) 6 fill / 12px repeat; background: none; color: #fff; padding: 0 2px; min-width: 64px; min-height: 40px; text-shadow: 1px 1px 0 #000; }
+.story-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 12px 0 24px; }
+.story-cut { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+.story-cut img { display: block; image-rendering: pixelated; border: 2px solid #000; }
+.story-narration { padding: 4px 8px; border: 12px solid transparent; border-image: var(--ui-row-panel) 6 fill / 12px repeat; color: #e9c46a; text-align: center; }
+.story-say { align-self: flex-start; max-width: 90%; padding: 0 4px 2px; border: 12px solid transparent; border-image: var(--ui-speech-bubble) 6 fill / 12px; color: #1b1a2e; image-rendering: pixelated; }
+.story-say b { display: block; color: #8d1c1c; }
+.story-say:nth-of-type(even) { align-self: flex-end; }
+.story-end { min-width: 160px; }

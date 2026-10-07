@@ -3,11 +3,12 @@ import { BUFF_KINDS, type BuffKind } from "./data/buffs";
 import { findCert } from "./data/certs";
 import { GEAR_MAX_LEVEL, GEAR_TIERS } from "./data/gear";
 import { LEGENDS, SUIT_SETS, findSuitItem, type LegendPart } from "./data/costumes";
+import { findEpisode } from "./data/story";
 import { findPet } from "./data/pets";
 import { findRelic } from "./data/relics";
 import { findSideJob } from "./data/sideJobs";
 
-export const SAVE_VERSION = 9;
+export const SAVE_VERSION = 10;
 export const OFFLINE_CAP_SEC = 12 * 3600;
 export const START_GOLD = 10;
 export const OFFICE_MAX_GRADE = 17;
@@ -100,6 +101,8 @@ export interface GameState {
   // 배속: on until `until` (from an ad), or always while `on` for 프리미엄 buyers.
   speed: { until: number; on: boolean };
   costume: CostumeState;
+  // 스토리 episodes already read (data/story.ts ids).
+  story: string[];
 }
 
 // Costumes beyond the owned list (suits) and what is worn (wear): rentals and when they end, the
@@ -200,6 +203,8 @@ const MIGRATIONS: Record<number, (save: Record<string, unknown>) => Record<strin
   7: (save) => ({ ...save, v: 8, speed: { until: 0, on: false } }),
   // v9: costumes work when owned; rentals, 불꽃, 전설 costumes.
   8: (save) => ({ ...save, v: 9, costume: { rent: {}, rented: [], auras: [], aura: 0, legend: {} } }),
+  // v10: 스토리.
+  9: (save) => ({ ...save, v: 10, story: [] }),
 };
 
 export function freshRun(): RunState {
@@ -242,6 +247,7 @@ export function newState(now: number): GameState {
     offlineBonus: null,
     speed: { until: 0, on: false },
     costume: { rent: {}, rented: [], auras: [], aura: 0, legend: {} },
+    story: [],
   };
 }
 
@@ -260,6 +266,7 @@ export function cloneState(s: GameState): GameState {
       rent: { ...s.costume.rent }, rented: [...s.costume.rented], auras: [...s.costume.auras], aura: s.costume.aura,
       legend: { ...s.costume.legend },
     },
+    story: [...s.story],
   };
 }
 
@@ -380,6 +387,7 @@ export function fromSave(raw: unknown): GameState {
       : null,
     speed: { until: seconds(obj(data.speed).until), on: obj(data.speed).on === true },
     costume: costumeOf(obj(data.costume)),
+    story: [...new Set(strings(data.story).filter((id) => findEpisode(id)))],
   };
 }
 

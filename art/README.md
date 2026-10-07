@@ -26,6 +26,7 @@ Scale up only by an integer factor with nearest-neighbour.
 | `icons/*.png` | UI icons, 32×32, plus 16×16 small icons named `*_s.png`. `icons/_sheet.png`, `_sheet_ui.png`, `_sheet_small.png` and `_sheet_aura_legend.png` are contact sheets. |
 | `vx/*.png` | 13 VX shop product images, 512×512 (128×128 pixel art scaled ×4 nearest-neighbour). The 128 px sources are in `vx/src/`, and `vx/_sheet.png` shows all of them. |
 | `icons/extra/`, `parts/gear/extra/` | Unused extras left over from generation. They can be deleted. |
+| `story/prologue_1..7.png` | The 7 webtoon prologue panels, 192×128, opaque, no text. `story/_sheet_prologue.png` shows them ×2 in reading order; `story/src/` holds the raw picks, unused alternates and the office-Park reference. See Story panels. |
 
 ## Park
 
@@ -336,3 +337,30 @@ All UI frames were generated with PixelLab (Pixen) at native size and cropped. `
 - **Fixed size:** `menu_button` (32×32), crimson with gold corners and a three-line menu mark.
 - **Notification dot** (`red_dot.png`, 10×10, fixed size): a red dot with a `#14110f` outline, darker red lower-right shade and a short white highlight at the upper left (5 colours). It replaces the CSS-drawn red dot; place it on the icon's top-right corner at an integer scale. `applyUiSkin` exposes it as `--ui-red-dot`.
 - `_preview_x1.png` / `_preview_x3.png`: a mock list (row panel + icon box + progress bar + the three button states), the HP bar, mission panel, both nav tiles and the menu button.
+
+## Story panels (`story/`)
+
+- Webtoon panels for the prologue in `docs/story/webtoon.md` ("프롤로그 — 명예로운 퇴직"). Each is **192×128** logical pixels, landscape, opaque, with no text, letters or UI (the game overlays the lines). Scale up only by an integer factor with nearest-neighbour.
+
+  | File | Panel |
+  |---|---|
+  | `prologue_1` | Park at his desk in 총무부: monitor covered in sticky notes, framed certificate, fluorescent glint on his head |
+  | `prologue_2` | An HR employee in a vest and glasses hands Park a white envelope; Park laughs naively |
+  | `prologue_3` | Night office: an empty desk with one box (plant, mug, pen); Park from behind, slumped |
+  | `prologue_4` | Evening street at sunset: Park on the phone, sweating, forcing a smile |
+  | `prologue_5` | Park bench by a pond: Park reads the newspaper, his jacket folded beside him, pigeons |
+  | `prologue_6` | Close-up: Park's hand holds the turned-over envelope; a small red horned-circle emblem on it matches the one on the newspaper; his eyes narrow |
+  | `prologue_7` | A tower piercing the clouds with the red horned emblem on top; tiny Park from behind raises one pen at the entrance, a security guard beside him |
+
+- How they were made (PixelLab):
+  1. An office-wear Park reference (`story/src/park_office_ref.png`, 64×64): Pro Flash text edit of `park/park_ref_front.png`, keeping the face, bald head, side hair and moustache and changing the tunic to a white shirt, red tie and dark trousers.
+  2. Each panel: Pro Flash `create_image_pro_flash` at 192×128 with a background, using that reference as the style image (labelled as the hero Park), and the same description of Park in every prompt. Prompts asked for a calm band at the top for text.
+  3. Cleanup: near-identical colours (RGB distance ≤ 6) merged, and faint lone specks inside flat areas replaced by their surroundings (4 to 32 per panel). Nothing was redrawn. Panels keep 36–86 colours each; they share the reference's outline and skin and shirt colours, but each scene keeps its own lighting (office, night, sunset, day, dusk).
+  4. Raw picks are `story/src/prologue_N_raw_*.png`. Unused alternates: `alt_p2a` (plain background), `alt_p6a` (face cropped above the eyes, no bald head), `alt_p7a` (squat tower that does not reach the clouds).
+- Credits: **70 generations** (1 × Pro Flash edit at 64×64 = 5, 10 × Pro Flash 192×128 = 6 each, 1 × Pro Flash 32×32 = 5 for the story icon). Panels 2, 6 and 7 were generated twice.
+- Known issues: in `prologue_7` the emblem at the top of the tower is cut by the top edge, and the clouds there are busy, so text reads better at the bottom-left or over a dark box. In `prologue_3` Park is seen from behind with more side hair than usual. `prologue_6` is a larger close-up and looks coarser than the other panels.
+
+## Story icon (`icons/story.png`)
+
+- 32×32, transparent, binary alpha, no letters: an open comic book with small picture panels on both pages and a red bookmark ribbon, for the 스토리 menu.
+- PixelLab Pro Flash 32×32 with `icons/missions.png` as the style image (5 generations, included in the count above). Used as generated.

@@ -5,6 +5,7 @@ import { OFFICE_PARTS, apartmentCost, officeUpgradeCost, type OfficePart } from 
 import {
   AURAS, LEGENDS, LEGEND_MAX_LEVEL, RENT_MS, SUIT_PARTS, auraOpen, findSuitItem, hasCostume, legendOpen, rentPrice,
 } from "./data/costumes";
+import { findEpisode } from "./data/story";
 import { AD_BUFF_MS, AD_COUPONS, AD_GEMS_MAX, AD_GEMS_MIN, AD_GOLD_KILLS, adReadyAt, findAd } from "./data/ads";
 import { BUFF_KINDS, extendBuff } from "./data/buffs";
 import { SPEED_AD_MS } from "./data/speed";
@@ -53,6 +54,7 @@ export type Intent =
   | { k: "buyAura"; set: number }
   | { k: "wearAura"; set: number }
   | { k: "levelLegend"; part: string }
+  | { k: "readStory"; id: string }
   | { k: "upgradeOffice"; part: OfficePart }
   | { k: "enterParking" }
   | { k: "claimDaily"; id: string }
@@ -100,6 +102,7 @@ export function readIntent(raw: unknown): Intent | null {
     case "rentSuit":
     case "claimDaily":
     case "claimSpecial":
+    case "readStory":
       return typeof r.id === "string" && r.id.length <= 32 ? { k: r.k, id: r.id } : null;
     case "takeOffSuit":
     case "levelLegend":
@@ -376,6 +379,13 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
     case "toggleSpeed": {
       if (!s.vx.premium) throw new RuleError("locked");
       s.speed = { ...s.speed, on: !s.speed.on };
+      return s;
+    }
+    case "readStory": {
+      const ep = findEpisode(intent.id);
+      if (!ep) throw new RuleError("unknown");
+      if (s.bestFloor < ep.floor) throw new RuleError("locked");
+      if (!s.story.includes(ep.id)) s.story = [...s.story, ep.id];
       return s;
     }
     case "claimDailyVx": {

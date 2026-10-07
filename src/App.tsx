@@ -25,13 +25,15 @@ import { ScreenLock, SettingsPanel } from "./ui/ScreenLock";
 import { Sheet } from "./ui/Sheet";
 import { SideJobPanel } from "./ui/SideJobPanel";
 import { StatusBanner } from "./ui/StatusBanner";
+import { StoryList, StoryViewer, storyToShow } from "./ui/StoryViewer";
+import type { Episode } from "../shared/data/story";
 import { Toast } from "./ui/Toast";
 
 const SYNC_MS = 1500;
 
 const SHEET_TITLES: Record<SheetId, string> = {
   prestige: "이직", suits: "코스튬", apartment: "아파트", relics: "퇴직 기념품", office: "사무용품",
-  missions: "미션", ranking: "랭킹", settings: "설정",
+  missions: "미션", ranking: "랭킹", settings: "설정", story: "스토리",
 };
 
 // Playing against the in-page server (no Verse8 project, or ?local in development).
@@ -88,6 +90,18 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
   const [tab, setTab] = useState<NavTab>("gear");
   const [sheet, setSheet] = useState<SheetId | null>(null);
   const [locked, setLocked] = useState(false);
+  const [reading, setReading] = useState<Episode | null>(null);
+  const [shown, setShown] = useState<string[]>([]);
+
+  // A new episode opens by itself once (over the battle, when no panel is open).
+  useEffect(() => {
+    if (!state || reading || sheet || locked) return;
+    const ep = storyToShow(state);
+    if (ep && !shown.includes(ep.id)) {
+      setShown([...shown, ep.id]);
+      setReading(ep);
+    }
+  }, [state, reading, sheet, locked, shown]);
 
   useEffect(() => {
     const tick = () => void store.flush().catch(() => undefined);
@@ -140,6 +154,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
           {sheet === "office" && <OfficePanel state={state} store={store} />}
           {sheet === "missions" && <MissionSheet state={state} store={store} />}
           {sheet === "ranking" && <RankingSheet state={state} store={store} />}
+          {sheet === "story" && <StoryList state={state} onRead={setReading} />}
           {sheet === "settings" && (
             <SettingsPanel
               onLock={() => {
@@ -152,6 +167,15 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
       )}
       <OfflinePopup store={store} />
       <Toast store={store} />
+      {reading && (
+        <StoryViewer
+          episode={reading}
+          onClose={() => {
+            if (!state.story.includes(reading.id)) store.do({ k: "readStory", id: reading.id });
+            setReading(null);
+          }}
+        />
+      )}
       {locked && <ScreenLock state={state} onClose={() => setLocked(false)} />}
     </div>
   );

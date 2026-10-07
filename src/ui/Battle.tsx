@@ -14,7 +14,7 @@ import { SpeedButton } from "./SpeedButton";
 import { Amount } from "./Amount";
 import { CurrencyBar } from "./CurrencyBar";
 
-export type SheetId = "prestige" | "suits" | "apartment" | "relics" | "office" | "missions" | "ranking" | "settings";
+export type SheetId = "prestige" | "suits" | "apartment" | "relics" | "office" | "missions" | "ranking" | "settings" | "story";
 
 // The battle scene (BattleCanvas) with the screen's controls over it: the three buffs and 2× speed
 // small in a row top left, title and floor top centre, a MENU button top right that opens
@@ -28,6 +28,7 @@ const SIDE: { id: SheetId; icon: string; label: string }[] = [
   { id: "apartment", icon: "side_apartment", label: "아파트" },
   { id: "relics", icon: "side_relics", label: "기념품" },
   { id: "office", icon: "side_office", label: "사무용품" },
+  { id: "story", icon: "story", label: "스토리" },
 ];
 
 export function Battle({ state, store, onOpen, onGo }: {
