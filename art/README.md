@@ -26,7 +26,7 @@ Scale up only by an integer factor with nearest-neighbour.
 | `icons/*.png` | UI icons, 32×32, plus 16×16 small icons named `*_s.png`. `icons/_sheet.png`, `_sheet_ui.png`, `_sheet_small.png` and `_sheet_aura_legend.png` are contact sheets. |
 | `vx/*.png` | 13 VX shop product images, 512×512 (128×128 pixel art scaled ×4 nearest-neighbour). The 128 px sources are in `vx/src/`, and `vx/_sheet.png` shows all of them. |
 | `icons/extra/`, `parts/gear/extra/` | Unused extras left over from generation. They can be deleted. |
-| `story/prologue_1..7.png`, `story/ep0_1..4.png`, `story/ep1_1..6.png`, `story/hunter_1..4.png`, `story/ep2_1..4.png`, `story/ep3_1..4.png`, `story/ep4_1..4.png`, `story/ep5_1..5.png`, `story/ep6_1..4.png`, `story/ep7_1..4.png` | Webtoon panels (prologue, episodes 0.5–7, headhunter), 192×128, opaque, no text. `story/_sheet_prologue.png`, `_sheet_ep0.png`, `_sheet_ep1.png`, `_sheet_hunter.png`, `_sheet_ep2.png` to `_sheet_ep7.png` show them ×2 in reading order; `story/src/` holds the raw picks, unused alternates and the character references. See Story panels. |
+| `story/prologue_1..7.png`, `story/ep0_1..4.png`, `story/ep1_1..6.png`, `story/hunter_1..4.png`, `story/ep2_1..4.png`, `story/ep3_1..4.png`, `story/ep4_1..4.png`, `story/ep5_1..5.png`, `story/ep6_1..4.png`, `story/ep7_1..4.png`, `story/ep8_1..4.png`, `story/ep9_1..4.png` | Webtoon panels (prologue, episodes 0.5–9, headhunter), 192×128, opaque, no text. `story/_sheet_prologue.png`, `_sheet_ep0.png`, `_sheet_ep1.png`, `_sheet_hunter.png`, `_sheet_ep2.png` to `_sheet_ep9.png` show them ×2 in reading order; `story/src/` holds the raw picks, unused alternates and the character references. See Story panels. |
 
 ## Park
 
@@ -442,28 +442,25 @@ All UI frames were generated with PixelLab (Pixen) at native size and cropped. `
 
 ## Story panels (`story/`)
 
-- Webtoon panels for the prologue in `docs/story/webtoon.md` ("프롤로그 — 명예로운 퇴직"). Each is **192×128** logical pixels, landscape, opaque, with no text, letters or UI (the game overlays the lines). Scale up only by an integer factor with nearest-neighbour.
+- Webtoon panels for `docs/story/webtoon.md`. Each is **192×128** logical pixels, landscape, opaque, with no text, letters or UI (the game overlays the lines). Scale up only by an integer factor with nearest-neighbour.
 
-  | File | Panel |
-  |---|---|
-  | `prologue_1` | Park at his desk in 총무부: the back of his monitor (plain, no notes), framed certificate, fluorescent glint on his head |
-  | `prologue_2` | An HR employee in a vest and glasses hands Park a white envelope; Park laughs naively |
-  | `prologue_3` | Night office: an empty desk with one box (plant, mug, pen); Park from behind, slumped |
-  | `prologue_4` | Evening street at sunset: Park on the phone, sweating, forcing a smile |
-  | `prologue_5` | Park bench by a pond: Park reads the newspaper, a small brown briefcase beside him, pigeons |
-  | `prologue_6` | Close-up: Park's hand holds the turned-over envelope; a small red horned-circle emblem on it matches the one on the newspaper; his eyes narrow |
-  | `prologue_7` | A tower piercing the clouds with the red horned emblem on top; tiny Park from behind raises one pen at the entrance, a security guard beside him |
+### Prologue (`prologue_*`): "프롤로그 — 나이 무관"
 
-- How they were made (PixelLab):
-  1. An office-wear Park reference (`story/src/park_office_ref.png`, 64×64): Pro Flash text edit of `park/park_ref_front.png`, keeping the face, bald head, side hair and moustache and changing the tunic to a white shirt, red tie and dark trousers.
-  2. Each panel: Pro Flash `create_image_pro_flash` at 192×128 with a background, using that reference as the style image (labelled as the hero Park), and the same description of Park in every prompt. Prompts asked for a calm band at the top for text.
-  3. Cleanup: near-identical colours (RGB distance ≤ 6) merged, and faint lone specks inside flat areas replaced by their surroundings (4 to 32 per panel). Nothing was redrawn. Panels keep 36–86 colours each; they share the reference's outline and skin and shirt colours, but each scene keeps its own lighting (office, night, sunset, day, dusk).
-  4. Raw picks are `story/src/prologue_N_raw_*.png`. Unused alternates: `alt_p2a` (plain background), `alt_p6a` (face cropped above the eyes, no bald head), `alt_p7a` (squat tower that does not reach the clouds).
-- Credits: **70 generations** (1 × Pro Flash edit at 64×64 = 5, 10 × Pro Flash 192×128 = 6 each, 1 × Pro Flash 32×32 = 5 for the story icon). Panels 2, 6 and 7 were generated twice.
-- Fixes after review (PixelLab Pro Flash inpaint on a crop, masked pixels only; every other pixel is unchanged). The originals are `story/src/prologue_1_v1.png` and `prologue_5_v1.png`; the inpaint outputs are `story/src/prologue_*_fix_inpaint*.png`.
-  - `prologue_1`: the sticky notes were stuck on the back of the monitor. Two inpaints (96×76 crop over the notes, then a 40×64 crop over two leftovers) made it a plain dark monitor back. 1,434 pixels changed; 8 leftover yellow pixels (one speck and a small light on the base) were set to the neighbouring dark grey.
-  - `prologue_5`: the dark clothes pile on the bench read as pulled-off trousers. One inpaint (64×64 crop, 28×28 mask) replaced it with a small closed brown briefcase standing on the bench. 493 pixels changed.
-- Known issues: in `prologue_7` the emblem at the top of the tower is cut by the top edge, and the clouds there are busy, so text reads better at the bottom-left or over a dark box. In `prologue_3` Park is seen from behind with more side hair than usual. `prologue_6` is a larger close-up and looks coarser than the other panels.
+  | File | Panel | Speaker head points [x, y] |
+  |---|---|---|
+  | `prologue_1` | Park bench; Park in shirt and tie with a laptop whose screen is a grid of red X stamps | (narration) |
+  | `prologue_2` | Laptop close-up: a job-ad layout of grey bars around a glowing red horned-circle emblem; Park's face peeks in at the right | 박부장 [172, 6] |
+  | `prologue_3` | The tower rising through the clouds, red emblem on top; Park at the entrance with a résumé envelope, straightening his tie | 박부장 [92, 63] |
+  | `prologue_4` | Interview room: 서류 슬라임, 스테이플러 박쥐 and 결재 강시 총무 상무 behind a desk; Park on the edge of a chair | 서류 슬라임 [32, 42], 박부장 [155, 47] |
+  | `prologue_5` | The 강시 상무 slams a red approval stamp (round red mark, no letters); Park stunned | 결재 강시 총무 상무 [128, 23], 박부장 [22, 40] |
+  | `prologue_6` | HR counter: a small box with one pen; Park holds up a blank ID card with a shield-figure emblem; a smiling HR staffer with a tablet | 박부장 [72, 22], 인사팀 [150, 24] |
+  | `prologue_7` | Evening outside an apartment complex; Park on the phone with a forced smile | 박부장 [53, 40], 아내 (off-screen, phone) [70, 77] |
+
+- How they were made (PixelLab): Pro Flash `create_image_pro_flash` at 192×128 with a background. The style image was the office-wear Park (`story/src/park_office_ref.png`, a Pro Flash edit of `park/park_ref_front.png`); for `prologue_4` and `prologue_5` it was Park next to frame 0 of `monsters/gangsi_sangmu_idle.png`, reduced to 12 colours so it stays small enough to send. The paper slime and stapler bat were described in the prompt.
+- Cleanup as for the other panels (colours merged, 0–41 faint specks per panel). Nothing was redrawn. Raw picks: `story/src/prologue_N_raw_*.png`; `alt_prologue_4a.png` is the rejected first `prologue_4` (better stapler bat and 강시, but the slime is cut off by the left edge).
+- Credits: **48 generations** (8 Pro Flash panels, 6 each; `prologue_4` was generated twice).
+- Known issues: in `prologue_4` the stapler bat and the 강시 are simplified compared with their game sprites. In `prologue_6` Park has tears on his cheeks, which reads as more upset than bewildered. The emblem at the top of the tower in `prologue_3` is cut by the top edge.
+- The earlier prologue ("명예로운 퇴직") is kept in `story/src/old_prologue/`, with its raw picks, alternates and the two inpaint fixes (monitor notes removed in panel 1, briefcase in panel 5).
 
 ### Episode 0.5 (`ep0_*`)
 
@@ -479,7 +476,8 @@ All UI frames were generated with PixelLab (Pixen) at native size and cropped. `
 - Monster references: frame 0 of `monsters/paper_slime_idle.png` (and of `stapler_bat_idle.png` and `clip_rat_idle.png`, described in the prompt for `ep0_4`). The style image was `park_office_ref.png` next to the paper slime frame, cropped and reduced to 24 colours so the image stays small enough to send.
 - Cleanup as before (colours merged, 12–75 faint specks per panel). Nothing was redrawn. Raw picks: `story/src/ep0_N_raw_*.png`. Rejected for `ep0_3`: `alt_ep0_3_a` (both eyes squeezed shut, so the clock gag is lost) and `alt_ep0_3_b` (the slime's face and the hit are too small to read).
 - Credits: **36 generations** (6 Pro Flash panels at 192×128, 6 each; `ep0_3` was generated three times). Two calls were rejected before generating because the reference image was cut off in transit, so they cost nothing.
-- Known issues: `ep0_3` shows only Park's arm, not his face. The wall clock in `ep0_3` has tick marks but no hands. In `ep0_4` the stapler bat and the clip rat come from the prompt only, so they look a little different from their game sprites.
+- Fix after review: the wall clock in `ep0_3` had no hands. One Pro Flash inpaint (40×40 crop, a disc of radius 11.5 inside the tick marks) added hands at 5:00: a short hour hand to 5, a long minute hand to 12, a thin red second hand. Only 65 pixels inside the clock face changed. The original is `story/src/ep0_3_v1.png`, the inpaint output `story/src/ep0_3_fix_clock_inpaint.png` (5 generations).
+- Known issues: `ep0_3` shows only Park's arm, not his face. In `ep0_4` the stapler bat and the clip rat come from the prompt only, so they look a little different from their game sprites.
 
 ### Episode 1 and the headhunter (`ep1_*`, `hunter_*`)
 
@@ -589,6 +587,57 @@ All UI frames were generated with PixelLab (Pixen) at native size and cropped. `
   - `ep7_3`: the plaque did not match `ep7_2` (an all-gold frame and a different photo). A 36×44 mask on a 64×64 crop redrew it with `ep7_2`'s plaque placed beside the crop as the context image: the same dark wooden plaque, thin gold frame, grey-blue photo of young Park and blank gold plate, smaller. 1,437 pixels changed.
   - Credits: 20 generations (4 inpaints, 5 each). Two of them used the output "Modify current layer", which came back unchanged, so they were run again.
 - Known issues: in `ep7_1` Park stands beside the ghost rather than over it, and looks tired rather than triumphant. The young Park photo on the plaque is small in `ep7_3` (about 12 px across). `ep6_2` has only 28 colours after the edit, so it looks a little flatter than the other panels. In `ep6_4` the folded sheet is held at the pocket rather than shown inside it. `ep7_4` is a larger close-up of Park, like `ep5_4`, so it looks coarser.
+
+### Episodes 10 and 11 (`ep10_*`, `ep11_*`)
+
+- "10화 — 동기 (4500층)" (4 panels) and "11화 — 구독자 100만 (5000층, 넥타이핀)" (3 panels), same format as the prologue. `story/_sheet_ep10.png` and `_sheet_ep11.png` show them ×2 in one row (like `_sheet_ep6.png`). Characters were placed with empty space above their heads for the game's speech bubbles.
+
+  | File | Panel |
+  |---|---|
+  | `ep10_1` | Floor 4500 boss room (a meeting room turned dungeon: long table pushed aside, office chairs, torches, purple glow): 홍과장, red-faced in a faint red aura, points and shouts at Park; Park flinches with a sweat drop, a hand on his tie |
+  | `ep10_2` | Flashback in warm sepia: a pocha tent with a hanging bulb, a grill and green bottles with no labels; young Park (black hair, navy suit) and young 홍과장 clink soju glasses, both laughing |
+  | `ep10_3` | The same room, dimmer: 홍과장 hangs his head, sad, his red aura fading; Park stands beside him with a serious face |
+  | `ep10_4` | Park, smiling, puts his hand on 홍과장's shoulder; 홍과장 grins with a raised fist |
+  | `ep11_1` | 공주임 screams with joy (eyes shut, tears, one knee up) and holds out her phone: on the screen a gold plaque with a red play-button shape, golden rays and confetti bursting out; no numbers or letters |
+  | `ep11_2` | A PR staffer in a navy suit bows deeply and offers an open box with a gleaming gold tie pin; Park leans back, awkward, with a sweat drop |
+  | `ep11_3` | Waist-up: Park, blushing and shyly proud, points his thumb at the gold bar pin gleaming on his red tie; 공주임 beams beside him with big gold sparkles and green up arrows around her |
+
+- New character reference (64×64, transparent, binary alpha, in `story/src/`): `ref_hong_gwajang.png`, 홍과장: red flushed face, short spiky grey-and-black hair, angry brows, open shouting mouth, rumpled grey suit, white shirt and red tie. Pro Flash with `park_office_ref.png` as the style image (proportions, outline and shading only), one roll. The PR staffer has no reference; he is drawn from the prompt.
+- Style images: `ep10_1`, `ep10_3` and `ep10_4` used Park + 홍과장 side by side (128×64, labelled "left: Park, right: 홍과장"); `ep10_2` used `ref_park_young.png` + 홍과장 (the prompt asked for him younger with black hair); `ep11_1` used the 공주임 reference alone, `ep11_2` Park's alone, and `ep11_3` Park + 공주임. The style images were reduced to at most 48 colours (palette PNG) so they stay small enough to send. Prompts repeat the same description of Park.
+- Cleanup as for episodes 6 and 7 (colours merged at RGB distance ≤ 6, 8–41 faint specks per panel; 31–71 colours per panel). Four panels came back with a light bottom row (the grid-recovery artefact) and `ep10_1` with off-colour first and last columns; each was replaced by a copy of the row or column next to it. Nothing was redrawn.
+- Raw picks: `story/src/{ep10,ep11}_N_raw_*.png`. Unused alternate: `alt_ep11_3a` (full-body wide shot; Park and 공주임 were small and the tie pin was only a gold speck).
+- Credits: **53 generations**: 홍과장 reference 5; 8 Pro Flash panels at 192×128 (6 each; `ep11_3` was rolled twice).
+- Fix after review (by hand, no generation): `ep10_1` came back with brown side hair, brown trousers and a small blue sweat drop on the side of Park's head. Inside boxes around his side hair and trousers, the brown shades were remapped one to one onto the black and dark greys of `park_office_ref.png`, and the drop's 12 pixels were painted as hair. 175 pixels changed; every other pixel is unchanged. The original is `story/src/ep10_1_v1.png`.
+- Known issues: in `ep10_2` the sepia tint makes young 홍과장's hair look brown. `ep11_3` is a larger close-up, so it looks coarser (like `ep5_4`), and its background is blurrier than the other panels; a few sparkles sit in the space above the heads where the bubbles go.
+
+### Episodes 8 and 9 (`ep8_*`, `ep9_*`)
+
+- "8화 — 늦지 마 (3000층)" and "9화 — 박부장들 (4000층)", 4 panels each, same format as the prologue. `story/_sheet_ep8.png` and `_sheet_ep9.png` show them ×2 in one row. Speakers have empty space above their heads for the speech bubbles.
+
+  | File | Panel |
+  |---|---|
+  | `ep8_1` | Floor 3000 finance vault: the round vault door swung open, shelves of gold bars, coins and cash; an old watch with a brown strap glows on a red cushion on a pedestal; small Park from behind at the lower left, startled |
+  | `ep8_2` | Close-up: Park's hands (white cuffs) hold the watch turned over; the steel case back is blank, with only a shine and a few scratches |
+  | `ep8_3` | Flashback in warm sepia: an apartment entrance in the morning; young Park (black hair, navy suit) holds out his wrist while his wife in a cream cardigan and yellow apron fastens the watch, smiling |
+  | `ep8_4` | Back in the vault: Park, teary and moved, fastens the watch on his wrist; in his other hand a phone whose screen shows three red marks for missed calls |
+  | `ep9_1` | Floor 4000 dungeon office: Park, alarmed, pen in hand, surrounded by paper slimes and stapler bats; blank business cards fall by his feet |
+  | `ep9_2` | In a golden swirl of blank glowing cards, four past Parks stand in a row, hair thinning left to right (full black hair and navy suit; full hair, saluting with a grin; comb-over with a bald crown; bald top with a few strands); the present Park in the lower right corner, jaw dropped |
+  | `ep9_3` | Five Parks charge together swinging giant ballpoint pens at slimes and stapler bats, impact stars and flying paper; the present Park in the front center |
+  | `ep9_4` | After the fight, smoke puffs and scattered papers: Park sits on a crate, hand on his bald head, gazing wistfully at the card on top of the bundle, which shows a tiny portrait |
+
+- New references (64×64, transparent, binary alpha, in `story/src/`):
+  - `ref_park_young.png`: Park on his first day at work, the same face and moustache with full black hair and a navy suit. Pro Flash text edit of `park_office_ref.png`.
+  - `ref_wife_young.png`: Park's wife in the flashback, late 20s, shoulder-length brown hair, cream cardigan, pale yellow apron. Pro Flash with `park_office_ref.png` as the style image, rolled twice; the second roll was kept.
+- Style images: Park's reference alone for `ep8_1`, `ep8_2` and `ep8_4`; young Park + wife (128×64) for `ep8_3`; Park + young Park (128×64, reduced to 20 colours so it stays small enough to send) for all of episode 9. The monsters (paper slime, stapler bat) and the middle ages of Park were described in the prompt.
+- Cleanup as before (colours merged at RGB distance ≤ 6, 4–42 faint specks per panel; 32–87 colours per panel). Seven panels had the light bottom-row artefact and some an off-colour edge column; each was replaced by a copy of the row or column next to it. Nothing was redrawn.
+- Raw picks: `story/src/{ep8,ep9}_N_raw_*.png`. Unused alternate: `alt_ep9_2a` (the glowing cards had letter-like marks, and the second Park had full hair like the first).
+- Credits: **69 generations**: 3 references (5 each) and 9 Pro Flash panels at 192×128 (6 each; `ep9_2` was rolled twice). Four calls failed before generating because the style image was cut off in transit, so they cost nothing.
+- Fixes after review (Pro Flash inpaint, output "New layer with changes", masked pixels only; every other pixel is unchanged). The originals are `story/src/ep8_3_v1.png`, `ep8_4_v1.png` and `ep9_2_v1.png`; the inpaint layers are `story/src/*_fix_inpaint*.png`.
+  - `ep8_3`: the watch on young Park's wrist was a tangle of hands and strap. A 26×26 mask on a 48×48 crop redrew it as a round white watch face on a brown strap, with the wife's fingers at the buckle. 440 pixels changed.
+  - `ep8_4`: Park's arms did not read as a forearm wearing a watch, and the phone showed three red squiggles. The arm area (46×24 mask, inpainted on the raw panel) became a forearm across his belly with a round steel watch, his other hand's fingertips on it. The phone screen (9×20 mask on a 32×32 crop) now shows one small red missed-call mark. 780 pixels changed.
+  - `ep9_2`: the third past Park had a mouth-like outlined shape on top of his head. Two tries redrew the same shape; the third, a 12×8 mask asking for plain scalp, removed the dark outline and left faint thin strands, like a comb-over. 64 pixels changed.
+  - Credits: 34 generations (2 inpaints on 48×48 and 32×32 crops, 5 each; 4 on the full panel, 6 each: the `ep8_4` arm and three `ep9_2` tries, of which only the last was used). Two more calls failed before generating because the crop was cut off in transit, so they cost nothing.
+- Known issues: the hair of the second past Park in `ep9_2` is full, with only a slightly higher hairline. The portrait on the card in `ep9_4` is tiny (about 6 px), so the full hair barely reads. The missed-call mark on the phone in `ep8_4` is about 5 px, so it reads as a small red arrow rather than a phone. In `ep8_1` the binder spines on the shelf have small blank labels. `ep8_1` shows Park small and from behind.
 
 ## Story icon (`icons/story.png`)
 

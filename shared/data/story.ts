@@ -25,30 +25,47 @@ export interface Episode {
 
 export const EPISODES: readonly Episode[] = [
   {
-    id: "prologue",
+    // v2: the job-application prologue (the first one, about the 명퇴 envelope, was replaced).
+    id: "prologue2",
     floor: 0,
-    title: "프롤로그 — 명예로운 퇴직",
+    title: "프롤로그 — 나이 무관",
     panels: [
-      { img: "prologue_1", lines: [{ text: "박부장, 52세. 대왕상사 25년 차. 지각 0회." }] },
-      { img: "prologue_2", lines: [{ who: "박부장", text: "명…예? 명예로운 거면 받아야지! 허허", at: [128, 36], flip: true }] },
-      { img: "prologue_3", lines: [{ who: "박부장", text: "…명예라며.", at: [48, 33] }] },
+      { img: "prologue_1", lines: [{ text: "박부장, 52세. 25년 다닌 회사에서 명퇴. 이력서 100통, 서류 탈락 100번." }] },
+      {
+        img: "prologue_2",
+        lines: [
+          { text: "마왕그룹 본사 용사 채용 — 나이·경력 무관 / 성과급 즉시 지급 / 출퇴근 자유" },
+          { who: "박부장", text: "…나이 무관?", at: [172, 8], flip: true },
+        ],
+      },
+      { img: "prologue_3", lines: [{ who: "박부장", text: "면접은 25년 만이네…", at: [92, 63] }] },
       {
         img: "prologue_4",
         lines: [
-          { who: "아내", text: "여보, 이번 달 대출 이자랑 민지 학원비…", at: [60, 64], flip: true },
-          { who: "박부장", text: "어! 회사지! 지금 회의 중이야! 바빠!", at: [96, 33] },
+          { who: "서류 슬라임", text: "자기소개 해 보세요.", at: [32, 42] },
+          { who: "박부장", text: "25년간 결재, 회식, 야근… 무엇이든 버텼습니다!", at: [155, 47], flip: true },
         ],
       },
       {
         img: "prologue_5",
-        lines: [{ text: "마왕그룹 본사 용사 채용 — 나이·경력 무관 / 몬스터 처치 시 성과급 즉시 지급 / 출퇴근 자유" }],
+        lines: [
+          { who: "결재 강시 총무 상무", text: "합격. 내일부터 1층에서 시작하세요.", at: [128, 23] },
+          { who: "박부장", text: "…직급은요?", at: [22, 40] },
+          { who: "결재 강시 총무 상무", text: "용사요. 계약직.", at: [150, 60] },
+        ],
       },
-      { img: "prologue_6", lines: [{ who: "박부장", text: "…너였구나.", at: [100, 10] }] },
+      {
+        img: "prologue_6",
+        lines: [
+          { who: "박부장", text: "…용사라니? 내가?", at: [72, 22] },
+          { who: "인사팀", text: "회장실까지 올라오시면 정규직 전환입니다. 만 층이에요.", at: [150, 60] },
+        ],
+      },
       {
         img: "prologue_7",
         lines: [
-          { who: "박부장", text: "25년 결재로 단련된 손목이다. 회장실이 몇 층이라고?", at: [84, 97], flip: true },
-          { who: "경비", text: "만 층입니다. 엘리베이터는 점검 중이고요. 25년째.", at: [122, 99] },
+          { who: "아내", text: "여보, 회사는 별일 없지?", at: [70, 77], flip: true },
+          { who: "박부장", text: "지금 회의 중이야! 바빠! 끊어!", at: [53, 40] },
           { text: "명퇴용사 박부장" },
         ],
       },
