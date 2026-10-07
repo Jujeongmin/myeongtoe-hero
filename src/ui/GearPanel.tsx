@@ -87,7 +87,7 @@ function ConfirmPanel({ state, tier, onClose, onConfirm }: {
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h3>{t("구매확정")}</h3>
         <p>{t("확정한 장비는 이직해도 사라지지 않아요")}</p>
-        <p><Amount icon="gem" value={cost.gems} /> <Amount icon="gold" value={formatBig(cost.gold)} /></p>
+        <p><Amount icon="gold" value={formatBig(cost.gold)} /> <Amount icon="gem" value={cost.gems} /></p>
         <button className="gold" disabled={!afford} onClick={onConfirm}>{afford ? t("확정하기") : t("재화가 부족해요")}</button>
         <button onClick={onClose}>{t("닫기")}</button>
       </div>
