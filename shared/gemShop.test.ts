@@ -25,7 +25,7 @@ function codeOf(s: GameState, intent: Intent): string {
 
 describe("gem shop", () => {
   test("three items with their prices (buffs come from ads, not gems)", () => {
-    expect(GEM_ITEMS.map((i) => [i.id, i.gems])).toEqual([["gold_100", 100], ["gold_1000", 500], ["gear_boost", 20]]);
+    expect(GEM_ITEMS.map((i) => [i.id, i.gems])).toEqual([["gold_100", 100], ["gold_1000", 500]]);
     expect(readIntent({ k: "buyGemItem", id: "gold_100" })).toEqual({ k: "buyGemItem", id: "gold_100" });
     expect(readIntent({ k: "buyGemItem" })).toBeNull();
   });
@@ -38,18 +38,6 @@ describe("gem shop", () => {
     expect(big.gems).toBe(500);
     expect(big.gold.sub(s.gold).div(killGoldNow(s)).toNumber()).toBeCloseTo(1000);
   });
-
-  test("the gear boost stacks and is gone after a job change", () => {
-    let s = withGems(100);
-    const base = heroAtk(s);
-    s = applyIntent(s, { k: "buyGemItem", id: "gear_boost" });
-    s = applyIntent(s, { k: "buyGemItem", id: "gear_boost" });
-    expect(s.run.gearBoost).toBe(2);
-    expect(heroAtk(s).cmp(base)).toBe(1);
-    s.run = { ...s.run, maxFloor: 100 };
-    expect(applyIntent(s, { k: "prestige", mode: "plain" }).run.gearBoost).toBe(0);
-  });
-
   test("not enough gems, unknown items", () => {
     expect(codeOf(withGems(99), { k: "buyGemItem", id: "gold_100" })).toBe("not_enough_gems");
     expect(codeOf(withGems(999), { k: "buyGemItem", id: "nope" })).toBe("unknown");

@@ -319,8 +319,7 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       if (!item) throw new RuleError("unknown");
       spendGems(s, item.gems);
       if (item.kind === "buff") extendBuff(s, item.buff, BUFF_MS);
-      else if (item.kind === "gold") s.gold = s.gold.add(killGoldNow(s).mulN(item.kills));
-      else s.run = { ...s.run, gearBoost: s.run.gearBoost + 1 };
+      else s.gold = s.gold.add(killGoldNow(s).mulN(item.kills));
       return s;
     }
     case "watchAd": {

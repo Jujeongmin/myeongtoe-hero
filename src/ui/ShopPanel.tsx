@@ -23,7 +23,7 @@ const TABS: { id: Tab; label: string }[] = [
 
 const GEM_ICONS: Record<string, string> = {
   buff_atk: "buff_atk", buff_gold: "buff_gold", buff_move: "buff_move",
-  gold_100: "gold_charge", gold_1000: "gold_charge_big", gear_boost: "gear_boost",
+  gold_100: "gold_charge", gold_1000: "gold_charge_big",
 };
 
 const AD_ICONS: Record<string, string> = {
