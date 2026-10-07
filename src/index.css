@@ -296,7 +296,7 @@ html[lang="ja"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional J
 .prestige-sheet header { display: flex; align-items: center; gap: 6px; font-size: 14px; }
 .prestige-sheet header .sub { color: #6b5a44; }
 .prestige-sheet .sub { color: #6b5a44; }
-.prestige-close { margin-left: auto; border: 12px solid transparent; border-image: var(--ui-button-gold) 6 fill / 12px repeat; background: none; color: #fff; padding: 0 2px; min-height: 36px; text-shadow: 1px 1px 0 #000; }
+.prestige-close { margin-left: auto; border: 8px solid transparent; border-image: var(--ui-prestige-button, var(--ui-button-gold)) 8 fill / 8px; image-rendering: pixelated; min-width: 64px; background: none; color: #fff; padding: 0 2px; min-height: 36px; text-shadow: 1px 1px 0 #000; }
 .prestige-pitch { display: flex; align-items: flex-end; gap: 6px; }
 .prestige-pitch img { flex: none; image-rendering: pixelated; }
 .prestige-say { position: relative; padding: 0 2px 1px; border: 8px solid transparent; border-image: var(--ui-speech-box) 6 fill / 8px; font-size: 12px; line-height: 15px; }
@@ -307,9 +307,9 @@ html[lang="ja"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional J
 .prestige-card .grow { flex: 1; min-width: 0; }
 .prestige-card .sub { color: #4a3a28; }
 .prestige-card .mult { color: #b3261e; }
-.prestige-card button { flex: none; min-width: 76px; min-height: 40px; border: 12px solid transparent; border-image: var(--ui-button-gold) 6 fill / 12px repeat; background: none; color: #fff; padding: 0 2px; text-shadow: 1px 1px 0 #000; }
-.prestige-card button.hot { border-image: var(--ui-button-gold-hot) 6 fill / 12px repeat; color: #ffd166; }
-.prestige-card button:disabled { border-image: var(--ui-button-disabled) 6 fill / 12px repeat; color: #bbb; }
+.prestige-card button { flex: none; min-width: 76px; min-height: 40px; border: 8px solid transparent; border-image: var(--ui-prestige-button, var(--ui-button-gold)) 8 fill / 8px; image-rendering: pixelated; background: none; color: #fff; padding: 0 2px; text-shadow: 1px 1px 0 #000; }
+.prestige-card button.hot { border-image: var(--ui-prestige-button-on, var(--ui-button-gold-hot)) 8 fill / 8px; color: #ffd166; }
+.prestige-card button:disabled { filter: grayscale(0.8) brightness(0.8); color: #bbb; }
 /* Themed menus: each sheet uses its own frames (art/ui/<theme>_*.png), falling back to the shared ones. */
 .theme-costume { border-image: var(--ui-costume-panel, var(--ui-row-panel)) 12 fill / 12px; }
 .theme-costume .row, .theme-costume .costume-row { border: 10px solid transparent; border-image: var(--ui-costume-row, var(--ui-row-panel)) 10 fill / 10px; }
@@ -462,7 +462,7 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 /* 이직 button: icon on the left, text and a progress bar (or the reward) on the right; once open it
    glows gold and bobs now and then, with a red "!" badge. */
 .prestige-btn { flex-direction: row; gap: 4px; align-items: center; padding: 0 6px 0 0; }
-.prestige-btn > .icon-img { width: 32px; height: 32px; margin: -10px 0 -10px -10px; }
+.prestige-btn > .icon-img { width: 32px; height: 32px; margin: 0; }
 .prestige-text { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; }
 .prestige-text b { font-size: 13px; }
 .prestige-text small { font-size: 11px; }
