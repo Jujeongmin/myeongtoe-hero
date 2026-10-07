@@ -43,7 +43,7 @@ export const EPISODES: readonly Episode[] = [
       {
         img: "prologue_4",
         lines: [
-          { who: "서류 슬라임", text: "자기소개 해 보세요.", at: [32, 42], w: 58 },
+          { who: "서류 슬라임", text: "자기소개 해 보세요.", at: [32, 42], w: 96 },
           { who: "박부장", text: "25년간 결재, 회식, 야근… 무엇이든 버텼습니다!", at: [158, 47], flip: true, w: 64 },
         ],
       },
@@ -157,7 +157,7 @@ export const EPISODES: readonly Episode[] = [
     panels: [
       { img: "ep3_1", lines: [{ who: "법무 상무 리치", text: "요즘 것들은 끈기가 없어. 라떼는…", at: [92, 10] }] },
       { img: "ep3_2", lines: [{ text: "날아온 서류 한 장. '내용증명'." }] },
-      { img: "ep3_3", lines: [{ who: "최대리", text: "마왕그룹 임금체불 건으로 소송 중입니다. 몬스터 체력, 등장하자마자 30%까지 압류합니다.", at: [96, 14] }] },
+      { img: "ep3_3", lines: [{ who: "최대리", text: "마왕그룹 임금체불 건으로 소송 중입니다. 몬스터 체력, 등장하자마자 30%까지 압류합니다.", at: [118, 46], w: 72 }] },
       {
         img: "ep3_4",
         lines: [

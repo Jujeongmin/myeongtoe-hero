@@ -58,19 +58,42 @@ export function StoryViewer({ episode, onClose }: { episode: Episode; onClose: (
 function Panel({ panel, width }: { panel: StoryPanel; width: number }) {
   const ref = useRef<HTMLElement>(null);
   const k = width / PANEL_W;
-  // Keep every bubble inside the panel (a bubble near an edge slides in; its tail stays put).
+  // Lay the bubbles out in reading order: each starts where its line says (tail on the speaker's
+  // head), slides in from the panel edges, and if it would cover an earlier bubble it first tries
+  // the other side, then moves down a step at a time until it is clear.
   useLayoutEffect(() => {
     const box = ref.current;
     if (!box) return;
-    for (const el of box.querySelectorAll<HTMLElement>(".story-say")) {
+    const b = box.getBoundingClientRect();
+    const placed: DOMRect[] = [];
+    const hits = (r: DOMRect) => placed.some((p) => Math.min(r.right, p.right) - Math.max(r.left, p.left) > 1 && Math.min(r.bottom, p.bottom) - Math.max(r.top, p.top) > 1);
+    const fit = (el: HTMLElement, dy: number) => {
       el.style.marginLeft = "0px";
-      el.style.marginTop = "0px";
-      const r = el.getBoundingClientRect();
-      const b = box.getBoundingClientRect();
-      const dx = r.left < b.left + 2 ? b.left + 2 - r.left : r.right > b.right - 2 ? b.right - 2 - r.right : 0;
-      const dy = r.top < b.top + 2 ? b.top + 2 - r.top : 0;
-      el.style.marginLeft = `${dx}px`;
       el.style.marginTop = `${dy}px`;
+      const r = el.getBoundingClientRect();
+      const dx = r.left < b.left + 2 ? b.left + 2 - r.left : r.right > b.right - 2 ? b.right - 2 - r.right : 0;
+      const up = r.top < b.top + 2 ? b.top + 2 - r.top : 0;
+      el.style.marginLeft = `${dx}px`;
+      el.style.marginTop = `${dy + up}px`;
+      return el.getBoundingClientRect();
+    };
+    for (const el of box.querySelectorAll<HTMLElement>(".story-say")) {
+      let best: DOMRect | null = null;
+      search: for (let dy = 0; dy <= b.height; dy += 4) {
+        for (const flip of [el.dataset.flip === "1", el.dataset.flip !== "1"]) {
+          el.classList.toggle("flip", flip);
+          const r = fit(el, dy);
+          if (!hits(r)) {
+            best = r;
+            break search;
+          }
+        }
+      }
+      if (!best) {
+        el.classList.toggle("flip", el.dataset.flip === "1");
+        best = fit(el, 0);
+      }
+      placed.push(best);
     }
   }, [panel, width]);
   let free = 0;
@@ -81,8 +104,8 @@ function Panel({ panel, width }: { panel: StoryPanel; width: number }) {
         if (!l.who) return null;
         const [x, y] = l.at ?? [12 + 84 * (free++ % 2), 30];
         return (
-          <div key={j} className={`story-say${l.flip ? " flip" : ""}`} style={{ left: x * k, top: y * k, maxWidth: l.w ? l.w * k : width * 0.62 }}>
-            <b>{t(l.who)}</b>{t(l.text)}
+          <div key={j} className={`story-say${l.flip ? " flip" : ""}`} data-flip={l.flip ? "1" : "0"} style={{ left: x * k, top: y * k, maxWidth: l.w ? l.w * k : width * 0.62 }}>
+            {t(l.text)}
           </div>
         );
       })}
