@@ -367,8 +367,8 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 /* Header wallets: each currency in its own counter (art/ui/wallet_pill), the full 32px icon and a
    bright outlined number, like the battle screen's currency row. */
 .sheet-wallet { gap: 4px; }
-.wallet-pill { display: inline-flex; align-items: center; gap: 2px; height: 28px; padding: 0 4px 0 0; border: 8px solid transparent; border-width: 4px 8px; border-image: var(--ui-wallet-pill, var(--ui-icon-box)) 8 fill / 4px 8px; image-rendering: pixelated; }
-.wallet-pill .icon-img { width: 32px; height: 32px; margin: -6px 0 -6px -8px; }
+.wallet-pill { display: inline-flex; align-items: center; gap: 2px; height: 32px; padding: 0 2px 0 0; border: 8px solid transparent; border-image: var(--ui-wallet-pill, var(--ui-icon-box)) 8 fill / 8px; image-rendering: pixelated; }
+.wallet-pill .icon-img { width: 32px; height: 32px; margin: -8px 0 -8px -10px; }
 .wallet-pill b { color: #ffd166; font-size: 12px; text-shadow: 1px 1px 0 #000, -1px 0 0 #000, 0 -1px 0 #000, 1px 0 0 #000; }
 /* Webtoon text scales with the panel (--k = screen pixels per art pixel), so bubbles keep the same
    size against the picture on a phone and on a wide screen. */

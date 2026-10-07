@@ -752,6 +752,22 @@
    "css": "border-image: url(story_button_hot.png) 8 fill / calc(8px * var(--px)) repeat;",
    "use": "story button, highlighted: yellow POW burst, orange-red rim, black spikes only in the four corner slices; flat centre #fde203 (dark text)",
    "centerRepeat": "repeat"
+  },
+  "wallet_pill": {
+   "file": "wallet_pill.png",
+   "size": [
+    40,
+    24
+   ],
+   "slice": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+   },
+   "css": "border-image: url(wallet_pill.png) 8 fill / calc(8px * var(--px)) repeat;",
+   "use": "currency counter in panel headers ([gem icon] 156): bevelled gold-bronze rim with rounded ends, light top rim, dark inset well with a 1 px #0c0b0a inner line; flat navy-black centre #1e2332 (bright text)",
+   "centerRepeat": "repeat"
   }
  },
  "threeSlice": {
