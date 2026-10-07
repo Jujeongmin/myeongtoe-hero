@@ -110,7 +110,12 @@ export function BattleCanvas({ state }: { state: GameState }) {
         if (!el) return;
         el.hidden = meter === null;
         const text = meter === null ? "" : `B${meter}m`;
-        if (el.textContent !== text) el.textContent = text;
+        if (el.textContent === text) return;
+        el.textContent = text;
+        // Every meter the counter bumps; every 10 m it bumps bigger.
+        el.classList.remove("bump", "bump-big");
+        void el.offsetWidth;
+        if (meter) el.classList.add(meter % 10 === 0 ? "bump-big" : "bump");
       });
       raf = requestAnimationFrame(loop);
     };
@@ -235,6 +240,12 @@ function draw(
     for (let x = -off; x < w; x += bw) {
       ctx.drawImage(bg, 0, 0, bg.width, bg.height, x, top, bw, bh);
     }
+  }
+
+  // Deeper in the garage it gets darker (up to 45% by 300 m).
+  if (parking && parking.meter > 1) {
+    ctx.fillStyle = `rgba(4, 6, 16, ${Math.min(0.45, (parking.meter - 1) / 660)})`;
+    ctx.fillRect(0, 0, w, h);
   }
 
   // Hits: n of them over the fight, each landing at the impact point of its own swing.

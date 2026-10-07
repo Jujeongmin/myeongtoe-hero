@@ -377,3 +377,7 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .story-cut .story-narration { font-size: calc(6.6px * var(--k, 2)); line-height: 1.25; }
 /* 지하주차장: the depth so far, big under the header while a run plays. */
 .parking-depth { position: absolute; z-index: 2; left: 50%; top: 40px; transform: translateX(-50%); font-size: 24px; color: #ffd166; text-shadow: 2px 2px 0 #000, -1px 0 0 #000, 0 -1px 0 #000, 1px 0 0 #000; pointer-events: none; }
+.parking-depth.bump { animation: depth-bump 160ms steps(2); }
+.parking-depth.bump-big { animation: depth-bump-big 320ms steps(4); color: #fff2a8; }
+@keyframes depth-bump { 0% { transform: translateX(-50%) scale(1.25); } 100% { transform: translateX(-50%) scale(1); } }
+@keyframes depth-bump-big { 0% { transform: translateX(-50%) scale(1.6); } 100% { transform: translateX(-50%) scale(1); } }
