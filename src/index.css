@@ -196,3 +196,8 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .mission-card .mission-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mission-card .claim { margin-top: 10px; padding: 0 4px; }
 .speed-btn { top: 38px; min-width: 0; padding: 0 2px; border-width: 8px; border-image-width: 8px; line-height: 16px; }
+/* The three buffs, top left under the icons: dim when off, lit with the time left when on. */
+.buff-bar { position: absolute; left: 44px; top: 38px; display: flex; gap: 2px; z-index: 2; }
+.buff-bar .buff { position: relative; width: 32px; height: 32px; padding: 0; border: none; background: none; opacity: 0.45; }
+.buff-bar .buff.on { opacity: 1; }
+.buff-bar .buff small { position: absolute; left: 50%; top: 30px; transform: translateX(-50%); font-size: 12px; color: #ffd166; text-shadow: 1px 1px 0 #000, -1px 0 0 #000; white-space: nowrap; }

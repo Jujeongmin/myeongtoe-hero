@@ -2,7 +2,6 @@ import { departmentOf, isBossFloor, targetsOn } from "../../shared/data/floors";
 import { PRESTIGE_MIN_FLOOR } from "../../shared/data/prestige";
 import { useState } from "react";
 import { formatCount } from "../../shared/format";
-import { skillsUnlocked } from "../../shared/data/skills";
 import type { GameState } from "../../shared/state";
 import { heroPower, jobChangeReward } from "../../shared/stats";
 import type { GameStore } from "../game/store";
@@ -10,6 +9,7 @@ import { BattleCanvas } from "./BattleCanvas";
 import { Icon } from "./Icon";
 import { MissionCard, missionsWaiting, type MissionPlace } from "./MissionCard";
 import { PixelBar } from "./PixelBar";
+import { BuffBar } from "./BuffBar";
 import { SpeedButton } from "./SpeedButton";
 import { Amount } from "./Amount";
 import { CurrencyBar } from "./CurrencyBar";
@@ -34,7 +34,6 @@ export function Battle({ state, store, onOpen, onGo }: {
   const power = heroPower(state);
   const boss = isBossFloor(floor) && !farming;
   const bossLeft = Math.max(0, Math.ceil(power.bossLimitSec - carrySec));
-  const skills = skillsUnlocked(state.bestFloor);
   const ready = maxFloor >= PRESTIGE_MIN_FLOOR;
   const reward = jobChangeReward(state);
 
@@ -81,13 +80,7 @@ export function Battle({ state, store, onOpen, onGo }: {
       </button>
       <MissionCard state={state} store={store} onGo={onGo} />
       <CurrencyBar state={state} />
-      {skills.length > 0 && (
-        <div className="skills">
-          {skills.map((s) => (
-            <span key={s.id}>{s.name}</span>
-          ))}
-        </div>
-      )}
+      <BuffBar state={state} store={store} onShop={() => onGo({ tab: "shop" })} />
     </section>
   );
 }
