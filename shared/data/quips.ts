@@ -61,6 +61,7 @@ export const BOSS_SAYS: Readonly<Record<string, { appear: string; fall: string }
   third_year_jooim: { appear: "호흡과 반복이 중요합니다", fall: "그 호흡이 아닌데…" },
   ppeongtwigi_gwajang: { appear: "…(바삭)", fall: "제 뻥튀기는 건드리지 마세요" },
   mz_sawon: { appear: "6시 정각인데요?", fall: "저 칼퇴할게요" },
+  love_daeri: { appear: "저 사랑꾼 아니라니까요", fall: "그 프레임… 진짜 싫은데…" },
 };
 
 // A line from a list, picked by a number in [0, 1).

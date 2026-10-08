@@ -1906,6 +1906,46 @@
      "loop": false
     }
    }
+  },
+  "love_daeri": {
+   "id": "love_daeri",
+   "name": "억울한 사랑꾼 대리",
+   "department": "any",
+   "departmentName": "",
+   "background": "",
+   "role": "parody",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 52,
+   "bodyWidth": 41,
+   "hpBarAnchor": [
+    31,
+    0
+   ],
+   "animations": {
+    "idle": {
+     "file": "love_daeri_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "love_daeri_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "love_daeri_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
   }
  }
 }
