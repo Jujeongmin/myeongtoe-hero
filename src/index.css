@@ -511,3 +511,12 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .modal-back > .sheet, .modal-back > .modal, .modal-back > .prestige-sheet, .welcome-form, .story-body { animation: ui-pop 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.25); }
 @keyframes ui-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes ui-pop { from { opacity: 0; transform: scale(0.86) translateY(8px); } to { opacity: 1; transform: none; } }
+/* 명함: an upright business card on cream paper (the application form's paper frame), centred. */
+.biz-card { width: 180px; margin: 4px auto 10px; padding: 6px 8px 10px; border: 12px solid transparent; border-image: var(--ui-apply-panel, var(--ui-row-panel)) 12 fill / 12px; color: #2a1d1a; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; image-rendering: pixelated; }
+.biz-company { font-size: 11px; letter-spacing: 2px; color: #7a1420; }
+.biz-card .icon-img { width: 64px; height: 64px; margin: 4px 0; }
+.biz-name { font-size: 18px; color: #1b1a2e; text-shadow: none; }
+.biz-title { font-size: 11px; color: #5a4636; }
+.biz-card hr { width: 100%; border: 0; border-top: 1px solid #c9b08a; margin: 6px 0 4px; }
+.biz-line { width: 100%; display: flex; justify-content: space-between; font-size: 11px; color: #5a4636; }
+.biz-line b { color: #2a1d1a; text-shadow: none; }

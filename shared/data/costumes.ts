@@ -181,7 +181,7 @@ export const LEGEND_SET: readonly { count: number; text: string }[] = [
   { count: 1, text: "처치 골드 +500%" },
   { count: 2, text: "치명타 데미지 +350%" },
   { count: 3, text: "공격력 +350%" },
-  { count: 4, text: "이직 응시권 +50%" },
+  { count: 4, text: "연봉협상 응시권 +50%" },
   { count: 5, text: "이동 속도 +10%" },
 ];
 
@@ -213,14 +213,14 @@ export function costumeEffectText(e: CostumeEffect): Text {
     case "sideJob": return pct("부업 수입 +{v}", e.v);
     case "boss": return pct("보스 데미지 +{v}", e.v);
     case "move": return pct("이동 속도 +{v}", e.v);
-    case "prestige": return pct("이직 응시권 +{v}", e.v);
+    case "prestige": return pct("연봉협상 응시권 +{v}", e.v);
     case "critChance": return pct("치명타 확률 +{v}", e.v);
     case "cost": return pct("장비·부업 비용 -{v}", e.v);
     case "bossTime": return { key: "보스 제한시간 +{v}초", vars: { v: e.v } };
     case "offline": return { key: "오프라인 시간 +{v}시간", vars: { v: e.v / 3600 } };
-    case "prestigeFloors": return { key: "이직 시 +{v}층으로 계산", vars: { v: e.v } };
+    case "prestigeFloors": return { key: "연봉협상 시 +{v}층으로 계산", vars: { v: e.v } };
     case "dmgBelow": return { key: "{floor}층 이하에서 공격력 +{v}", vars: { floor: e.floor, v: PCT(e.v) } };
-    case "prestigeBelow": return { key: "{floor}층 이하 이직 시 응시권 +{v}", vars: { floor: e.floor, v: PCT(e.v) } };
+    case "prestigeBelow": return { key: "{floor}층 이하 연봉협상 시 응시권 +{v}", vars: { floor: e.floor, v: PCT(e.v) } };
   }
 }
 
@@ -239,7 +239,7 @@ export function legendEffectText(l: Legend, level: number): Text {
   const v = legendValue(l, Math.max(1, level));
   switch (l.effect.k) {
     case "dmg": return pct("공격력 +{v}", v);
-    case "prestige": return pct("이직 응시권 +{v}", v);
+    case "prestige": return pct("연봉협상 응시권 +{v}", v);
     case "critDmg": return pct("치명타 데미지 +{v}", v);
     case "gold": return pct("처치 골드 +{v}", v);
     case "perConfirmed": return pct("구매확정한 장비 1개당 공격력 +{v}", v);

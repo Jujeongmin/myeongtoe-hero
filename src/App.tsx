@@ -56,7 +56,7 @@ function walletFor(sheet: SheetId, state: GameState, getMore: GetMore): ReactNod
 }
 
 const SHEET_TITLES: Record<SheetId, string> = {
-  profile: "프로필", prestige: "이직", suits: "코스튬", apartment: "아파트", relics: "퇴직 기념품", office: "사무용품",
+  profile: "명함", prestige: "연봉협상", suits: "코스튬", apartment: "아파트", relics: "퇴직 기념품", office: "사무용품",
   missions: "미션", ranking: "랭킹", settings: "설정", story: "스토리",
 };
 

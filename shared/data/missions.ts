@@ -39,13 +39,13 @@ export const STEP_MISSIONS: readonly MissionDef[] = [
   { id: "s11", text: "50층 도달", done: (s) => s.bestFloor >= 50, reward: { gems: 50 } },
   { id: "s12", text: "코스튬 1개 구매", done: (s) => s.suits.length >= 1, reward: { gems: 50 } },
   { id: "s13", text: "100층 도달", done: (s) => s.bestFloor >= 100, reward: { gems: 60, tickets: 5 } },
-  { id: "s14", text: "첫 이직", done: (s) => s.prestiges >= 1, reward: { gems: 60 } },
+  { id: "s14", text: "첫 연봉협상", done: (s) => s.prestiges >= 1, reward: { gems: 60 } },
   { id: "s15", text: "동료 레벨업", done: (s) => Object.values(s.pets).some((lv) => lv >= 2), reward: { gems: 80 } },
   { id: "s16", text: "아파트 5평", done: (s) => s.apartment >= 5, reward: { gems: 80 } },
   { id: "s17", text: "200층 도달", done: (s) => s.bestFloor >= 200, reward: { gems: 100 } },
   { id: "s18", text: "자격증 10개", done: (s) => owned(s.certs) >= 10, reward: { gems: 120 } },
   { id: "s19", text: "300층 도달", done: (s) => s.bestFloor >= 300, reward: { gems: 150 } },
-  { id: "s20", text: "이직 3회", done: (s) => s.prestiges >= 3, reward: { gems: 200 } },
+  { id: "s20", text: "연봉협상 3회", done: (s) => s.prestiges >= 3, reward: { gems: 200 } },
 ];
 
 export const SPECIAL_MISSIONS: readonly MissionDef[] = [
@@ -53,9 +53,9 @@ export const SPECIAL_MISSIONS: readonly MissionDef[] = [
   { id: "f1000", text: "최고 1000층", done: (s) => s.bestFloor >= 1000, reward: { gems: 200 } },
   { id: "f2000", text: "최고 2000층", done: (s) => s.bestFloor >= 2000, reward: { gems: 400 } },
   { id: "f5000", text: "최고 5000층", done: (s) => s.bestFloor >= 5000, reward: { gems: 1000 } },
-  { id: "p5", text: "이직 5회", done: (s) => s.prestiges >= 5, reward: { gems: 100 } },
-  { id: "p10", text: "이직 10회", done: (s) => s.prestiges >= 10, reward: { gems: 200 } },
-  { id: "p30", text: "이직 30회", done: (s) => s.prestiges >= 30, reward: { gems: 500 } },
+  { id: "p5", text: "연봉협상 5회", done: (s) => s.prestiges >= 5, reward: { gems: 100 } },
+  { id: "p10", text: "연봉협상 10회", done: (s) => s.prestiges >= 10, reward: { gems: 200 } },
+  { id: "p30", text: "연봉협상 30회", done: (s) => s.prestiges >= 30, reward: { gems: 500 } },
   { id: "c20", text: "자격증 20개", done: (s) => owned(s.certs) >= 20, reward: { gems: 200 } },
   { id: "c40", text: "자격증 {n}개 전부", vars: { n: CERTS.length }, done: (s) => owned(s.certs) >= CERTS.length, reward: { gems: 500 } },
   { id: "k100", text: "지하주차장 100m", done: (s) => s.parking.best >= 100, reward: { gems: 100 } },

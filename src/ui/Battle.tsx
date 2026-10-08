@@ -26,7 +26,7 @@ export type SheetId = "profile" | "prestige" | "suits" | "apartment" | "relics" 
 // everything else, the job-change button bottom left and the step mission bottom right. The
 // monster's health bar is drawn over the monster by the canvas.
 const SIDE: { id: SheetId; icon: string; label: string }[] = [
-  { id: "profile", icon: "side_profile", label: "프로필" },
+  { id: "profile", icon: "side_profile", label: "명함" },
   { id: "missions", icon: "missions", label: "미션" },
   { id: "ranking", icon: "rank", label: "랭킹" },
   { id: "settings", icon: "settings", label: "설정" },
@@ -107,7 +107,7 @@ export function Battle({ state, store, onOpen, onGo, getMore }: {
         <Icon name="prestige" />
         <span className="prestige-text">
           <span className="prestige-line">
-            <b>{t("이직")}</b>
+            <b>{t("연봉협상")}</b>
             {ready ? <small><Amount icon="ticket" value={`+${formatCount(reward.tickets)}`} /></small> : <small className="prestige-floor">{t("{n}/{floor}층", { n: maxFloor, floor: PRESTIGE_MIN_FLOOR })}</small>}
           </span>
           {!ready && <PixelBar kind="progress" value={maxFloor / PRESTIGE_MIN_FLOOR} />}

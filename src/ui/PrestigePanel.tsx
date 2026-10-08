@@ -29,16 +29,16 @@ export function PrestigePanel({ state, store, onClose }: { state: GameState; sto
   };
 
   const offers: { mode: PrestigeMode; name: string }[] = [
-    { mode: "plain", name: t("이직") },
-    { mode: "boosted", name: t("강화이직") },
-    { mode: "super", name: t("초강화이직") },
+    { mode: "plain", name: t("연봉협상") },
+    { mode: "boosted", name: t("강화 연봉협상") },
+    { mode: "super", name: t("초강화 연봉협상") },
   ];
 
   return (
     <div className="modal-back" onClick={onClose}>
       <div className="prestige-sheet" onClick={(e) => e.stopPropagation()}>
         <header>
-          <b>{t("이직")}</b> <span className="sub">{t("(지금까지 {n}번)", { n: state.prestiges })}</span>
+          <b>{t("연봉협상")}</b> <span className="sub">{t("(지금까지 {n}번)", { n: state.prestiges })}</span>
           <button className="prestige-close" onClick={onClose} aria-label={t("닫기")}>{t("닫기")}</button>
         </header>
         <div className="prestige-pitch">
@@ -60,11 +60,11 @@ export function PrestigePanel({ state, store, onClose }: { state: GameState; sto
               <div className="grow">
                 <b>{name}</b>{ticketMult > 1 && <span className="mult"> ×{ticketMult}</span>}
                 <div className="sub">
-                  {ready ? <><Amount icon="ticket" value={formatCount(reward.tickets * ticketMult)} /> <Amount icon="gem" value={reward.gems} /></> : t("{floor}층에 도달하면 이직할 수 있어요", { floor: PRESTIGE_MIN_FLOOR })}
+                  {ready ? <><Amount icon="ticket" value={formatCount(reward.tickets * ticketMult)} /> <Amount icon="gem" value={reward.gems} /></> : t("{floor}층에 도달하면 연봉협상할 수 있어요", { floor: PRESTIGE_MIN_FLOOR })}
                 </div>
               </div>
               <button className={armed === mode ? "hot" : ""} disabled={!ready || !afford} onClick={() => press(mode)}>
-                {armed === mode ? t("한 번 더") : gems > 0 ? <Amount icon="gem" value={gems} /> : t("이직하기")}
+                {armed === mode ? t("한 번 더") : gems > 0 ? <Amount icon="gem" value={gems} /> : t("연봉협상하기")}
               </button>
             </div>
           );

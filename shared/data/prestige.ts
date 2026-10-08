@@ -11,6 +11,8 @@ export const PRESTIGE_MODES: Record<PrestigeMode, { gems: number; ticketMult: nu
   super: { gems: 1000, ticketMult: 5 },
 };
 export const PRESTIGE_TICKET_BASE = 100;
+// 칼퇴 걸음 switched on for this long right after a 연봉협상.
+export const PRESTIGE_MOVE_MS = 60_000;
 export const PRESTIGE_TICKET_GROWTH = 1.009;
 
 // 보석 count from the run's best floor; 응시권 from `ticketFloor`, the best floor with bonus floors

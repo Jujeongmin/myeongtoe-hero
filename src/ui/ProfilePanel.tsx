@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { departmentOf } from "../../shared/data/floors";
 import { readNickname } from "../../shared/ranking";
 import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
@@ -48,17 +49,20 @@ export function NicknameField({ store, initial, submit, done }: { store: GameSto
   );
 }
 
-// 프로필 (side menu): Park's employee ID card — the nickname to change, and a few records.
+// 명함 (side menu): Park's business card, standing upright — company, face, name and title, then a
+// few records — with the nickname to change under it.
 export function ProfilePanel({ state, store, guest }: { state: GameState; store: GameStore; guest: boolean }) {
   return (
     <>
-      <div className="row profile-card">
+      <div className="biz-card">
+        <div className="biz-company">{t("마왕그룹")}</div>
         <Icon name="side_profile" size={64} />
-        <div className="grow">
-          <b>{state.nickname || t("이름 없음")}</b>
-          <div className="sub">{t("마왕그룹 용사 (계약직)")}</div>
-          <div className="sub">{t("최고 {floor}층 · 이직 {n}번", { floor: state.bestFloor, n: state.prestiges })}</div>
-        </div>
+        <b className="biz-name">{state.nickname || t("이름 없음")}</b>
+        <div className="biz-title">{t("마왕그룹 용사 (계약직)")}</div>
+        <hr />
+        <div className="biz-line">{t("소속")} <b>{t(departmentOf(state.run.floor))}</b></div>
+        <div className="biz-line">{t("최고 기록")} <b>{t("{floor}층", { floor: state.bestFloor })}</b></div>
+        <div className="biz-line">{t("연봉협상")} <b>{t("{n}번", { n: state.prestiges })}</b></div>
       </div>
       <div className="profile-label">{t("닉네임 바꾸기")}</div>
       {guest ? <div className="row"><span className="sub">{t("로그인하면 닉네임을 정할 수 있어요")}</span></div> : <NicknameField store={store} initial={state.nickname} submit={t("저장")} />}

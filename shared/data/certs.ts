@@ -75,7 +75,7 @@ export const CERTS: readonly CertDef[] = [...MAIN, ...BASIC, ...CAREER];
 export const CERT_KIND_TEXT: Record<CertKind, string> = {
   atk: "공격력", crit: "치명타 데미지", side: "부업 수입", gold: "처치 골드", grit: "공격력 추가",
   critChance: "치명타 확률", aspd: "공격 속도", discount: "장비·부업 비용", sideJob: "부업 수입",
-  prestige: "이직 응시권", prestigeBoost: "커리어코치 효과", prestigeFloors: "이직 층수",
+  prestige: "연봉협상 응시권", prestigeBoost: "커리어코치 효과", prestigeFloors: "연봉협상 층수",
 };
 
 const BY_ID = new Map(CERTS.map((c) => [c.id, c]));

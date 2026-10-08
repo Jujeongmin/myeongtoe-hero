@@ -17,7 +17,7 @@ import { PARK_RUN_SEC, runParking } from "./data/parking";
 import { dailyVxClaimed, dailyVxGems } from "./data/shop";
 import { dailyOf } from "./daily";
 import { PET_BOX_COUPONS, findPet, petLevelCost, petsUnlocked } from "./data/pets";
-import { PRESTIGE_MIN_FLOOR, PRESTIGE_MODES, type PrestigeMode } from "./data/prestige";
+import { PRESTIGE_MIN_FLOOR, PRESTIGE_MODES, PRESTIGE_MOVE_MS, type PrestigeMode } from "./data/prestige";
 import { findRelic, relicLevelCost } from "./data/relics";
 import { SIDE_JOB_MAX_LEVEL, findSideJob } from "./data/sideJobs";
 import { parkPassMax, petLevel, relicLevel } from "./mods";
@@ -210,6 +210,8 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
         : { tier: 0, level: 0, confirmed: 0 };
       s.sideJobs = {};
       s.prestiges += 1;
+      // A fresh start walks fast: 칼퇴 걸음 for a minute (added to any time it already had).
+      extendBuff(s, "move", PRESTIGE_MOVE_MS);
       return s;
     }
     case "levelPet": {

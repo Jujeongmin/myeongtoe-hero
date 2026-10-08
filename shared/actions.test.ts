@@ -6,7 +6,7 @@ import { GEAR_MAX_LEVEL, GEAR_TIERS, gearAtk, gearConfirmCost, gearLevelCost, ge
 import { LEGENDS, SUIT_ITEMS } from "./data/costumes";
 import { apartmentCost, officeUpgradeCost } from "./data/home";
 import { PET_BOX_COUPONS, petLevelCost } from "./data/pets";
-import { PRESTIGE_MIN_FLOOR, prestigeReward } from "./data/prestige";
+import { PRESTIGE_MIN_FLOOR, PRESTIGE_MOVE_MS, prestigeReward } from "./data/prestige";
 import { relicLevelCost } from "./data/relics";
 import { SIDE_JOBS, sideJobCost } from "./data/sideJobs";
 import { gearPriceFor, sideJobCostFor } from "./prices";
@@ -146,7 +146,7 @@ describe("certificates", () => {
     expect(applyIntent(maxed, { k: "levelCert", id: "atk2", bulk: false }).certs.atk2).toBe(1);
   });
 
-  test("이직 자격증 are paid in gems", () => {
+  test("연봉협상 자격증 are paid in gems", () => {
     const s = { ...rich(), gems: 1000, tickets: 0 };
     const after = applyIntent(s, { k: "levelCert", id: "c_coach", bulk: false });
     expect(after.certs.c_coach).toBe(1);
@@ -185,6 +185,7 @@ describe("prestige", () => {
 
   test("resets the run and keeps the permanent things", () => {
     const after = applyIntent(at(120), { k: "prestige", mode: "plain" });
+    expect(after.buffs.move).toBe(Math.max(at(120).buffs.move, after.lastTick) + PRESTIGE_MOVE_MS);
     const reward = prestigeReward(120, 0);
     expect(after.gold.isZero()).toBe(true);
     expect(after.run).toEqual({ floor: 1, target: 0, carrySec: 0, farming: false, maxFloor: 1, gearBoost: 0 });
@@ -197,7 +198,7 @@ describe("prestige", () => {
     expect(after.prestiges).toBe(1);
   });
 
-  test("강화이직: 500 gems for ×3 tickets; 초강화이직: 1000 gems for ×5; gems reward unchanged", () => {
+  test("강화 연봉협상: 500 gems for ×3 tickets; 초강화 연봉협상: 1000 gems for ×5; gems reward unchanged", () => {
     const reward = prestigeReward(120, 0);
     const boosted = applyIntent(at(120), { k: "prestige", mode: "boosted" });
     expect(boosted.tickets).toBe(7 + reward.tickets * 3);

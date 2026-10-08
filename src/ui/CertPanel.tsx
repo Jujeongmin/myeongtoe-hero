@@ -76,7 +76,7 @@ export function CertPanel({ state, store }: { state: GameState; store: GameStore
       })}
       <div className="group-title">{t("필수 자격증")}</div>
       {CERTS.filter((c) => c.group === "basic").map((def) => <CertRow key={def.id} def={def} state={state} store={store} />)}
-      <div className="group-title">{t("이직 자격증 (보석)")}</div>
+      <div className="group-title">{t("연봉협상 자격증 (보석)")}</div>
       {CERTS.filter((c) => c.group === "career").map((def) => <CertRow key={def.id} def={def} state={state} store={store} />)}
     </>
   );
