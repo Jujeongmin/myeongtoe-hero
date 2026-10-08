@@ -60,9 +60,11 @@ export function PrestigePanel({ state, store, onClose }: { state: GameState; sto
             <div key={mode} className={`prestige-card ${mode}`}>
               <div className="grow">
                 <b>{name}</b>{ticketMult > 1 && <span className="mult"> ×{ticketMult}</span>}
-                <div className="sub">
-                  {ready ? <><Amount icon="ticket" value={formatCount(reward.tickets * ticketMult)} /> <Amount icon="gem" value={reward.gems} /></> : t("{floor}층에 도달하면 연봉협상할 수 있어요", { floor: PRESTIGE_MIN_FLOOR })}
-                </div>
+                {ready && (
+                  <div className="sub">
+                    <Amount icon="ticket" value={formatCount(reward.tickets * ticketMult)} /> <Amount icon="gem" value={reward.gems} />
+                  </div>
+                )}
               </div>
               <button className={armed === mode ? "hot" : ""} disabled={!ready || !afford} onClick={() => press(mode)}>
                 {armed === mode ? t("한 번 더") : gems > 0 ? <Amount icon="gem" value={gems} /> : t("연봉협상하기")}
