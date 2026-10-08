@@ -163,7 +163,8 @@ function nameTag(el: HTMLDivElement | null, text: string, x: number, y: number):
 // Park's speech bubble over his head: one at a time, gone after a few seconds.
 let bubbleTimer = 0;
 // The battle screen's controls a bubble must not cover.
-const BUBBLE_AVOID = ".battle-head, .top-left, .side-menu, .boss-btn, .atk-now, .prestige-btn, .mission-card, .monster-name, .currency, .parking-depth";
+// The bubble keeps clear of the controls; the monster's name it may cover (it is drawn above it).
+const BUBBLE_AVOID = ".battle-head, .top-left, .side-menu, .boss-btn, .atk-now, .prestige-btn, .mission-card, .currency, .parking-depth";
 
 function say(el: HTMLDivElement | null, text: string, x: number, y: number): void {
   if (!el) return;
