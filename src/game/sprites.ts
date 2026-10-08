@@ -17,7 +17,7 @@ const URLS = import.meta.glob(
     "../../art/backgrounds/*.png",
     "../../art/icons/*.png",
     "../../art/monsters/*.png",
-    "../../art/ui/*.png",
+    "../../art/ui/[!_]*.png",
     "../../art/vx/src/*.png",
     "../../art/story/*.png",
     "../../art/fx/*.png",

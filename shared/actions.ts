@@ -8,7 +8,7 @@ import {
 import { episodeOpen, findEpisode } from "./data/story";
 import { MONSTERS_PER_FLOOR } from "./data/floors";
 import { AD_BUFF_MS, AD_COUPONS, AD_GEMS_MAX, AD_GEMS_MIN, AD_GOLD_KILLS, adReadyAt, findAd } from "./data/ads";
-import { BUFF_KINDS, extendBuff, type BuffKind } from "./data/buffs";
+import { extendBuff, type BuffKind } from "./data/buffs";
 import { SPEED_AD_MS, SPEED_MULT, speedActive } from "./data/speed";
 import { dailyQuestReward, findDailyQuest } from "./data/dailyQuests";
 import { BUFF_MS, findGemItem } from "./data/gemShop";

@@ -1,6 +1,5 @@
 // First, before anything reaches for storage: @agent8/gameserver touches localStorage while its
 // module is being evaluated. See storageFallback.ts.
-import { initAudio } from "./game/audio";
 import "./storageFallback";
 
 import { StrictMode } from "react";
@@ -13,7 +12,9 @@ import "@fontsource/fusion-pixel-12px-proportional-tc";
 import "@fontsource/fusion-pixel-12px-proportional-jp";
 import "./fonts.css";
 import "./index.css";
+import { initAudio } from "./game/audio";
 import { applyUiSkin } from "./game/sprites";
+import { loadLocale, locale } from "./i18n";
 import { initAds } from "./net/ads";
 import { wantsOnline } from "./net/connection";
 import { ErrorBoundary } from "./ui/ErrorBoundary";
@@ -32,7 +33,8 @@ document.addEventListener("selectstart", (e) => {
 
 const online = wantsOnline(import.meta.env.VITE_AGENT8_VERSE, window.location.search, import.meta.env.DEV);
 
-createRoot(document.getElementById("root")!).render(
+// The chosen language's sentences arrive first (each language is its own file), then the game.
+void loadLocale(locale()).finally(() => createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ErrorBoundary>
       <Preload>
@@ -46,4 +48,4 @@ createRoot(document.getElementById("root")!).render(
       </Preload>
     </ErrorBoundary>
   </StrictMode>,
-);
+));

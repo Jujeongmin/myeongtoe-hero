@@ -1,5 +1,3 @@
-import { BUFF_KINDS, extendBuff } from "./buffs";
-import { BUFF_MS } from "./gemShop";
 import { cloneState, type GameState } from "../state";
 import { fill, type Text } from "../text";
 import { kstDay } from "../time";

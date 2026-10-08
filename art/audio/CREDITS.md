@@ -14,4 +14,4 @@
 | bgm_battle.mp3 | 전투 배경음(피버 중에도 그대로) | Fun and Games | music 6 |
 | bgm_parking.mp3 | 지하주차장 배경음 | Space Game | music 668 |
 
-2026-10-08 사용자가 청취 페이지에서 고름. 효과음은 앞 무음을 자르고 최고 -3dB로 맞춰 모노 96kbps, 배경음은 평균 -22dB로 맞춰 112kbps(Python `imageio_ffmpeg`의 ffmpeg).
+2026-10-08 사용자가 청취 페이지에서 고름. 효과음은 앞 무음을 자르고 최고 -3dB로 맞춰 모노 96kbps, 배경음은 평균 -22dB로 맞춰 96kbps(2026-10-08 최적화, 원본에서 다시 인코딩)(Python `imageio_ffmpeg`의 ffmpeg).

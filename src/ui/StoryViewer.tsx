@@ -2,7 +2,6 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { EPISODES, episodeOpen, type Episode, type StoryPanel } from "../../shared/data/story";
 import type { GameState } from "../../shared/state";
 import { imageUrl } from "../game/sprites";
-import type { GameStore } from "../game/store";
 import { useFitText } from "./useFitText";
 import { t } from "../i18n";
 

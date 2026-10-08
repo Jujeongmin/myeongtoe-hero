@@ -11,7 +11,6 @@ import { drawPark, visibleWear } from "../game/drawPark";
 import type { GameStore } from "../game/store";
 import { Amount } from "./Amount";
 import { Icon } from "./Icon";
-import { SpriteThumb } from "./SpriteThumb";
 
 type Tab = SuitPart | "aura" | "legend";
 const TABS: { id: Tab; label: string }[] = [

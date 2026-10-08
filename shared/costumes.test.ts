@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { AURAS, LEGENDS, SUIT_ITEMS, hasCostume, legendValue } from "./data/costumes";
+import { AURAS, LEGENDS, SUIT_ITEMS, legendValue } from "./data/costumes";
 import { mods } from "./mods";
 import { newState } from "./state";
 import { heroPower } from "./stats";

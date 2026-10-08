@@ -2,10 +2,9 @@ import { describe, expect, test } from "vitest";
 import { applyIntent, readIntent, RuleError, type Intent } from "./actions";
 import { GEM_ITEMS } from "./data/gemShop";
 import { newState, type GameState } from "./state";
-import { heroAtk, killGoldNow } from "./stats";
+import { killGoldNow } from "./stats";
 
 const T0 = 1_000_000_000_000;
-const MIN = 60_000;
 
 function withGems(gems: number): GameState {
   const s = newState(T0);

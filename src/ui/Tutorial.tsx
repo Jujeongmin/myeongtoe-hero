@@ -36,6 +36,7 @@ const COVERS = ".modal-back, .story, .welcome, .screen-lock";
 export function Tutorial({ state, tab }: { state: GameState; tab: NavTab }) {
   const aim = aimFor(state, tab);
   const box = useRef<HTMLDivElement>(null);
+  const hint = useRef<HTMLSpanElement>(null);
   const seen = useRef("");
 
   useEffect(() => {
@@ -57,13 +58,23 @@ export function Tutorial({ state, tab }: { state: GameState; tab: NavTab }) {
       const r = target.getBoundingClientRect();
       const x = r.left + r.width / 2;
       const y = r.top + r.height / 2;
+      // The game's column (on a PC it is narrower than the window).
+      const game = document.querySelector(".phone")?.getBoundingClientRect() ?? new DOMRect(0, 0, window.innerWidth, window.innerHeight);
       // The pen comes from below right; near the bottom or the right edge it comes from the other
       // side, so it stays on screen.
-      el.classList.toggle("up", y > window.innerHeight * 0.6);
-      el.classList.toggle("left", x > window.innerWidth - 120);
+      el.classList.toggle("up", y > game.top + game.height * 0.6);
+      el.classList.toggle("left", x > game.left + game.width / 2);
       el.style.left = `${Math.round(x)}px`;
       el.style.top = `${Math.round(y)}px`;
       el.hidden = false;
+      // The line keeps inside the column, slid sideways if it would run off either edge.
+      const h = hint.current;
+      if (h) {
+        h.style.translate = "";
+        const b = h.getBoundingClientRect();
+        const dx = b.right > game.right - 4 ? game.right - 4 - b.right : b.left < game.left + 4 ? game.left + 4 - b.left : 0;
+        if (dx) h.style.translate = `${Math.round(dx)}px 0`;
+      }
     };
     place();
     return () => cancelAnimationFrame(raf);
@@ -73,7 +84,7 @@ export function Tutorial({ state, tab }: { state: GameState; tab: NavTab }) {
   return (
     <div ref={box} className="tutorial" hidden>
       <img src={imageUrl("ui/tutorial_pen.png")} alt="" draggable={false} />
-      <span className="tutorial-hint">{aim.hint}</span>
+      <span ref={hint} className="tutorial-hint">{aim.hint}</span>
     </div>
   );
 }
