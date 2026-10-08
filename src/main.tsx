@@ -4,6 +4,7 @@ import "./storageFallback";
 
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { Preload } from "./ui/Preload";
 import { GameServerProvider } from "@agent8/gameserver";
 import { LocalApp, OnlineApp } from "./App";
 import "@fontsource/fusion-pixel-12px-proportional-sc";
@@ -32,13 +33,15 @@ const online = wantsOnline(import.meta.env.VITE_AGENT8_VERSE, window.location.se
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ErrorBoundary>
-      {online ? (
-        <GameServerProvider>
-          <OnlineApp />
-        </GameServerProvider>
-      ) : (
-        <LocalApp />
-      )}
+      <Preload>
+        {online ? (
+          <GameServerProvider>
+            <OnlineApp />
+          </GameServerProvider>
+        ) : (
+          <LocalApp />
+        )}
+      </Preload>
     </ErrorBoundary>
   </StrictMode>,
 );

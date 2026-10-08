@@ -220,3 +220,23 @@ export function monsterFor(department: string, floor: number, target: number, bo
   const pool = [...d.normal, ...d.spareNormal];
   return monsterSprite(pool[(floor * 7 + target * 3) % pool.length]);
 }
+
+// Every picture in the game, loaded and decoded up front (the loading screen waits for it), so
+// nothing is fetched or decoded while playing. Reports progress as 0..1; a picture that fails to
+// load counts as done.
+export async function preloadAll(onProgress: (done: number) => void): Promise<void> {
+  const paths = Object.keys(URLS).map((k) => k.slice("../../art/".length));
+  let done = 0;
+  const one = async (path: string) => {
+    image(path);
+    const img = images.get(path);
+    if (img) {
+      if (!img.complete) await new Promise((r) => { img.addEventListener("load", r, { once: true }); img.addEventListener("error", r, { once: true }); });
+      await img.decode?.().catch(() => undefined);
+    }
+    done += 1;
+    onProgress(done / paths.length);
+  };
+  // A few at a time keeps the progress bar moving smoothly.
+  for (let i = 0; i < paths.length; i += 12) await Promise.all(paths.slice(i, i + 12).map(one));
+}

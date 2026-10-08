@@ -5,8 +5,10 @@ import { formatBig } from "../../shared/format";
 import { targetSec } from "../../shared/settle";
 import type { GameState } from "../../shared/state";
 import { heroCrit, heroPower } from "../../shared/stats";
+import { FEVER_KILL_SEC, feverActive } from "../../shared/data/fever";
+import { coinLanded, coinLaunched } from "../game/coins";
 import { PARK_CHEST_EVERY, PARK_RUN_SEC, PARK_STEP_SEC, parkHp, parkMeterSec } from "../../shared/data/parking";
-import { ANIMS, ATTACK_IMPACT_FRAME, BASELINE_Y, HP_BAR, backgroundFile, image, monsterFor, preloadBattleArt, type Anim, type MonsterSprite } from "../game/sprites";
+import { ANIMS, ATTACK_IMPACT_FRAME, BASELINE_Y, HP_BAR, backgroundFile, image, imageUrl, monsterFor, preloadBattleArt, type Anim, type MonsterSprite } from "../game/sprites";
 import { drawPark, visibleWear } from "../game/drawPark";
 import { t } from "../i18n";
 
@@ -63,6 +65,10 @@ interface Sim {
   // Hit bursts still playing, and a short screen shake after a critical hit.
   fx: { crit: boolean; x: number; y: number; since: number }[];
   shakeUntil: number;
+  // 피버타임: monsters knocked flying off the screen, and when the next one is.
+  flung: { monster: MonsterSprite; since: number; spin: number; rise: number }[];
+  feverKey: string;
+  feverDone: number;
   // A parking chest opening where the 20th, 40th… meter's monster fell.
   chest: { x: number; since: number } | null;
 }
@@ -90,7 +96,7 @@ export function BattleCanvas({ state }: { state: GameState }) {
     let scroll = 0;
     let last = performance.now();
     const sim: Sim = {
-      kill: "", hits: 0, crits: [], hurtUntil: 0, dying: null, current: null, currentX: 0, floor: 0, boss: false,
+      kill: "", hits: 0, crits: [], flung: [], feverKey: "", feverDone: 0, hurtUntil: 0, dying: null, current: null, currentX: 0, floor: 0, boss: false,
       quipAt: performance.now() + QUIP_MIN_MS * Math.random(), fx: [], shakeUntil: 0, chest: null,
     };
     const loop = (now: number) => {
@@ -133,6 +139,8 @@ export function BattleCanvas({ state }: { state: GameState }) {
         el.classList.remove("bump", "bump-big");
         void el.offsetWidth;
         if (meter) el.classList.add(meter % 10 === 0 ? "bump-big" : "bump");
+      }, (x, y, n) => {
+        flyCoins(layer.current, (x * cw) / w, (y * ch) / h, n);
       });
       raf = requestAnimationFrame(loop);
     };
@@ -206,6 +214,42 @@ function fitBubble(el: HTMLDivElement): void {
   el.style.left = `${left}px`;
 }
 
+// Gold coins popping out of a fallen monster and swept into the gold counter at the bottom left.
+function flyCoins(layer: HTMLDivElement | null, x: number, y: number, n: number): void {
+  const scene = layer?.closest(".battle");
+  const target = scene?.querySelector(".currency span .icon-img");
+  const src = imageUrl("icons/gold_s.png") ?? imageUrl("icons/gold.png");
+  if (!layer || !scene || !target || !src) return;
+  const box = scene.getBoundingClientRect();
+  const goal = target.getBoundingClientRect();
+  const gx = goal.left - box.left + goal.width / 2;
+  const gy = goal.top - box.top + goal.height / 2;
+  for (let i = 0; i < n; i++) {
+    const coin = document.createElement("img");
+    coin.className = "fly-coin";
+    coin.src = src;
+    coin.style.left = `${Math.round(x)}px`;
+    coin.style.top = `${Math.round(y)}px`;
+    layer.appendChild(coin);
+    coinLaunched();
+    const pop = { x: (Math.random() - 0.5) * 40, y: -12 - Math.random() * 18 };
+    coin.animate(
+      [
+        { transform: "translate(-50%, -50%) scale(0.6)" },
+        { transform: `translate(calc(-50% + ${pop.x}px), calc(-50% + ${pop.y}px)) scale(1)`, offset: 0.3 },
+        { transform: `translate(calc(-50% + ${gx - x}px), calc(-50% + ${gy - y}px)) scale(0.7)` },
+      ],
+      { duration: 650 + i * 70, easing: "cubic-bezier(0.5, 0, 0.9, 0.6)", fill: "forwards" },
+    ).onfinish = () => {
+      coin.remove();
+      coinLanded();
+      target.closest("span")?.classList.remove("gold-hit");
+      void (target as HTMLElement).offsetWidth;
+      target.closest("span")?.classList.add("gold-hit");
+    };
+  }
+}
+
 // A damage number that rises and fades over the monster (pixel font text, not a picture).
 function popDamage(layer: HTMLDivElement | null, text: string, x: number, y: number, crit: boolean): void {
   if (!layer || layer.childElementCount > 12) return;
@@ -222,6 +266,7 @@ function draw(
   ctx: CanvasRenderingContext2D, w: number, h: number, bgScale: number, { state, at }: Snapshot, now: number, dt: number, scroll: number,
   sim: Sim, pop: (text: string, x: number, y: number, crit: boolean) => void, talk: (text: string, x: number, y: number) => void,
   tag: (text: string, x: number, y: number) => void, showDepth: (meter: number | null) => void,
+  coins: (x: number, y: number, n: number) => void,
 ): number {
   ctx.imageSmoothingEnabled = false;
   const { floor, target, carrySec, farming } = state.run;
@@ -241,7 +286,9 @@ function draw(
   const kills = parking ? 0 : fighting ? Math.floor(elapsed / perKill) : 0;
   const t = parking ? parking.t : fighting ? elapsed - kills * perKill : 0;
   const walking = t < walkSec || !Number.isFinite(fight);
-  const nextScroll = walking ? scroll + (WALK_PX_PER_SEC * dt) / walkSec : scroll;
+  // 피버타임: Park charges through the floors the run had reached before the 연봉협상.
+  const fever = !parking && feverActive(state, serverNow);
+  const nextScroll = fever ? scroll + FEVER_SCROLL_PX * dt : walking ? scroll + (WALK_PX_PER_SEC * dt) / walkSec : scroll;
   const floorY = h - (BG_H - BG_FLOOR) * bgScale;
   const department = parking ? PARKING_DEPARTMENT : departmentOf(floor);
   const placeNow = current + (fighting ? Math.floor(elapsed / perKill) : 0);
@@ -257,8 +304,15 @@ function draw(
   // How deep the run is: the meters already cleared.
   showDepth(parking ? parking.meter - 1 : null);
   const head: [number, number] = [parkX + 32, floorY - BASELINE_Y + 4];
-  if (kill !== sim.kill) {
-    if (sim.current && sim.kill !== "") sim.dying = { monster: sim.current, x: sim.currentX, since: now };
+  if (fever) sim.kill = ""; // the fight starts fresh once the fever ends
+  else if (kill !== sim.kill) {
+    if (sim.current && sim.kill !== "") {
+      // A monster always falls where it met Park (by now sim.currentX may already be the next one
+      // walking in).
+      sim.dying = { monster: sim.current, x: contactX, since: now };
+      // Its gold flies into the counter (more coins for a boss); the garage pays in chests instead.
+      if (!sim.kill.startsWith("p:")) coins(contactX + sim.current.size / 2, floorY - sim.current.size / 2, sim.boss ? 8 : 3);
+    }
     // Every 20 m down the garage a chest pops open.
     if (parking && sim.kill.startsWith("p:") && (parking.meter - 1) % PARK_CHEST_EVERY === 0 && parking.meter > 1) {
       sim.chest = { x: sim.currentX + 16, since: now };
@@ -301,6 +355,12 @@ function draw(
     for (let x = -off; x < w; x += bw) {
       ctx.drawImage(bg, 0, 0, bg.width, bg.height, x, top, bw, bh);
     }
+  }
+
+  if (fever) {
+    tag("", 0, 0);
+    drawFever(ctx, state, sim, now, elapsed, floor, parkX, contactX, floorY, w, coins);
+    return nextScroll;
   }
 
   // Deeper in the garage it gets darker (up to 45% by 300 m).
@@ -457,4 +517,67 @@ function drawMonster(ctx: CanvasRenderingContext2D, m: Drawn, anim: "idle" | "hu
   if (!img) return;
   const frame = m.frame ?? m.size;
   ctx.drawImage(img, f * frame, 0, frame, frame, x, floorY - m.baseline - m.hover, m.size, m.size);
+}
+
+// ---- 피버타임 ----
+
+const FEVER_SCROLL_PX = 420; // art px a second the office rushes past
+const FLING_MS = 700;
+const FEVER_FLAME = { file: "fx/fever_flame.png", w: 43, h: 44, frames: 6, ms: 70 };
+
+// Park dashes, leaving fading afterimages, and meets the floor's monsters one by one at the fever's
+// pace (FEVER_KILL_SEC each, the boss last): each is knocked spinning up and off the screen with a
+// burst and its gold.
+function drawFever(
+  ctx: CanvasRenderingContext2D, state: GameState, sim: Sim, now: number, elapsed: number, floor: number,
+  parkX: number, contactX: number, floorY: number, w: number, coins: (x: number, y: number, n: number) => void,
+): void {
+  // The kills the rules have made since the snapshot, at the fever's pace; each new one is flung.
+  const done = Math.floor(elapsed / FEVER_KILL_SEC);
+  const key = `f:${state.run.floor}:${state.run.target}`;
+  if (sim.feverKey !== key) {
+    sim.feverKey = key;
+    sim.feverDone = 0;
+  }
+  for (; sim.feverDone < done && sim.feverDone < 40; sim.feverDone++) {
+    const place = state.run.target + sim.feverDone;
+    const f = floor + Math.floor(place / MONSTERS_PER_FLOOR);
+    if (f >= state.fever.toFloor) break;
+    const target = place % MONSTERS_PER_FLOOR;
+    const boss = isBoss(target);
+    const found = monsterFor(departmentOf(f), f, target, boss);
+    const m = found && boss ? enlarge(found, bossScale) : found;
+    if (m) sim.flung.push({ monster: m, since: now, spin: 6 + Math.random() * 6, rise: (boss ? 1.3 : 0.7) + Math.random() * 0.4 });
+    sim.fx.push({ crit: true, x: contactX + 8, y: floorY - 28, since: now });
+    coins(contactX + 16, floorY - 24, boss ? 4 : 1);
+  }
+  // A fire aura streaming back from Park (art/fx/fever_flame.png, 6 frames), and two faint
+  // afterimages in it.
+  const flame = image(FEVER_FLAME.file);
+  if (flame) {
+    const f = Math.floor(now / FEVER_FLAME.ms) % FEVER_FLAME.frames;
+    ctx.drawImage(flame, f * FEVER_FLAME.w, 0, FEVER_FLAME.w, FEVER_FLAME.h, parkX + 34 - FEVER_FLAME.w, floorY - FEVER_FLAME.h - 2, FEVER_FLAME.w, FEVER_FLAME.h);
+  }
+  const fi = Math.floor(now / 40) % ANIMS.walk.frames.length;
+  for (let i = 2; i >= 1; i--) {
+    ctx.globalAlpha = 0.15 * (3 - i);
+    drawPark(ctx, visibleWear(state), state.gear.tier, "walk", (fi + i) % ANIMS.walk.frames.length, parkX - i * 10, floorY - BASELINE_Y, now);
+  }
+  ctx.globalAlpha = 1;
+  drawPark(ctx, visibleWear(state), state.gear.tier, "walk", fi, parkX, floorY - BASELINE_Y, now);
+  // Knocked away: up in an arc, spinning, off to the right.
+  sim.flung = sim.flung.filter((f) => now - f.since < FLING_MS);
+  for (const f of sim.flung) {
+    const p = (now - f.since) / FLING_MS;
+    const x = contactX + p * (w - contactX + 40);
+    const y = floorY - f.monster.baseline - f.monster.hover - Math.sin(p * Math.PI) * 60 * f.rise - p * 30;
+    ctx.save();
+    ctx.translate(x + f.monster.size / 2, y + f.monster.size / 2);
+    ctx.rotate(p * f.spin);
+    const img = image(f.monster.anims.hurt.file);
+    const frame = (f.monster as Drawn).frame ?? f.monster.size;
+    if (img) ctx.drawImage(img, 0, 0, frame, frame, -f.monster.size / 2, -f.monster.size / 2, f.monster.size, f.monster.size);
+    ctx.restore();
+  }
+  drawHitFx(ctx, sim, now);
 }

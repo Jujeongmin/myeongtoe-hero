@@ -13,6 +13,7 @@ import { SPEED_AD_MS, SPEED_MULT, speedActive } from "./data/speed";
 import { dailyQuestReward, findDailyQuest } from "./data/dailyQuests";
 import { BUFF_MS, findGemItem } from "./data/gemShop";
 import { ATTENDANCE_REWARDS, STEP_MISSIONS, findSpecialMission, type Reward } from "./data/missions";
+import { FEVER_MS } from "./data/fever";
 import { PARK_AWAKEN, PARK_RUN_SEC, runParking } from "./data/parking";
 import { dailyVxClaimed, dailyVxGems } from "./data/shop";
 import { dailyOf } from "./daily";
@@ -59,6 +60,7 @@ export type Intent =
   | { k: "claimParking" }
   | { k: "upgradeOffice"; part: OfficePart }
   | { k: "enterParking" }
+  | { k: "feedParking" }
   | { k: "claimDaily"; id: string }
   | { k: "claimStep" }
   | { k: "claimSpecial"; id: string }
@@ -91,6 +93,7 @@ export function readIntent(raw: unknown): Intent | null {
     case "petBox":
     case "expandApartment":
     case "enterParking":
+    case "feedParking":
     case "claimStep":
     case "claimAttendance":
     case "confirmGear":
@@ -203,6 +206,8 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       s.tickets += reward.tickets * mode.ticketMult;
       s.gems += reward.gems;
       s.gold = Big.ZERO;
+      // 피버타임: charge back up to the floor this run reached, for at most FEVER_MS.
+      s.fever = { until: s.lastTick + FEVER_MS, toFloor: s.run.maxFloor };
       s.run = freshRun();
       // 구매확정-ed tiers stay: the last of them in hand at Lv5, so the next can be bought at once.
       s.gear = s.gear.confirmed > 0
@@ -293,6 +298,13 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       s.costume = { ...s.costume, legend: { ...s.costume.legend, [legend.part]: lv + 1 } };
       return s;
     }
+    case "feedParking": {
+      // 각성: offer the passes held (as many as are still needed) toward PARK_AWAKEN.
+      const n = Math.min(s.parking.passes, PARK_AWAKEN - s.parking.used);
+      if (n <= 0) throw new RuleError(s.parking.used >= PARK_AWAKEN ? "claimed" : "no_pass");
+      s.parking = { ...s.parking, passes: s.parking.passes - n, used: s.parking.used + n };
+      return s;
+    }
     case "enterParking": {
       if (s.parking.passes <= 0) throw new RuleError("no_pass");
       if (s.parking.runUntil > s.lastTick || !s.parking.claimed) throw new RuleError("busy");
@@ -302,7 +314,6 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
         ...s.parking, passes: s.parking.passes - 1, best: Math.max(s.parking.best, run.depth),
         // 배속 plays the same 30 seconds in half the real time.
         runFrom: s.lastTick, runUntil: s.lastTick + (PARK_RUN_SEC * 1000) / (speedActive(s) ? SPEED_MULT : 1), last: run, claimed: false,
-        used: s.parking.used + 1,
       };
       s.daily = { ...today, claimed: [...today.claimed], entries: today.entries + 1, bestDepth: Math.max(today.bestDepth, run.depth) };
       return s;

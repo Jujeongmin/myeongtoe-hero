@@ -520,3 +520,11 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .biz-card hr { width: 100%; border: 0; border-top: 1px solid #c9b08a; margin: 6px 0 4px; }
 .biz-line { width: 100%; display: flex; justify-content: space-between; font-size: 11px; color: #5a4636; }
 .biz-line b { color: #2a1d1a; text-shadow: none; }
+/* Coins from a fallen monster flying into the gold counter, which bumps as each lands. */
+.fly-coin { position: absolute; z-index: 3; width: 16px; height: 16px; pointer-events: none; image-rendering: pixelated; }
+.currency span.gold-hit { animation: gold-hit 0.18s steps(2); }
+@keyframes gold-hit { 50% { transform: scale(1.12); } }
+/* Loading screen: the title, a bar and the percentage while every picture loads. */
+.screen.loading b { font-size: 20px; color: #ffd166; text-shadow: 1px 1px 0 #000; }
+.loading-bar { width: 200px; }
+.loading-bar .pbar { width: 100%; }

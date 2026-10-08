@@ -841,3 +841,7 @@ Each menu has its own frame set instead of the shared blue row panel. Every them
 - `ui/button_gold.png`, `button_gold_hot.png` and `button_disabled.png` lost their corner ornaments (gold studs, silver brackets and a white tip pixel) at the user's request: in each corner a 10x10 area was refilled from the edge cross-sections next to it, with the very corner pixel left transparent. The originals are in `ui/src/*_corners_orig.png`.
 - `ui/row_panel.png` got the same treatment (its gold corner brackets refilled from the edges, 6x6 per corner, 2026-10-07); original in `ui/src/row_panel_corners_orig.png`.
 - `ui/icon_box.png`: its corner glints (white top corners, gold bottom-right) recoloured to the black rim (23 px, 2026-10-07); original in `ui/src/icon_box_corners_orig.png`.
+
+## Fever flame (Codex)
+
+- `fx/fever_flame.png` (6 frames of 43x44, one row): the fire aura streaming back from Park during 피버타임. Made with Codex image generation at the user's request (PixelLab was out of generations): a 2172x724 six-frame strip on magenta (`fx/src/fever_flame_codex.png`), keyed, cropped to the shared bounds, nearest-neighbour scaled to 44 px tall, alpha cut at 128, quantised to 12 colours.

@@ -34,15 +34,24 @@ export function ParkingPanel({ state, store }: { state: GameState; store: GameSt
             {passes >= PARK_PASS_MAX ? t("주차권이 가득 찼어요") : t("다음 주차권까지 {time}", { time: clock(PARK_RECHARGE_SEC - passCarrySec) })}
             {" · "}{t("최고 B{m}m", { m: best })}
           </div>
-          <div className="sub">
-            {state.parking.used >= PARK_AWAKEN
-              ? t("각성: 한 방 구간은 {m}m까지 건너뛰어요", { m: PARK_WARP_MAX })
-              : t("각성까지 입장 {n}회 (한 방 구간 건너뛰기)", { n: PARK_AWAKEN - state.parking.used })}
-          </div>
         </div>
         <button className={running || passes <= 0 ? "" : "hot"} disabled={running || passes <= 0} onClick={enter}>
           {running ? t("탐사 중") : <>{t("입장")}<br />{t("주차권 1장")}</>}
         </button>
+      </div>
+      {/* 각성: passes offered here (all held at once) toward PARK_AWAKEN; then runs warp through
+          the one-hit meters. */}
+      <div className="row">
+        <div className="grow">
+          <b>{t("주차장 각성")}</b> {state.parking.used >= PARK_AWAKEN ? t("완료") : `${state.parking.used}/${PARK_AWAKEN}`}
+          <div className="sub">{t("주차권을 바쳐 각성하면 한 방 구간을 {m}m까지 건너뛰어요", { m: PARK_WARP_MAX })}</div>
+          {state.parking.used < PARK_AWAKEN && <div className="bar"><i style={{ width: `${(state.parking.used / PARK_AWAKEN) * 100}%` }} /></div>}
+        </div>
+        {state.parking.used < PARK_AWAKEN && (
+          <button disabled={passes <= 0 || running} onClick={() => store.do({ k: "feedParking" })}>
+            {t("바치기")}<br />{t("주차권 {n}장", { n: Math.min(passes, PARK_AWAKEN - state.parking.used) })}
+          </button>
+        )}
       </div>
       <div className="group-title">
         {t("오늘의 주차장 퀘스트 · 입장 {n}회 · 최고 B{m}m", { n: today.entries, m: today.bestDepth })}{saturday ? t(" · 토요일 2배!") : ""}

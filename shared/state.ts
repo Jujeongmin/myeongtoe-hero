@@ -8,7 +8,7 @@ import { findPet } from "./data/pets";
 import { findRelic } from "./data/relics";
 import { findSideJob } from "./data/sideJobs";
 
-export const SAVE_VERSION = 13;
+export const SAVE_VERSION = 14;
 export const OFFLINE_CAP_SEC = 12 * 3600;
 export const START_GOLD = 10;
 export const OFFICE_MAX_GRADE = 17;
@@ -85,7 +85,7 @@ export interface GameState {
   // A run lasts until runUntil (server ms) and its result waits in `last` until claimed (`claimed`);
   // the tower waits through both (see PARK_AUTO_CLAIM_MS).
   parking: {
-    // runFrom..runUntil: the run's real time (30 s, or 15 s under 배속). used: runs entered ever
+    // runFrom..runUntil: the run's real time (30 s, or 15 s under 배속). used: passes offered so far
     // (PARK_AWAKEN of them awaken the garage: one-hit meters are warped through).
     passes: number; passCarrySec: number; best: number; runFrom: number; runUntil: number;
     last: { depth: number; chests: number; tickets: number; warped: number } | null; claimed: boolean; used: number;
@@ -107,6 +107,9 @@ export interface GameState {
   offlineBonus: { gold: string; tickets: number; until: number } | null;
   // 배속: on until `until` (from an ad), or always while `on` for 프리미엄 buyers.
   speed: { until: number; on: boolean };
+  // 피버타임 right after a 연봉협상: until `until` (server ms), or until the run reaches `toFloor`
+  // (its best floor before the 연봉협상), Park charges through the floors.
+  fever: { until: number; toFloor: number };
   costume: CostumeState;
   // 스토리 episodes already read (data/story.ts ids).
   story: string[];
@@ -215,6 +218,8 @@ const MIGRATIONS: Record<number, (save: Record<string, unknown>) => Record<strin
   11: (save) => ({ ...save, v: 12, parking: { ...obj(save.parking), runFrom: Math.max(0, seconds(obj(save.parking).runUntil) - 30_000) } }),
   // v13: runs entered ever (지하주차장 각성).
   12: (save) => ({ ...save, v: 13, parking: { ...obj(save.parking), used: 0 } }),
+  // v14: 피버타임; parking.used now counts passes offered, not runs (start over).
+  13: (save) => ({ ...save, v: 14, fever: { until: 0, toFloor: 0 }, parking: { ...obj(save.parking), used: 0 } }),
 };
 
 export function freshRun(): RunState {
@@ -256,6 +261,7 @@ export function newState(now: number): GameState {
     vx: { total: 0, premium: false, passUntil: 0, dailyClaimed: "", rookie: false, promos: [] },
     offlineBonus: null,
     speed: { until: 0, on: false },
+    fever: { until: 0, toFloor: 0 },
     costume: { auras: [], aura: 0, legend: {} },
     story: [],
   };
@@ -272,6 +278,7 @@ export function cloneState(s: GameState): GameState {
     buffs: { ...s.buffs }, ads: { ...s.ads }, vx: { ...s.vx, promos: [...s.vx.promos] },
     offlineBonus: s.offlineBonus && { ...s.offlineBonus },
     speed: { ...s.speed },
+    fever: { ...s.fever },
     costume: {
       auras: [...s.costume.auras], aura: s.costume.aura,
       legend: { ...s.costume.legend },
@@ -400,6 +407,7 @@ export function fromSave(raw: unknown): GameState {
       ? { gold: gold(bonus.gold).toString(), tickets: int(bonus.tickets, 0, 0), until: seconds(bonus.until) }
       : null,
     speed: { until: seconds(obj(data.speed).until), on: obj(data.speed).on === true },
+    fever: { until: seconds(obj(data.fever).until), toFloor: int(obj(data.fever).toFloor, 0, 0) },
     costume: costumeOf(obj(data.costume)),
     story: [...new Set(strings(data.story).filter((id) => findEpisode(id)))],
   };

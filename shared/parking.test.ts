@@ -139,11 +139,15 @@ describe("지하주차장 각성", () => {
     expect(runParking(strong(1e300), true).warped).toBe(PARK_WARP_MAX);
   });
 
-  test("a run entered after PARK_AWAKEN runs is awakened", () => {
+  test("passes offered count toward PARK_AWAKEN; once there, runs are awakened", () => {
     const s = newState(0);
-    s.parking = { ...s.parking, used: PARK_AWAKEN };
-    const after = applyIntent(s, { k: "enterParking" });
-    expect(after.parking.used).toBe(PARK_AWAKEN + 1);
-    expect(after.parking.last?.warped).toBe(runParking(heroPower(s), true).warped);
+    s.parking = { ...s.parking, passes: 10, used: PARK_AWAKEN - 4 };
+    const fed = applyIntent(s, { k: "feedParking" });
+    expect(fed.parking.used).toBe(PARK_AWAKEN);
+    expect(fed.parking.passes).toBe(6);
+    expect(() => applyIntent(fed, { k: "feedParking" })).toThrow(RuleError);
+    const after = applyIntent(fed, { k: "enterParking" });
+    expect(after.parking.used).toBe(PARK_AWAKEN);
+    expect(after.parking.last?.warped).toBe(runParking(heroPower(fed), true).warped);
   });
 });

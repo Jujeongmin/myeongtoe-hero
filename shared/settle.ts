@@ -2,6 +2,7 @@ import { Big } from "./big";
 import { BUFF_KINDS } from "./data/buffs";
 import { SPEED_MULT, speedActive } from "./data/speed";
 import { MONSTERS_PER_FLOOR, bossGems, bossTickets, isBoss, killGoldMult, targetHp } from "./data/floors";
+import { FEVER_KILL_SEC, feverActive } from "./data/fever";
 import { PARK_AUTO_CLAIM_MS, parkingHolds, rechargePasses } from "./data/parking";
 import { findSideJob, sideJobCycle, sideJobIncome } from "./data/sideJobs";
 import { cloneState, type GameState, type RunState, type SideJobState } from "./state";
@@ -92,6 +93,36 @@ export function settleBattle(
   return { run, gold, tickets, gems, kills };
 }
 
+// 피버타임: monsters fall one every FEVER_KILL_SEC (bosses too) until the time runs out or the run
+// reaches `toFloor`. Whatever time is left is kept in run.carrySec: for the next kill while the
+// fever lasts, or for the usual fight once Park is back at his floor.
+export function settleFever(
+  start: RunState, power: Power, dt: number, toFloor: number,
+): { run: RunState; gold: Big; tickets: number; gems: number; kills: number } {
+  const run = { ...start, farming: false };
+  let gold = Big.ZERO;
+  let tickets = 0;
+  let gems = 0;
+  let kills = 0;
+  let t = start.carrySec + dt;
+  while (run.floor < toFloor && t >= FEVER_KILL_SEC && kills < MAX_STEPS) {
+    t -= FEVER_KILL_SEC;
+    const target = Math.min(run.target, BOSS);
+    gold = gold.add(power.killGold.mulN(killGoldMult(run.floor, target)));
+    kills += 1;
+    run.target = target + 1;
+    if (isBoss(target)) {
+      tickets += bossTickets(run.floor);
+      gems += bossGems(run.floor);
+      run.floor += 1;
+      run.target = 0;
+      run.maxFloor = Math.max(run.maxFloor, run.floor);
+    }
+  }
+  run.carrySec = t;
+  return { run, gold, tickets, gems, kills };
+}
+
 // Every owned side job pays once per cycle and starts over on its own, the time left over carried.
 export function settleSideJobs(
   jobs: Record<string, SideJobState>, dt: number, incomeMult = 1,
@@ -124,7 +155,7 @@ export function settle(state: GameState, now: number): GameState {
   next.lastTick = Math.max(state.lastTick, now - offlineCapSec(state) * 1000);
   while (next.lastTick < now) {
     const parkingEnds = next.parking.claimed ? [next.parking.runUntil] : [next.parking.runUntil, next.parking.runUntil + PARK_AUTO_CLAIM_MS];
-    const ends = [...BUFF_KINDS.map((k) => next.buffs[k]), next.speed.until, ...parkingEnds].filter((t) => t > next.lastTick && t < now);
+    const ends = [...BUFF_KINDS.map((k) => next.buffs[k]), next.speed.until, next.fever.until, ...parkingEnds].filter((t) => t > next.lastTick && t < now);
     next = settleSpan(next, Math.min(now, ...ends));
   }
   return next;
@@ -140,7 +171,19 @@ function settleSpan(start: GameState, to: number): GameState {
   // During a parking run, and until its result is claimed, the tower waits (side jobs and the rest
   // go on). An unclaimed result pays itself after PARK_AUTO_CLAIM_MS.
   const parked = parkingHolds(next.parking, start.lastTick);
-  const battle = settleBattle(next.run, heroPower(next), parked ? 0 : dt);
+  const power = heroPower(next);
+  // 피버타임 first; once Park is back at his floor the rest of the span is fought as usual.
+  let fightDt = parked ? 0 : dt;
+  let fever: ReturnType<typeof settleFever> | null = null;
+  if (!parked && feverActive(next, start.lastTick)) {
+    fever = settleFever(next.run, power, fightDt, next.fever.toFloor);
+    fightDt = 0; // the fever's leftover time is in its run.carrySec
+    if (fever.run.floor >= next.fever.toFloor) next.fever = { ...next.fever, until: 0 };
+  }
+  const fought = settleBattle(fever ? fever.run : next.run, power, fightDt);
+  const battle = fever
+    ? { run: fought.run, gold: fever.gold.add(fought.gold), tickets: fever.tickets + fought.tickets, gems: fever.gems + fought.gems, kills: fever.kills + fought.kills }
+    : fought;
   const jobs = settleSideJobs(next.sideJobs, dt, m.sideJobMult);
   const best = Math.max(next.bestFloor, battle.run.maxFloor);
   const drops = next.ticketCarry + battle.kills * m.ticketPerKill;
