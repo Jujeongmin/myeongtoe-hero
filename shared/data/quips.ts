@@ -83,9 +83,10 @@ export const BOSS_SAYS: Readonly<Record<string, { appear: readonly string[]; fal
   love_daeri: { appear: ["저 사랑꾼 아니라니까요"], fall: ["그 프레임… 진짜 싫은데…"] },
 };
 
-// The line for a boss's visit to `floor` (the next one each time it comes back).
+// The line for a boss's visit to `floor`, the next one each time it comes back: 이대표 comes every
+// 100 floors from floor 50, so his first visit says the first line.
 export function bossLine(lines: readonly string[], floor: number): string {
-  return lines[Math.floor(floor / 10) % lines.length];
+  return lines[Math.floor(floor / 100) % lines.length];
 }
 
 // A line from a list, picked by a number in [0, 1).
