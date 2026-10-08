@@ -563,3 +563,8 @@ body:has(.loading) { background: #0b0916; }
 @keyframes tut-tap-left { 0% { translate: -6px 6px; } 100% { translate: 0 0; } }
 .tutorial.up.left img { animation-name: tut-tap-upleft; }
 @keyframes tut-tap-upleft { 0% { translate: -6px -6px; } 100% { translate: 0 0; } }
+
+/* Settings: the two volume sliders. */
+.volume-row { gap: 8px; }
+.volume { width: 46%; accent-color: #f2c94c; }
+.volume-n { width: 28px; text-align: right; font-size: 12px; color: #fff4d0; }

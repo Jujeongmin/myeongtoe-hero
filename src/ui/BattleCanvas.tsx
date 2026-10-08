@@ -1,3 +1,4 @@
+import { bgm, sfx } from "../game/audio";
 import { useEffect, useRef } from "react";
 import { MONSTERS_PER_FLOOR, departmentOf, isBoss, targetHp } from "../../shared/data/floors";
 import { BOSS_LINES, BOSS_SAYS, PARK_QUIPS, bossKind, bossLine, pickLine } from "../../shared/data/quips";
@@ -256,6 +257,7 @@ function flyCoins(layer: HTMLDivElement | null, x: number, y: number, n: number)
     ).onfinish = () => {
       coin.remove();
       coinLanded();
+      sfx("coin");
       target.closest("span")?.classList.remove("gold-hit");
       void (target as HTMLElement).offsetWidth;
       target.closest("span")?.classList.add("gold-hit");
@@ -302,6 +304,7 @@ function draw(
   const walking = t < walkSec || !Number.isFinite(fight);
   // 피버타임: Park charges through the floors the run had reached before the 연봉협상.
   const fever = !parking && feverActive(state, serverNow);
+  bgm(parking ? "parking" : "battle");
   const nextScroll = fever ? scroll + FEVER_SCROLL_PX * dt : walking ? scroll + (WALK_PX_PER_SEC * dt) / walkSec : scroll;
   const floorY = h - (BG_H - BG_FLOOR) * bgScale;
   const placeNow = current + (fighting ? Math.floor(elapsed / perKill) : 0);
@@ -328,6 +331,7 @@ function draw(
       // A monster always falls where it met Park (by now sim.currentX may already be the next one
       // walking in).
       sim.dying = { monster: sim.current, x: contactX, since: now, hold: 0, scroll };
+      sfx("kill");
       // Its gold flies into the counter (more coins for a boss); the garage pays in chests instead.
       if (!sim.kill.startsWith("p:")) coins(contactX + sim.current.size / 2, floorY - sim.current.size / 2, sim.boss ? 8 : 3);
     }
@@ -353,6 +357,7 @@ function draw(
     sim.crits = [];
     const found = monsterFor(department, shownFloor, place, boss) ?? null;
     sim.current = found && boss ? enlarge(found, bossScale) : found;
+    if (boss && sim.current) sfx("boss");
     // A parody boss announces itself as it walks in.
     const says = found && boss ? BOSS_SAYS[found.id] : undefined;
     if (says && sim.current) {
@@ -421,6 +426,7 @@ function draw(
     for (let k = sim.hits; k < landed; k++) {
       const crit = sim.crits[k];
       pop(formatBig(hp.mulN((crit ? 1 + bonus : 1) / shares)), monsterX + monster.size / 2 + (k % 3) * 3 - 3, top, crit);
+      sfx(crit ? "crit" : "hit");
       // The burst where the swing lands: the monster's front edge, halfway down its body (from the
       // top of its pixels, just under the HP bar anchor, to its feet).
       const spriteTop = floorY - monster.baseline - monster.hover;
@@ -589,6 +595,7 @@ function drawFever(
     if (m) sim.flung.push({ monster: m, since: now, spin: 6 + Math.random() * 6, rise: (boss ? 1.3 : 0.7) + Math.random() * 0.4 });
     sim.fx.push({ crit: true, x: contactX + 8, y: floorY - 28, since: now });
     coins(contactX + 16, floorY - 24, boss ? 4 : 1);
+    sfx("kill");
   }
   // A fire aura streaming back from Park (art/fx/fever_flame.png, 6 frames), and two faint
   // afterimages in it.

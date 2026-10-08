@@ -1,3 +1,4 @@
+import { actionSfx } from "./audio";
 import { applyIntent, RuleError, type Intent } from "../../shared/actions";
 import type { Board, RankingView } from "../../shared/ranking";
 import { settle } from "../../shared/settle";
@@ -64,6 +65,7 @@ export class GameStore {
       return false;
     }
     this.pending.push(intent);
+    actionSfx(intent.k);
     this.emit();
     return true;
   }

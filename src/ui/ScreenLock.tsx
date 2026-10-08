@@ -1,5 +1,6 @@
 import { LOCALES, setLocale, t, useLocale, type Locale } from "../i18n";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { getVolumes, setVolumes, sfx, type Volumes } from "../game/audio";
 import { formatBig } from "../../shared/format";
 import type { GameState } from "../../shared/state";
 
@@ -23,10 +24,32 @@ export function ScreenLock({ state, onClose }: { state: GameState; onClose: () =
 }
 
 // Settings: for now the screen lock.
+// One volume (0–100%): moving it changes the sound at once; letting go of the effects one plays a
+// click at the new level.
+function VolumeRow({ label, value, onChange, onDone }: { label: string; value: number; onChange: (v: number) => void; onDone?: () => void }) {
+  return (
+    <div className="row volume-row">
+      <div className="grow">{label}</div>
+      <input
+        type="range" className="volume" min={0} max={100} step={5} value={Math.round(value * 100)}
+        onChange={(e) => onChange(Number(e.target.value) / 100)} onPointerUp={onDone} onKeyUp={onDone}
+      />
+      <span className="volume-n">{Math.round(value * 100)}</span>
+    </div>
+  );
+}
+
 export function SettingsPanel({ onLock }: { onLock: () => void }) {
   const current = useLocale();
+  const [vol, setVol] = useState<Volumes>(getVolumes());
+  const change = (next: Volumes) => {
+    setVol(next);
+    setVolumes(next);
+  };
   return (
     <>
+    <VolumeRow label={t("효과음")} value={vol.sfx} onChange={(v) => change({ ...vol, sfx: v })} onDone={() => sfx("tap")} />
+    <VolumeRow label={t("배경음")} value={vol.bgm} onChange={(v) => change({ ...vol, bgm: v })} />
     <div className="row">
       <div className="grow">
         {t("언어")}

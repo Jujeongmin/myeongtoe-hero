@@ -1,5 +1,6 @@
 // First, before anything reaches for storage: @agent8/gameserver touches localStorage while its
 // module is being evaluated. See storageFallback.ts.
+import { initAudio } from "./game/audio";
 import "./storageFallback";
 
 import { StrictMode } from "react";
@@ -19,6 +20,7 @@ import { ErrorBoundary } from "./ui/ErrorBoundary";
 
 initAds();
 applyUiSkin();
+initAudio();
 
 // No dragging or selecting text and pictures anywhere but the text fields (index.css does the same
 // for browsers that honour it).
