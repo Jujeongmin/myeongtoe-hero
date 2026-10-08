@@ -20,13 +20,17 @@ import { t } from "../i18n";
 // fighting it. A fight is split into as many hits as Park's attack speed allows; each hit lands on
 // the swing's impact frame, knocks the monster's health down one step and shows its damage, and
 // the last one kills it.
-// Park and the monsters at a set size, not a share of the screen width: about 1.5 CSS px per art
-// pixel, rounded to whole device pixels (Park stands about 60 px tall on any phone).
-const ART_CSS_PX = 1.5;
+// Park and the monsters at a set size, not a share of the screen width: about 2 CSS px per art
+// pixel, rounded to whole device pixels (Park stands about 80 px tall on any phone).
+const ART_CSS_PX = 2;
+// The office behind them at a set size too: one background pixel is about 6 CSS px (bigger if the
+// scene is taller than the picture).
+const BG_CSS_PX = 6;
 // Bosses are drawn about this much bigger than the other monsters (rounded to whole device pixels).
 const BOSS_SIZE = 1.3;
 let artScale = 1;
 let bossScale = 1;
+
 const BG_H = 96;
 const BG_FLOOR = 82;
 const WALK_PX_PER_SEC = 48;
@@ -110,7 +114,8 @@ export function BattleCanvas({ state }: { state: GameState }) {
       }
       const w = dw / scale;
       const h = dh / scale;
-      scroll = draw(ctx, w, h, Math.max(1, Math.ceil(h / BG_H)), snap.current, now, dt, scroll, sim, (text, x, y, crit) => {
+      const bgScale = Math.max(Math.round((BG_CSS_PX * dpr) / scale), Math.ceil(h / BG_H), 1);
+      scroll = draw(ctx, w, h, bgScale, snap.current, now, dt, scroll, sim, (text, x, y, crit) => {
         popDamage(layer.current, text, (x * cw) / w, (y * ch) / h, crit);
       }, (text, x, y) => {
         // Park's quips and boss lines, and the monster's name, shown in the player's language.
@@ -240,8 +245,10 @@ function draw(
   const department = parking ? PARKING_DEPARTMENT : departmentOf(floor);
   const placeNow = current + (fighting ? Math.floor(elapsed / perKill) : 0);
   const boss = !parking && !farming && isBoss(placeNow % MONSTERS_PER_FLOOR);
+  const monsterW = sim.current?.size ?? 48;
   const parkX = Math.round(w * 0.38) - 34;
   const contactX = parkX + 44;
+  if (import.meta.env.DEV) (window as unknown as { __fight?: object }).__fight = { parkX, contactX, monsterW, floorY, w, h };
 
   // Which monster this is; a new one means the last one was killed.
   const place = parking ? parking.meter : target + kills;

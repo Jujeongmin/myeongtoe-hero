@@ -405,8 +405,6 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .bottom-nav { gap: 2px; }
 .bottom-nav button { flex: 1 1 0; width: auto; }
 .mission-card { max-width: 220px; }
-/* The small coupon drawing has a red rim that melts into red buttons: give it a dark outline. */
-.icon-img[data-icon="coupon"] { filter: drop-shadow(1px 0 0 #1b1a2e) drop-shadow(-1px 0 0 #1b1a2e) drop-shadow(0 1px 0 #1b1a2e) drop-shadow(0 -1px 0 #1b1a2e); }
 /* 프로필: Park's employee ID card (art/ui/profile_*). */
 .theme-profile { border-image: var(--ui-profile-panel, var(--ui-row-panel)) 12 fill / 12px; }
 .theme-profile .row { border: 10px solid transparent; border-image: var(--ui-profile-row, var(--ui-row-panel)) 10 fill / 10px; }
@@ -482,3 +480,34 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .row { min-height: 0; }
 .row > .icon-box { width: 48px; height: 48px; border-width: 8px; border-image-width: 8px; }
 .row > .icon-box .gear-img { width: 32px; height: 32px; }
+/* The step mission stays bottom right on one line but narrow (up to 150px; its text shrinks to
+   fit), so Park and the monster fit on the floor between it and the 이직 button. */
+.mission-card { max-width: 150px; font-size: 11px; }
+/* Small phones (narrower than 380px): every control on the battle screen a size smaller. */
+@media (max-width: 379px) {
+  .boss-btn { font-size: 12px; }
+  .atk-box { height: 26px; border-width: 6px; border-image-width: 6px; }
+  .atk-box b { font-size: 11px; }
+  .atk-label { font-size: 9px; }
+  .atk-weapon { width: 24px; height: 24px; margin: -6px -2px -6px -8px; }
+  .prestige-btn { border-width: 6px; border-image-width: 6px; }
+  .prestige-btn > .icon-img { width: 24px; height: 24px; }
+  .prestige-text b { font-size: 12px; }
+  .prestige-text small { font-size: 10px; }
+  .prestige-text .pbar { min-width: 48px; }
+  .mission-card { max-width: 112px; font-size: 10px; }
+  .prestige-text .pbar { min-width: 40px; }
+  .prestige-floor { display: none; }
+  .currency { font-size: 12px; }
+  .currency .icon-img { width: 24px; height: 24px; }
+}
+/* 보스 도전: a gold glow that breathes and a nudge now and then, so it keeps asking to be tapped. */
+.boss-btn { animation: boss-call 1.6s steps(4) infinite; }
+.boss-btn .boss-face { animation: boss-nudge 3.2s steps(1) infinite; }
+@keyframes boss-call { 0%, 100% { box-shadow: 0 0 0 1px #000, 0 0 2px 1px rgba(255, 209, 102, 0.35); } 50% { box-shadow: 0 0 0 1px #000, 0 0 8px 3px rgba(255, 209, 102, 0.9); } }
+@keyframes boss-nudge { 0%, 84% { transform: none; } 86% { transform: translateX(-2px); } 90% { transform: translateX(2px); } 94% { transform: translateX(-1px); } }
+/* Panels open with a short pop (scale up past 1 and settle) over a fading backdrop. */
+.modal-back { animation: ui-fade 0.15s ease-out; }
+.modal-back > .sheet, .modal-back > .modal, .modal-back > .prestige-sheet, .welcome-form, .story-body { animation: ui-pop 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.25); }
+@keyframes ui-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ui-pop { from { opacity: 0; transform: scale(0.86) translateY(8px); } to { opacity: 1; transform: none; } }

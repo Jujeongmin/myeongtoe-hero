@@ -108,7 +108,7 @@ export function Battle({ state, store, onOpen, onGo, getMore }: {
         <span className="prestige-text">
           <span className="prestige-line">
             <b>{t("이직")}</b>
-            {ready ? <small><Amount icon="ticket" value={`+${formatCount(reward.tickets)}`} /></small> : <small>{t("{n}/{floor}층", { n: maxFloor, floor: PRESTIGE_MIN_FLOOR })}</small>}
+            {ready ? <small><Amount icon="ticket" value={`+${formatCount(reward.tickets)}`} /></small> : <small className="prestige-floor">{t("{n}/{floor}층", { n: maxFloor, floor: PRESTIGE_MIN_FLOOR })}</small>}
           </span>
           {!ready && <PixelBar kind="progress" value={maxFloor / PRESTIGE_MIN_FLOOR} />}
         </span>
@@ -149,12 +149,12 @@ function AtkReadout({ atk, tier }: { atk: Big; tier: number }) {
   const src = imageUrl(`parts/gear/g${String(tier).padStart(2, "0")}.png`);
   return (
     <div className="atk-now">
-      <div key={gain?.at ?? 0} className={`atk-box${gain ? " up" : ""}`}>
+      <div key={`box${gain?.at ?? 0}`} className={`atk-box${gain ? " up" : ""}`}>
         {src && <img className="atk-weapon" src={src} alt="" draggable={false} />}
         <span className="atk-label">{t("공격력")}</span>
         <b>{formatBig(atk)}</b>
       </div>
-      {gain && <span key={gain.at} className="atk-gain">{gain.text}</span>}
+      {gain && <span key={`gain${gain.at}`} className="atk-gain">{gain.text}</span>}
     </div>
   );
 }
