@@ -56,7 +56,7 @@ export const EPISODES: readonly Episode[] = [
         lines: [
           { who: "결재 강시 총무 상무", text: "합격. 내일부터 1층에서 시작하세요.", at: [128, 23] },
           { who: "박부장", text: "…직급은요?", at: [22, 40] },
-          { who: "결재 강시 총무 상무", text: "용사요. 계약직.", at: [176, 84], flip: true, w: 46 },
+          { who: "결재 강시 총무 상무", text: "용사요. 계약직.", at: [176, 84], flip: true },
         ],
       },
       {

@@ -251,8 +251,8 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .vx-card .sub { flex: 1; }
 .vx-card button { width: 100%; border-image: var(--ui-button-gold-hot) 6 fill / 12px repeat; color: #ffd166; }
 .vx-img { width: 128px; height: 128px; max-width: 100%; height: auto; image-rendering: pixelated; border: 2px solid #000; }
-/* Park's speech bubble (art/ui/speech_bubble, 9-slice, tail bottom left), its tail over his head. */
-.bubble { position: absolute; z-index: 2; transform: translate(-6px, -100%); max-width: 140px; padding: 0 1px 1px; border: 8px solid transparent; border-image: var(--ui-speech-bubble) 6 fill / 8px; color: #1b1a2e; font-size: 10px; line-height: 12px; width: max-content; word-break: keep-all; pointer-events: none; image-rendering: pixelated; }
+/* Park's speech bubble (art/ui/speech_box, 9-slice, no tail), its bottom left corner over his head. */
+.bubble { position: absolute; z-index: 2; transform: translate(-6px, -100%); max-width: 140px; padding: 0 1px 1px; border: 8px solid transparent; border-image: var(--ui-speech-box) 6 fill / 8px; color: #1b1a2e; font-size: 10px; line-height: 12px; width: max-content; word-break: keep-all; pointer-events: none; image-rendering: pixelated; }
 /* 스토리: the webtoon over everything, panels down the middle with their lines under them. */
 .story { position: fixed; inset: 0; z-index: 15; display: flex; flex-direction: column; background: #0b0916; }
 .story header { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #0b0916; border-bottom: 2px solid #2b2440; }
@@ -263,7 +263,7 @@ b, strong { font-weight: normal; color: #fff3c4; }
 /* Speech: the tail's tip sits on the point over the speaker's head; the bubble grows up and to the
    right, or up and to the left (flip, with the frame mirrored so the tail is on its right). */
 .story-say { position: absolute; z-index: 1; width: max-content; padding: 0 2px 1px; border: 8px solid transparent; color: #1b1a2e; font-size: 13px; line-height: 16px; word-break: keep-all; transform: translate(-4px, -100%); }
-.story-say::before { content: ""; position: absolute; inset: -8px; z-index: -1; border: 8px solid transparent; border-image: var(--ui-speech-bubble) 6 fill / 8px; image-rendering: pixelated; }
+.story-say::before { content: ""; position: absolute; inset: -8px; z-index: -1; border: 8px solid transparent; border-image: var(--ui-speech-box) 6 fill / 8px; image-rendering: pixelated; }
 .story-say.flip { transform: translate(calc(-100% + 4px), -100%); }
 .story-say.flip::before { transform: scaleX(-1); }
 .story-say b { color: #8d1c1c; margin-right: 4px; }
