@@ -55,14 +55,38 @@ export const BOSS_LINES: Record<BossKind, readonly string[]> = {
 };
 
 // What the office-parody bosses and the CEO say: on arriving, and as they fall (by monster id).
-export const BOSS_SAYS: Readonly<Record<string, { appear: string; fall: string }>> = {
-  lee_ceo: { appear: "우리 회사는 가족 같은 회사입니다", fall: "이 시계가 얼마짜린데…" },
-  card_audit_bujang: { appear: "이 법카 내역, 컨펌 받으셨어요?", fall: "…리스펙트는 해 드리죠" },
-  third_year_jooim: { appear: "호흡과 반복이 중요합니다", fall: "그 호흡이 아닌데…" },
-  ppeongtwigi_gwajang: { appear: "…(바삭)", fall: "제 뻥튀기는 건드리지 마세요" },
-  mz_sawon: { appear: "6시 정각인데요?", fall: "저 칼퇴할게요" },
-  love_daeri: { appear: "저 사랑꾼 아니라니까요", fall: "그 프레임… 진짜 싫은데…" },
+// With several lines, each visit (counted by floor) says the next one.
+export const BOSS_SAYS: Readonly<Record<string, { appear: readonly string[]; fall: readonly string[] }>> = {
+  lee_ceo: {
+    appear: [
+      "영광인 줄 알아!",
+      "대박나야지!",
+      "부자되자!",
+      "우리 다 같이 부자되자!",
+      "올해는 무조건 대박이다!",
+      "우리 회사는 가족 같은 회사입니다",
+      "꿈은 크게! 연봉은 겸손하게!",
+      "이 시계 한정판인 거 알지?",
+      "내가 왕년에는 말이야~",
+    ],
+    fall: [
+      "이 시계가 얼마짜린데…",
+      "내 클러치… 스크래치 나면 안 되는데…",
+      "법카로 다시 사면 되지 뭐…",
+      "다음 분기엔… 대박날 거야…",
+    ],
+  },
+  card_audit_bujang: { appear: ["이 법카 내역, 컨펌 받으셨어요?"], fall: ["…리스펙트는 해 드리죠"] },
+  third_year_jooim: { appear: ["호흡과 반복이 중요합니다"], fall: ["그 호흡이 아닌데…"] },
+  ppeongtwigi_gwajang: { appear: ["…(바삭)"], fall: ["제 뻥튀기는 건드리지 마세요"] },
+  mz_sawon: { appear: ["6시 정각인데요?"], fall: ["저 칼퇴할게요"] },
+  love_daeri: { appear: ["저 사랑꾼 아니라니까요"], fall: ["그 프레임… 진짜 싫은데…"] },
 };
+
+// The line for a boss's visit to `floor` (the next one each time it comes back).
+export function bossLine(lines: readonly string[], floor: number): string {
+  return lines[Math.floor(floor / 10) % lines.length];
+}
 
 // A line from a list, picked by a number in [0, 1).
 export function pickLine(lines: readonly string[], r: number): string {

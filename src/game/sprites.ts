@@ -214,19 +214,18 @@ function monsterSprite(id: string): MonsterSprite | undefined {
   };
 }
 
-// The monster standing at this floor's `target`-th place. Bosses: the department's executive on
-// every 100th floor, 명품 두른 이대표 on the other 50th floors, and on the 10th floors the team
-// leader and the office parodies by turns (20, 40, … the leader; 10, 30, … a parody, in rotation).
-// Otherwise one of the department's normal monsters (picked by floor and place, so the same spot
-// always shows the same monster).
+// The monster standing at this floor's `target`-th place. Bosses (every floor's last monster): the
+// department's executive on every 100th floor, 명품 두른 이대표 on the other 50th floors, an
+// office parody on the other floors ending in 0 (in rotation), and the department's team leader on
+// every other floor. Otherwise one of the department's normal monsters (picked by floor and place,
+// so the same spot always shows the same monster).
 export function monsterFor(department: string, floor: number, target: number, boss: boolean): MonsterSprite | undefined {
   const d = DEPARTMENTS.find((x) => x.name === department) ?? DEPARTMENTS[0];
   if (!d) return undefined;
   if (boss) {
     if (floor % 100 === 0) return monsterSprite(d.executive);
     if (floor % 50 === 0) return monsterSprite(CEO_BOSS);
-    const tens = Math.floor(floor / 10);
-    if (tens % 2 === 1) return monsterSprite(PARODY_BOSSES[Math.floor(tens / 2) % PARODY_BOSSES.length]);
+    if (floor % 10 === 0) return monsterSprite(PARODY_BOSSES[(floor / 10) % PARODY_BOSSES.length]);
     return monsterSprite(d.teamLeader);
   }
   const pool = [...d.normal, ...d.spareNormal];

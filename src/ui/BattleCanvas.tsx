@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { MONSTERS_PER_FLOOR, departmentOf, isBoss, targetHp } from "../../shared/data/floors";
-import { BOSS_LINES, BOSS_SAYS, PARK_QUIPS, bossKind, pickLine } from "../../shared/data/quips";
+import { BOSS_LINES, BOSS_SAYS, PARK_QUIPS, bossKind, bossLine, pickLine } from "../../shared/data/quips";
 import { formatBig } from "../../shared/format";
 import { targetSec } from "../../shared/settle";
 import type { GameState } from "../../shared/state";
@@ -320,7 +320,7 @@ function draw(
     // The boss fell: the floor went up past it. A parody boss has the last word; otherwise Park.
     if (sim.kill !== "" && sim.boss && floor > sim.floor) {
       const says = sim.current && BOSS_SAYS[sim.current.id];
-      if (says && sim.current) talk(says.fall, contactX + sim.current.size / 2, floorY - sim.current.baseline + 6);
+      if (says && sim.current) talk(bossLine(says.fall, sim.floor), contactX + sim.current.size / 2, floorY - sim.current.baseline + 6);
       else talk(pickLine(BOSS_LINES[bossKind(sim.floor)], Math.random()), ...head);
       sim.quipAt = now + QUIP_MIN_MS;
     }
@@ -334,7 +334,7 @@ function draw(
     // A parody boss announces itself as it walks in.
     const says = found && boss ? BOSS_SAYS[found.id] : undefined;
     if (says && sim.current) {
-      talk(says.appear, contactX + sim.current.size / 2, floorY - sim.current.baseline + 6);
+      talk(bossLine(says.appear, floor), contactX + sim.current.size / 2, floorY - sim.current.baseline + 6);
       sim.quipAt = now + QUIP_MIN_MS;
     }
   }
