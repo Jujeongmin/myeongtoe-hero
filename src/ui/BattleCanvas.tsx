@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { MONSTERS_PER_FLOOR, departmentOf, isBoss, targetHp } from "../../shared/data/floors";
-import { BOSS_LINES, PARK_QUIPS, bossKind, pickLine } from "../../shared/data/quips";
+import { BOSS_LINES, BOSS_SAYS, PARK_QUIPS, bossKind, pickLine } from "../../shared/data/quips";
 import { formatBig } from "../../shared/format";
 import { targetSec } from "../../shared/settle";
 import type { GameState } from "../../shared/state";
@@ -317,9 +317,11 @@ function draw(
     if (parking && sim.kill.startsWith("p:") && (parking.meter - 1) % PARK_CHEST_EVERY === 0 && parking.meter > 1) {
       sim.chest = { x: sim.currentX + 16, since: now };
     }
-    // The boss fell: the floor went up past it.
+    // The boss fell: the floor went up past it. A parody boss has the last word; otherwise Park.
     if (sim.kill !== "" && sim.boss && floor > sim.floor) {
-      talk(pickLine(BOSS_LINES[bossKind(sim.floor)], Math.random()), ...head);
+      const says = sim.current && BOSS_SAYS[sim.current.id];
+      if (says && sim.current) talk(says.fall, contactX + sim.current.size / 2, floorY - sim.current.baseline + 6);
+      else talk(pickLine(BOSS_LINES[bossKind(sim.floor)], Math.random()), ...head);
       sim.quipAt = now + QUIP_MIN_MS;
     }
     sim.floor = floor;
@@ -329,6 +331,12 @@ function draw(
     sim.crits = [];
     const found = monsterFor(department, floor, place, boss) ?? null;
     sim.current = found && boss ? enlarge(found, bossScale) : found;
+    // A parody boss announces itself as it walks in.
+    const says = found && boss ? BOSS_SAYS[found.id] : undefined;
+    if (says && sim.current) {
+      talk(says.appear, contactX + sim.current.size / 2, floorY - sim.current.baseline + 6);
+      sim.quipAt = now + QUIP_MIN_MS;
+    }
   }
 
   // Development: window.__quip = "…" makes Park say it now (to check bubble layout).

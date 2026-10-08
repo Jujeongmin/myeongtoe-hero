@@ -198,6 +198,10 @@ const DEPARTMENTS = monstersJson.departments as unknown as {
   name: string; normal: string[]; spareNormal: string[]; teamLeader: string; executive: string;
 }[];
 
+// The office-parody bosses (see monsterFor) and the CEO who turns up every 50 floors.
+export const CEO_BOSS = "lee_ceo";
+export const PARODY_BOSSES: readonly string[] = ["card_audit_bujang", "third_year_jooim", "ppeongtwigi_gwajang", "mz_sawon"];
+
 function monsterSprite(id: string): MonsterSprite | undefined {
   const m = MONSTERS[id];
   if (!m) return undefined;
@@ -210,13 +214,21 @@ function monsterSprite(id: string): MonsterSprite | undefined {
   };
 }
 
-// The monster standing at this floor's `target`-th place: the department's executive on every
-// 100th floor, its team leader on the other boss floors, otherwise one of its normal ones (picked by
-// floor and place, so the same spot always shows the same monster).
+// The monster standing at this floor's `target`-th place. Bosses: the department's executive on
+// every 100th floor, 명품 두른 이대표 on the other 50th floors, and on the 10th floors the team
+// leader and the office parodies by turns (20, 40, … the leader; 10, 30, … a parody, in rotation).
+// Otherwise one of the department's normal monsters (picked by floor and place, so the same spot
+// always shows the same monster).
 export function monsterFor(department: string, floor: number, target: number, boss: boolean): MonsterSprite | undefined {
   const d = DEPARTMENTS.find((x) => x.name === department) ?? DEPARTMENTS[0];
   if (!d) return undefined;
-  if (boss) return monsterSprite(floor % 100 === 0 ? d.executive : d.teamLeader);
+  if (boss) {
+    if (floor % 100 === 0) return monsterSprite(d.executive);
+    if (floor % 50 === 0) return monsterSprite(CEO_BOSS);
+    const tens = Math.floor(floor / 10);
+    if (tens % 2 === 1) return monsterSprite(PARODY_BOSSES[Math.floor(tens / 2) % PARODY_BOSSES.length]);
+    return monsterSprite(d.teamLeader);
+  }
   const pool = [...d.normal, ...d.spareNormal];
   return monsterSprite(pool[(floor * 7 + target * 3) % pool.length]);
 }

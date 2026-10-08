@@ -54,6 +54,15 @@ export const BOSS_LINES: Record<BossKind, readonly string[]> = {
   ],
 };
 
+// What the office-parody bosses and the CEO say: on arriving, and as they fall (by monster id).
+export const BOSS_SAYS: Readonly<Record<string, { appear: string; fall: string }>> = {
+  lee_ceo: { appear: "우리 회사는 가족 같은 회사입니다", fall: "이 시계가 얼마짜린데…" },
+  card_audit_bujang: { appear: "이 법카 내역, 컨펌 받으셨어요?", fall: "…리스펙트는 해 드리죠" },
+  third_year_jooim: { appear: "호흡과 반복이 중요합니다", fall: "그 호흡이 아닌데…" },
+  ppeongtwigi_gwajang: { appear: "…(바삭)", fall: "제 뻥튀기는 건드리지 마세요" },
+  mz_sawon: { appear: "6시 정각인데요?", fall: "저 칼퇴할게요" },
+};
+
 // A line from a list, picked by a number in [0, 1).
 export function pickLine(lines: readonly string[], r: number): string {
   return lines[Math.min(lines.length - 1, Math.floor(r * lines.length))];

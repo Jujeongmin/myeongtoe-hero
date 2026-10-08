@@ -1706,6 +1706,206 @@
      "loop": false
     }
    }
+  },
+  "lee_ceo": {
+   "id": "lee_ceo",
+   "name": "명품 두른 이대표",
+   "department": "any",
+   "departmentName": "",
+   "background": "",
+   "role": "ceo",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 52,
+   "bodyWidth": 41,
+   "hpBarAnchor": [
+    31,
+    0
+   ],
+   "animations": {
+    "idle": {
+     "file": "lee_ceo_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "lee_ceo_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "lee_ceo_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "card_audit_bujang": {
+   "id": "card_audit_bujang",
+   "name": "법카 감사 부장",
+   "department": "any",
+   "departmentName": "",
+   "background": "",
+   "role": "parody",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 52,
+   "bodyWidth": 41,
+   "hpBarAnchor": [
+    31,
+    0
+   ],
+   "animations": {
+    "idle": {
+     "file": "card_audit_bujang_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "card_audit_bujang_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "card_audit_bujang_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "third_year_jooim": {
+   "id": "third_year_jooim",
+   "name": "호흡 장인 주임",
+   "department": "any",
+   "departmentName": "",
+   "background": "",
+   "role": "parody",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 52,
+   "bodyWidth": 41,
+   "hpBarAnchor": [
+    31,
+    0
+   ],
+   "animations": {
+    "idle": {
+     "file": "third_year_jooim_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "third_year_jooim_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "third_year_jooim_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "ppeongtwigi_gwajang": {
+   "id": "ppeongtwigi_gwajang",
+   "name": "뻥튀기 과장",
+   "department": "any",
+   "departmentName": "",
+   "background": "",
+   "role": "parody",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 52,
+   "bodyWidth": 41,
+   "hpBarAnchor": [
+    31,
+    0
+   ],
+   "animations": {
+    "idle": {
+     "file": "ppeongtwigi_gwajang_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "ppeongtwigi_gwajang_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "ppeongtwigi_gwajang_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
+  },
+  "mz_sawon": {
+   "id": "mz_sawon",
+   "name": "MZ사원",
+   "department": "any",
+   "departmentName": "",
+   "background": "",
+   "role": "parody",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 56,
+   "hoverPx": 0,
+   "bodyHeight": 52,
+   "bodyWidth": 41,
+   "hpBarAnchor": [
+    31,
+    0
+   ],
+   "animations": {
+    "idle": {
+     "file": "mz_sawon_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "mz_sawon_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "mz_sawon_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
   }
  }
 }

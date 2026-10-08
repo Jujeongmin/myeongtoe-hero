@@ -849,3 +849,7 @@ Each menu has its own frame set instead of the shared blue row panel. Every them
 ## Loading key art (Codex)
 
 - `ui/loading_art.png` (235x418, 64 colours): the loading screen's key art, Park leaping with a glowing ballpoint pen among the office monsters under the Demon King Group tower. Codex image generation with three references (a sheet of Park's idle/walk/attack frames at x8, four monster idle frames, a store screenshot) so it keeps his chibi sprite look; the 941x1672 result (`ui/src/loading_art_codex2.png`) box-downscaled by 4 and quantised to 64 colours without dithering.
+
+## Office-parody bosses and CEO Lee (Codex)
+
+- `monsters/lee_ceo_*`, `card_audit_bujang_*`, `third_year_jooim_*`, `ppeongtwigi_gwajang_*`, `mz_sawon_*` (idle 4, hurt 2, death 4; 64 px frames): Codex image generation, one 4x3 sheet each on magenta (raws in `monsters/src/*_codex.png`), laid out like `baek_bujang`'s frames (attached at x6 as the style and size reference) plus reference photos for the caricatures. Each 362 px cell box-scaled to 64, magenta keyed (fringe pixels to the outline colour), alpha cut at 110, 64 colours per strip. Data copied from `baek_bujang` in `monsters.json` (roles `ceo` / `parody`).
