@@ -9,9 +9,13 @@
       /* The frame the game needs even before (or without) src/index.css. */
       html, body { margin: 0; padding: 0; height: 100%; background: #120f20; color: #fff; overflow: hidden; }
       #root { height: 100%; }
-      .boot { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; background: #120f20; font-family: monospace; }
-      .boot-title { font-size: 22px; font-weight: 700; }
-      .boot-sub { font-size: 13px; color: #b8b3d6; }
+      /* The first screen while the game's code downloads: the same title as the loading screen. */
+      @font-face { font-family: Mulmaru; font-display: swap; src: url("./src/assets/fonts/Mulmaru.woff2") format("woff2"); }
+      .boot { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: linear-gradient(180deg, #0b0916 0%, #1b1530 55%, #0b0916 100%); font-family: Mulmaru, monospace; text-align: center; }
+      .boot-kicker { font-size: 18px; letter-spacing: 6px; color: #ffd166; text-shadow: 2px 2px 0 #7a1420, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; }
+      .boot-title { font-size: 52px; line-height: 56px; color: #fff4e0; text-shadow: 3px 3px 0 #7a1420, 5px 5px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000; }
+      .boot-sub { margin-top: 28px; font-size: 13px; color: #b8b3d6; animation: boot-blink 1.2s steps(1) infinite; }
+      @keyframes boot-blink { 50% { opacity: 0.4; } }
     </style>
     <script>
       // Verse8 embeds the game in an iframe and asks how big it is (REQUEST_GAME_SIZE); without an
@@ -39,7 +43,8 @@
   <body>
     <div id="root">
       <div class="boot">
-        <div class="boot-title">명퇴용사 박부장</div>
+        <div class="boot-kicker">명퇴용사</div>
+        <div class="boot-title">박부장</div>
         <div class="boot-sub">출근 준비 중…</div>
       </div>
     </div>

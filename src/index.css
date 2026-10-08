@@ -524,7 +524,20 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .fly-coin { position: absolute; z-index: 3; width: 16px; height: 16px; pointer-events: none; image-rendering: pixelated; }
 .currency span.gold-hit { animation: gold-hit 0.18s steps(2); }
 @keyframes gold-hit { 50% { transform: scale(1.12); } }
-/* Loading screen: the title, a bar and the percentage while every picture loads. */
-.screen.loading b { font-size: 20px; color: #ffd166; text-shadow: 1px 1px 0 #000; }
-.loading-bar { width: 200px; }
+/* Loading screen: the office behind a dark shade, the title (kicker, big name, subtitle) in the
+   pixel font with a hard outline, Park breathing (idle strip, 4 frames, drawn ×3), and at the
+   bottom one of his lines, the bar and the percentage. */
+.loading { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 12dvh 16px 8dvh; background: #0b0916 center bottom / auto 100% repeat-x; image-rendering: pixelated; overflow: hidden; }
+.loading-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8, 6, 18, 0.92) 0%, rgba(8, 6, 18, 0.55) 45%, rgba(8, 6, 18, 0.9) 100%); }
+.loading > :not(.loading-shade) { position: relative; }
+.loading-title { display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
+.loading-kicker { font-size: 18px; letter-spacing: 6px; color: #ffd166; text-shadow: 2px 2px 0 #7a1420, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; }
+.loading-name { font-size: 52px; line-height: 56px; color: #fff4e0; text-shadow: 3px 3px 0 #7a1420, 5px 5px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000; }
+.loading-sub { margin-top: 6px; font-size: 12px; color: #c9c3e0; text-shadow: 1px 1px 0 #000; }
+.loading-park { width: 192px; height: 192px; background-size: 768px 192px; background-repeat: no-repeat; animation: loading-park 1s steps(4) infinite; image-rendering: pixelated; }
+@keyframes loading-park { to { background-position: -768px 0; } }
+.loading-foot { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.loading-tip { min-height: 16px; font-size: 12px; color: #fff; text-shadow: 1px 1px 0 #000; }
+.loading-bar { width: 220px; }
 .loading-bar .pbar { width: 100%; }
+.loading small { color: #b8b3d6; }
