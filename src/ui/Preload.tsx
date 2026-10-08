@@ -6,9 +6,10 @@ import { PixelBar } from "./PixelBar";
 
 const TIP_MS = 2200;
 
-// The loading screen: the title over the office, Park breathing in the middle, a bar and one of
-// his lines at a time. Every picture and the fonts load before the game starts, so nothing hitches
-// while playing; on a slow connection this takes a few seconds.
+// The loading screen: the key art (Park charging into battle, art/ui/loading_art.png) filling the
+// screen, the title over its dark sky, and at the bottom one of his lines, the bar and the
+// percentage. Every picture and the fonts load before the game starts, so nothing hitches while
+// playing; on a slow connection this takes a few seconds.
 export function Preload({ children }: { children: ReactNode }) {
   const [progress, setProgress] = useState(0);
   const [ready, setReady] = useState(false);
@@ -26,17 +27,15 @@ export function Preload({ children }: { children: ReactNode }) {
     };
   }, []);
   if (ready) return <>{children}</>;
-  const bg = imageUrl("backgrounds/bg_general_affairs.png");
-  const park = imageUrl("park/idle_strip.png");
+  const art = imageUrl("ui/loading_art.png");
   return (
-    <div className="loading" style={bg ? { backgroundImage: `url("${bg}")` } : undefined}>
+    <div className="loading" style={art ? { backgroundImage: `url("${art}")` } : undefined}>
       <div className="loading-shade" />
       <div className="loading-title">
         <span className="loading-kicker">{t("명퇴용사")}</span>
         <b className="loading-name">{t("박부장")}</b>
         <span className="loading-sub">{t("52세, 마왕그룹에 용사로 재취업하다")}</span>
       </div>
-      {park && <div className="loading-park" style={{ backgroundImage: `url("${park}")` }} />}
       <div className="loading-foot">
         <div className="loading-tip">“{t(PARK_QUIPS[tip])}”</div>
         <div className="loading-bar"><PixelBar kind="progress" value={progress} /></div>

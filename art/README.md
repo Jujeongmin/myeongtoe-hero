@@ -845,3 +845,7 @@ Each menu has its own frame set instead of the shared blue row panel. Every them
 ## Fever flame (Codex)
 
 - `fx/fever_flame.png` (6 frames of 43x44, one row): the fire aura streaming back from Park during 피버타임. Made with Codex image generation at the user's request (PixelLab was out of generations): a 2172x724 six-frame strip on magenta (`fx/src/fever_flame_codex.png`), keyed, cropped to the shared bounds, nearest-neighbour scaled to 44 px tall, alpha cut at 128, quantised to 12 colours.
+
+## Loading key art (Codex)
+
+- `ui/loading_art.png` (235x418, 64 colours): the loading screen's key art, Park leaping with a glowing ballpoint pen among the office monsters under the Demon King Group tower. Codex image generation with three references (a sheet of Park's idle/walk/attack frames at x8, four monster idle frames, a store screenshot) so it keeps his chibi sprite look; the 941x1672 result (`ui/src/loading_art_codex2.png`) box-downscaled by 4 and quantised to 64 colours without dithering.
