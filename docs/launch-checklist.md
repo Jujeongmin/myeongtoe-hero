@@ -15,7 +15,7 @@
 
 - [ ] 게임 이름: 명퇴용사 박부장 / Early Retirement Hero Park
 - [ ] 소개글: 한국어·영어 (대화에서 받은 초안을 그대로 붙여넣는다)
-- [ ] 아이콘과 대표 이미지: 박부장 도트를 PixelLab으로 따로 만든다. 아직 없다.
+- [x] 아이콘과 대표 이미지: `store/icon.png` (1024×1024, 상단에 "명퇴용사 박부장"), `store/keyart.png` (1024×578, 타이틀). Codex로 게임 속 박부장 그림을 붙여 그린 뒤 도트 크기로 줄였다. 원본은 `store/src/`.
 - [x] 스크린샷 5장: `store/screenshots/` (1170×2532, 전투·보스 도전·코스튬·이직 제안서·웹툰). 다시 찍기: `npm run dev` 후 `node tools/shots.mjs`.
 - [ ] 지원 언어: 한국어, English, 日本語, 繁體中文, 简体中文
 

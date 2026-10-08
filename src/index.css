@@ -495,7 +495,7 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
   .prestige-text b { font-size: 12px; }
   .prestige-text small { font-size: 10px; }
   .prestige-text .pbar { min-width: 48px; }
-  .mission-card { max-width: 112px; font-size: 10px; }
+  .mission-card { max-width: 140px; font-size: 10px; }
   .prestige-text .pbar { min-width: 40px; }
   .prestige-floor { display: none; }
   .currency { font-size: 12px; }
