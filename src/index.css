@@ -544,3 +544,5 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
    whole window, so the key art isn't blown up. */
 .loading { max-width: 480px; margin: 0 auto; }
 body:has(.loading) { background: #0b0916; }
+/* The webtoon reader keeps to the game's portrait column on a wide screen. */
+.story { max-width: 480px; margin: 0 auto; }

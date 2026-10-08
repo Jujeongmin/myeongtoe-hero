@@ -12,6 +12,8 @@ export function episodeReady(ep: Episode): boolean {
 }
 
 const PANEL_W = 192;
+// The game is a portrait column this wide at most (index.css .phone).
+const COLUMN_PX = 480;
 
 // An episode's panels split into pages of up to three, as even as possible (7 → 3, 2, 2).
 function pagesOf(n: number): number[][] {
@@ -39,8 +41,9 @@ export function StoryViewer({ episode, onClose }: { episode: Episode; onClose: (
   }, []);
   const pages = pagesOf(episode.panels.length);
   const panels = pages[page];
-  // Panel width: the screen width, unless three panels would be taller than the room left.
-  const width = Math.floor(Math.min(size.w, 720, ((size.h - 84) / panels.length - 4) * 1.5));
+  // Panel width: the game's column (the screen on a phone, 480px on a wide screen), unless three
+  // panels would be taller than the room left.
+  const width = Math.floor(Math.min(size.w, COLUMN_PX, ((size.h - 84) / panels.length - 4) * 1.5));
   const last = page === pages.length - 1;
   return (
     <div className="story" onClick={() => (last ? onClose() : setPage(page + 1))}>
