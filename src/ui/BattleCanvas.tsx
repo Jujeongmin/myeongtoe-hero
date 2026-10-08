@@ -54,7 +54,9 @@ interface Sim {
   hits: number;
   crits: boolean[]; // which of this kill's hits are crits, rolled when the kill starts
   hurtUntil: number;
-  dying: { monster: MonsterSprite; x: number; since: number } | null;
+  // `hold`: how long it then lies there (a boss saying its last word), sliding back with the floor
+  // from `scroll`, its bubble following it.
+  dying: { monster: MonsterSprite; x: number; since: number; hold: number; scroll: number } | null;
   current: MonsterSprite | null;
   currentX: number;
   // The floor and whether the monster being fought is its boss (to know when a boss falls), and
@@ -76,6 +78,9 @@ interface Sim {
 const QUIP_MIN_MS = 25_000;
 const QUIP_MORE_MS = 25_000;
 const BUBBLE_MS = 3_000;
+// A boss lies where it fell while it says its last word, then fades with the bubble.
+const LAST_WORD_MS = 2_000;
+const FADE_MS = 300;
 
 export function BattleCanvas({ state }: { state: GameState }) {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -123,9 +128,15 @@ export function BattleCanvas({ state }: { state: GameState }) {
       const bgScale = Math.max(Math.round((BG_CSS_PX * dpr) / scale), Math.ceil(h / BG_H), 1);
       scroll = draw(ctx, w, h, bgScale, snap.current, now, dt, scroll, sim, (text, x, y, crit) => {
         popDamage(layer.current, text, (x * cw) / w, (y * ch) / h, crit);
-      }, (text, x, y) => {
+      }, (text, x, y, ms) => {
         // Park's quips and boss lines, and the monster's name, shown in the player's language.
-        say(talk.current, t(text), (x * cw) / w, (y * ch) / h);
+        say(talk.current, t(text), (x * cw) / w, (y * ch) / h, ms);
+      }, (dx, opacity) => {
+        // The last word's bubble moving off with the fallen boss and fading with it.
+        const el = talk.current;
+        if (!el) return;
+        el.style.translate = `${Math.round((dx * cw) / w)}px 0`;
+        el.style.opacity = String(opacity);
       }, (text, x, y) => {
         nameTag(tag.current, t(text), (x * cw) / w, (y * ch) / h);
       }, (meter) => {
@@ -174,15 +185,17 @@ let bubbleTimer = 0;
 // The bubble keeps clear of the controls; the monster's name it may cover (it is drawn above it).
 const BUBBLE_AVOID = ".battle-head, .top-left, .side-menu, .boss-btn, .atk-now, .prestige-btn, .mission-card, .currency, .parking-depth";
 
-function say(el: HTMLDivElement | null, text: string, x: number, y: number): void {
+function say(el: HTMLDivElement | null, text: string, x: number, y: number, ms = BUBBLE_MS): void {
   if (!el) return;
   el.textContent = text;
+  el.style.translate = "";
+  el.style.opacity = "";
   el.style.left = `${Math.round(x)}px`;
   el.style.top = `${Math.round(y)}px`;
   el.hidden = false;
   fitBubble(el);
   window.clearTimeout(bubbleTimer);
-  bubbleTimer = window.setTimeout(() => (el.hidden = true), BUBBLE_MS);
+  bubbleTimer = window.setTimeout(() => (el.hidden = true), ms);
 }
 
 // Size a bubble to the characters (Park is about 60 px tall): font 10px down to 8px, wrapping at
@@ -264,7 +277,8 @@ function popDamage(layer: HTMLDivElement | null, text: string, x: number, y: num
 
 function draw(
   ctx: CanvasRenderingContext2D, w: number, h: number, bgScale: number, { state, at }: Snapshot, now: number, dt: number, scroll: number,
-  sim: Sim, pop: (text: string, x: number, y: number, crit: boolean) => void, talk: (text: string, x: number, y: number) => void,
+  sim: Sim, pop: (text: string, x: number, y: number, crit: boolean) => void, talk: (text: string, x: number, y: number, ms?: number) => void,
+  follow: (dx: number, opacity: number) => void,
   tag: (text: string, x: number, y: number) => void, showDepth: (meter: number | null) => void,
   coins: (x: number, y: number, n: number) => void,
 ): number {
@@ -313,7 +327,7 @@ function draw(
     if (sim.current && sim.kill !== "") {
       // A monster always falls where it met Park (by now sim.currentX may already be the next one
       // walking in).
-      sim.dying = { monster: sim.current, x: contactX, since: now };
+      sim.dying = { monster: sim.current, x: contactX, since: now, hold: 0, scroll };
       // Its gold flies into the counter (more coins for a boss); the garage pays in chests instead.
       if (!sim.kill.startsWith("p:")) coins(contactX + sim.current.size / 2, floorY - sim.current.size / 2, sim.boss ? 8 : 3);
     }
@@ -324,7 +338,11 @@ function draw(
     // The boss fell: the floor went up past it. A parody boss has the last word; otherwise Park.
     if (sim.kill !== "" && sim.boss && shownFloor > sim.floor) {
       const says = sim.current && BOSS_SAYS[sim.current.id];
-      if (says && sim.current) talk(bossLine(says.fall, sim.floor), contactX + sim.current.size / 2, floorY - sim.current.baseline + 6);
+      if (says && sim.current && sim.dying) {
+        // Said lying down: the bubble sits on the body, which stays until the bubble goes.
+        sim.dying.hold = LAST_WORD_MS;
+        talk(bossLine(says.fall, sim.floor), contactX + sim.current.size / 2, floorY - sim.current.size * 0.45, sim.dying.monster.anims.death.ms * sim.dying.monster.anims.death.frames + LAST_WORD_MS);
+      }
       else talk(pickLine(BOSS_LINES[bossKind(sim.floor)], Math.random()), ...head);
       sim.quipAt = now + QUIP_MIN_MS;
     }
@@ -417,10 +435,19 @@ function draw(
 
   // The monster from the last kill, going up in smoke where it fell.
   if (sim.dying) {
-    const d = sim.dying.monster.anims.death;
-    const f = Math.floor((now - sim.dying.since) / d.ms);
-    if (f >= d.frames) sim.dying = null;
-    else drawMonster(ctx, sim.dying.monster, "death", f, sim.dying.x, floorY);
+    const { monster: m, since, hold } = sim.dying;
+    const d = m.anims.death;
+    const age = now - since;
+    const end = d.ms * d.frames + hold;
+    if (age >= end) sim.dying = null;
+    else {
+      const dx = sim.dying.scroll - nextScroll;
+      const alpha = hold > 0 ? Math.min(1, (end - age) / FADE_MS) : 1;
+      ctx.globalAlpha = alpha;
+      drawMonster(ctx, m, "death", Math.min(d.frames - 1, Math.floor(age / d.ms)), Math.round(sim.dying.x + dx), floorY);
+      ctx.globalAlpha = 1;
+      if (hold > 0) follow(dx, alpha);
+    }
   }
 
   let anim: Anim;
