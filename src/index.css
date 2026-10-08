@@ -540,3 +540,7 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .loading-bar { width: 220px; }
 .loading-bar .pbar { width: 100%; }
 .loading small { color: #b8b3d6; }
+/* On a wide screen the loading screen takes the game's own column (480px, centred), not the
+   whole window, so the key art isn't blown up. */
+.loading { max-width: 480px; margin: 0 auto; }
+body:has(.loading) { background: #0b0916; }
