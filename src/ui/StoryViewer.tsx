@@ -59,6 +59,12 @@ export function StoryViewer({ episode, onClose }: { episode: Episode; onClose: (
   );
 }
 
+// A short last word (만 층이에요 → "층이에요.") is held to the word before it, so no line is left
+// with it alone.
+function keepLastWord(text: string): string {
+  return text.replace(/ (\S{1,5})$/u, "\u00a0$1");
+}
+
 function Panel({ panel, width }: { panel: StoryPanel; width: number }) {
   const ref = useRef<HTMLElement>(null);
   const k = width / PANEL_W;
@@ -74,9 +80,11 @@ function Panel({ panel, width }: { panel: StoryPanel; width: number }) {
     const fit = (el: HTMLElement, dy: number) => {
       el.style.marginLeft = "0px";
       el.style.marginTop = `${dy}px`;
+      // The frame is drawn a border's width outside the box: keep that inside the panel too.
       const r = el.getBoundingClientRect();
-      const dx = r.left < b.left + 2 ? b.left + 2 - r.left : r.right > b.right - 2 ? b.right - 2 - r.right : 0;
-      const up = r.top < b.top + 2 ? b.top + 2 - r.top : 0;
+      const m = 2 + 4 * k;
+      const dx = r.left < b.left + m ? b.left + m - r.left : r.right > b.right - m ? b.right - m - r.right : 0;
+      const up = r.top < b.top + m ? b.top + m - r.top : 0;
       el.style.marginLeft = `${dx}px`;
       el.style.marginTop = `${dy + up}px`;
       return el.getBoundingClientRect();
@@ -109,7 +117,7 @@ function Panel({ panel, width }: { panel: StoryPanel; width: number }) {
         const [x, y] = l.at ?? [12 + 84 * (free++ % 2), 30];
         return (
           <div key={j} className={`story-say${l.flip ? " flip" : ""}`} data-flip={l.flip ? "1" : "0"} style={{ left: x * k, top: y * k, maxWidth: l.w ? l.w * k : width * 0.62 }}>
-            {t(l.text)}
+            {keepLastWord(t(l.text))}
           </div>
         );
       })}
