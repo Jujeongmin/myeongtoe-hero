@@ -8,7 +8,7 @@ import { findPet } from "./data/pets";
 import { findRelic } from "./data/relics";
 import { findSideJob } from "./data/sideJobs";
 
-export const SAVE_VERSION = 12;
+export const SAVE_VERSION = 13;
 export const OFFLINE_CAP_SEC = 12 * 3600;
 export const START_GOLD = 10;
 export const OFFICE_MAX_GRADE = 17;
@@ -85,9 +85,10 @@ export interface GameState {
   // A run lasts until runUntil (server ms) and its result waits in `last` until claimed (`claimed`);
   // the tower waits through both (see PARK_AUTO_CLAIM_MS).
   parking: {
-    // runFrom..runUntil: the run's real time (30 s, or 15 s under 배속).
+    // runFrom..runUntil: the run's real time (30 s, or 15 s under 배속). used: runs entered ever
+    // (PARK_AWAKEN of them awaken the garage: one-hit meters are warped through).
     passes: number; passCarrySec: number; best: number; runFrom: number; runUntil: number;
-    last: { depth: number; chests: number; tickets: number } | null; claimed: boolean;
+    last: { depth: number; chests: number; tickets: number; warped: number } | null; claimed: boolean; used: number;
   };
   // Today's parking record for the daily quests (a new day starts fresh when read; see dailyOf).
   daily: { day: string; entries: number; bestDepth: number; claimed: string[] };
@@ -212,6 +213,8 @@ const MIGRATIONS: Record<number, (save: Record<string, unknown>) => Record<strin
   10: (save) => ({ ...save, v: 11, parking: { ...obj(save.parking), runUntil: 0, last: null, claimed: true } }),
   // v12: when the run started (배속 halves its real time).
   11: (save) => ({ ...save, v: 12, parking: { ...obj(save.parking), runFrom: Math.max(0, seconds(obj(save.parking).runUntil) - 30_000) } }),
+  // v13: runs entered ever (지하주차장 각성).
+  12: (save) => ({ ...save, v: 13, parking: { ...obj(save.parking), used: 0 } }),
 };
 
 export function freshRun(): RunState {
@@ -242,7 +245,7 @@ export function newState(now: number): GameState {
     suits: [],
     wear: {},
     office: { keyboard: 1, mouse: 1, chair: 1, monitor: 1 },
-    parking: { passes: PARK_PASS_MAX, passCarrySec: 0, best: 0, runFrom: 0, runUntil: 0, last: null, claimed: true },
+    parking: { passes: PARK_PASS_MAX, passCarrySec: 0, best: 0, runFrom: 0, runUntil: 0, last: null, claimed: true, used: 0 },
     daily: { day: "", entries: 0, bestDepth: 0, claimed: [] },
     missions: { step: 0, special: [] },
     attendance: { lastDay: "", count: 0 },
@@ -371,6 +374,7 @@ export function fromSave(raw: unknown): GameState {
       runUntil: seconds(parking.runUntil),
       last: parkingRunOf(obj(parking.last)),
       claimed: parking.claimed !== false,
+      used: int(parking.used, 0, 0),
     },
     daily: {
       day: text(daily.day, 10),
@@ -402,7 +406,9 @@ export function fromSave(raw: unknown): GameState {
 }
 
 function parkingRunOf(l: Record<string, unknown>): GameState["parking"]["last"] {
-  return typeof l.depth === "number" ? { depth: int(l.depth, 0, 0), chests: int(l.chests, 0, 0), tickets: int(l.tickets, 0, 0) } : null;
+  return typeof l.depth === "number"
+    ? { depth: int(l.depth, 0, 0), chests: int(l.chests, 0, 0), tickets: int(l.tickets, 0, 0), warped: int(l.warped, 0, 0) }
+    : null;
 }
 
 function costumeOf(c: Record<string, unknown>): CostumeState {

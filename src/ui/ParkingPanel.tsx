@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { DAILY_QUESTS, dailyQuestReward } from "../../shared/data/dailyQuests";
-import { PARK_PASS_MAX, PARK_RECHARGE_SEC, runParking, type ParkingRun } from "../../shared/data/parking";
+import { PARK_AWAKEN, PARK_PASS_MAX, PARK_RECHARGE_SEC, PARK_WARP_MAX, runParking, type ParkingRun } from "../../shared/data/parking";
 import { dailyOf } from "../../shared/daily";
 import { formatCount } from "../../shared/format";
 import type { GameState } from "../../shared/state";
@@ -33,6 +33,11 @@ export function ParkingPanel({ state, store }: { state: GameState; store: GameSt
           <div className="sub">
             {passes >= PARK_PASS_MAX ? t("주차권이 가득 찼어요") : t("다음 주차권까지 {time}", { time: clock(PARK_RECHARGE_SEC - passCarrySec) })}
             {" · "}{t("최고 B{m}m", { m: best })}
+          </div>
+          <div className="sub">
+            {state.parking.used >= PARK_AWAKEN
+              ? t("각성: 한 방 구간은 {m}m까지 건너뛰어요", { m: PARK_WARP_MAX })
+              : t("각성까지 입장 {n}회 (한 방 구간 건너뛰기)", { n: PARK_AWAKEN - state.parking.used })}
           </div>
         </div>
         <button className={running || passes <= 0 ? "" : "hot"} disabled={running || passes <= 0} onClick={enter}>

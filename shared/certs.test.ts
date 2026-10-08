@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
-  CERTS, CERT_GRADES, CERT_MAX_LEVEL, certEffects, certLevelCost, certOpen, certValue, findCert,
+  CERTS, CERT_GRADES, CERT_MAX_LEVEL, certEffects, certLevelCost, certOpen, certValue, findCert, prestigeCertBonus,
 } from "./data/certs";
 import { newState } from "./state";
 import { heroPower } from "./stats";
@@ -106,5 +106,16 @@ describe("certificate effects", () => {
     s.certs = { b_crit: 45, crit1: 4 };
     // crit chance 5% → 50%, crit bonus 50% → 150%.
     expect(heroPower(s).dps.div(before).toNumber()).toBeCloseTo((1 + 0.5 * 1.5) / (1 + 0.05 * 0.5));
+  });
+});
+
+describe("연봉협상 certificate bonus", () => {
+  test("the highest-grade 타격 and 수금 held go up 2 levels, capped at their max", () => {
+    const next = prestigeCertBonus({ atk1: 10, atk2: 3, gold1: 49, crit1: 5 });
+    expect(next.atk1).toBe(10);
+    expect(next.atk2).toBe(5);
+    expect(next.gold1).toBe(Math.min(findCert("gold1")!.maxLevel, 51));
+    expect(next.crit1).toBe(5);
+    expect(prestigeCertBonus({})).toEqual({});
   });
 });

@@ -258,3 +258,16 @@ export function certEffects(certs: Record<string, number>, grade3Mult = 1): Cert
 export function certsOwned(certs: Record<string, number>): number {
   return Object.values(certs).filter((l) => l > 0).length;
 }
+
+// 연봉협상 bonus: each one raises the highest-grade 타격 and 수금 certificate already held by
+// PRESTIGE_CERT_BONUS levels (up to their max).
+export const PRESTIGE_CERT_BONUS = 2;
+export function prestigeCertBonus(certs: Readonly<Record<string, number>>): Record<string, number> {
+  const next = { ...certs };
+  for (const line of ["atk", "gold"] as const) {
+    const held = MAIN.filter((d) => d.kind === line && (certs[d.id] ?? 0) > 0);
+    const top = held[held.length - 1];
+    if (top) next[top.id] = Math.min(top.maxLevel, (certs[top.id] ?? 0) + PRESTIGE_CERT_BONUS);
+  }
+  return next;
+}

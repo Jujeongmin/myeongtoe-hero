@@ -5,7 +5,7 @@ import { formatBig } from "../../shared/format";
 import { targetSec } from "../../shared/settle";
 import type { GameState } from "../../shared/state";
 import { heroCrit, heroPower } from "../../shared/stats";
-import { PARK_CHEST_EVERY, PARK_RUN_SEC, PARK_STEP_SEC, parkHp } from "../../shared/data/parking";
+import { PARK_CHEST_EVERY, PARK_RUN_SEC, PARK_STEP_SEC, parkHp, parkMeterSec } from "../../shared/data/parking";
 import { ANIMS, ATTACK_IMPACT_FRAME, BASELINE_Y, HP_BAR, backgroundFile, image, monsterFor, preloadBattleArt, type Anim, type MonsterSprite } from "../game/sprites";
 import { drawPark, visibleWear } from "../game/drawPark";
 import { t } from "../i18n";
@@ -396,11 +396,10 @@ function parkingView(state: GameState, power: ReturnType<typeof heroPower>, serv
   const pace = (PARK_RUN_SEC * 1000) / Math.max(1, state.parking.runUntil - state.parking.runFrom);
   let left = Math.max(0, ((serverNow - start) / 1000) * pace);
   const depth = state.parking.last?.depth ?? 0;
-  for (let meter = 1; ; meter++) {
-    const hp = parkHp(meter).mulN(power.hpMult);
-    const rate = (hp.isZero() ? 0 : power.dps.div(hp).toNumber()) + power.drainPerSec;
-    const fight = rate > 0 ? 1 / rate : Number.POSITIVE_INFINITY;
-    const sec = fight + PARK_STEP_SEC;
+  // An awakened run starts past the meters it warped through.
+  for (let meter = (state.parking.last?.warped ?? 0) + 1; ; meter++) {
+    const sec = parkMeterSec(power, meter);
+    const fight = sec - PARK_STEP_SEC;
     // The last monster (the one the time runs out on) stays until the run ends.
     if (left < sec || meter > depth) return { start, meter, fight, t: left };
     left -= sec;

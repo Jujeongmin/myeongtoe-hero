@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { applyIntent, RuleError } from "./actions";
 import { Big } from "./big";
 import { BOSS_LIMIT_SEC } from "./data/floors";
-import { PARK_PASS_MAX, PARK_RECHARGE_SEC, chestTickets, runParking } from "./data/parking";
+import { PARK_AWAKEN, PARK_CHEST_EVERY, PARK_PASS_MAX, PARK_RECHARGE_SEC, PARK_WARP_MAX, chestTickets, runParking } from "./data/parking";
 import { dailyOf } from "./daily";
 import { settle } from "./settle";
 import { newState, type GameState } from "./state";
@@ -39,7 +39,7 @@ describe("a parking run", () => {
 describe("parking passes", () => {
   test("recharge one per 15 minutes, up to 16", () => {
     const s = newState(0);
-    s.parking = { passes: 10, passCarrySec: 0, best: 0, runFrom: 0, runUntil: 0, last: null, claimed: true };
+    s.parking = { passes: 10, passCarrySec: 0, best: 0, runFrom: 0, runUntil: 0, last: null, claimed: true, used: 0 };
     const later = settle(s, (PARK_RECHARGE_SEC * 2 + 60) * 1000);
     expect(later.parking.passes).toBe(12);
     expect(later.parking.passCarrySec).toBeCloseTo(60, 6);
@@ -68,7 +68,7 @@ describe("entering the parking garage", () => {
 
   test("no pass, no entry", () => {
     const s = newState(now);
-    s.parking = { passes: 0, passCarrySec: 0, best: 0, runFrom: 0, runUntil: 0, last: null, claimed: true };
+    s.parking = { passes: 0, passCarrySec: 0, best: 0, runFrom: 0, runUntil: 0, last: null, claimed: true, used: 0 };
     expect(code(s)).toBe("no_pass");
   });
 
@@ -119,5 +119,31 @@ describe("배속 and the parking garage", () => {
     const entered = applyIntent(s, { k: "enterParking" });
     expect(entered.parking.runUntil - entered.parking.runFrom).toBe(15_000);
     expect(entered.parking.last).toEqual(applyIntent(newState(1000), { k: "enterParking" }).parking.last);
+  });
+});
+
+describe("지하주차장 각성", () => {
+  const strong = (dps: number) => P(Big.of(dps));
+
+  test("an awakened run warps through the one-hit meters, keeps their chests, and goes deeper", () => {
+    const power = strong(1e9);
+    const plain = runParking(power);
+    const woke = runParking(power, true);
+    expect(plain.warped).toBe(0);
+    expect(woke.warped).toBeGreaterThan(100);
+    expect(woke.depth).toBeGreaterThan(plain.depth);
+    expect(woke.chests).toBe(Math.floor(woke.depth / PARK_CHEST_EVERY));
+  });
+
+  test("the warp stops at PARK_WARP_MAX meters", () => {
+    expect(runParking(strong(1e300), true).warped).toBe(PARK_WARP_MAX);
+  });
+
+  test("a run entered after PARK_AWAKEN runs is awakened", () => {
+    const s = newState(0);
+    s.parking = { ...s.parking, used: PARK_AWAKEN };
+    const after = applyIntent(s, { k: "enterParking" });
+    expect(after.parking.used).toBe(PARK_AWAKEN + 1);
+    expect(after.parking.last?.warped).toBe(runParking(heroPower(s), true).warped);
   });
 });

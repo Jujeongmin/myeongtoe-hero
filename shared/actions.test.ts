@@ -192,7 +192,7 @@ describe("prestige", () => {
     expect(after.gear).toEqual({ tier: 0, level: 0, confirmed: 0 });
     expect(after.sideJobs).toEqual({});
     expect(after.bestFloor).toBe(120);
-    expect(after.certs).toEqual({ atk1: 2 });
+    expect(after.certs).toEqual({ atk1: 2 + 2 }); // kept, plus the 연봉협상 bonus
     expect(after.tickets).toBe(7 + reward.tickets);
     expect(after.gems).toBe(1500 + reward.gems);
     expect(after.prestiges).toBe(1);

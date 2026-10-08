@@ -51,6 +51,7 @@ export function PrestigePanel({ state, store, onClose }: { state: GameState; sto
         <div className="prestige-terms">
           <div>{t("이번 회차 최고 {floor}층", { floor })}</div>
           <FitLine text={t("층, 골드, 업무 장비(구매확정한 것은 남아요), 부업이 초기화돼요.")} />
+          <FitLine text={t("보너스: 가장 높은 타격·수금 자격증 +2레벨, 칼퇴 걸음 1분")} />
         </div>
         {offers.map(({ mode, name }) => {
           const { gems, ticketMult } = PRESTIGE_MODES[mode];

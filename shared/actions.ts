@@ -1,5 +1,5 @@
 import { Big } from "./big";
-import { certLevelCost, certOpen, findCert } from "./data/certs";
+import { certLevelCost, certOpen, findCert, prestigeCertBonus } from "./data/certs";
 import { GEAR_MAX_LEVEL, GEAR_TIERS, gearConfirmCost } from "./data/gear";
 import { OFFICE_PARTS, apartmentCost, officeUpgradeCost, type OfficePart } from "./data/home";
 import {
@@ -13,7 +13,7 @@ import { SPEED_AD_MS, SPEED_MULT, speedActive } from "./data/speed";
 import { dailyQuestReward, findDailyQuest } from "./data/dailyQuests";
 import { BUFF_MS, findGemItem } from "./data/gemShop";
 import { ATTENDANCE_REWARDS, STEP_MISSIONS, findSpecialMission, type Reward } from "./data/missions";
-import { PARK_RUN_SEC, runParking } from "./data/parking";
+import { PARK_AWAKEN, PARK_RUN_SEC, runParking } from "./data/parking";
 import { dailyVxClaimed, dailyVxGems } from "./data/shop";
 import { dailyOf } from "./daily";
 import { PET_BOX_COUPONS, findPet, petLevelCost, petsUnlocked } from "./data/pets";
@@ -210,6 +210,7 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
         : { tier: 0, level: 0, confirmed: 0 };
       s.sideJobs = {};
       s.prestiges += 1;
+      s.certs = prestigeCertBonus(s.certs);
       // A fresh start walks fast: 칼퇴 걸음 for a minute (added to any time it already had).
       extendBuff(s, "move", PRESTIGE_MOVE_MS);
       return s;
@@ -295,12 +296,13 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
     case "enterParking": {
       if (s.parking.passes <= 0) throw new RuleError("no_pass");
       if (s.parking.runUntil > s.lastTick || !s.parking.claimed) throw new RuleError("busy");
-      const run = runParking(heroPower(s));
+      const run = runParking(heroPower(s), s.parking.used >= PARK_AWAKEN);
       const today = dailyOf(s);
       s.parking = {
         ...s.parking, passes: s.parking.passes - 1, best: Math.max(s.parking.best, run.depth),
         // 배속 plays the same 30 seconds in half the real time.
         runFrom: s.lastTick, runUntil: s.lastTick + (PARK_RUN_SEC * 1000) / (speedActive(s) ? SPEED_MULT : 1), last: run, claimed: false,
+        used: s.parking.used + 1,
       };
       s.daily = { ...today, claimed: [...today.claimed], entries: today.entries + 1, bestDepth: Math.max(today.bestDepth, run.depth) };
       return s;

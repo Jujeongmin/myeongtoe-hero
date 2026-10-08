@@ -34,17 +34,35 @@ export interface ParkingRun {
   depth: number;
   chests: number;
   tickets: number;
+  warped: number; // meters at the start passed through without fighting (각성)
+}
+
+// 지하주차장 각성: after this many runs ever, a run warps through the meters Park kills in one hit
+// (a monster with at most half a second of his damage), up to PARK_WARP_MAX m; their chests still pay.
+export const PARK_AWAKEN = 1500;
+export const PARK_WARP_MAX = 7000;
+
+// The seconds meter `meter` takes: its fight plus the step to the next one.
+export function parkMeterSec(power: Power, meter: number): number {
+  const hp = parkHp(meter).mulN(power.hpMult);
+  const rate = (hp.isZero() ? 0 : power.dps.div(hp).toNumber()) + power.drainPerSec;
+  return (rate > 0 ? 1 / rate : Number.POSITIVE_INFINITY) + PARK_STEP_SEC;
+}
+
+// Whether meter `meter` is warped through in an awakened run.
+function warps(power: Power, meter: number): boolean {
+  return meter <= PARK_WARP_MAX && parkHp(meter).mulN(power.hpMult).cmp(power.dps.mulN(0.5)) <= 0;
 }
 
 // One run at a fixed power, in closed form like the tower: no randomness, so the client's preview
 // is exactly what the server applies.
-export function runParking(power: Power): ParkingRun {
+export function runParking(power: Power, awakened = false): ParkingRun {
   let t = PARK_RUN_SEC;
   let depth = 0;
+  while (awakened && depth < MAX_METERS && warps(power, depth + 1)) depth += 1;
+  const warped = depth;
   while (depth < MAX_METERS) {
-    const hp = parkHp(depth + 1).mulN(power.hpMult);
-    const rate = (hp.isZero() ? 0 : power.dps.div(hp).toNumber()) + power.drainPerSec;
-    const sec = (rate > 0 ? 1 / rate : Number.POSITIVE_INFINITY) + PARK_STEP_SEC;
+    const sec = parkMeterSec(power, depth + 1);
     if (sec > t) break;
     t -= sec;
     depth += 1;
@@ -52,7 +70,7 @@ export function runParking(power: Power): ParkingRun {
   const chests = Math.floor(depth / PARK_CHEST_EVERY);
   let tickets = 0;
   for (let k = 1; k <= chests; k++) tickets += chestTickets(k);
-  return { depth, chests, tickets };
+  return { depth, chests, tickets, warped };
 }
 
 // Passes refill with time (called from settle). A full stack holds no partial time.
