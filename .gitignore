@@ -2,3 +2,7 @@
 node_modules/
 dist/
 server/dist/
+
+# Mixkit sounds: the license forbids redistributing the files. They are on GitLab develop and in the
+# separate myeongtoe-hero-audio folder (docs/SETUP.md).
+art/audio/*.mp3
