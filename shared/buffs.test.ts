@@ -4,12 +4,15 @@ import { WALK_SEC } from "./data/floors";
 import { settle } from "./settle";
 import { fromSave, newState, toSave, type GameState } from "./state";
 import { heroAtk, heroPower } from "./stats";
+import { PROLOGUE_ID } from "./settle";
+// A new game whose prologue has been read (an unread one stands still; see settle.ts).
+const played = (now: number) => ({ ...newState(now), story: [PROLOGUE_ID] });
 
 const T0 = 1_000_000_000_000;
 const MIN = 60_000;
 
 function strong(): GameState {
-  const s = newState(T0);
+  const s = played(T0);
   s.gear = { tier: 6, level: 5, confirmed: 0 };
   return s;
 }
@@ -28,7 +31,7 @@ describe("buffs", () => {
   });
 
   test("a buff bought while one runs adds on after it", () => {
-    const s = newState(T0);
+    const s = played(T0);
     extendBuff(s, "gold", 30 * MIN);
     extendBuff(s, "gold", 30 * MIN);
     expect(s.buffs.gold).toBe(T0 + 60 * MIN);
@@ -63,7 +66,7 @@ describe("buffs", () => {
   });
 
   test("a version 6 save gets empty buffs, ads and VX fields", () => {
-    const v6 = { ...toSave(newState(T0)), v: 6 } as Record<string, unknown>;
+    const v6 = { ...toSave(played(T0)), v: 6 } as Record<string, unknown>;
     for (const k of ["buffs", "ads", "startedAt", "vx", "offlineBonus"]) delete v6[k];
     v6.run = { floor: 3, target: 0, carrySec: 0, farming: false, maxFloor: 3 };
     const s = fromSave(v6);
@@ -80,7 +83,7 @@ describe("프리미엄 buffs", () => {
   test("all three are always on for premium buyers", async () => {
     const { newState } = await import("./state");
     const { buffActive, BUFF_KINDS } = await import("./data/buffs");
-    const s = newState(0);
+    const s = played(0);
     expect(BUFF_KINDS.some((k) => buffActive(s, k))).toBe(false);
     s.vx.premium = true;
     expect(BUFF_KINDS.every((k) => buffActive(s, k))).toBe(true);

@@ -2,20 +2,22 @@ import { describe, expect, test } from "vitest";
 import { Big } from "./big";
 import { BOSS_LIMIT_SEC, WALK_SEC, targetHp } from "./data/floors";
 import { SIDE_JOBS, sideJobCycle, sideJobIncome } from "./data/sideJobs";
-import { fightSec, settle, settleBattle, settleSideJobs, targetSec } from "./settle";
+import { PROLOGUE_ID, fightSec, settle, settleBattle, settleSideJobs, targetSec, waitingForPrologue } from "./settle";
 import { OFFLINE_CAP_SEC, newState } from "./state";
 import { heroDps, heroPower, type Power } from "./stats";
+// A new game whose prologue has been read (an unread one stands still; see settle.ts).
+const played = (now: number) => ({ ...newState(now), story: [PROLOGUE_ID] });
 
 const KG = Big.of(7);
 const P = (dps: Big, extra: Partial<Power> = {}): Power => ({
   dps, bossDps: dps, bossLimitSec: BOSS_LIMIT_SEC, goldMult: 1, hpMult: 1, drainPerSec: 0, walkSec: WALK_SEC, hitSec: 0.5, killGold: KG, ...extra,
 });
 
-const fresh = () => newState(0).run;
+const fresh = () => played(0).run;
 
 describe("heroDps", () => {
   test("the ballpoint pen: 10 attack × 2 hits a second × expected crit", () => {
-    expect(heroDps(newState(0)).toNumber()).toBeCloseTo(50 * 2 * 1.025, 9);
+    expect(heroDps(played(0)).toNumber()).toBeCloseTo(50 * 2 * 1.025, 9);
   });
 });
 
@@ -130,7 +132,7 @@ describe("settleSideJobs", () => {
 
 describe("settle", () => {
   test("advances the clock and adds battle and side job gold", () => {
-    const s = newState(0);
+    const s = played(0);
     s.sideJobs[SIDE_JOBS[0].id] = { level: 1, progressSec: 0, running: true };
     const after = settle(s, 60_000);
     expect(after.lastTick).toBe(60_000);
@@ -141,7 +143,7 @@ describe("settle", () => {
   });
 
   test("caps offline time at 12 hours", () => {
-    const s = newState(0);
+    const s = played(0);
     const capped = settle(s, OFFLINE_CAP_SEC * 1000);
     const beyond = settle(s, OFFLINE_CAP_SEC * 4000);
     expect(beyond.run).toEqual(capped.run);
@@ -149,14 +151,32 @@ describe("settle", () => {
   });
 
   test("ignores a clock that went backwards", () => {
-    const s = newState(10_000);
+    const s = played(10_000);
     expect(settle(s, 5_000)).toBe(s);
   });
 
   test("a fresh Park climbs a little and gets stuck at an early boss", () => {
-    const after = settle(newState(0), 3_600_000);
+    const after = settle(played(0), 3_600_000);
     expect(after.run.farming).toBe(true);
     expect(after.bestFloor).toBeGreaterThan(1);
     expect(after.bestFloor).toBeLessThan(20);
   });
 });
+
+describe("the prologue gate", () => {
+  test("a new game stands still until the prologue is read, then runs", () => {
+    const s = newState(0);
+    const held = settle(s, 120_000);
+    expect(held.run).toEqual(s.run);
+    expect(held.gold).toEqual(s.gold);
+    expect(held.lastTick).toBe(120_000);
+    const read = { ...held, story: [PROLOGUE_ID] };
+    expect(settle(read, 240_000).run.target + settle(read, 240_000).run.floor).toBeGreaterThan(s.run.target + s.run.floor);
+  });
+
+  test("a save that got past the first floor is never held", () => {
+    const s = { ...newState(0), bestFloor: 5 };
+    expect(waitingForPrologue(s)).toBe(false);
+  });
+});
+

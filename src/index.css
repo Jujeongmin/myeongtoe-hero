@@ -573,3 +573,4 @@ body:has(.loading) { background: #0b0916; }
 .volume-knob { position: absolute; top: 2px; width: 14px; height: 26px; margin-left: 0; transform: translateX(-50%); background: var(--ui-vol-knob) center / 100% 100% no-repeat; image-rendering: pixelated; pointer-events: none; }
 .volume:focus-visible .volume-knob { filter: brightness(1.3); }
 .volume-n { width: 28px; text-align: right; font-size: 12px; color: #fff4d0; }
+.tutorial-shade { position: fixed; z-index: 29; background: rgba(0, 0, 0, 0.62); }

@@ -7,7 +7,8 @@ import type { NavTab } from "./BottomNav";
 
 // The first steps, shown with Park's pen: it taps the button the current step mission needs (the
 // tab first, then the button in it), and once a step is done, the mission card that pays it out.
-// Nothing is blocked; the pen just goes away once the guided steps are over.
+// When that button can be pressed now, the rest of the screen goes dark and can't be touched;
+// while it waits for gold, nothing is blocked. Only the first few missions are guided.
 interface Aim { at: string; hint: string }
 
 const NAV = (tab: NavTab) => `[data-tut="nav-${tab}"]`;
@@ -15,17 +16,16 @@ const NAV = (tab: NavTab) => `[data-tut="nav-${tab}"]`;
 function aimFor(state: GameState, tab: NavTab): Aim | null {
   const m = STEP_MISSIONS[state.missions.step];
   if (!m) return null;
-  const guided = ["s01", "s02", "s03", "s04", "s07", "s08"];
+  const guided = ["s01", "s01b", "s02", "s02b", "s03"];
   if (!guided.includes(m.id)) return null;
   if (m.done(state)) return { at: ".mission-card", hint: t("미션 완료! 눌러서 보상을 받자") };
   const inTab = (want: NavTab, at: string, hint: string): Aim => (tab === want ? { at, hint } : { at: NAV(want), hint });
   switch (m.id) {
     case "s01": return inTab("sideJobs", '[data-tut="job-j00"]', t("부업부터 시작하자. 월급만으론 안 돼…"));
+    case "s01b": return inTab("sideJobs", '[data-tut="job-j00"]', t("알바 레벨을 올리면 수입이 늘어난다"));
+    case "s02b": return inTab("sideJobs", '[data-tut="job-j01"]', t("부업을 하나 더 뛰자"));
     case "s02": return inTab("gear", '[data-tut="gear-up"]', t("볼펜부터 손보자. 장비가 곧 공격력이다"));
-    case "s03":
-    case "s04": return inTab("gear", '[data-tut="gear-buy"], [data-tut="gear-up"]', t("골드가 모이면 다음 장비로 바꾸자"));
-    case "s07": return inTab("certs", '[data-tut="cert"]:not(:disabled), [data-tut="cert"]', t("응시권으로 자격증을 따 두자"));
-    case "s08": return inTab("dungeon", '[data-tut="park-enter"]', t("주차권으로 지하주차장을 탐사해 보자"));
+    case "s03": return inTab("gear", '[data-tut="gear-buy"], [data-tut="gear-up"]', t("골드가 모이면 다음 장비로 바꾸자"));
     default: return null;
   }
 }
@@ -37,6 +37,7 @@ export function Tutorial({ state, tab }: { state: GameState; tab: NavTab }) {
   const aim = aimFor(state, tab);
   const box = useRef<HTMLDivElement>(null);
   const hint = useRef<HTMLSpanElement>(null);
+  const shades = useRef<(HTMLDivElement | null)[]>([]);
   const seen = useRef("");
 
   useEffect(() => {
@@ -47,8 +48,16 @@ export function Tutorial({ state, tab }: { state: GameState; tab: NavTab }) {
       raf = requestAnimationFrame(place);
       // `at` lists the choices in order of preference.
       const target = aim.at.split(", ").map((q) => document.querySelector<HTMLElement>(q)).find((e) => e) ?? null;
+      const shade = (rects: [number, number, number, number][] | null) =>
+        shades.current.forEach((d, i) => {
+          if (!d) return;
+          const r = rects?.[i];
+          d.hidden = !r;
+          if (r) Object.assign(d.style, { left: `${r[0]}px`, top: `${r[1]}px`, width: `${Math.max(0, r[2])}px`, height: `${Math.max(0, r[3])}px` });
+        });
       if (!target || document.querySelector(COVERS)) {
         el.hidden = true;
+        shade(null);
         return;
       }
       if (seen.current !== aim.at) {
@@ -67,6 +76,16 @@ export function Tutorial({ state, tab }: { state: GameState; tab: NavTab }) {
       el.style.left = `${Math.round(x)}px`;
       el.style.top = `${Math.round(y)}px`;
       el.hidden = false;
+      // Dark around the button (four panels that also catch every other touch), only while it can
+      // be pressed.
+      if ((target as HTMLButtonElement).disabled) shade(null);
+      else {
+        const p = 4;
+        const [l, tp, rt, b] = [r.left - p, r.top - p, r.right + p, r.bottom + p];
+        const W = window.innerWidth;
+        const H = window.innerHeight;
+        shade([[0, 0, W, tp], [0, b, W, H - b], [0, tp, l, b - tp], [rt, tp, W - rt, b - tp]]);
+      }
       // The line keeps inside the column, slid sideways if it would run off either edge.
       const h = hint.current;
       if (h) {
@@ -77,14 +96,20 @@ export function Tutorial({ state, tab }: { state: GameState; tab: NavTab }) {
       }
     };
     place();
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      shades.current.forEach((d) => d && (d.hidden = true));
+    };
   }, [aim?.at]);
 
   if (!aim) return null;
   return (
+    <>
+    {[0, 1, 2, 3].map((i) => <div key={i} ref={(d) => { shades.current[i] = d; }} className="tutorial-shade" hidden />)}
     <div ref={box} className="tutorial" hidden>
       <img src={imageUrl("ui/tutorial_pen.png")} alt="" draggable={false} />
       <span ref={hint} className="tutorial-hint">{aim.hint}</span>
     </div>
+    </>
   );
 }

@@ -8,6 +8,9 @@ import { settle } from "./settle";
 import { newState, type GameState } from "./state";
 import { heroPower, type Power } from "./stats";
 import { kstDay } from "./time";
+import { PROLOGUE_ID } from "./settle";
+// A new game whose prologue has been read (an unread one stands still; see settle.ts).
+const played = (now: number) => ({ ...newState(now), story: [PROLOGUE_ID] });
 
 const P = (dps: Big): Power => ({ dps, bossDps: dps, bossLimitSec: BOSS_LIMIT_SEC, goldMult: 1, hpMult: 1, drainPerSec: 0, walkSec: 1, hitSec: 0.5, killGold: Big.of(1) });
 
@@ -38,7 +41,7 @@ describe("a parking run", () => {
 
 describe("parking passes", () => {
   test("recharge one per 15 minutes, up to 16", () => {
-    const s = newState(0);
+    const s = played(0);
     s.parking = { passes: 10, passCarrySec: 0, best: 0, runFrom: 0, runUntil: 0, last: null, claimed: true, used: 0 };
     const later = settle(s, (PARK_RECHARGE_SEC * 2 + 60) * 1000);
     expect(later.parking.passes).toBe(12);
@@ -53,7 +56,7 @@ describe("entering the parking garage", () => {
   const now = Date.UTC(2026, 9, 6, 3, 0);
 
   test("spends a pass, records the day and the best; the tickets come when the result is claimed", () => {
-    const s = newState(now);
+    const s = played(now);
     const preview = runParking(heroPower(s));
     const after = applyIntent(s, { k: "enterParking" });
     expect(after.parking.passes).toBe(PARK_PASS_MAX - 1);
@@ -67,13 +70,13 @@ describe("entering the parking garage", () => {
   });
 
   test("no pass, no entry", () => {
-    const s = newState(now);
+    const s = played(now);
     s.parking = { passes: 0, passCarrySec: 0, best: 0, runFrom: 0, runUntil: 0, last: null, claimed: true, used: 0 };
     expect(code(s)).toBe("no_pass");
   });
 
   test("a new KST day starts a fresh daily record", () => {
-    const s = newState(now);
+    const s = played(now);
     s.daily = { day: "2000-01-01", entries: 9, bestDepth: 99, claimed: ["e1"] };
     expect(dailyOf(s)).toEqual({ day: kstDay(now), entries: 0, bestDepth: 0, claimed: [] });
     expect(applyIntent(s, { k: "enterParking" }).daily.entries).toBe(1);
@@ -83,7 +86,7 @@ describe("entering the parking garage", () => {
 describe("a parking run takes 30 seconds", () => {
   test("the tower waits while it runs; side jobs and the rest go on", async () => {
     const { applyIntent } = await import("./actions");
-    const s = newState(1000);
+    const s = played(1000);
     s.run = { ...s.run, floor: 1, target: 0, carrySec: 0 };
     const entered = applyIntent(s, { k: "enterParking" });
     expect(entered.parking.runUntil).toBe(1000 + 30_000);
@@ -101,7 +104,7 @@ describe("a parking run takes 30 seconds", () => {
 describe("an unclaimed parking result", () => {
   test("pays itself after 5 minutes and the tower goes on", async () => {
     const { applyIntent } = await import("./actions");
-    const s = newState(1000);
+    const s = played(1000);
     const entered = applyIntent(s, { k: "enterParking" });
     const later = settle(entered, 1000 + 30_000 + 5 * 60_000 + 60_000);
     expect(later.parking.claimed).toBe(true);
@@ -114,11 +117,11 @@ describe("an unclaimed parking result", () => {
 describe("배속 and the parking garage", () => {
   test("the same 30-second run plays in half the real time", async () => {
     const { applyIntent } = await import("./actions");
-    const s = newState(1000);
+    const s = played(1000);
     s.speed = { until: 1000 + 3_600_000, on: false };
     const entered = applyIntent(s, { k: "enterParking" });
     expect(entered.parking.runUntil - entered.parking.runFrom).toBe(15_000);
-    expect(entered.parking.last).toEqual(applyIntent(newState(1000), { k: "enterParking" }).parking.last);
+    expect(entered.parking.last).toEqual(applyIntent(played(1000), { k: "enterParking" }).parking.last);
   });
 });
 
@@ -140,7 +143,7 @@ describe("지하주차장 각성", () => {
   });
 
   test("passes offered count toward PARK_AWAKEN; once there, runs are awakened", () => {
-    const s = newState(0);
+    const s = played(0);
     s.parking = { ...s.parking, passes: 10, used: PARK_AWAKEN - 4 };
     const fed = applyIntent(s, { k: "feedParking" });
     expect(fed.parking.used).toBe(PARK_AWAKEN);

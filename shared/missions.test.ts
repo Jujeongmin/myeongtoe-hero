@@ -17,8 +17,8 @@ function code(s: GameState, intent: Intent): string {
 }
 
 describe("step missions", () => {
-  test("20 steps, done one at a time, in order", () => {
-    expect(STEP_MISSIONS).toHaveLength(20);
+  test("22 steps, done one at a time, in order", () => {
+    expect(STEP_MISSIONS).toHaveLength(22);
     const s = newState(NOW);
     expect(code(s, { k: "claimStep" })).toBe("not_done");
     s.sideJobs.j00 = { level: 1, progressSec: 0, running: true };

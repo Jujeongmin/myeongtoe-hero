@@ -2,6 +2,9 @@ import { describe, expect, test } from "vitest";
 import { Big } from "./big";
 import { newState, toSave } from "./state";
 import { MAX_INTENTS_PER_SYNC, syncSave } from "./sync";
+import { PROLOGUE_ID } from "./settle";
+// A new game whose prologue has been read (an unread one stands still; see settle.ts).
+const played = (now: number) => ({ ...newState(now), story: [PROLOGUE_ID] });
 
 describe("syncSave", () => {
   test("no save yet: a new game at the server's time", () => {
@@ -13,7 +16,7 @@ describe("syncSave", () => {
   });
 
   test("settles up to now before applying intents", () => {
-    const save = toSave({ ...newState(0), gold: Big.of(5) });
+    const save = toSave({ ...played(0), gold: Big.of(5) });
     // Too poor for the first side job (10) at t=0, rich enough after 60 s of fighting.
     const r = syncSave(save, [{ k: "levelSideJob", id: "j00" }], 60_000);
     expect(r.rejected).toEqual([]);
@@ -21,14 +24,14 @@ describe("syncSave", () => {
   });
 
   test("reports bad and refused intents by index and keeps going", () => {
-    const save = toSave({ ...newState(0), gold: Big.of(1, 200) });
+    const save = toSave({ ...played(0), gold: Big.of(1, 200) });
     const r = syncSave(save, [{ k: "hack" }, { k: "levelRelic", id: "r_badge" }, { k: "levelGear" }], 0);
     expect(r.rejected).toEqual([{ index: 0, code: "bad_intent" }, { index: 1, code: "locked" }]);
     expect(r.save.gear.level).toBe(1);
   });
 
   test("drops intents past the per-sync limit", () => {
-    const save = toSave({ ...newState(0), gold: Big.of(1, 200) });
+    const save = toSave({ ...played(0), gold: Big.of(1, 200) });
     const many = Array.from({ length: MAX_INTENTS_PER_SYNC + 2 }, () => ({ k: "levelSideJob", id: "j00" }));
     const r = syncSave(save, many, 0);
     expect(r.save.sideJobs.j00.level).toBe(MAX_INTENTS_PER_SYNC);
@@ -46,7 +49,7 @@ describe("syncSave", () => {
     expect(() => syncSave({ v: 1, gold: 5 }, [], 0)).toThrow("bad_save");
   });
   test("reports what happened while away, from a minute on", () => {
-    const save = toSave(newState(0));
+    const save = toSave(played(0));
     expect(syncSave(save, [], 30_000).offline).toBeNull();
     const r = syncSave(save, [], 600_000);
     expect(r.offline).not.toBeNull();

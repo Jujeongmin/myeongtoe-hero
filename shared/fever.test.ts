@@ -4,10 +4,13 @@ import { FEVER_KILL_SEC, FEVER_MS } from "./data/fever";
 import { MONSTERS_PER_FLOOR } from "./data/floors";
 import { settle } from "./settle";
 import { newState, type GameState } from "./state";
+import { PROLOGUE_ID } from "./settle";
+// A new game whose prologue has been read (an unread one stands still; see settle.ts).
+const played = (now: number) => ({ ...newState(now), story: [PROLOGUE_ID] });
 
 // A save at floor 80 ready for a 연봉협상.
 function ready(): GameState {
-  const s = newState(0);
+  const s = played(0);
   s.run = { ...s.run, floor: 80, maxFloor: 80 };
   s.bestFloor = 80;
   return s;
@@ -15,7 +18,7 @@ function ready(): GameState {
 
 // Just after a 연봉협상 from floor `toFloor` (the fever climbs a floor a second).
 function feverFrom(toFloor: number): GameState {
-  const s = newState(0);
+  const s = played(0);
   s.fever = { until: s.lastTick + FEVER_MS, toFloor };
   return s;
 }

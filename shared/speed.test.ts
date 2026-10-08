@@ -3,12 +3,15 @@ import { applyIntent, RuleError, type Intent } from "./actions";
 import { speedActive } from "./data/speed";
 import { settle } from "./settle";
 import { newState, type GameState } from "./state";
+import { PROLOGUE_ID } from "./settle";
+// A new game whose prologue has been read (an unread one stands still; see settle.ts).
+const played = (now: number) => ({ ...newState(now), story: [PROLOGUE_ID] });
 
 const T0 = 1_000_000_000_000;
 const MIN = 60_000;
 
 function strong(): GameState {
-  const s = newState(T0);
+  const s = played(T0);
   s.gear = { tier: 6, level: 5, confirmed: 0 };
   s.sideJobs = { j00: { level: 5, progressSec: 0, running: true } };
   return s;
@@ -49,7 +52,7 @@ describe("배속", () => {
 
   test("speed ending mid-way: settling in pieces equals settling at once", () => {
     // Side jobs only (the tower's boss walls re-check per call, which is not about speed).
-    const s = newState(T0);
+    const s = played(T0);
     s.sideJobs = { j00: { level: 5, progressSec: 0, running: true }, j01: { level: 3, progressSec: 0, running: true } };
     s.run = { ...s.run, farming: true };
     s.speed = { until: T0 + 7 * MIN + 321, on: false };

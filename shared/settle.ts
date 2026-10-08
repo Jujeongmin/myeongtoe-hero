@@ -149,8 +149,21 @@ export function settleSideJobs(
 // latest part). The time is cut where a buff ends, so each piece runs at one power; where the cuts
 // fall depends only on the buffs, so settling in any number of calls gives the same result.
 // Returns a new state; the input is never changed.
+// A new player's game starts once the prologue is read: until then the clock moves but nothing
+// happens (a save that already got anywhere is never held back).
+export const PROLOGUE_ID = "prologue2";
+
+export function waitingForPrologue(s: Pick<GameState, "story" | "bestFloor" | "prestiges">): boolean {
+  return s.bestFloor <= 1 && s.prestiges === 0 && !s.story.includes(PROLOGUE_ID);
+}
+
 export function settle(state: GameState, now: number): GameState {
   if (now <= state.lastTick) return state;
+  if (waitingForPrologue(state)) {
+    const held = cloneState(state);
+    held.lastTick = now;
+    return held;
+  }
   let next = cloneState(state);
   next.lastTick = Math.max(state.lastTick, now - offlineCapSec(state) * 1000);
   while (next.lastTick < now) {
