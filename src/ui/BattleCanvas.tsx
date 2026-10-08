@@ -290,7 +290,6 @@ function draw(
   const fever = !parking && feverActive(state, serverNow);
   const nextScroll = fever ? scroll + FEVER_SCROLL_PX * dt : walking ? scroll + (WALK_PX_PER_SEC * dt) / walkSec : scroll;
   const floorY = h - (BG_H - BG_FLOOR) * bgScale;
-  const department = parking ? PARKING_DEPARTMENT : departmentOf(floor);
   const placeNow = current + (fighting ? Math.floor(elapsed / perKill) : 0);
   const boss = !parking && !farming && isBoss(placeNow % MONSTERS_PER_FLOOR);
   const monsterW = sim.current?.size ?? 48;
@@ -299,8 +298,13 @@ function draw(
   if (import.meta.env.DEV) (window as unknown as { __fight?: object }).__fight = { parkX, contactX, monsterW, floorY, w, h };
 
   // Which monster this is; a new one means the last one was killed.
-  const place = parking ? parking.meter : target + kills;
-  const kill = parking ? `p:${parking.start}:${parking.meter}` : `${floor}:${farming}:${place}`;
+  // Kills are foreseen here before the state catches up: one past the boss is the next floor's
+  // first monster, named the way the state will name it so the boss isn't killed twice.
+  const ahead = parking || farming ? 0 : Math.floor((target + kills) / MONSTERS_PER_FLOOR);
+  const shownFloor = floor + ahead;
+  const place = parking ? parking.meter : target + kills - ahead * MONSTERS_PER_FLOOR;
+  const department = parking ? PARKING_DEPARTMENT : departmentOf(shownFloor);
+  const kill = parking ? `p:${parking.start}:${parking.meter}` : `${shownFloor}:${farming}:${place}`;
   // How deep the run is: the meters already cleared.
   showDepth(parking ? parking.meter - 1 : null);
   const head: [number, number] = [parkX + 32, floorY - BASELINE_Y + 4];
@@ -318,23 +322,23 @@ function draw(
       sim.chest = { x: sim.currentX + 16, since: now };
     }
     // The boss fell: the floor went up past it. A parody boss has the last word; otherwise Park.
-    if (sim.kill !== "" && sim.boss && floor > sim.floor) {
+    if (sim.kill !== "" && sim.boss && shownFloor > sim.floor) {
       const says = sim.current && BOSS_SAYS[sim.current.id];
       if (says && sim.current) talk(bossLine(says.fall, sim.floor), contactX + sim.current.size / 2, floorY - sim.current.baseline + 6);
       else talk(pickLine(BOSS_LINES[bossKind(sim.floor)], Math.random()), ...head);
       sim.quipAt = now + QUIP_MIN_MS;
     }
-    sim.floor = floor;
+    sim.floor = shownFloor;
     sim.boss = boss;
     sim.kill = kill;
     sim.hits = 0;
     sim.crits = [];
-    const found = monsterFor(department, floor, place, boss) ?? null;
+    const found = monsterFor(department, shownFloor, place, boss) ?? null;
     sim.current = found && boss ? enlarge(found, bossScale) : found;
     // A parody boss announces itself as it walks in.
     const says = found && boss ? BOSS_SAYS[found.id] : undefined;
     if (says && sim.current) {
-      talk(bossLine(says.appear, floor), contactX + sim.current.size / 2, floorY - sim.current.baseline + 6);
+      talk(bossLine(says.appear, shownFloor), contactX + sim.current.size / 2, floorY - sim.current.baseline + 6);
       sim.quipAt = now + QUIP_MIN_MS;
     }
   }
