@@ -78,7 +78,7 @@ export const EPISODES: readonly Episode[] = [
   },
   {
     id: "ep0",
-    floor: 3,
+    floor: 6,
     title: "0.5화 — 월급만큼만",
     panels: [
       { img: "ep0_1", lines: [{ who: "박부장", text: "덤벼라!", at: [36, 46] }] },
