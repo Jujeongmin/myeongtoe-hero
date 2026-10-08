@@ -28,6 +28,7 @@ import { ShopPanel } from "./ui/ShopPanel";
 import { ScreenLock, SettingsPanel } from "./ui/ScreenLock";
 import { PlusButton, type GetMore, type ShopTab } from "./ui/CurrencyBar";
 import { ProfilePanel } from "./ui/ProfilePanel";
+import { Tutorial } from "./ui/Tutorial";
 import { Welcome, welcomeNeeded } from "./ui/Welcome";
 import { Sheet } from "./ui/Sheet";
 import { SideJobPanel } from "./ui/SideJobPanel";
@@ -180,6 +181,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
         {tab === "shop" && <ShopPanel key={shopTab.at} state={state} store={store} initial={shopTab.tab} />}
       </main>
       <BottomNav state={state} tab={tab} onPick={setTab} onLocked={(text) => store.notify(text)} />
+      {!welcome && <Tutorial state={state} tab={tab} />}
       {sheet === "prestige" && <PrestigePanel state={state} store={store} onClose={() => setSheet(null)} />}
       {sheet && sheet !== "prestige" && (
         <Sheet title={t(SHEET_TITLES[sheet])} theme={SHEET_THEMES[sheet]} wallet={walletFor(sheet, state, getMore)} onClose={() => setSheet(null)}>

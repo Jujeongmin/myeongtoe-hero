@@ -35,7 +35,7 @@ export function ParkingPanel({ state, store }: { state: GameState; store: GameSt
             {" · "}{t("최고 B{m}m", { m: best })}
           </div>
         </div>
-        <button className={running || passes <= 0 ? "" : "hot"} disabled={running || passes <= 0} onClick={enter}>
+        <button data-tut="park-enter" className={running || passes <= 0 ? "" : "hot"} disabled={running || passes <= 0} onClick={enter}>
           {running ? t("탐사 중") : <>{t("입장")}<br />{t("주차권 1장")}</>}
         </button>
       </div>

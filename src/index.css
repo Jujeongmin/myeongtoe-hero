@@ -546,3 +546,20 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 body:has(.loading) { background: #0b0916; }
 /* The webtoon reader keeps to the game's portrait column on a wide screen. */
 .story { max-width: 480px; margin: 0 auto; }
+
+/* Tutorial: Park's pen taps the button to press (its tip at the button's middle), a line beside it. */
+.tutorial { position: fixed; z-index: 30; width: 0; height: 0; pointer-events: none; }
+.tutorial img { position: absolute; left: -4px; top: -4px; width: 48px; height: 48px; image-rendering: pixelated; animation: tut-tap 0.9s steps(2) infinite; }
+.tutorial.up img { top: auto; bottom: -4px; transform: scaleY(-1); }
+.tutorial.left img { left: auto; right: -4px; transform: scaleX(-1); }
+.tutorial.up.left img { transform: scale(-1, -1); }
+.tutorial-hint { position: absolute; left: 28px; top: 46px; width: max-content; white-space: nowrap; padding: 3px 6px; background: #1b1a2e; border: 2px solid #f2c94c; color: #fff4d0; font-size: 11px; line-height: 14px; word-break: keep-all; }
+.tutorial.up .tutorial-hint { top: auto; bottom: 46px; }
+.tutorial.left .tutorial-hint { left: auto; right: 28px; }
+@keyframes tut-tap { 0% { translate: 6px 6px; } 100% { translate: 0 0; } }
+.tutorial.up img { animation-name: tut-tap-up; }
+@keyframes tut-tap-up { 0% { translate: 6px -6px; } 100% { translate: 0 0; } }
+.tutorial.left img { animation-name: tut-tap-left; }
+@keyframes tut-tap-left { 0% { translate: -6px 6px; } 100% { translate: 0 0; } }
+.tutorial.up.left img { animation-name: tut-tap-upleft; }
+@keyframes tut-tap-upleft { 0% { translate: -6px -6px; } 100% { translate: 0 0; } }

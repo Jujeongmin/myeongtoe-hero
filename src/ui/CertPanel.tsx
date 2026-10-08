@@ -40,7 +40,7 @@ function CertRow({ def, state, store }: { def: CertDef; state: GameState; store:
         <button disabled>MAX</button>
       ) : (
         <div className="buttons">
-          <HoldButton disabled={have < cost} onFire={() => store.do({ k: "levelCert", id: def.id, bulk: false })}>
+          <HoldButton data-tut={level === 0 ? "cert" : undefined} disabled={have < cost} onFire={() => store.do({ k: "levelCert", id: def.id, bulk: false })}>
             {level === 0 ? t("취득") : "+1"}<br /><Amount icon={def.currency === "gems" ? "gem" : "ticket"} value={formatCount(cost)} />
           </HoldButton>
           <button disabled={have < cost} onClick={() => store.do({ k: "levelCert", id: def.id, bulk: true })}>

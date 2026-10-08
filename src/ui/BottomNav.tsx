@@ -25,6 +25,7 @@ export function BottomNav({ state, tab, onPick, onLocked }: {
         return (
           <button
             key={item.id}
+            data-tut={`nav-${item.id}`}
             className={`${item.id === tab ? "on" : ""}${open ? "" : " locked"}`}
             onClick={() => (open ? onPick(item.id) : onLocked(t("{name}은(는) {floor}층에서 해금돼요", { name: t(item.label), floor: item.openAt })))}
           >
