@@ -200,7 +200,7 @@ const DEPARTMENTS = monstersJson.departments as unknown as {
 
 // The office-parody bosses (see monsterFor) and the CEO who turns up every 50 floors.
 export const CEO_BOSS = "lee_ceo";
-export const PARODY_BOSSES: readonly string[] = ["card_audit_bujang", "third_year_jooim", "ppeongtwigi_gwajang", "mz_sawon", "love_daeri"];
+export const PARODY_BOSSES: readonly string[] = ["card_audit_bujang", "third_year_jooim", "ppeongtwigi_gwajang", "mz_sawon", "love_daeri", "airpod_mz"];
 
 function monsterSprite(id: string): MonsterSprite | undefined {
   const m = MONSTERS[id];

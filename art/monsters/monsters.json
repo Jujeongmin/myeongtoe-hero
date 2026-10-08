@@ -1946,6 +1946,46 @@
      "loop": false
     }
    }
+  },
+  "airpod_mz": {
+   "id": "airpod_mz",
+   "name": "에어팟 MZ사원",
+   "department": "any",
+   "departmentName": "",
+   "background": "",
+   "role": "parody",
+   "spare": false,
+   "flying": false,
+   "frameWidth": 64,
+   "frameHeight": 64,
+   "feetBaselineY": 58,
+   "hoverPx": 0,
+   "bodyHeight": 51,
+   "bodyWidth": 41,
+   "hpBarAnchor": [
+    29,
+    1
+   ],
+   "animations": {
+    "idle": {
+     "file": "airpod_mz_idle.png",
+     "frameCount": 4,
+     "frameDurationMs": 160,
+     "loop": true
+    },
+    "hurt": {
+     "file": "airpod_mz_hurt.png",
+     "frameCount": 2,
+     "frameDurationMs": 90,
+     "loop": false
+    },
+    "death": {
+     "file": "airpod_mz_death.png",
+     "frameCount": 4,
+     "frameDurationMs": 100,
+     "loop": false
+    }
+   }
   }
  }
 }

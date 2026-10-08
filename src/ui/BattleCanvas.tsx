@@ -77,6 +77,8 @@ interface Sim {
 }
 
 const QUIP_MIN_MS = 25_000;
+// Hits whose crits are all rolled up front (more than that and they are rolled as they land).
+const MAX_ROLLED_HITS = 10_000;
 const QUIP_MORE_MS = 25_000;
 const BUBBLE_MS = 3_000;
 // A boss lies where it fell while it says its last word, then fades with the bubble.
@@ -420,8 +422,13 @@ function draw(
     // The kill's HP split over its hits, a crit hit taking (1 + bonus) shares of a normal one, so a
     // crit's number is that much bigger and the hits still add up to the monster's HP.
     const { chance, bonus } = heroCrit(state);
-    if (sim.crits.length !== n) sim.crits = Array.from({ length: n }, (_, i) => sim.crits[i] ?? Math.random() < chance);
-    const shares = sim.crits.reduce((sum, c) => sum + (c ? 1 + bonus : 1), 0);
+    // A fight Park can't win in any sensible time has billions of hits: only the ones landed so far
+    // are rolled, and the HP is split by the expected crits instead.
+    const exact = n <= MAX_ROLLED_HITS;
+    if (exact ? sim.crits.length !== n : sim.crits.length < landed) {
+      sim.crits = Array.from({ length: exact ? n : landed }, (_, i) => sim.crits[i] ?? Math.random() < chance);
+    }
+    const shares = exact ? sim.crits.reduce((sum, c) => sum + (c ? 1 + bonus : 1), 0) : n * (1 + chance * bonus);
     const top = floorY - monster.baseline + monster.hpBar[1] - monster.hover;
     for (let k = sim.hits; k < landed; k++) {
       const crit = sim.crits[k];

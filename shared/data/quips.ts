@@ -80,6 +80,7 @@ export const BOSS_SAYS: Readonly<Record<string, { appear: readonly string[]; fal
   third_year_jooim: { appear: ["호흡과 반복이 중요합니다"], fall: ["그 호흡이 아닌데…"] },
   ppeongtwigi_gwajang: { appear: ["…(바삭)"], fall: ["제 뻥튀기는 건드리지 마세요"] },
   mz_sawon: { appear: ["6시 정각인데요?"], fall: ["저 칼퇴할게요"] },
+  airpod_mz: { appear: ["저는 에어팟을 끼고 음악을 들어야 일의 능률이 올라가는 편입니다"], fall: ["…잘 안 들려서요~"] },
   love_daeri: { appear: ["저 사랑꾼 아니라니까요"], fall: ["그 프레임… 진짜 싫은데…"] },
 };
 
