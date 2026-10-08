@@ -1,6 +1,8 @@
 import { LOCALES, setLocale, t, useLocale, type Locale } from "../i18n";
 import { useRef, useState } from "react";
 import { getVolumes, setVolumes, sfx, type Volumes } from "../game/audio";
+import { iconUrl } from "../game/sprites";
+import { PixelBar } from "./PixelBar";
 import { formatBig } from "../../shared/format";
 import type { GameState } from "../../shared/state";
 
@@ -24,16 +26,58 @@ export function ScreenLock({ state, onClose }: { state: GameState; onClose: () =
 }
 
 // Settings: for now the screen lock.
-// One volume (0–100%): moving it changes the sound at once; letting go of the effects one plays a
-// click at the new level.
-function VolumeRow({ label, value, onChange, onDone }: { label: string; value: number; onChange: (v: number) => void; onDone?: () => void }) {
+const KNOB_HALF = 7; // the knob is 14 px wide; its middle never leaves the track
+
+// One volume (0–100%) as a pixel fader: the progress bar for the track, a metal knob to drag (or
+// tap the track, or use the arrow keys). The speaker/note on the left mutes it, and a second tap
+// brings the level back. Letting go of the effects one plays a click at the new level.
+function VolumeRow({ label, icon, value, onChange, onDone }: {
+  label: string; icon: "vol_sfx" | "vol_bgm"; value: number; onChange: (v: number) => void; onDone?: () => void;
+}) {
+  const track = useRef<HTMLSpanElement>(null);
+  const before = useRef(value > 0 ? value : 0.5);
+  const at = (clientX: number) => {
+    const r = track.current?.getBoundingClientRect();
+    if (!r) return;
+    onChange(Math.round(Math.max(0, Math.min(1, (clientX - r.left - KNOB_HALF) / (r.width - 2 * KNOB_HALF))) * 20) / 20);
+  };
+  const mute = () => {
+    if (value > 0) {
+      before.current = value;
+      onChange(0);
+    } else onChange(before.current);
+  };
+  const src = iconUrl(value > 0 ? icon : "vol_mute");
   return (
     <div className="row volume-row">
+      <button className="volume-icon" aria-label={label} onClick={mute}>{src && <img src={src} alt="" draggable={false} />}</button>
       <div className="grow">{label}</div>
-      <input
-        type="range" className="volume" min={0} max={100} step={5} value={Math.round(value * 100)}
-        onChange={(e) => onChange(Number(e.target.value) / 100)} onPointerUp={onDone} onKeyUp={onDone}
-      />
+      <span
+        ref={track}
+        className="volume"
+        role="slider"
+        tabIndex={0}
+        aria-label={label}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(value * 100)}
+        onPointerDown={(e) => {
+          e.currentTarget.setPointerCapture(e.pointerId);
+          at(e.clientX);
+        }}
+        onPointerMove={(e) => e.currentTarget.hasPointerCapture(e.pointerId) && at(e.clientX)}
+        onPointerUp={() => onDone?.()}
+        onKeyDown={(e) => {
+          const step = e.key === "ArrowRight" || e.key === "ArrowUp" ? 0.05 : e.key === "ArrowLeft" || e.key === "ArrowDown" ? -0.05 : 0;
+          if (!step) return;
+          e.preventDefault();
+          onChange(Math.round(Math.max(0, Math.min(1, value + step)) * 20) / 20);
+          onDone?.();
+        }}
+      >
+        <PixelBar kind="progress" value={value} />
+        <i className="volume-knob" style={{ left: `calc(${KNOB_HALF}px + (100% - ${2 * KNOB_HALF}px) * ${value})` }} />
+      </span>
       <span className="volume-n">{Math.round(value * 100)}</span>
     </div>
   );
@@ -48,8 +92,8 @@ export function SettingsPanel({ onLock }: { onLock: () => void }) {
   };
   return (
     <>
-    <VolumeRow label={t("효과음")} value={vol.sfx} onChange={(v) => change({ ...vol, sfx: v })} onDone={() => sfx("tap")} />
-    <VolumeRow label={t("배경음")} value={vol.bgm} onChange={(v) => change({ ...vol, bgm: v })} />
+    <VolumeRow label={t("효과음")} icon="vol_sfx" value={vol.sfx} onChange={(v) => change({ ...vol, sfx: v })} onDone={() => sfx("tap")} />
+    <VolumeRow label={t("배경음")} icon="vol_bgm" value={vol.bgm} onChange={(v) => change({ ...vol, bgm: v })} />
     <div className="row">
       <div className="grow">
         {t("언어")}
