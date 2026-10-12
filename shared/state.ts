@@ -9,7 +9,7 @@ import { findRelic } from "./data/relics";
 import { findSideJob } from "./data/sideJobs";
 
 export const SAVE_VERSION = 15;
-export const OFFLINE_CAP_SEC = 12 * 3600;
+export const OFFLINE_CAP_SEC = 8 * 3600;
 export const START_GOLD = 10;
 export const OFFICE_MAX_GRADE = 17;
 // 지하주차장 passes stored at most. Re-exported by data/parking.ts.
