@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { formatBig, formatCount } from "../../shared/format";
 import type { GameState } from "../../shared/state";
 import { heroAtk, heroPower, jobChangeReward } from "../../shared/stats";
+import { goldPerSec } from "../../shared/settle";
 import type { GameStore } from "../game/store";
 import { BattleCanvas } from "./BattleCanvas";
 import { Icon } from "./Icon";
@@ -74,7 +75,7 @@ export function Battle({ state, store, onOpen, onGo, getMore }: {
         {!parked && !farming && !boss && <span className="floor-no">{t("보스까지 {n}마리", { n: MONSTERS_PER_FLOOR - 1 - Math.min(target, MONSTERS_PER_FLOOR - 1) })}</span>}
         {!parked && boss && <span className="boss-timer"><Icon name="timer" size={16} /><PixelBar kind="progress" value={bossLeft / power.bossLimitSec} /></span>}
       </header>
-      <AtkReadout atk={atk} tier={state.gear.tier} />
+      <AtkReadout atk={atk} tier={state.gear.tier} perSec={goldPerSec(state).total} />
       <div className="top-left">
         <BuffBar state={state} store={store} />
         <SpeedButton state={state} store={store} />
@@ -139,7 +140,8 @@ export function Battle({ state, store, onOpen, onGo, getMore }: {
 
 // 공격력 in a counter with Park's weapon. When it goes up, the counter bumps and the gain floats up
 // out of it ("+N"), so an upgrade is felt on the battle screen too.
-function AtkReadout({ atk, tier }: { atk: Big; tier: number }) {
+// 공격력, and under it the gold a second right now (side jobs and kills, as settle pays them).
+function AtkReadout({ atk, tier, perSec }: { atk: Big; tier: number; perSec: Big }) {
   const last = useRef(atk);
   const [gain, setGain] = useState<{ text: string; at: number } | null>(null);
   useEffect(() => {
@@ -155,6 +157,10 @@ function AtkReadout({ atk, tier }: { atk: Big; tier: number }) {
         <b>{formatBig(atk)}</b>
       </div>
       {gain && <span key={`gain${gain.at}`} className="atk-gain">{gain.text}</span>}
+      <div className="atk-box gps-box">
+        <Icon name="gold" size={16} />
+        <b>{formatBig(perSec)} / s</b>
+      </div>
     </div>
   );
 }

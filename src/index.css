@@ -211,6 +211,10 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .atk-box b { font-size: 12px; color: #ffd166; text-shadow: 1px 1px 0 #000, -1px 0 0 #000, 0 -1px 0 #000, 1px 0 0 #000; }
 .atk-box.up { animation: atk-bump 0.35s steps(4); }
 .atk-box.up b { animation: atk-flash 0.6s steps(3); }
+/* Gold a second, under the attack: the same counter, a little smaller. */
+.atk-now { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.gps-box { height: 26px; border-width: 6px; border-image-width: 6px; padding: 0 2px; }
+.gps-box .icon-img { width: 16px; height: 16px; }
 .atk-gain { position: absolute; left: 34px; top: -4px; font-size: 12px; color: #7dff8a; white-space: nowrap; text-shadow: 1px 1px 0 #000, -1px 0 0 #000, 0 -1px 0 #000, 1px 0 0 #000; animation: atk-rise 0.9s steps(9) forwards; }
 @keyframes atk-bump { 0% { transform: scale(1); } 40% { transform: scale(1.15); } 100% { transform: scale(1); } }
 @keyframes atk-flash { 0%, 60% { color: #ffffff; } 100% { color: #ffd166; } }

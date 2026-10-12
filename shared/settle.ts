@@ -7,7 +7,7 @@ import { PARK_AUTO_CLAIM_MS, parkingHolds, rechargePasses } from "./data/parking
 import { findSideJob, sideJobCycle, sideJobIncome } from "./data/sideJobs";
 import { cloneState, type GameState, type RunState, type SideJobState } from "./state";
 import { mods, parkPassMax, type Mods } from "./mods";
-import { heroPower, offlineCapSec, type Power } from "./stats";
+import { heroPower, incomePerSec, offlineCapSec, type Power } from "./stats";
 
 // Enough for 12 offline hours at one kill a second, with room to spare; only a broken table loops.
 const MAX_STEPS = 200_000;
@@ -229,4 +229,32 @@ function paidBySideJobPet(s: GameState, m: Mods, dt: number): Big {
     if (income.cmp(best) > 0) best = income;
   }
   return best.mulN((dt / m.sideJobPaySec) * m.sideJobPayMult * m.sideJobMult);
+}
+
+// Gold a second right now, paid the way settle pays it (shown under the attack on the battle
+// screen). The side jobs (투잡관리 and the like raise them) with 박주임's payouts, plus the kills:
+// each a share of the side jobs' income (수금 and the like raise it), a floor's five kills and their
+// walks averaged with the boss's bigger pay, or the normal monsters over and over while a boss is
+// too strong. 2배속 doubles it; a parking run holds the tower (the kills pay nothing meanwhile).
+export function goldPerSec(s: GameState): { jobs: Big; kills: Big; total: Big } {
+  const m = mods(s);
+  const speed = speedActive(s) ? SPEED_MULT : 1;
+  const jobs = incomePerSec(s).add(paidBySideJobPet(s, m, 1)).mulN(speed);
+  const kills = parkingHolds(s.parking, s.lastTick) ? Big.ZERO : killGoldPerSec(s.run, heroPower(s)).mulN(speed);
+  return { jobs, kills, total: jobs.add(kills) };
+}
+
+function killGoldPerSec(run: RunState, power: Power): Big {
+  const farm = () => {
+    const tpk = targetSec(run.floor, 0, power) + power.walkSec;
+    return Number.isFinite(tpk) && tpk > 0 ? power.killGold.mulN(1 / tpk) : Big.ZERO;
+  };
+  if (run.farming || targetSec(run.floor, BOSS, power) > power.bossLimitSec) return farm();
+  let sec = 0;
+  let mult = 0;
+  for (let target = 0; target <= BOSS; target++) {
+    sec += targetSec(run.floor, target, power) + power.walkSec;
+    mult += killGoldMult(run.floor, target);
+  }
+  return Number.isFinite(sec) && sec > 0 ? power.killGold.mulN(mult / sec) : Big.ZERO;
 }
