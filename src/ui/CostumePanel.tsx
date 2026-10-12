@@ -156,9 +156,42 @@ function Legends({ state, store }: { state: GameState; store: GameStore }) {
 }
 
 // A costume piece on its own (no Park), cropped to its pixels and blown up by a whole number to
-// fill the box, so even small gloves (5×6 px on Park) read clearly.
+// fill the box. Gloves are only 5×6 px on Park standing, a blob alone: they show on his punch.
 export function CostumeThumb({ item }: { item: SuitItem }) {
+  if (item.part === "gloves") return <GloveThumb item={item} />;
   return <SpriteThumb path={partStrip(item.id, "idle")} frame={FRAME} res={40} className="part-thumb" />;
+}
+
+// Gloves show on Park's punch (attack frame 4, his arm straight out): this square of it, at 2×,
+// the fist and forearm.
+const GLOVE_FRAME = 4;
+const GLOVE_CROP = { x: 32, y: 29, size: 18 };
+
+function GloveThumb({ item }: { item: SuitItem }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    let timer = 0;
+    const draw = () => {
+      const canvas = ref.current;
+      if (!canvas || !image(partStrip(item.id, "attack")) || !image("park/attack_strip.png")) {
+        timer = window.setTimeout(draw, 100);
+        return;
+      }
+      const cell = document.createElement("canvas");
+      cell.width = cell.height = FRAME;
+      drawPark(cell.getContext("2d")!, { gloves: item.id }, -1, "attack", GLOVE_FRAME, 0, 0, 0);
+      const { x, y, size } = GLOVE_CROP;
+      const k = Math.floor(canvas.width / size);
+      const off = Math.floor((canvas.width - size * k) / 2);
+      const ctx = canvas.getContext("2d")!;
+      ctx.imageSmoothingEnabled = false;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(cell, x, y, size, size, off, off, size * k, size * k);
+    };
+    draw();
+    return () => window.clearTimeout(timer);
+  }, [item]);
+  return <canvas ref={ref} className="part-thumb" width={40} height={40} />;
 }
 
 // Park at 3× in an idle loop, wearing `wear`.
