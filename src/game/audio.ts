@@ -38,6 +38,7 @@ const buffers = new Map<string, Promise<AudioBuffer | null>>();
 const lastAt = new Map<Sfx, number>();
 let lastAnyAt = -1e9;
 let wantBgm: Bgm | null = null;
+let wantRate = 1;
 let playing: { name: Bgm; node: AudioBufferSourceNode } | null = null;
 
 function buffer(name: string): Promise<AudioBuffer | null> {
@@ -124,14 +125,20 @@ async function switchBgm(name: Bgm): Promise<void> {
   const node = ctx.createBufferSource();
   node.buffer = b;
   node.loop = true;
+  node.playbackRate.value = wantRate;
   node.connect(bgmGain);
   node.start();
   playing = { name, node };
 }
 
-// Which track should be on (the garage has its own); it starts once sound is allowed.
-export function bgm(name: Bgm): void {
+// Which track should be on (the garage has its own) and how fast it plays (2 during 피버타임, then
+// back to 1, eased over a quarter second); it starts once sound is allowed.
+export function bgm(name: Bgm, rate = 1): void {
   wantBgm = name;
+  if (rate !== wantRate) {
+    wantRate = rate;
+    if (ctx && playing) playing.node.playbackRate.setTargetAtTime(rate, ctx.currentTime, 0.08);
+  }
   void switchBgm(name);
 }
 

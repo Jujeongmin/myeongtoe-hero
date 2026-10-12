@@ -306,7 +306,7 @@ function draw(
   const walking = t < walkSec || !Number.isFinite(fight);
   // 피버타임: Park charges through the floors the run had reached before the 연봉협상.
   const fever = !parking && feverActive(state, serverNow);
-  bgm(parking ? "parking" : "battle");
+  bgm(parking ? "parking" : "battle", fever ? 2 : 1);
   const nextScroll = fever ? scroll + FEVER_SCROLL_PX * dt : walking ? scroll + (WALK_PX_PER_SEC * dt) / walkSec : scroll;
   const floorY = h - (BG_H - BG_FLOOR) * bgScale;
   const placeNow = current + (fighting ? Math.floor(elapsed / perKill) : 0);
