@@ -1,4 +1,5 @@
-import { OFFER_ADS, ROOKIE_DAYS, type Offer } from "../../shared/data/shop";
+import { OFFER_ADS, PASS_DAILY_GEMS, PASS_DAYS, PREMIUM_DAILY_GEMS, PREMIUM_OFFLINE_SEC, ROOKIE_DAYS, type Offer, type Product } from "../../shared/data/shop";
+import { formatCount } from "../../shared/format";
 import type { GameState } from "../../shared/state";
 import { kstDay } from "../../shared/time";
 import type { GameStore } from "../game/store";
@@ -58,6 +59,26 @@ function headline(offer: Offer): { title: string; sub: string } {
   }
 }
 
+// What a product holds, as pictures: each currency with its amount, or 프리미엄's and 월급 통장's
+// perks, each with its icon.
+function contents(p: Product): { icon: string; label: string; value: string }[] {
+  const out: { icon: string; label: string; value: string }[] = [];
+  if (p.gems) out.push({ icon: "gem", label: t("보석"), value: formatCount(p.gems) });
+  if (p.tickets) out.push({ icon: "ticket", label: t("응시권"), value: formatCount(p.tickets) });
+  if (p.coupons) out.push({ icon: "coupon", label: t("상품권"), value: formatCount(p.coupons) });
+  if (p.id === "premium") {
+    out.push({ icon: "ad", label: t("광고 없이"), value: t("바로 보상") });
+    out.push({ icon: "buff_atk", label: t("버프 3종"), value: t("항상 켜짐") });
+    out.push({ icon: "timer", label: t("오프라인"), value: t("+{h}시간", { h: PREMIUM_OFFLINE_SEC / 3600 }) });
+    out.push({ icon: "gem", label: t("매일 보석"), value: formatCount(PREMIUM_DAILY_GEMS) });
+  }
+  if (p.id === "pass_salary") {
+    out.push({ icon: "gem", label: t("매일 보석"), value: formatCount(PASS_DAILY_GEMS) });
+    out.push({ icon: "timer", label: t("기간"), value: t("{n}일", { n: PASS_DAYS }) });
+  }
+  return out;
+}
+
 export function OfferPopup({ offer, onClose }: { offer: Offer; onClose: () => void }) {
   const guard = useTapGuard();
   const p = offer.product;
@@ -69,7 +90,15 @@ export function OfferPopup({ offer, onClose }: { offer: Offer; onClose: () => vo
         <div className="sub">{sub}</div>
         <img className="vx-img" src={imageUrl(`vx/src/${p.id}_128.png`)} width={128} height={128} alt="" draggable={false} />
         <b>{t(p.name.key, p.name.vars)}</b>
-        <div className="sub">{t(p.text.key, p.text.vars)}</div>
+        <div className="offer-items">
+          {contents(p).map((c) => (
+            <div key={c.icon + c.label} className="offer-item">
+              <Icon name={c.icon} size={32} />
+              <div className="sub">{c.label}</div>
+              <b>{c.value}</b>
+            </div>
+          ))}
+        </div>
         <button className="gold" onClick={() => { onClose(); buyProduct(p.id); }}>
           <Icon name="vx" size={16} /> {(productPrice(p.id) ?? p.vx).toLocaleString("en-US")}
         </button>

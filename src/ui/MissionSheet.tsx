@@ -66,7 +66,7 @@ export function Attendance({ state, store }: { state: GameState; store: GameStor
         {ATTENDANCE_REWARDS.map((r, i) => (
           <div key={i} className={`day${i === now ? " now" : ""}${i < now || (today && i === now) ? " got" : ""}`}>
             <div className="sub">{t("{n}일", { n: i + 1 })}</div>
-            <div><RewardView reward={r} /></div>
+            <div><RewardView reward={r} size={24} /></div>
           </div>
         ))}
       </div>
