@@ -15,6 +15,8 @@ export interface SideJob {
 
 export const SIDE_JOB_MAX_LEVEL = 999;
 export const SIDE_JOB_LEVEL_COST_GROWTH = 1.12;
+// Every side job's pay, raised 20% across the board (2026-10-12).
+export const SIDE_JOB_PAY_MULT = 1.2;
 
 const MIN = 60;
 const HOUR = 3600;
@@ -85,7 +87,7 @@ export function sideJobMilestone(level: number): { from: number; to: number } | 
 
 export function sideJobIncome(job: SideJob, level: number): Big {
   if (level <= 0) return Big.ZERO;
-  return job.baseIncome.mulN(((level + 1) / 2) * sideJobMilestoneMult(level));
+  return job.baseIncome.mulN(((level + 1) / 2) * sideJobMilestoneMult(level) * SIDE_JOB_PAY_MULT);
 }
 
 export function sideJobCycle(job: SideJob, _level: number): number {

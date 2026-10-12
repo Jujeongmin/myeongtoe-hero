@@ -15,8 +15,8 @@ describe("side job milestones", () => {
   });
 
   test("the level-10 milestone pays for itself: from level 10 on, the pay is what it was before it", () => {
-    // Before: level n paid 10 × (n + 1) / 2, doubled at 25, 50, 100, …
-    const before = (n: number) => 10 * ((n + 1) / 2) * 2 ** [25, 50, 100, 200].filter((m) => m <= n).length;
+    // Before: level n paid 10 × (n + 1) / 2, doubled at 25, 50, 100, … (now all of it 20% more).
+    const before = (n: number) => 1.2 * 10 * ((n + 1) / 2) * 2 ** [25, 50, 100, 200].filter((m) => m <= n).length;
     for (const n of [10, 24, 25, 99, 100, 150]) expect(sideJobIncome(job, n).toNumber()).toBeCloseTo(before(n));
     expect(sideJobIncome(job, 9).toNumber()).toBeCloseTo(before(9) / 2);
   });

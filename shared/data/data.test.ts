@@ -77,12 +77,12 @@ describe("side jobs", () => {
     expect(SIDE_JOB_MAX_LEVEL).toBe(999);
   });
 
-  test("the first one: 10 gold, 1 s, pays 5; levels cost 12% more each and pay half the base more", () => {
+  test("the first one: 10 gold, 1 s, pays 6; levels cost 12% more each and pay half the base more", () => {
     const job = SIDE_JOBS[0];
     expect(sideJobCost(job, 0).toNumber()).toBe(10);
     expect(sideJobCost(job, 1).toNumber()).toBeCloseTo(11.2, 9);
     expect(sideJobIncome(job, 0).isZero()).toBe(true);
-    expect([1, 2, 3].map((l) => sideJobIncome(job, l).toNumber())).toEqual([5, 7.5, 10]);
+    expect([1, 2, 3].map((l) => sideJobIncome(job, l).toNumber())).toEqual([6, 9, 12]);
     expect(sideJobCycle(job, 1)).toBe(1);
     expect(sideJobCycle(job, 500)).toBe(1);
   });
