@@ -19,7 +19,7 @@ import { PRESTIGE_MIN_FLOOR } from "../shared/data/prestige";
 import { grantPurchase } from "../shared/data/shop";
 import { formatBig, formatCount } from "../shared/format";
 import { gearLevelCostFor, gearPriceFor, sideJobCostFor } from "../shared/prices";
-import { settle } from "../shared/settle";
+import { PROLOGUE_ID, settle } from "../shared/settle";
 import { newState, type GameState } from "../shared/state";
 import { incomePerSec, jobChangeReward } from "../shared/stats";
 
@@ -176,7 +176,8 @@ function act(r: Run, profile: Profile, now: number): void {
 }
 
 export function simulate(profile: Profile, days: number): Run {
-  let s = newState(START);
+  // A new game waits until the prologue is read (settle's waitingForPrologue).
+  let s = attempt(newState(START), { k: "readStory", id: PROLOGUE_ID }) ?? newState(START);
   if (profile === "paid") {
     s = grantPurchase(s, "pack_rookie", 1, START);
     s = grantPurchase(s, "premium", 1, START);
