@@ -81,7 +81,6 @@ describe("buffs", () => {
 
 describe("프리미엄 buffs", () => {
   test("all three are always on for premium buyers", async () => {
-    const { newState } = await import("./state");
     const { buffActive, BUFF_KINDS } = await import("./data/buffs");
     const s = played(0);
     expect(BUFF_KINDS.some((k) => buffActive(s, k))).toBe(false);

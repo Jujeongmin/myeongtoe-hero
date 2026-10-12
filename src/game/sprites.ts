@@ -248,6 +248,11 @@ export async function preloadAll(onProgress: (done: number) => void): Promise<vo
     done += 1;
     onProgress(done / paths.length);
   };
-  // A few at a time keeps the progress bar moving smoothly.
-  for (let i = 0; i < paths.length; i += 12) await Promise.all(paths.slice(i, i + 12).map(one));
+  // Twelve at a time, each starting the next as it finishes (no batch waits on its slowest file);
+  // the progress bar still moves smoothly.
+  let next = 0;
+  const worker = async () => {
+    while (next < paths.length) await one(paths[next++]);
+  };
+  await Promise.all(Array.from({ length: 12 }, worker));
 }

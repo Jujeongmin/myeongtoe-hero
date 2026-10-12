@@ -1,5 +1,5 @@
 import type { GameState } from "../state";
-import type { Text, TextVars } from "../text";
+import type { TextVars } from "../text";
 import { CERTS } from "./certs";
 import { GEAR_MAX_LEVEL } from "./gear";
 import { awakenStage } from "./pets";
@@ -79,13 +79,4 @@ const SPECIAL_BY_ID = new Map(SPECIAL_MISSIONS.map((m) => [m.id, m]));
 
 export function findSpecialMission(id: string): MissionDef | undefined {
   return SPECIAL_BY_ID.get(id);
-}
-
-// The reward's parts, each a pattern for t() (shown joined with " · ").
-export function rewardText(r: Reward): Text[] {
-  const parts: Text[] = [];
-  if (r.gems) parts.push({ key: "보석 {n}", vars: { n: r.gems } });
-  if (r.tickets) parts.push({ key: "응시권 {n}", vars: { n: r.tickets } });
-  if (r.coupons) parts.push({ key: "상품권 {n}", vars: { n: r.coupons } });
-  return parts;
 }

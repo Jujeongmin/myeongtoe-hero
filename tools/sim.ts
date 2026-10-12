@@ -203,7 +203,7 @@ export function simulate(profile: Profile, days: number): Run {
 // ad (again whenever it is ready), upgrading every 5 seconds and retrying the boss when farming.
 // Run: FIRST=30 npm run sim
 export function firstSession(minutes: number): string[] {
-  let s = newState(START);
+  let s = attempt(newState(START), { k: "readStory", id: PROLOGUE_ID }) ?? newState(START);
   const out: string[] = [];
   let shown = 0;
   for (let now = START; now <= START + minutes * MIN; now += 5_000) {
