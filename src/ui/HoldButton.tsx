@@ -1,38 +1,53 @@
-import { useEffect, useRef, type ButtonHTMLAttributes } from "react";
+import { useEffect, useRef, useState, type ButtonHTMLAttributes } from "react";
 
 const FIRST_DELAY_MS = 350;
 const START_EVERY_MS = 140;
 const FASTEST_EVERY_MS = 50;
+// While held but not affordable yet, how often it looks again.
+const WAIT_EVERY_MS = 100;
 
 // A level-up button that keeps firing while held: once on press, then after a short pause again
-// and again, faster the longer it is held. It stops on release, when the finger leaves it, or as
-// soon as it turns disabled (out of gold, maxed). A keyboard press fires once.
-export function HoldButton({ onFire, disabled, ...rest }: { onFire: () => void } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick">) {
+// and again, faster the longer it is held. Held while it can't be paid for (`ready` false), it
+// waits and fires the moment the money is there, then carries on. It stops on release, when the
+// finger leaves it, or when it turns disabled (maxed). A keyboard press fires once, if ready.
+// Not ready is aria-disabled (and looks it), not disabled, so it can still be held.
+export function HoldButton({ onFire, disabled, ready = true, className, ...rest }: { onFire: () => void; ready?: boolean } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick">) {
   const fire = useRef(onFire);
   fire.current = onFire;
+  const can = useRef(ready);
+  can.current = ready;
   const timer = useRef(0);
+  const [held, setHeld] = useState(false);
   const stop = () => {
     window.clearTimeout(timer.current);
     timer.current = 0;
+    setHeld(false);
   };
   useEffect(() => {
     if (disabled) stop();
   }, [disabled]);
-  useEffect(() => stop, []);
+  useEffect(() => () => window.clearTimeout(timer.current), []);
   const repeat = (every: number) => {
     timer.current = window.setTimeout(() => {
+      if (!can.current) {
+        repeat(every);
+        return;
+      }
       fire.current();
       repeat(Math.max(FASTEST_EVERY_MS, every * 0.85));
-    }, every);
+    }, can.current ? every : WAIT_EVERY_MS);
   };
   return (
     <button
       {...rest}
+      className={`${className ?? ""}${held && !ready ? " waiting" : ""}`}
       disabled={disabled}
+      aria-disabled={!ready || undefined}
       onPointerDown={(e) => {
         if (e.button !== 0) return;
-        stop();
-        fire.current();
+        window.clearTimeout(timer.current);
+        setHeld(true);
+        if (can.current) fire.current();
         timer.current = window.setTimeout(() => repeat(START_EVERY_MS), FIRST_DELAY_MS - START_EVERY_MS);
       }}
       onPointerUp={stop}
@@ -40,7 +55,7 @@ export function HoldButton({ onFire, disabled, ...rest }: { onFire: () => void }
       onPointerCancel={stop}
       onContextMenu={(e) => e.preventDefault()}
       onClick={(e) => {
-        if (e.detail === 0) fire.current(); // keyboard (Enter/Space); pointer presses already fired
+        if (e.detail === 0 && can.current) fire.current(); // keyboard (Enter/Space); pointer presses already fired
       }}
     />
   );

@@ -100,7 +100,7 @@ function SideJobRow({ job, state, store, count }: { job: SideJob; state: GameSta
           </div>
         )}
       </div>
-      <HoldButton data-tut={`job-${job.id}`} className={maxed || state.gold.lt(cost) ? "poor" : "hot"} disabled={maxed || state.gold.lt(cost)} onFire={() => store.do({ k: "levelSideJob", id: job.id, count })}>
+      <HoldButton data-tut={`job-${job.id}`} className={maxed || state.gold.lt(cost) ? "poor" : "hot"} disabled={maxed} ready={!state.gold.lt(cost)} onFire={() => store.do({ k: "levelSideJob", id: job.id, count })}>
         {maxed ? t("최대") : level === 0 && levels === 1 ? t("시작") : levels > 1 ? `+${levels}` : t("레벨업")}<br /><Amount icon="gold" value={formatBig(cost)} />
       </HoldButton>
     </div>

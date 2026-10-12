@@ -40,10 +40,12 @@ function CertRow({ def, state, store }: { def: CertDef; state: GameState; store:
         <button disabled>MAX</button>
       ) : (
         <div className="buttons">
-          <HoldButton data-tut={level === 0 ? "cert" : undefined} disabled={have < cost} onFire={() => store.do({ k: "levelCert", id: def.id, bulk: false })}>
+          {/* Affordable: red (hot). Short: the plain navy button, which can still be held and then
+              waits for the tickets. */}
+          <HoldButton data-tut={level === 0 ? "cert" : undefined} className={have < cost ? "short" : "hot"} ready={have >= cost} onFire={() => store.do({ k: "levelCert", id: def.id, bulk: false })}>
             {level === 0 ? t("취득") : "+1"}<br /><Amount icon={def.currency === "gems" ? "gem" : "ticket"} value={formatCount(cost)} />
           </HoldButton>
-          <button disabled={have < cost} onClick={() => store.do({ k: "levelCert", id: def.id, bulk: true })}>
+          <button className={have < cost ? "short" : "hot"} disabled={have < cost} onClick={() => store.do({ k: "levelCert", id: def.id, bulk: true })}>
             {t("최대")}<br />{t("한번에")}
           </button>
         </div>

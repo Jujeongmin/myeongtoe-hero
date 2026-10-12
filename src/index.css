@@ -289,6 +289,11 @@ html[lang="ja"] body { font-family: "Mulmaru", "Fusion Pixel 12px Proportional J
 .bottom-nav .nav-label { display: block; width: 100%; white-space: nowrap; overflow: hidden; text-align: center; }
 /* Level-up and buy buttons: red when there is gold for it, the plain gold button when there isn't. */
 .row button.poor:disabled { border-image: var(--ui-button-gold) 6 fill / 12px repeat; color: #fff; }
+/* A level-up held while short of money waits for it (HoldButton): it pulses until it can pay. */
+/* A certificate it can't pay for yet: the plain navy button (red once it can pay). */
+.row button.short, .row button.short:disabled { border-image: var(--ui-button-gold) 6 fill / 12px repeat; color: #fff; }
+.row button.poor.waiting, .row button.short.waiting { animation: hold-wait 0.6s steps(2) infinite; }
+@keyframes hold-wait { 50% { filter: brightness(1.35); } }
 /* 이직: an offer letter (art/ui/prestige_panel) with the headhunter's pitch and three offer cards. */
 .prestige-btn { border: 8px solid transparent; border-image: var(--ui-prestige-button, var(--ui-button-gold)) 8 fill / 8px; background: none; image-rendering: pixelated; }
 .prestige-btn.ready { border-image: var(--ui-prestige-button-on, var(--ui-button-gold-hot)) 8 fill / 8px; }

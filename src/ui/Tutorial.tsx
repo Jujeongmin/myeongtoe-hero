@@ -78,7 +78,8 @@ export function Tutorial({ state, tab }: { state: GameState; tab: NavTab }) {
       el.hidden = false;
       // Dark around the button (four panels that also catch every other touch), only while it can
       // be pressed.
-      if ((target as HTMLButtonElement).disabled) shade(null);
+      // Not payable yet (disabled, or a level-up held waiting for gold): nothing is blocked.
+      if ((target as HTMLButtonElement).disabled || target.getAttribute("aria-disabled") === "true") shade(null);
       else {
         const p = 4;
         const [l, tp, rt, b] = [r.left - p, r.top - p, r.right + p, r.bottom + p];

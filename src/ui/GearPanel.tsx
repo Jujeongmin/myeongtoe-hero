@@ -44,7 +44,7 @@ export function GearPanel({ state, store, onSuits }: { state: GameState; store: 
           const cost = gearLevelCostFor(state, tier, level);
           const maxed = level >= GEAR_MAX_LEVEL;
           button = (
-            <HoldButton data-tut="gear-up" className={maxed ? "" : state.gold.lt(cost) ? "poor" : "hot"} disabled={maxed || state.gold.lt(cost)} onFire={() => store.do({ k: "levelGear" })}>
+            <HoldButton data-tut="gear-up" className={maxed ? "" : state.gold.lt(cost) ? "poor" : "hot"} disabled={maxed} ready={!state.gold.lt(cost)} onFire={() => store.do({ k: "levelGear" })}>
               {maxed ? t("최대") : <>+1<br /><Amount icon="gold" value={formatBig(cost)} /></>}
             </HoldButton>
           );
