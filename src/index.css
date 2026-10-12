@@ -580,3 +580,12 @@ body:has(.loading) { background: #0b0916; }
 .attendance-popup { width: min(360px, 92vw); }
 .attendance-popup .row { text-align: left; }
 .offer-popup .vx-img { align-self: center; }
+/* A reward waiting to be taken (a finished mission, today's check-in, a daily quest): it glows gold
+   in slow pulses and a band of light sweeps across it now and then, so the eye goes to it. */
+.shine { animation: shine-pulse 1.6s steps(4) infinite; }
+button.shine { position: relative; }
+.shine::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(105deg, transparent 38%, rgba(255, 246, 200, 0.8) 46%, rgba(255, 255, 255, 0.95) 50%, rgba(255, 246, 200, 0.8) 54%, transparent 62%) no-repeat; background-size: 300% 100%; animation: shine-sweep 2.4s steps(16) infinite; }
+@keyframes shine-pulse { 0%, 100% { filter: drop-shadow(0 0 1px rgba(255, 209, 102, 0.6)); } 50% { filter: drop-shadow(0 0 5px rgba(255, 209, 102, 1)) brightness(1.12); } }
+@keyframes shine-sweep { 0% { background-position: 100% 0; } 50%, 100% { background-position: 0 0; } }
+.mission-card.shine { animation: shine-pulse 1.6s steps(4) infinite, prestige-bob 2.4s steps(1) infinite; }
+.row button.shine, .modal .row button.shine { border-image: var(--ui-button-gold-hot) 6 fill / 12px repeat; color: #ffd166; }

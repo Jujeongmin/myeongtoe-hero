@@ -38,7 +38,7 @@ function Specials({ state, store }: { state: GameState; store: GameStore }) {
               {t(m.text, m.vars)}
               <div className="sub"><RewardView reward={m.reward} /></div>
             </div>
-            <button disabled={claimed || !m.done(state)} onClick={() => store.do({ k: "claimSpecial", id: m.id })}>
+            <button className={!claimed && m.done(state) ? "shine" : ""} disabled={claimed || !m.done(state)} onClick={() => store.do({ k: "claimSpecial", id: m.id })}>
               {claimed ? t("받음") : t("받기")}
             </button>
           </div>
@@ -60,7 +60,7 @@ export function Attendance({ state, store }: { state: GameState; store: GameStor
           {t("출석 {n}일째", { n: count })}
           <div className="sub">{t("7일마다 처음부터 다시 돌아요")}</div>
         </div>
-        <button disabled={today} onClick={() => store.do({ k: "claimAttendance" })}>{today ? t("받음") : t("출석")}</button>
+        <button className={today ? "" : "shine"} disabled={today} onClick={() => store.do({ k: "claimAttendance" })}>{today ? t("받음") : t("출석")}</button>
       </div>
       <div className="attendance">
         {ATTENDANCE_REWARDS.map((r, i) => (

@@ -132,7 +132,7 @@ function VxShop({ state, store }: { state: GameState; store: GameStore }) {
             <b>{t("매일 보석")}</b>
             <div className="sub">{t("프리미엄·월급 통장 혜택")}</div>
           </div>
-          <button className="hot" disabled={dailyVxClaimed(state)} onClick={() => store.do({ k: "claimDailyVx" })}>
+          <button className={dailyVxClaimed(state) ? "hot" : "hot shine"} disabled={dailyVxClaimed(state)} onClick={() => store.do({ k: "claimDailyVx" })}>
             {dailyVxClaimed(state) ? t("받음") : <>{t("받기")}<br /><Amount icon="gem" value={daily} /></>}
           </button>
         </div>

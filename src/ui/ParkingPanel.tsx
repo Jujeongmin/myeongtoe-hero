@@ -63,7 +63,7 @@ export function ParkingPanel({ state, store }: { state: GameState; store: GameSt
               {q.kind === "entries" ? t("주차장 {n}회 입장", { n: q.goal }) : t("B{m}m 도달", { m: q.goal })}
               <div className="sub">{Math.min(have, q.goal)}/{q.goal}</div>
             </div>
-            <button disabled={!done || claimed} onClick={() => store.do({ k: "claimDaily", id: q.id })}>
+            <button className={done && !claimed ? "shine" : ""} disabled={!done || claimed} onClick={() => store.do({ k: "claimDaily", id: q.id })}>
               {claimed ? t("받음") : <>{t("받기")}<br /><Amount icon="coupon" value={dailyQuestReward(q, state.lastTick)} /></>}
             </button>
           </div>

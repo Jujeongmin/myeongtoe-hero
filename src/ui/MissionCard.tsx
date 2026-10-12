@@ -37,7 +37,7 @@ export function MissionCard({ state, store, onGo }: { state: GameState; store: G
   const line = useFitText<HTMLDivElement>(text);
   return (
     <div
-      className={`mission-card${done ? " done" : ""}`}
+      className={`mission-card${done ? " done shine" : ""}`}
       onClick={() => (done ? store.do({ k: "claimStep" }) : place && onGo(place))}
     >
       <div className="mission-line" ref={line}>{text}</div>
