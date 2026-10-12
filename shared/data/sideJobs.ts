@@ -2,7 +2,7 @@ import { Big } from "../big";
 
 // 부업: each pays its income once per cycle and starts over on its own. Starting a job costs its
 // base cost; each next level costs 12% more than the last, and the pay grows by half the level-1 pay
-// per level (level n pays base × (n + 1) / 2), doubled at each milestone level reached (25, 50,
+// per level (level n pays base × (n + 1) / 2), doubled at each milestone level reached (10, 25, 50,
 // 100, then every 100). Up to level 999. Reset by a job change (이직).
 export interface SideJob {
   id: string;
@@ -19,7 +19,9 @@ export const SIDE_JOB_LEVEL_COST_GROWTH = 1.12;
 const MIN = 60;
 const HOUR = 3600;
 
-// Name, starting cost, seconds per cycle, level-1 pay.
+// Name, starting cost, seconds per cycle, and the pay level 1 would have without the level-10
+// milestone: the first levels pay half of it, so from level 10 on the pay is what it was before
+// that milestone was added.
 const TABLE: readonly (readonly [string, number, number, number])[] = [
   ["편의점 알바", 10, 1, 10],
   ["전단지 돌리기", 130, 2, 120],
@@ -53,7 +55,7 @@ export const SIDE_JOBS: readonly SideJob[] = TABLE.map(([name, cost, cycle, pay]
   name,
   unlockFloor: 1,
   baseCost: Big.of(cost),
-  baseIncome: Big.of(pay),
+  baseIncome: Big.of(pay / 2),
   baseCycleSec: cycle,
 }));
 
@@ -68,7 +70,7 @@ export function sideJobCost(job: SideJob, level: number): Big {
   return job.baseCost.mul(Big.pow(SIDE_JOB_LEVEL_COST_GROWTH, level));
 }
 
-export const SIDE_JOB_MILESTONES: readonly number[] = [25, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+export const SIDE_JOB_MILESTONES: readonly number[] = [10, 25, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
 
 // ×2 for every milestone at or below `level`.
 export function sideJobMilestoneMult(level: number): number {
