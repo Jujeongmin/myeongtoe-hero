@@ -48,7 +48,7 @@ function Specials({ state, store }: { state: GameState; store: GameStore }) {
   );
 }
 
-function Attendance({ state, store }: { state: GameState; store: GameStore }) {
+export function Attendance({ state, store }: { state: GameState; store: GameStore }) {
   const { count, lastDay } = state.attendance;
   const today = lastDay === kstDay(state.lastTick);
   // The day of the 7-day cycle the next claim pays (or today's claim paid).

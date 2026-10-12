@@ -1,6 +1,7 @@
 import { cloneState, type GameState } from "../state";
 import { fill, type Text } from "../text";
 import { kstDay } from "../time";
+import { STEP_MISSIONS } from "./missions";
 
 // VX 상품 (sold through the Verse8 VX Shop; what is bought arrives on the server's
 // $onItemPurchased and goes through grantPurchase). The prices here are fallbacks: the shop's
@@ -126,4 +127,36 @@ export function dailyVxGems(s: GameState): number {
 
 export function dailyVxClaimed(s: GameState): boolean {
   return s.vx.dailyClaimed === kstDay(s.lastTick);
+}
+
+// 결제 제안: a VX product the game brings up by itself in a popup. Each key is shown once on a
+// device (`seen` lists the ones already shown): a promotion pack when it opens (the highest first),
+// the rookie pack once the guided first steps are over and again on its last day, and 프리미엄 on a
+// day the player has already watched OFFER_ADS different ads.
+export type OfferWhy = "promo" | "rookie" | "rookieLast" | "premium";
+export interface Offer { key: string; why: OfferWhy; product: Product }
+
+export const OFFER_ADS = 3;
+// The step mission after the last one the tutorial pen guides (s03).
+export const ROOKIE_OFFER_STEP = STEP_MISSIONS.findIndex((m) => m.id === "s03") + 1;
+
+export function offerToShow(s: GameState, seen: readonly string[], now = s.lastTick): Offer | undefined {
+  const fresh = (key: string, why: OfferWhy, p: Product): Offer | undefined => (seen.includes(key) ? undefined : { key, why, product: p });
+  const promo = PRODUCTS.filter((p) => p.floor !== undefined && productOffered(s, p, now))
+    .sort((a, b) => b.floor! - a.floor!)
+    .map((p) => fresh(p.id, "promo", p))
+    .find((o) => o);
+  if (promo) return promo;
+  const rookie = findProduct("pack_rookie")!;
+  if (productOffered(s, rookie, now) && s.missions.step >= ROOKIE_OFFER_STEP) {
+    const last = now >= s.startedAt + (ROOKIE_DAYS - 1) * DAY_MS;
+    const o = last ? fresh("pack_rookie_last", "rookieLast", rookie) : fresh("pack_rookie", "rookie", rookie);
+    if (o) return o;
+  }
+  const premium = findProduct("premium")!;
+  const today = kstDay(now);
+  if (productOffered(s, premium, now) && Object.values(s.ads).filter((at) => kstDay(at) === today).length >= OFFER_ADS) {
+    return fresh(`premium:${today}`, "premium", premium);
+  }
+  return undefined;
 }

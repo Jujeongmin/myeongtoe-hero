@@ -35,9 +35,14 @@ import { SideJobPanel } from "./ui/SideJobPanel";
 import { StatusBanner } from "./ui/StatusBanner";
 import { StoryList, StoryViewer, storyToShow } from "./ui/StoryViewer";
 import type { Episode } from "../shared/data/story";
+import { offerToShow, type Offer } from "../shared/data/shop";
+import { AttendancePopup, OfferPopup, attendanceDue, markOfferSeen, seenOffers } from "./ui/Popups";
+import { idleFor } from "./ui/useTapGuard";
 import { Toast } from "./ui/Toast";
 
 const SYNC_MS = 1500;
+// What opens by itself waits until the player has stopped tapping for this long.
+const IDLE_MS = 1500;
 
 const SHEET_THEMES: Partial<Record<SheetId, string>> = {
   profile: "profile", suits: "costume", apartment: "apartment", relics: "relics", office: "office",
@@ -118,6 +123,9 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
   const [locked, setLocked] = useState(false);
   const [reading, setReading] = useState<Episode | null>(null);
   const [shown, setShown] = useState<string[]>([]);
+  const [popup, setPopup] = useState<"attendance" | Offer | null>(null);
+  const [attendanceAsked, setAttendanceAsked] = useState(false);
+  const [offered, setOffered] = useState(false);
   const [welcomed, setWelcomed] = useState(false);
   const [shopTab, setShopTab] = useState<{ tab: ShopTab; at: number }>({ tab: "gems", at: 0 });
   // A currency's "+": the shop, opened at the part that gives more of it.
@@ -128,15 +136,33 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
   };
   const welcome = !!state && !welcomed && welcomeNeeded(state, guest);
 
-  // A new episode opens by itself once (over the battle, when no panel is open).
+  // What opens by itself, one thing at a time, only over the bare battle screen and only once the
+  // player has stopped tapping for a moment (a burst of 강화 taps must not land on it): the
+  // prologue before anything, then attendance (once, on arriving), a new episode, and at most one
+  // VX offer a session. Checked on every redraw.
   useEffect(() => {
-    if (!state || welcome || reading || sheet || locked) return;
+    if (!state || welcome || reading || popup || sheet || locked || store.offline || !idleFor(IDLE_MS)) return;
     const ep = storyToShow(state);
-    if (ep && !shown.includes(ep.id)) {
-      setShown([...shown, ep.id]);
-      setReading(ep);
+    const story = ep && !shown.includes(ep.id) ? ep : undefined;
+    const read = (e: Episode) => {
+      setShown([...shown, e.id]);
+      setReading(e);
+    };
+    if (story && state.story.length === 0) return read(story);
+    if (!attendanceAsked) {
+      setAttendanceAsked(true);
+      if (attendanceDue(state)) return setPopup("attendance");
     }
-  }, [state, welcome, reading, sheet, locked, shown]);
+    if (story) return read(story);
+    if (!offered) {
+      const offer = offerToShow(state, seenOffers());
+      if (offer) {
+        setOffered(true);
+        markOfferSeen(offer.key);
+        setPopup(offer);
+      }
+    }
+  });
 
   useEffect(() => {
     const tick = () => void store.flush().catch(() => undefined);
@@ -214,6 +240,8 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
           }}
         />
       )}
+      {popup === "attendance" && <AttendancePopup state={state} store={store} onClose={() => setPopup(null)} />}
+      {popup && popup !== "attendance" && <OfferPopup offer={popup} onClose={() => setPopup(null)} />}
       {welcome && <Welcome state={state} store={store} guest={guest} onDone={() => setWelcomed(true)} />}
       {locked && <ScreenLock state={state} onClose={() => setLocked(false)} />}
     </div>

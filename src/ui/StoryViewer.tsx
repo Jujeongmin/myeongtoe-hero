@@ -4,6 +4,7 @@ import type { GameState } from "../../shared/state";
 import { imageUrl } from "../game/sprites";
 import { useFitText } from "./useFitText";
 import { t } from "../i18n";
+import { useTapGuard } from "./useTapGuard";
 
 // An episode can be shown once every panel's picture is in art/story.
 export function episodeReady(ep: Episode): boolean {
@@ -29,10 +30,19 @@ function pagesOf(n: number): number[][] {
 
 // The webtoon a page at a time, like a comic: up to three panels stacked to fill the screen, each
 // with its lines on it (speech bubbles over the speaker's head, narration in a caption box along
-// the bottom). Tap anywhere for the next page; after the last it closes and counts as read.
+// the bottom). Tap anywhere for the next page; after the last it closes and counts as read. Taps
+// right after it opens or turns a page do nothing (useTapGuard), so a burst of taps on the game
+// does not skip it.
+const PAGE_ARM_MS = 450;
+
 export function StoryViewer({ episode, onClose }: { episode: Episode; onClose: () => void }) {
   const [size, setSize] = useState({ w: window.innerWidth, h: window.innerHeight });
   const [page, setPage] = useState(0);
+  const guard = useTapGuard();
+  const turn = () => {
+    guard.arm(PAGE_ARM_MS);
+    setPage(page + 1);
+  };
   useEffect(() => {
     const resize = () => setSize({ w: window.innerWidth, h: window.innerHeight });
     window.addEventListener("resize", resize);
@@ -45,7 +55,7 @@ export function StoryViewer({ episode, onClose }: { episode: Episode; onClose: (
   const width = Math.floor(Math.min(size.w, COLUMN_PX, ((size.h - 84) / panels.length - 4) * 1.5));
   const last = page === pages.length - 1;
   return (
-    <div className="story" onClick={() => (last ? onClose() : setPage(page + 1))}>
+    <div className={`story${guard.armed ? "" : " arming"}`} onClickCapture={guard.onClickCapture} onClick={() => (last ? onClose() : turn())}>
       <header onClick={(e) => e.stopPropagation()}>
         <b>{t(episode.title)}</b>
         <button onClick={onClose}>{t("건너뛰기")}</button>

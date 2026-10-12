@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { applyIntent, readIntent, RuleError, type Intent } from "./actions";
-import { PRODUCTS, findProduct, grantPurchase, productOffered } from "./data/shop";
+import { OFFER_ADS, PRODUCTS, ROOKIE_OFFER_STEP, findProduct, grantPurchase, offerToShow, productOffered } from "./data/shop";
 import { parkPassMax } from "./mods";
 import { applyPurchase, readPurchaseEvent } from "./purchase";
 import { newState, toSave, type GameState } from "./state";
@@ -73,6 +73,46 @@ describe("VX products", () => {
     expect(codeOf(once, { k: "claimDailyVx" })).toBe("claimed");
     expect(applyIntent({ ...once, lastTick: T0 + DAY }, { k: "claimDailyVx" }).gems).toBe(once.gems + 400);
     expect(readIntent({ k: "claimDailyVx" })).toEqual({ k: "claimDailyVx" });
+  });
+});
+
+describe("offer popups", () => {
+  const key = (s: GameState, seen: string[] = [], now?: number) => offerToShow(s, seen, now)?.key;
+
+  test("none for a new player still in the guided first steps", () => {
+    expect(key(newState(T0))).toBeUndefined();
+  });
+
+  test("the rookie pack once the guided steps are over, and again on its last day", () => {
+    const s = newState(T0);
+    s.missions.step = ROOKIE_OFFER_STEP;
+    expect(key(s)).toBe("pack_rookie");
+    expect(key(s, ["pack_rookie"])).toBeUndefined();
+    expect(key(s, ["pack_rookie"], T0 + 6 * DAY + 1)).toBe("pack_rookie_last");
+    expect(key(s, ["pack_rookie", "pack_rookie_last"], T0 + 6 * DAY + 1)).toBeUndefined();
+    expect(key(s, [], T0 + 8 * DAY)).toBeUndefined();
+    expect(key(grantPurchase(s, "pack_rookie", 1, T0))).toBeUndefined();
+  });
+
+  test("a promotion pack when it opens, the highest one first", () => {
+    const s = newState(T0);
+    s.bestFloor = 320;
+    expect(key(s)).toBe("pack_promo_300");
+    expect(key(s, ["pack_promo_300"])).toBe("pack_promo_100");
+    expect(key(grantPurchase(s, "pack_promo_300", 1, T0), ["pack_promo_100"])).toBeUndefined();
+  });
+
+  test("premium on a day with several different ads watched, once that day", () => {
+    const s = newState(T0);
+    const ids = ["ad_gems", "ad_gold", "ad_coupons", "ad_parking"].slice(0, OFFER_ADS);
+    ids.slice(0, -1).forEach((id) => (s.ads[id] = T0));
+    expect(key(s)).toBeUndefined();
+    s.ads[ids[ids.length - 1]] = T0;
+    const k = key(s);
+    expect(k).toMatch(/^premium:/);
+    expect(key(s, [k!])).toBeUndefined();
+    expect(key({ ...s, ads: Object.fromEntries(ids.map((id) => [id, T0 + DAY])) }, [k!], T0 + DAY)).toMatch(/^premium:/);
+    expect(key(grantPurchase(s, "premium", 1, T0))).toBeUndefined();
   });
 });
 
