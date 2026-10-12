@@ -5,7 +5,6 @@ import type { GameStore } from "../game/store";
 import { t } from "../i18n";
 import type { NavTab } from "./BottomNav";
 import { RewardView } from "./Amount";
-import { useFitText } from "./useFitText";
 
 // Where a step mission is done: a bottom tab or a panel opened from the battle screen. Floor goals
 // go to the gear tab (a stronger tool is what gets Park higher).
@@ -34,13 +33,13 @@ export function MissionCard({ state, store, onGo }: { state: GameState; store: G
   const done = m.done(state);
   const place = PLACES[m.id];
   const text = t("{step}단계 · {mission}", { step: step + 1, mission: t(m.text, m.vars) });
-  const line = useFitText<HTMLDivElement>(text);
   return (
     <div
       className={`mission-card${done ? " done shine" : ""}`}
       onClick={() => (done ? store.do({ k: "claimStep" }) : place && onGo(place))}
     >
-      <div className="mission-line" ref={line}>{text}</div>
+      {/* A [bracketed name] never breaks inside, so the line wraps before it. */}
+      <div className="mission-line">{text.replace(/\[[^\]]*\]/g, (b) => b.replace(/ /g, "\u00a0"))}</div>
       {done && <div className="claim">{t("받기")} <RewardView reward={m.reward} /></div>}
     </div>
   );

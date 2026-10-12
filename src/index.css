@@ -480,9 +480,11 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .row { min-height: 0; }
 .row > .icon-box { width: 48px; height: 48px; border-width: 8px; border-image-width: 8px; }
 .row > .icon-box .gear-img { width: 32px; height: 32px; }
-/* The step mission stays bottom right on one line but narrow (up to 150px; its text shrinks to
-   fit), so Park and the monster fit on the floor between it and the 이직 button. */
-.mission-card { max-width: 150px; font-size: 11px; }
+/* The step mission stays bottom right and narrow (up to 150px), so Park and the monster fit on the
+   floor between it and the 이직 button; a long mission wraps onto a second line at a readable 12px
+   (it used to shrink to 7px to stay on one). */
+.mission-card { max-width: 150px; font-size: 12px; }
+.mission-card .mission-line { white-space: normal; word-break: keep-all; line-height: 14px; }
 /* Small phones (narrower than 380px): every control on the battle screen a size smaller. */
 @media (max-width: 379px) {
   .boss-btn { font-size: 12px; }
@@ -495,7 +497,7 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
   .prestige-text b { font-size: 12px; }
   .prestige-text small { font-size: 10px; }
   .prestige-text .pbar { min-width: 48px; }
-  .mission-card { max-width: 140px; font-size: 10px; }
+  .mission-card { max-width: 140px; font-size: 11px; }
   .prestige-text .pbar { min-width: 40px; }
   .prestige-floor { display: none; }
   .currency { font-size: 12px; }
