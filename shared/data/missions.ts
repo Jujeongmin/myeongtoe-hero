@@ -27,7 +27,7 @@ const jobsStarted = (s: GameState) => Object.values(s.sideJobs).filter((j) => j.
 
 export const STEP_MISSIONS: readonly MissionDef[] = [
   { id: "s01", text: "부업 [편의점 알바] 시작", done: (s) => (s.sideJobs.j00?.level ?? 0) >= 1, reward: { gems: 20 } },
-  { id: "s01b", text: "부업 [편의점 알바] Lv5", done: (s) => (s.sideJobs.j00?.level ?? 0) >= 5, reward: { gems: 20 } },
+  { id: "s01b", text: "부업 [편의점 알바] Lv10", done: (s) => (s.sideJobs.j00?.level ?? 0) >= 10, reward: { gems: 20 } },
   { id: "s02", text: "업무 장비 [볼펜] Lv5", done: (s) => s.gear.tier > 0 || s.gear.level >= GEAR_MAX_LEVEL, reward: { gems: 20 } },
   { id: "s02b", text: "부업 [전단지 돌리기] 시작", done: (s) => (s.sideJobs.j01?.level ?? 0) >= 1, reward: { gems: 20 } },
   { id: "s03", text: "업무 장비 [2. 형광펜] 구매", done: (s) => s.gear.tier >= 1, reward: { gems: 25 } },
