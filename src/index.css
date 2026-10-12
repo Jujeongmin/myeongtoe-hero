@@ -593,3 +593,13 @@ button.shine { position: relative; }
 .offer-item { flex: 0 1 64px; min-width: 60px; display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 4px 2px; background: #2f2a48; border: 2px solid #0b0916; }
 .offer-item .sub { font-size: 11px; line-height: 1.1; }
 .offer-item b { color: #ffd166; text-shadow: 1px 1px 0 #000; }
+/* A player's card from the ranking: Park as dressed, the records beside him, the pieces worn below. */
+.row.tappable { cursor: pointer; }
+.profile-card { width: min(340px, 92vw); }
+.profile-card-top { display: flex; gap: 10px; align-items: center; text-align: left; }
+.profile-card-top .costume-preview { width: 120px; height: 120px; }
+.profile-card-stats { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.profile-card-stats b { color: #ffd166; margin-left: 4px; }
+.profile-card-worn { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+.profile-card-piece { width: 70px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 2px; background: #2f2a48; border: 2px solid #0b0916; }
+.profile-card-piece .sub { font-size: 10px; line-height: 1.15; text-align: center; word-break: keep-all; }

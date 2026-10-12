@@ -1,5 +1,5 @@
 import type { Intent } from "../../shared/actions";
-import { rankRowOf, readNickname, type Board, type RankingView } from "../../shared/ranking";
+import { profileOf, rankRowOf, readNickname, type Board, type PublicProfile, type RankingView } from "../../shared/ranking";
 import { fromSave, toSave } from "../../shared/state";
 import { syncSave, type SyncResult } from "../../shared/sync";
 
@@ -7,6 +7,7 @@ import { syncSave, type SyncResult } from "../../shared/sync";
 export interface Transport {
   sync(intents: Intent[]): Promise<SyncResult>;
   ranking(board: Board): Promise<RankingView>;
+  profile(account: string): Promise<PublicProfile>;
   setNickname(name: string): Promise<{ nickname: string }>;
 }
 
@@ -32,6 +33,12 @@ export class LocalTransport implements Transport {
     return { board, rows: mine ? [mine] : [], mine };
   }
 
+  async profile(account: string): Promise<PublicProfile> {
+    const raw = this.storage.getItem(this.key);
+    if (!raw) throw new Error("not_found");
+    return profileOf(account, fromSave(JSON.parse(raw)));
+  }
+
   async setNickname(name: string): Promise<{ nickname: string }> {
     const nickname = readNickname(name);
     if (!nickname) throw new Error("bad_nickname");
@@ -49,5 +56,6 @@ export class LocalTransport implements Transport {
 export const OFFLINE: Transport = {
   sync: () => Promise.reject(new Error("offline")),
   ranking: () => Promise.reject(new Error("offline")),
+  profile: () => Promise.reject(new Error("offline")),
   setNickname: () => Promise.reject(new Error("offline")),
 };

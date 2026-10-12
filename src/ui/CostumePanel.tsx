@@ -157,12 +157,12 @@ function Legends({ state, store }: { state: GameState; store: GameStore }) {
 
 // A costume piece on its own (no Park), cropped to its pixels and blown up by a whole number to
 // fill the box, so even small gloves (5×6 px on Park) read clearly.
-function CostumeThumb({ item }: { item: SuitItem }) {
+export function CostumeThumb({ item }: { item: SuitItem }) {
   return <SpriteThumb path={partStrip(item.id, "idle")} frame={FRAME} res={40} className="part-thumb" />;
 }
 
 // Park at 3× in an idle loop, wearing `wear`.
-function Preview({ wear, gearTier }: { wear: Record<string, string>; gearTier: number }) {
+export function Preview({ wear, gearTier }: { wear: Record<string, string>; gearTier: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const props = useRef({ wear, gearTier });
   props.current = { wear, gearTier };

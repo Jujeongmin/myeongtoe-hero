@@ -36,5 +36,25 @@ describe("rankings", () => {
     const board = await server.ranking("floor");
     expect(board.mine.nickname).toBe("박부장");
   });
-});
 
+  test("a profile: anyone's records and the costume pieces they own and wear", async (server) => {
+    const s = newState(Date.now());
+    s.nickname = "김대리";
+    s.bestFloor = 77;
+    s.suits = ["s1_helmet"];
+    s.wear = { helmet: "s1_helmet", armor: "s1_armor" };
+    await $global.updateUserState("test-r5", { save: toSave(s) });
+    server.connect({ account: "test-r6" });
+    const p = await server.profile("test-r5");
+    expect(p.nickname).toBe("김대리");
+    expect(p.floor).toBe(77);
+    expect(p.wear).toEqual({ helmet: "s1_helmet" });
+    let error = "";
+    try {
+      await server.profile("test-nobody");
+    } catch (e: any) {
+      error = String(e?.message ?? e);
+    }
+    expect(error).toContain("not_found");
+  });
+});

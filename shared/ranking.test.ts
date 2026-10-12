@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { displayName, readBoard, readNickname, rankRowOf } from "./ranking";
+import { displayName, profileOf, readAccount, readBoard, readNickname, rankRowOf } from "./ranking";
 import { fill } from "./text";
 import { newState } from "./state";
 
@@ -38,5 +38,28 @@ describe("boards", () => {
     s.parking = { ...s.parking, best: 40 };
     s.nickname = "박부장";
     expect(rankRowOf("acc", s)).toEqual({ account: "acc", nickname: "박부장", floor: 120, depth: 40 });
+  });
+});
+
+describe("profiles", () => {
+  test("records, the tool, and only the costume pieces owned", () => {
+    const s = newState(0);
+    s.nickname = "박부장";
+    s.bestFloor = 120;
+    s.prestiges = 2;
+    s.gear = { ...s.gear, tier: 4 };
+    s.suits = ["s1_helmet"];
+    s.wear = { helmet: "s1_helmet", gloves: "s2_gloves" };
+    const p = profileOf("acc", s);
+    expect(p).toMatchObject({ account: "acc", nickname: "박부장", floor: 120, prestiges: 2, gearTier: 4, costumes: 1 });
+    expect(p.wear).toEqual({ helmet: "s1_helmet" });
+    expect(p.costumesAll).toBeGreaterThan(0);
+  });
+
+  test("account ids: a non-empty string of at most 128", () => {
+    expect(readAccount("0xabc")).toBe("0xabc");
+    expect(readAccount("")).toBeNull();
+    expect(readAccount(5)).toBeNull();
+    expect(readAccount("x".repeat(129))).toBeNull();
   });
 });

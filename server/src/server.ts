@@ -1,5 +1,5 @@
 import { applyPurchase, readPurchaseEvent } from "../../shared/purchase";
-import { RANKING_SIZE, rankRowOf, readBoard, readNickname, type RankRow, type RankingView } from "../../shared/ranking";
+import { RANKING_SIZE, profileOf, rankRowOf, readAccount, readBoard, readNickname, type PublicProfile, type RankRow, type RankingView } from "../../shared/ranking";
 import { fromSave, newState, toSave, type SaveData } from "../../shared/state";
 import { syncSave, type SyncResult } from "../../shared/sync";
 
@@ -62,6 +62,16 @@ export class Server {
     const items = await $global.getCollectionItems(RANKING, { orderBy: [{ field: b, direction: "desc" }], limit: RANKING_SIZE });
     const [mine] = await $global.getCollectionItems(RANKING, { filters: [{ field: "account", operator: "==", value: account }], limit: 1 });
     return { board: b, rows: items.map(stripId), mine: mine ? stripId(mine) : null };
+  }
+
+  // Someone's profile card, for tapping their row on a board.
+  async profile(account: unknown): Promise<PublicProfile> {
+    const id = readAccount(account);
+    if (!id) throw new Error("bad_account");
+    const userState = await $global.getUserState(id);
+    const raw = userState?.[SAVE_KEY];
+    if (!raw) throw new Error("not_found");
+    return profileOf(id, fromSave(raw));
   }
 
   // 2~8 Korean/English letters or digits; saved on the save and shown on the boards.

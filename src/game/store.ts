@@ -1,6 +1,6 @@
 import { actionSfx } from "./audio";
 import { applyIntent, RuleError, type Intent } from "../../shared/actions";
-import type { Board, RankingView } from "../../shared/ranking";
+import type { Board, PublicProfile, RankingView } from "../../shared/ranking";
 import { settle } from "../../shared/settle";
 import { fromSave, type GameState } from "../../shared/state";
 import type { OfflineReport } from "../../shared/sync";
@@ -106,6 +106,10 @@ export class GameStore {
 
   ranking(board: Board): Promise<RankingView> {
     return this.transport.ranking(board);
+  }
+
+  profile(account: string): Promise<PublicProfile> {
+    return this.transport.profile(account);
   }
 
   // Syncs now rather than at the next heartbeat (a VX purchase has just been paid on the server).
