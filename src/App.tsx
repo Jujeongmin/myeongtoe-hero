@@ -139,20 +139,22 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
     setShopTab({ tab: to, at: Date.now() });
   };
   const welcome = !!state && !welcomed && welcomeNeeded(state, guest);
+  // A new game opens on the prologue at once (in the same render the 입사지원서 closes in), so the
+  // battle never shows before it; the other episodes wait for a pause (below).
+  const prologue = state && !welcome && state.story.length === 0 ? storyToShow(state) : undefined;
 
   // What opens by itself, one thing at a time, only over the bare battle screen and only once the
   // player has stopped tapping for a moment (a burst of 강화 taps must not land on it): the
   // prologue before anything, then attendance (once, on arriving), a new episode, and at most one
   // VX offer a session. Checked on every redraw.
   useEffect(() => {
-    if (!state || welcome || reading || popup || sheet || locked || nego || store.offline || !idleFor(IDLE_MS)) return;
+    if (!state || welcome || prologue || reading || popup || sheet || locked || nego || store.offline || !idleFor(IDLE_MS)) return;
     const ep = storyToShow(state);
     const story = ep && !shown.includes(ep.id) ? ep : undefined;
     const read = (e: Episode) => {
       setShown([...shown, e.id]);
       setReading(e);
     };
-    if (story && state.story.length === 0) return read(story);
     if (!attendanceAsked) {
       setAttendanceAsked(true);
       if (attendanceDue(state)) return setPopup("attendance");
@@ -249,11 +251,12 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
       )}
       <OfflinePopup store={store} />
       <Toast store={store} />
-      {reading && (
+      {(reading ?? prologue) && (
         <StoryViewer
-          episode={reading}
+          episode={(reading ?? prologue)!}
           onClose={() => {
-            if (!state.story.includes(reading.id)) store.do({ k: "readStory", id: reading.id });
+            const ep = (reading ?? prologue)!;
+            if (!state.story.includes(ep.id)) store.do({ k: "readStory", id: ep.id });
             setReading(null);
           }}
         />
