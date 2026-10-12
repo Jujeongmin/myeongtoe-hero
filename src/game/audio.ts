@@ -79,7 +79,8 @@ export function initAudio(): void {
   // Every button clicks like a stapler, unless what it did already made its own sound.
   document.addEventListener("click", (e) => {
     const b = (e.target as Element | null)?.closest?.("button");
-    if (b && !b.disabled && performance.now() - lastAnyAt > 50) sfx("tap");
+    // Not a button that can't do anything yet (disabled, or a level-up short of money).
+    if (b && !b.disabled && b.getAttribute("aria-disabled") !== "true" && performance.now() - lastAnyAt > 50) sfx("tap");
   });
   document.addEventListener("visibilitychange", () => {
     if (!ctx) return;
