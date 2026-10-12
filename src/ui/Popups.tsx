@@ -68,7 +68,7 @@ function contents(p: Product): { icon: string; label: string; value: string }[] 
   if (p.coupons) out.push({ icon: "coupon", label: t("상품권"), value: formatCount(p.coupons) });
   if (p.id === "premium") {
     out.push({ icon: "ad", label: t("광고 없이"), value: t("바로 보상") });
-    out.push({ icon: "buff_atk", label: t("버프 3종"), value: t("항상 켜짐") });
+    out.push({ icon: "speed", label: t("2배속 포함 버프 4종"), value: t("항상 켜짐") });
     out.push({ icon: "timer", label: t("오프라인"), value: t("+{h}시간", { h: PREMIUM_OFFLINE_SEC / 3600 }) });
     out.push({ icon: "gem", label: t("매일 보석"), value: formatCount(PREMIUM_DAILY_GEMS) });
   }
