@@ -66,7 +66,7 @@ function GemShop({ state, store }: { state: GameState; store: GameStore }) {
             <div className="sub">{t(item.text)}</div>
             {item.kind === "gold" && <div className="sub"><Amount icon="gold" value={`+${formatBig(killGoldNow(state).mulN(item.kills))}`} /></div>}
           </div>
-          <button disabled={state.gems < item.gems} onClick={() => store.do({ k: "buyGemItem", id: item.id })}>
+          <button className={state.gems < item.gems ? "" : "hot"} disabled={state.gems < item.gems} onClick={() => store.do({ k: "buyGemItem", id: item.id })}>
             {t("구매")}<br /><Amount icon="gem" value={item.gems} />
           </button>
         </div>

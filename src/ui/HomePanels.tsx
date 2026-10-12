@@ -17,7 +17,7 @@ export function ApartmentPanel({ state, store }: Props) {
         <b>{t("박부장 아파트")}</b> {t("{n}평", { n: state.apartment })}
         <div className="sub">{t("10평마다 데미지 2배 · 지금 ×{mult}", { mult: apartmentDamage(state.apartment) })}</div>
       </div>
-      <button disabled={state.gems < cost} onClick={() => store.do({ k: "expandApartment" })}>
+      <button className={state.gems < cost ? "" : "hot"} disabled={state.gems < cost} onClick={() => store.do({ k: "expandApartment" })}>
         {t("+1평")}<br /><Amount icon="gem" value={cost} />
       </button>
     </div>
@@ -45,7 +45,7 @@ export function RelicPanel({ state, store }: Props) {
               <b>{t(r.name)}</b> Lv{level}
               <div className="sub">{t("{text} / 레벨", { text: t(r.text) })}</div>
             </div>
-            <button disabled={state.gems < cost} onClick={() => store.do({ k: "levelRelic", id: r.id })}>
+            <button className={state.gems < cost ? "" : "hot"} disabled={state.gems < cost} onClick={() => store.do({ k: "levelRelic", id: r.id })}>
               {t("레벨업")}<br /><Amount icon="gem" value={cost} />
             </button>
           </div>
@@ -69,7 +69,7 @@ export function OfficePanel({ state, store }: Props) {
               <b>{t(p.name)}</b> {t("{n}등급", { n: grade })}
               <div className="sub">{t("{text} / 등급", { text: t(p.text) })}</div>
             </div>
-            <button disabled={maxed || state.coupons < cost} onClick={() => store.do({ k: "upgradeOffice", part: p.key })}>
+            <button className={maxed || state.coupons < cost ? "" : "hot"} disabled={maxed || state.coupons < cost} onClick={() => store.do({ k: "upgradeOffice", part: p.key })}>
               {maxed ? t("최대") : <>{t("업그레이드")}<br /><Amount icon="coupon" value={cost} /></>}
             </button>
           </div>

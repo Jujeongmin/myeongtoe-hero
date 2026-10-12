@@ -17,7 +17,7 @@ export function PetPanel({ state, store }: { state: GameState; store: GameStore 
           <div className="sub">{t("랜덤 동료 1명 레벨 +1 · 각성 {n}단계", { n: stage })}</div>
           {joined > 0 && <div className="sub">{t("확률: 함께하는 동료마다 {p}%", { p: petBoxChance(joined) })}</div>}
         </div>
-        <button disabled={joined === 0 || state.coupons < PET_BOX_COUPONS} onClick={() => store.do({ k: "petBox" })}>
+        <button className={joined === 0 || state.coupons < PET_BOX_COUPONS ? "" : "hot"} disabled={joined === 0 || state.coupons < PET_BOX_COUPONS} onClick={() => store.do({ k: "petBox" })}>
           {t("열기")}<br /><Amount icon="coupon" value={PET_BOX_COUPONS} />
         </button>
       </div>
@@ -38,7 +38,7 @@ export function PetPanel({ state, store }: { state: GameState; store: GameStore 
               <b>{t(pet.name)}</b> Lv{level}
               <div className="sub">{t(pet.text)}</div>
             </div>
-            <button disabled={state.gems < cost} onClick={() => store.do({ k: "levelPet", id: pet.id })}>
+            <button className={state.gems < cost ? "" : "hot"} disabled={state.gems < cost} onClick={() => store.do({ k: "levelPet", id: pet.id })}>
               {t("레벨업")}<br /><Amount icon="gem" value={cost} />
             </button>
           </div>

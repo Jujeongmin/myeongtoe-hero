@@ -45,7 +45,7 @@ export function ParkingPanel({ state, store }: { state: GameState; store: GameSt
           {state.parking.used < PARK_AWAKEN && <div className="bar"><i style={{ width: `${(state.parking.used / PARK_AWAKEN) * 100}%` }} /></div>}
         </div>
         {state.parking.used < PARK_AWAKEN && (
-          <button disabled={passes <= 0 || running} onClick={() => store.do({ k: "feedParking" })}>
+          <button className={passes <= 0 || running ? "" : "hot"} disabled={passes <= 0 || running} onClick={() => store.do({ k: "feedParking" })}>
             {t("바치기")}<br />{t("주차권 {n}장", { n: Math.min(passes, PARK_AWAKEN - state.parking.used) })}
           </button>
         )}
