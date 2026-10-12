@@ -13,7 +13,7 @@ import { useFitText } from "./useFitText";
 // the first arms it, the second signs (no window.confirm: the Verse8 iframe may not allow dialogs).
 // Signing hands over to the cutscene (PrestigeCutscene), which sends the negotiation under its fade.
 export function PrestigePanel({ state, onSign, onClose }: {
-  state: GameState; onSign: (mode: PrestigeMode, tickets: number, gems: number) => void; onClose: () => void;
+  state: GameState; onSign: (mode: PrestigeMode, tickets: number) => void; onClose: () => void;
 }) {
   const [armed, setArmed] = useState<PrestigeMode | null>(null);
   const floor = state.run.maxFloor;
@@ -26,7 +26,7 @@ export function PrestigePanel({ state, onSign, onClose }: {
       return;
     }
     setArmed(null);
-    onSign(kind, reward.tickets * PRESTIGE_MODES[kind].ticketMult, reward.gems);
+    onSign(kind, reward.tickets * PRESTIGE_MODES[kind].ticketMult);
   };
 
   const offers: { mode: PrestigeMode; name: string }[] = [
@@ -63,7 +63,7 @@ export function PrestigePanel({ state, onSign, onClose }: {
                 <b>{name}</b>{ticketMult > 1 && <span className="mult"> ×{ticketMult}</span>}
                 {ready && (
                   <div className="sub">
-                    <Amount icon="ticket" value={formatCount(reward.tickets * ticketMult)} /> <Amount icon="gem" value={reward.gems} />
+                    <Amount icon="ticket" value={formatCount(reward.tickets * ticketMult)} />
                   </div>
                 )}
               </div>

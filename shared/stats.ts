@@ -86,13 +86,13 @@ export function heroDps(s: GameState): Big {
 
 // What a job change now would pay: 응시권 count from the best floor stretched by 공주임 and with
 // 인맥관리사's floors added.
-export function jobChangeReward(s: GameState): { tickets: number; gems: number } {
+export function jobChangeReward(s: GameState): { tickets: number } {
   const m = mods(s);
   const floor = s.run.maxFloor;
   const base = prestigeReward(floor, m.prestigeBonus, Math.floor(floor * m.prestigeFloorMult) + m.prestigeFloorAdd);
   let mult = m.prestigeTicketMult;
   for (const [upTo, x] of m.prestigeBelow) if (floor <= upTo) mult *= x;
-  return { ...base, tickets: Math.floor(base.tickets * mult) };
+  return { tickets: Math.floor(base.tickets * mult) };
 }
 
 export function offlineCapSec(s: GameState): number {

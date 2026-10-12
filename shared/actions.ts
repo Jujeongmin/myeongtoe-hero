@@ -216,7 +216,6 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       spendGems(s, mode.gems);
       const reward = jobChangeReward(s);
       s.tickets += reward.tickets * mode.ticketMult;
-      s.gems += reward.gems;
       s.gold = Big.ZERO;
       // 피버타임: charge back up to the floor this run reached, for at most FEVER_MS.
       s.fever = { until: s.lastTick + FEVER_MS, toFloor: s.run.maxFloor };

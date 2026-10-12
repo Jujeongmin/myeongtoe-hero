@@ -17,7 +17,7 @@ const SEAL_AT = { x: 57, y: 103.5 };
 
 type Stage = "in" | "drop" | "hit" | "reward" | "out" | "black" | "back";
 
-export function PrestigeCutscene({ tickets, gems, commit, onDone }: { tickets: number; gems: number; commit: () => void; onDone: () => void }) {
+export function PrestigeCutscene({ tickets, commit, onDone }: { tickets: number; commit: () => void; onDone: () => void }) {
   const [stage, setStage] = useState<Stage>("in");
   const [count, setCount] = useState(0);
   const committed = useRef(false);
@@ -92,7 +92,6 @@ export function PrestigeCutscene({ tickets, gems, commit, onDone }: { tickets: n
           {past("reward") && (
             <div className="nego-reward">
               <Amount icon="ticket" value={`+${formatCount(count)}`} size={32} />
-              {gems > 0 && <Amount icon="gem" value={`+${formatCount(gems)}`} size={32} />}
             </div>
           )}
           {!past("out") && <div className="nego-skip">{t("눌러서 넘기기")}</div>}

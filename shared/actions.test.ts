@@ -220,43 +220,42 @@ describe("prestige", () => {
     expect(after.bestFloor).toBe(120);
     expect(after.certs).toEqual({ atk1: 2 + 2 }); // kept, plus the 연봉협상 bonus
     expect(after.tickets).toBe(7 + reward.tickets);
-    expect(after.gems).toBe(1500 + reward.gems);
+    expect(after.gems).toBe(1500); // no gems any more, only tickets
     expect(after.prestiges).toBe(1);
   });
 
-  test("강화 연봉협상: 500 gems for ×3 tickets; 초강화 연봉협상: 1000 gems for ×5; gems reward unchanged", () => {
+  test("강화 연봉협상: 500 gems for ×3 tickets; 초강화 연봉협상: 1000 gems for ×5", () => {
     const reward = prestigeReward(120, 0);
     const boosted = applyIntent(at(120), { k: "prestige", mode: "boosted" });
     expect(boosted.tickets).toBe(7 + reward.tickets * 3);
-    expect(boosted.gems).toBe(1500 - 500 + reward.gems);
+    expect(boosted.gems).toBe(1500 - 500);
     const sup = applyIntent(at(120), { k: "prestige", mode: "super" });
     expect(sup.tickets).toBe(7 + reward.tickets * 5);
-    expect(sup.gems).toBe(1500 - 1000 + reward.gems);
+    expect(sup.gems).toBe(1500 - 1000);
     expect(codeOf({ ...at(120), gems: 499 }, { k: "prestige", mode: "boosted" })).toBe("not_enough_gems");
     expect(codeOf({ ...at(120), gems: 999 }, { k: "prestige", mode: "super" })).toBe("not_enough_gems");
   });
 
-  test("tickets grow exponentially: 100 at floor 100, about 300,000 at floor 1000", () => {
-    expect(prestigeReward(100, 0)).toEqual({ tickets: 100, gems: 5 });
-    expect(prestigeReward(70, 0)).toEqual({ tickets: Math.floor(100 * 1.009 ** -30), gems: 3 });
+  test("tickets grow exponentially: 200 at floor 100, about 600,000 at floor 1000; no gems", () => {
+    expect(prestigeReward(100, 0)).toEqual({ tickets: 200 });
+    expect(prestigeReward(70, 0)).toEqual({ tickets: Math.floor(200 * 1.009 ** -30) });
     expect(prestigeReward(69, 0).tickets).toBe(0);
-    expect(prestigeReward(1000, 0).tickets).toBeGreaterThan(250_000);
-    expect(prestigeReward(1000, 0).tickets).toBeLessThan(400_000);
-    expect(prestigeReward(300, 0).tickets).toBe(Math.floor(100 * 1.009 ** 200));
-    expect(prestigeReward(200, 0.5).tickets).toBe(Math.floor(100 * 1.009 ** 100 * 1.5));
+    expect(prestigeReward(1000, 0).tickets).toBeGreaterThan(500_000);
+    expect(prestigeReward(1000, 0).tickets).toBeLessThan(800_000);
+    expect(prestigeReward(300, 0).tickets).toBe(Math.floor(200 * 1.009 ** 200));
+    expect(prestigeReward(200, 0.5).tickets).toBe(Math.floor(200 * 1.009 ** 100 * 1.5));
   });
 
   test("커리어코치, 자소서첨삭사 and 인맥관리사 raise the tickets", () => {
     const s = at(300);
     const plain = jobChangeReward(s).tickets;
     s.certs = { c_coach: 10 };
-    expect(jobChangeReward(s).tickets).toBe(Math.floor(100 * 1.009 ** 200 * 2));
+    expect(jobChangeReward(s).tickets).toBe(Math.floor(200 * 1.009 ** 200 * 2));
     s.certs = { c_coach: 10, c_resume: 20 };
-    expect(jobChangeReward(s).tickets).toBe(Math.floor(100 * 1.009 ** 200 * 3));
+    expect(jobChangeReward(s).tickets).toBe(Math.floor(200 * 1.009 ** 200 * 3));
     s.certs = { c_network: 10 };
-    expect(jobChangeReward(s).tickets).toBe(Math.floor(100 * 1.009 ** 250));
-    expect(jobChangeReward(s).gems).toBe(15);
-    expect(plain).toBe(Math.floor(100 * 1.009 ** 200));
+    expect(jobChangeReward(s).tickets).toBe(Math.floor(200 * 1.009 ** 250));
+    expect(plain).toBe(Math.floor(200 * 1.009 ** 200));
   });
 });
 

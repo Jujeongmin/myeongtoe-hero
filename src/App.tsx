@@ -129,7 +129,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
   const [popup, setPopup] = useState<"attendance" | Offer | { intro: FeatureId } | null>(null);
   const [attendanceAsked, setAttendanceAsked] = useState(false);
   const [offered, setOffered] = useState(false);
-  const [nego, setNego] = useState<{ mode: PrestigeMode; tickets: number; gems: number } | null>(null);
+  const [nego, setNego] = useState<{ mode: PrestigeMode; tickets: number } | null>(null);
   const [welcomed, setWelcomed] = useState(false);
   const [shopTab, setShopTab] = useState<{ tab: ShopTab; at: number }>({ tab: "gems", at: 0 });
   // A currency's "+": the shop, opened at the part that gives more of it.
@@ -220,9 +220,9 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
       {sheet === "prestige" && (
         <PrestigePanel
           state={state}
-          onSign={(mode, tickets, gems) => {
+          onSign={(mode, tickets) => {
             setSheet(null);
-            setNego({ mode, tickets, gems });
+            setNego({ mode, tickets });
           }}
           onClose={() => setSheet(null)}
         />
@@ -273,7 +273,6 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
       {nego && (
         <PrestigeCutscene
           tickets={nego.tickets}
-          gems={nego.gems}
           commit={() => store.do({ k: "prestige", mode: nego.mode })}
           onDone={() => setNego(null)}
         />
