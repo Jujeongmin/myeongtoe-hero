@@ -156,18 +156,24 @@ function Legends({ state, store }: { state: GameState; store: GameStore }) {
 }
 
 // A costume piece on its own (no Park), cropped to its pixels and blown up by a whole number to
-// fill the box. Gloves are only 5×6 px on Park standing, a blob alone: they show on his punch.
+// fill the box. Gloves and boots are a few pixels on Park standing, a blob alone: they show on
+// him mid-punch instead (PoseThumb).
 export function CostumeThumb({ item }: { item: SuitItem }) {
-  if (item.part === "gloves") return <GloveThumb item={item} />;
+  const pose = POSE_CROPS[item.part];
+  if (pose) return <PoseThumb item={item} crop={pose} />;
   return <SpriteThumb path={partStrip(item.id, "idle")} frame={FRAME} res={40} className="part-thumb" />;
 }
 
-// Gloves show on Park's punch (attack frame 4, his arm straight out): this square of it, at 2×,
-// the fist and forearm.
-const GLOVE_FRAME = 4;
-const GLOVE_CROP = { x: 32, y: 29, size: 18 };
+// Park mid-punch (attack frame 4: arm straight out, feet apart), wearing just the piece, and the
+// square of him that shows it at 2×: the fist and forearm for gloves, the legs for boots.
+interface PoseCrop { x: number; y: number; size: number }
+const POSE_FRAME = 4;
+const POSE_CROPS: Partial<Record<SuitItem["part"], PoseCrop>> = {
+  gloves: { x: 32, y: 29, size: 18 },
+  boots: { x: 17, y: 42, size: 18 },
+};
 
-function GloveThumb({ item }: { item: SuitItem }) {
+function PoseThumb({ item, crop }: { item: SuitItem; crop: PoseCrop }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     let timer = 0;
@@ -179,8 +185,8 @@ function GloveThumb({ item }: { item: SuitItem }) {
       }
       const cell = document.createElement("canvas");
       cell.width = cell.height = FRAME;
-      drawPark(cell.getContext("2d")!, { gloves: item.id }, -1, "attack", GLOVE_FRAME, 0, 0, 0);
-      const { x, y, size } = GLOVE_CROP;
+      drawPark(cell.getContext("2d")!, { [item.part]: item.id }, -1, "attack", POSE_FRAME, 0, 0, 0);
+      const { x, y, size } = crop;
       const k = Math.floor(canvas.width / size);
       const off = Math.floor((canvas.width - size * k) / 2);
       const ctx = canvas.getContext("2d")!;
@@ -190,7 +196,7 @@ function GloveThumb({ item }: { item: SuitItem }) {
     };
     draw();
     return () => window.clearTimeout(timer);
-  }, [item]);
+  }, [item, crop]);
   return <canvas ref={ref} className="part-thumb" width={40} height={40} />;
 }
 
