@@ -38,10 +38,13 @@ export class RuleError extends Error {
   }
 }
 
+export type SideJobCount = 1 | 10 | "max";
+
 export type Intent =
   | { k: "buyGear" }
   | { k: "levelGear" }
-  | { k: "levelSideJob"; id: string }
+  // `count`: how many levels to buy in one go (1 when absent); "max" buys as many as the gold pays.
+  | { k: "levelSideJob"; id: string; count?: SideJobCount }
   // Takes a certificate (level 0 → 1) or levels it; `bulk` keeps going while it can pay.
   | { k: "levelCert"; id: string; bulk: boolean }
   | { k: "prestige"; mode: PrestigeMode }
@@ -83,7 +86,9 @@ export function readIntent(raw: unknown): Intent | null {
     case "watchAd":
       return typeof r.id === "string" && r.id.length <= 32 ? { k: r.k, id: r.id } : null;
     case "levelSideJob":
-      return typeof r.id === "string" && r.id.length <= 32 ? { k: r.k, id: r.id } : null;
+      if (typeof r.id !== "string" || r.id.length > 32) return null;
+      if (r.count === undefined) return { k: r.k, id: r.id };
+      return r.count === 1 || r.count === 10 || r.count === "max" ? { k: r.k, id: r.id, count: r.count } : null;
     case "levelCert":
       return typeof r.id === "string" && r.id.length <= 32 && typeof r.bulk === "boolean"
         ? { k: "levelCert", id: r.id, bulk: r.bulk }
@@ -173,10 +178,17 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       if (s.run.maxFloor < job.unlockFloor) throw new RuleError("locked");
       const own = s.sideJobs[job.id] ?? { level: 0, progressSec: 0, running: false };
       if (own.level >= SIDE_JOB_MAX_LEVEL) throw new RuleError("max");
-      spend(s, sideJobCostFor(s, job, own.level));
-      s.sideJobs[job.id] = own.level === 0
-        ? { level: 1, progressSec: 0, running: true }
-        : { ...own, level: own.level + 1 };
+      // The first level is paid for like the rest; the rest of `count` is bought while the gold lasts.
+      let level = own.level;
+      spend(s, sideJobCostFor(s, job, level));
+      level += 1;
+      const more = intent.count === "max" ? SIDE_JOB_MAX_LEVEL : (intent.count ?? 1) - 1;
+      for (let i = 0; i < more && level < SIDE_JOB_MAX_LEVEL; i++, level++) {
+        const cost = sideJobCostFor(s, job, level);
+        if (s.gold.lt(cost)) break;
+        spend(s, cost);
+      }
+      s.sideJobs[job.id] = own.level === 0 ? { level, progressSec: 0, running: true } : { ...own, level };
       return s;
     }
     case "levelCert": {

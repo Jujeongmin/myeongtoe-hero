@@ -32,6 +32,10 @@ describe("readIntent", () => {
     expect(readIntent({ k: "buyGear" })).toEqual({ k: "buyGear" });
     expect(readIntent({ k: "levelSideJob", id: "j00" })).toEqual({ k: "levelSideJob", id: "j00" });
     expect(readIntent({ k: "levelSideJob" })).toBeNull();
+    expect(readIntent({ k: "levelSideJob", id: "j00", count: 10 })).toEqual({ k: "levelSideJob", id: "j00", count: 10 });
+    expect(readIntent({ k: "levelSideJob", id: "j00", count: "max" })).toEqual({ k: "levelSideJob", id: "j00", count: "max" });
+    expect(readIntent({ k: "levelSideJob", id: "j00", count: 5 })).toBeNull();
+    expect(readIntent({ k: "levelSideJob", id: "j00", count: "all" })).toBeNull();
     expect(readIntent({ k: "restartSideJob", id: "j00" })).toBeNull();
     expect(readIntent({ k: "giveGold", n: 1e9 })).toBeNull();
     expect(readIntent("buyGear")).toBeNull();
@@ -99,6 +103,28 @@ describe("side jobs", () => {
     expect(applyIntent(s, { k: "levelSideJob", id: first.id }).sideJobs[first.id]).toEqual({
       level: 4, progressSec: 1.25, running: false,
     });
+  });
+
+  test("count 10 and max buy several levels at once, as many as the gold pays", () => {
+    const own = (level: number) => ({ level, progressSec: 0.5, running: true });
+    const s = rich(Big.of(1, 30));
+    s.sideJobs[first.id] = own(3);
+    expect(applyIntent(s, { k: "levelSideJob", id: first.id, count: 10 }).sideJobs[first.id]).toEqual(own(13));
+    expect(applyIntent(s, { k: "levelSideJob", id: first.id, count: 1 }).sideJobs[first.id]).toEqual(own(4));
+    // Gold for three levels only: ten asks for ten and gets three; max gets the same three.
+    const poor = rich(sideJobCost(first, 3).add(sideJobCost(first, 4)).add(sideJobCost(first, 5)));
+    poor.sideJobs[first.id] = own(3);
+    for (const count of [10, "max"] as const) {
+      const after = applyIntent(poor, { k: "levelSideJob", id: first.id, count });
+      expect(after.sideJobs[first.id]).toEqual(own(6));
+      expect(after.gold.toNumber()).toBeCloseTo(0, 6);
+    }
+    // Nothing affordable is still an error; max stops at level 999; starting a job counts as a level.
+    expect(codeOf(rich(Big.ZERO), { k: "levelSideJob", id: first.id, count: 10 })).toBe("not_enough_gold");
+    const near = rich(Big.of(1, 300));
+    near.sideJobs[first.id] = own(995);
+    expect(applyIntent(near, { k: "levelSideJob", id: first.id, count: "max" }).sideJobs[first.id].level).toBe(999);
+    expect(applyIntent(rich(Big.of(1, 30)), { k: "levelSideJob", id: first.id, count: 10 }).sideJobs[first.id]).toEqual({ level: 10, progressSec: 0, running: true });
   });
 
   test("open from the start, cost gold, stop at level 999", () => {
