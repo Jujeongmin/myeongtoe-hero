@@ -96,7 +96,7 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .row button.hot { background: #8d1c1c; color: #ffd166; }
 .row .buttons button { min-width: 56px; }
 
-.battle-head { position: absolute; top: 4px; left: 140px; right: 140px; height: 32px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0; line-height: 14px; white-space: nowrap; text-shadow: 1px 1px 0 #000; pointer-events: none; }
+.battle-head { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); min-width: 76px; height: 32px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0; line-height: 14px; white-space: nowrap; text-shadow: 1px 1px 0 #000; pointer-events: none; }
 .battle-head .floor-no { }
 /* Pixel-art bars (art/ui, 3-slice, drawn at 2 CSS px per art pixel). */
 .pbar { position: relative; display: block; image-rendering: pixelated; }
@@ -500,6 +500,13 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
   .prestige-floor { display: none; }
   .currency { font-size: 12px; }
   .currency .icon-img { width: 24px; height: 24px; }
+}
+/* The floor and the boss timer stay centred on the screen; on a 320px phone the four buff and speed
+   icons on the left (4 x 32px) would reach under them, so they shrink a little there. */
+@media (max-width: 349px) {
+  .top-left .buff-bar .buff, .top-left .buff-bar .buff .icon-img { width: 26px; height: 26px; }
+  .top-left .speed-btn { width: 26px; height: 26px; }
+  .top-left .speed-btn .icon-img { width: 26px; height: 26px; }
 }
 /* 보스 도전: a gold glow that breathes and a nudge now and then, so it keeps asking to be tapped. */
 .boss-btn { animation: boss-call 1.6s steps(4) infinite; }
