@@ -38,7 +38,8 @@ import { StatusBanner } from "./ui/StatusBanner";
 import { StoryList, StoryViewer, storyToShow } from "./ui/StoryViewer";
 import type { Episode } from "../shared/data/story";
 import { offerToShow, type Offer } from "../shared/data/shop";
-import { AttendancePopup, OfferPopup, attendanceDue, markOfferSeen, seenOffers } from "./ui/Popups";
+import { AttendancePopup, FeatureIntroPopup, OfferPopup, attendanceDue, markIntroSeen, markOfferSeen, seenIntros, seenOffers } from "./ui/Popups";
+import { featureIntroToShow, type FeatureId } from "../shared/data/intros";
 import { idleFor } from "./ui/useTapGuard";
 import { Toast } from "./ui/Toast";
 
@@ -125,7 +126,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
   const [locked, setLocked] = useState(false);
   const [reading, setReading] = useState<Episode | null>(null);
   const [shown, setShown] = useState<string[]>([]);
-  const [popup, setPopup] = useState<"attendance" | Offer | null>(null);
+  const [popup, setPopup] = useState<"attendance" | Offer | { intro: FeatureId } | null>(null);
   const [attendanceAsked, setAttendanceAsked] = useState(false);
   const [offered, setOffered] = useState(false);
   const [nego, setNego] = useState<{ mode: PrestigeMode; tickets: number; gems: number } | null>(null);
@@ -157,6 +158,11 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
       if (attendanceDue(state)) return setPopup("attendance");
     }
     if (story) return read(story);
+    const intro = featureIntroToShow(state, seenIntros());
+    if (intro) {
+      markIntroSeen(intro);
+      return setPopup({ intro });
+    }
     if (!offered) {
       const offer = offerToShow(state, seenOffers());
       if (offer) {
@@ -253,7 +259,17 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
         />
       )}
       {popup === "attendance" && <AttendancePopup state={state} store={store} onClose={() => setPopup(null)} />}
-      {popup && popup !== "attendance" && <OfferPopup offer={popup} onClose={() => setPopup(null)} />}
+      {popup && popup !== "attendance" && "intro" in popup && (
+        <FeatureIntroPopup
+          id={popup.intro}
+          onGo={() => {
+            setSheet(popup.intro);
+            setPopup(null);
+          }}
+          onClose={() => setPopup(null)}
+        />
+      )}
+      {popup && popup !== "attendance" && "product" in popup && <OfferPopup offer={popup} onClose={() => setPopup(null)} />}
       {nego && (
         <PrestigeCutscene
           tickets={nego.tickets}

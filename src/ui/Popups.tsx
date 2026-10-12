@@ -9,6 +9,7 @@ import { buyProduct, productPrice } from "../net/shop";
 import { Icon } from "./Icon";
 import { Attendance } from "./MissionSheet";
 import { useTapGuard } from "./useTapGuard";
+import type { FeatureId } from "../../shared/data/intros";
 
 // Popups the game opens by itself (App decides when): attendance on arriving, and a VX offer.
 // Both start with a moment that lets no tap through (useTapGuard).
@@ -103,6 +104,50 @@ export function OfferPopup({ offer, onClose }: { offer: Offer; onClose: () => vo
           <Icon name="vx" size={16} /> {(productPrice(p.id) ?? p.vx).toLocaleString("en-US")}
         </button>
         <button onClick={onClose}>{t("다음에")}</button>
+      </div>
+    </div>
+  );
+}
+
+// 새 기능 안내 (shared/data/intros.ts): what the feature does, where it lives, and a way straight in.
+const INTROS: Record<FeatureId, { icon: string; name: string; text: string }> = {
+  apartment: { icon: "side_apartment", name: "아파트", text: "보석으로 평수를 늘려요. 10평마다 데미지가 2배!" },
+  office: { icon: "side_office", name: "사무용품", text: "상품권으로 키보드·마우스·의자·모니터를 올려요. 데미지·치명타·보스 데미지·골드가 늘어요." },
+  relics: { icon: "side_relics", name: "퇴직 기념품", text: "1000층부터 기념품이 하나씩 도착해요. 보석으로 키우면 크게 강해져요." },
+};
+
+const INTRO_KEY = "myeongtoe-hero:intros-seen";
+
+export function seenIntros(): string[] {
+  try {
+    const v: unknown = JSON.parse(localStorage.getItem(INTRO_KEY) ?? "[]");
+    return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+export function markIntroSeen(id: FeatureId): void {
+  try {
+    localStorage.setItem(INTRO_KEY, JSON.stringify([...seenIntros().filter((k) => k !== id), id]));
+  } catch {
+    // No storage: it may come back next time.
+  }
+}
+
+export function FeatureIntroPopup({ id, onGo, onClose }: { id: FeatureId; onGo: () => void; onClose: () => void }) {
+  const guard = useTapGuard();
+  const intro = INTROS[id];
+  return (
+    <div className={`modal-back${guard.armed ? "" : " arming"}`} onClickCapture={guard.onClickCapture}>
+      <div className="modal intro-popup">
+        <div className="sub">{t("새 기능")}</div>
+        <Icon name={intro.icon} size={64} />
+        <h3>{t(intro.name)}</h3>
+        <p>{t(intro.text)}</p>
+        <div className="sub">{t("오른쪽 위 메뉴에서 언제든 열 수 있어요")}</div>
+        <button className="gold" onClick={onGo}>{t("바로 가기")}</button>
+        <button onClick={onClose}>{t("나중에")}</button>
       </div>
     </div>
   );
