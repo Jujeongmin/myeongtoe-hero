@@ -8,7 +8,7 @@ import { findPet } from "./data/pets";
 import { findRelic } from "./data/relics";
 import { findSideJob } from "./data/sideJobs";
 
-export const SAVE_VERSION = 14;
+export const SAVE_VERSION = 15;
 export const OFFLINE_CAP_SEC = 12 * 3600;
 export const START_GOLD = 10;
 export const OFFICE_MAX_GRADE = 17;
@@ -220,6 +220,12 @@ const MIGRATIONS: Record<number, (save: Record<string, unknown>) => Record<strin
   12: (save) => ({ ...save, v: 13, parking: { ...obj(save.parking), used: 0 } }),
   // v14: 피버타임; parking.used now counts passes offered, not runs (start over).
   13: (save) => ({ ...save, v: 14, fever: { until: 0, toFloor: 0 }, parking: { ...obj(save.parking), used: 0 } }),
+  // v15: step missions gained 70층 at 14 and 첫 연봉협상 moved before 100층; steps past both move one on.
+  14: (save) => {
+    const missions = obj(save.missions);
+    const step = int(missions.step, 0, 0);
+    return { ...save, v: 15, missions: { ...missions, step: step >= 16 ? step + 1 : step } };
+  },
 };
 
 export function freshRun(): RunState {

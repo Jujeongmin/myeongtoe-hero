@@ -14,7 +14,7 @@ export type MissionPlace = { tab: NavTab } | { sheet: "suits" | "apartment" | "p
 const PLACES: Record<string, MissionPlace> = {
   s01: { tab: "sideJobs" }, s01b: { tab: "sideJobs" }, s02: { tab: "gear" }, s02b: { tab: "sideJobs" }, s03: { tab: "gear" }, s04: { tab: "gear" },
   s05: { tab: "gear" }, s06: { tab: "gear" }, s07: { tab: "certs" }, s08: { tab: "dungeon" },
-  s09: { tab: "gear" }, s10: { tab: "sideJobs" }, s11: { tab: "gear" }, s12: { sheet: "suits" },
+  s09: { tab: "gear" }, s10: { tab: "sideJobs" }, s11: { tab: "gear" }, s12: { sheet: "suits" }, s12b: { tab: "gear" },
   s13: { tab: "gear" }, s14: { sheet: "prestige" }, s15: { tab: "pets" }, s16: { sheet: "apartment" },
   s17: { tab: "gear" }, s18: { tab: "certs" }, s19: { tab: "gear" }, s20: { sheet: "prestige" },
 };

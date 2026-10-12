@@ -40,8 +40,10 @@ export const STEP_MISSIONS: readonly MissionDef[] = [
   { id: "s10", text: "부업 3개 시작", done: (s) => jobsStarted(s) >= 3, reward: { gems: 40 } },
   { id: "s11", text: "50층 도달", done: (s) => s.bestFloor >= 50, reward: { gems: 50 } },
   { id: "s12", text: "코스튬 1개 구매", done: (s) => s.suits.length >= 1, reward: { gems: 50 } },
-  { id: "s13", text: "100층 도달", done: (s) => s.bestFloor >= 100, reward: { gems: 60, tickets: 5 } },
+  // 연봉협상 opens at 70층: the first one comes before 100층, which the fever after it helps reach.
+  { id: "s12b", text: "70층 도달", done: (s) => s.bestFloor >= 70, reward: { gems: 50 } },
   { id: "s14", text: "첫 연봉협상", done: (s) => s.prestiges >= 1, reward: { gems: 60 } },
+  { id: "s13", text: "100층 도달", done: (s) => s.bestFloor >= 100, reward: { gems: 60, tickets: 5 } },
   { id: "s15", text: "동료 레벨업", done: (s) => Object.values(s.pets).some((lv) => lv >= 2), reward: { gems: 80 } },
   { id: "s16", text: "아파트 5평", done: (s) => s.apartment >= 5, reward: { gems: 80 } },
   { id: "s17", text: "200층 도달", done: (s) => s.bestFloor >= 200, reward: { gems: 100 } },

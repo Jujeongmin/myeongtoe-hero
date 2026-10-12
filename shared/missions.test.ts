@@ -17,8 +17,13 @@ function code(s: GameState, intent: Intent): string {
 }
 
 describe("step missions", () => {
-  test("22 steps, done one at a time, in order", () => {
-    expect(STEP_MISSIONS).toHaveLength(22);
+  test("after 50층 and a costume: 70층, the first 연봉협상 (open from 70층), then 100층", () => {
+    const ids = STEP_MISSIONS.map((m) => m.id);
+    expect(ids.slice(ids.indexOf("s11"), ids.indexOf("s15"))).toEqual(["s11", "s12", "s12b", "s14", "s13"]);
+  });
+
+  test("23 steps, done one at a time, in order", () => {
+    expect(STEP_MISSIONS).toHaveLength(23);
     const s = newState(NOW);
     expect(code(s, { k: "claimStep" })).toBe("not_done");
     s.sideJobs.j00 = { level: 1, progressSec: 0, running: true };

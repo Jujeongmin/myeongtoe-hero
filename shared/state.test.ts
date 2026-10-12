@@ -125,6 +125,11 @@ describe("state", () => {
     expect(s.missions).toEqual({ step: 0, special: [] });
   });
 
+  test("a version 14 save keeps its place in the step missions (70층 added, 연봉협상 moved before 100층)", () => {
+    const at = (step: number) => fromSave({ ...toSave(newState(0)), v: 14, missions: { step, special: [] } }).missions.step;
+    expect([0, 13, 14, 15, 16, 21, 22].map(at)).toEqual([0, 13, 14, 15, 17, 22, 23]);
+  });
+
   test("parking passes stay within 0..18 (16 + VIP), lists stay unique", () => {
     const save = toSave(newState(0)) as unknown as Record<string, unknown>;
     save.parking = { passes: 99, passCarrySec: -3, best: 12 };
