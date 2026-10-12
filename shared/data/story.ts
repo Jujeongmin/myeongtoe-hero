@@ -126,7 +126,7 @@ export const EPISODES: readonly Episode[] = [
     panels: [
       { img: "hunter_1", lines: [{ who: "헤드헌터 냥", text: "박부장님, 연봉은 올려 드리죠. 대신 1층부터 다시 시작입니다.", at: [96, 36] }] },
       { img: "hunter_2", lines: [{ who: "박부장", text: "1층부터? 내가 여기까지 어떻게 왔는데!", at: [110, 10] }] },
-      { img: "hunter_3", lines: [{ who: "헤드헌터 냥", text: "경력은 인정해 드립니다. 연봉협상할 때마다 자격증 응시권으로요. 자격증 따 두시면 여기까지 금방 다시 올라오세요.", at: [112, 30] }] },
+      { img: "hunter_3", lines: [{ who: "헤드헌터 냥", text: "연봉협상 때마다 응시권 드려요.\n자격증 따면 여기까지 금방이에요.", at: [112, 30] }] },
       { img: "hunter_4", lines: [{ who: "박부장", text: "…중장비 자격증도 있나?", at: [92, 18] }, { text: "70층부터 연봉협상할 수 있어요." }] },
     ],
   },

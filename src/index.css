@@ -603,3 +603,5 @@ button.shine { position: relative; }
 .profile-card-worn { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
 .profile-card-piece { width: 70px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 2px; background: #2f2a48; border: 2px solid #0b0916; }
 .profile-card-piece .sub { font-size: 10px; line-height: 1.15; text-align: center; word-break: keep-all; }
+/* A line's "\n" is where its bubble breaks (it wraps on its own only past its width). */
+.story-say { white-space: pre-line; }
