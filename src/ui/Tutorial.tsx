@@ -31,7 +31,7 @@ function aimFor(state: GameState, tab: NavTab): Aim | null {
 }
 
 // Anything over the game (a sheet, the webtoon, a popup) hides the pen.
-const COVERS = ".modal-back, .story, .welcome, .screen-lock";
+const COVERS = ".modal-back, .story, .welcome, .screen-lock, .nego";
 
 export function Tutorial({ state, tab }: { state: GameState; tab: NavTab }) {
   const aim = aimFor(state, tab);

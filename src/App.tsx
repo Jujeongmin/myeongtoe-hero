@@ -23,6 +23,8 @@ import { CostumePanel } from "./ui/CostumePanel";
 import { OfflinePopup } from "./ui/OfflinePopup";
 import { PetPanel } from "./ui/PetPanel";
 import { PrestigePanel } from "./ui/PrestigePanel";
+import { PrestigeCutscene } from "./ui/PrestigeCutscene";
+import type { PrestigeMode } from "../shared/data/prestige";
 import { RankingSheet } from "./ui/RankingSheet";
 import { ShopPanel } from "./ui/ShopPanel";
 import { ScreenLock, SettingsPanel } from "./ui/ScreenLock";
@@ -126,6 +128,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
   const [popup, setPopup] = useState<"attendance" | Offer | null>(null);
   const [attendanceAsked, setAttendanceAsked] = useState(false);
   const [offered, setOffered] = useState(false);
+  const [nego, setNego] = useState<{ mode: PrestigeMode; tickets: number; gems: number } | null>(null);
   const [welcomed, setWelcomed] = useState(false);
   const [shopTab, setShopTab] = useState<{ tab: ShopTab; at: number }>({ tab: "gems", at: 0 });
   // A currency's "+": the shop, opened at the part that gives more of it.
@@ -141,7 +144,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
   // prologue before anything, then attendance (once, on arriving), a new episode, and at most one
   // VX offer a session. Checked on every redraw.
   useEffect(() => {
-    if (!state || welcome || reading || popup || sheet || locked || store.offline || !idleFor(IDLE_MS)) return;
+    if (!state || welcome || reading || popup || sheet || locked || nego || store.offline || !idleFor(IDLE_MS)) return;
     const ep = storyToShow(state);
     const story = ep && !shown.includes(ep.id) ? ep : undefined;
     const read = (e: Episode) => {
@@ -208,7 +211,16 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
       </main>
       <BottomNav state={state} tab={tab} onPick={setTab} onLocked={(text) => store.notify(text)} />
       {!welcome && <Tutorial state={state} tab={tab} />}
-      {sheet === "prestige" && <PrestigePanel state={state} store={store} onClose={() => setSheet(null)} />}
+      {sheet === "prestige" && (
+        <PrestigePanel
+          state={state}
+          onSign={(mode, tickets, gems) => {
+            setSheet(null);
+            setNego({ mode, tickets, gems });
+          }}
+          onClose={() => setSheet(null)}
+        />
+      )}
       {sheet && sheet !== "prestige" && (
         <Sheet title={t(SHEET_TITLES[sheet])} theme={SHEET_THEMES[sheet]} wallet={walletFor(sheet, state, getMore)} onClose={() => setSheet(null)}>
           {sheet === "profile" && <ProfilePanel state={state} store={store} guest={guest} />}
@@ -242,6 +254,14 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
       )}
       {popup === "attendance" && <AttendancePopup state={state} store={store} onClose={() => setPopup(null)} />}
       {popup && popup !== "attendance" && <OfferPopup offer={popup} onClose={() => setPopup(null)} />}
+      {nego && (
+        <PrestigeCutscene
+          tickets={nego.tickets}
+          gems={nego.gems}
+          commit={() => store.do({ k: "prestige", mode: nego.mode })}
+          onDone={() => setNego(null)}
+        />
+      )}
       {welcome && <Welcome state={state} store={store} guest={guest} onDone={() => setWelcomed(true)} />}
       {locked && <ScreenLock state={state} onClose={() => setLocked(false)} />}
     </div>

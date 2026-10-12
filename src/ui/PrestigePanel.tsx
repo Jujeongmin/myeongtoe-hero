@@ -3,7 +3,6 @@ import { PRESTIGE_MIN_FLOOR, PRESTIGE_MODES, type PrestigeMode } from "../../sha
 import { formatCount } from "../../shared/format";
 import type { GameState } from "../../shared/state";
 import { jobChangeReward } from "../../shared/stats";
-import type { GameStore } from "../game/store";
 import { t } from "../i18n";
 import { imageUrl } from "../game/sprites";
 import { Amount } from "./Amount";
@@ -12,7 +11,10 @@ import { useFitText } from "./useFitText";
 // 이직: the headhunter's offer letter. The cat makes the pitch, the letter lists what resets and what
 // stays, and the three offers sit on their own cards (plain, boosted, super). Two taps on an offer:
 // the first arms it, the second signs (no window.confirm: the Verse8 iframe may not allow dialogs).
-export function PrestigePanel({ state, store, onClose }: { state: GameState; store: GameStore; onClose: () => void }) {
+// Signing hands over to the cutscene (PrestigeCutscene), which sends the negotiation under its fade.
+export function PrestigePanel({ state, onSign, onClose }: {
+  state: GameState; onSign: (mode: PrestigeMode, tickets: number, gems: number) => void; onClose: () => void;
+}) {
   const [armed, setArmed] = useState<PrestigeMode | null>(null);
   const floor = state.run.maxFloor;
   const ready = floor >= PRESTIGE_MIN_FLOOR;
@@ -24,8 +26,7 @@ export function PrestigePanel({ state, store, onClose }: { state: GameState; sto
       return;
     }
     setArmed(null);
-    store.do({ k: "prestige", mode: kind });
-    onClose();
+    onSign(kind, reward.tickets * PRESTIGE_MODES[kind].ticketMult, reward.gems);
   };
 
   const offers: { mode: PrestigeMode; name: string }[] = [
