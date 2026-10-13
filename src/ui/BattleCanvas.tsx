@@ -331,7 +331,8 @@ function draw(
   else if (kill !== sim.kill) {
     if (sim.current && sim.kill !== "") {
       // A monster always falls where it met Park (by now sim.currentX may already be the next one
-      // walking in).
+      // walking in). A boss still lying there with its last word goes now, and its bubble with it.
+      if (sim.dying && sim.dying.hold > 0) follow(0, 0);
       sim.dying = { monster: sim.current, x: contactX, since: now, hold: 0, scroll };
       sfx("kill");
       // Its gold flies into the counter (more coins for a boss); the garage pays in chests instead.
