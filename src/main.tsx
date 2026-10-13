@@ -27,6 +27,14 @@ initAudio();
 // for browsers that honour it).
 const editable = (target: EventTarget | null) => target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement;
 document.addEventListener("dragstart", (e) => e.preventDefault());
+
+// No zooming: iOS Safari ignores the viewport's user-scalable=no, so a double tap would zoom in
+// (and a pinch too). index.css's touch-action: manipulation stops the double-tap zoom without
+// slowing taps; these stop the pinch and any double-tap left over (taps still click as usual).
+document.addEventListener("gesturestart", (e) => e.preventDefault());
+document.addEventListener("dblclick", (e) => {
+  if (!editable(e.target)) e.preventDefault();
+}, { passive: false });
 document.addEventListener("selectstart", (e) => {
   if (!editable(e.target)) e.preventDefault();
 });

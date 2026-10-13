@@ -21,6 +21,8 @@ button { font: inherit; cursor: pointer; }
    The nickname field stays editable. */
 * { -webkit-user-select: none; user-select: none; -webkit-user-drag: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
 input, textarea { -webkit-user-select: text; user-select: text; }
+/* No double-tap zoom on iOS (it ignores the viewport's user-scalable=no); taps are not delayed. */
+html, body, * { touch-action: manipulation; }
 img, canvas { pointer-events: none; }
 img, canvas { image-rendering: pixelated; }
 b, strong { font-weight: normal; color: #fff3c4; }
