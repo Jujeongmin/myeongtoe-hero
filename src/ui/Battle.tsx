@@ -38,8 +38,8 @@ const SIDE: { id: SheetId; icon: string; label: string }[] = [
   { id: "story", icon: "story", label: "스토리" },
 ];
 
-export function Battle({ state, store, onOpen, onGo, getMore }: {
-  state: GameState; store: GameStore; onOpen: (id: SheetId) => void; onGo: (p: MissionPlace) => void; getMore: GetMore;
+export function Battle({ state, store, dots, onOpen, onGo, getMore }: {
+  state: GameState; store: GameStore; dots: Record<string, boolean>; onOpen: (id: SheetId) => void; onGo: (p: MissionPlace) => void; getMore: GetMore;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { floor, target, carrySec, farming, maxFloor } = state.run;
@@ -82,7 +82,7 @@ export function Battle({ state, store, onOpen, onGo, getMore }: {
       </div>
       <div className="side-menu">
         <button className={`menu-btn${menuOpen ? " on" : ""}`} aria-label={t("메뉴")} onClick={() => setMenuOpen(!menuOpen)}>
-          {missionsWaiting(state) && <i className="dot" />}
+          {(missionsWaiting(state) || Object.values(dots).some(Boolean)) && <i className="dot" />}
         </button>
         {menuOpen && (
           <div className="side-icons">
@@ -96,7 +96,7 @@ export function Battle({ state, store, onOpen, onGo, getMore }: {
               >
                 <Icon name={s.icon} />
                 {t(s.label)}
-                {s.id === "missions" && missionsWaiting(state) && <i className="dot" />}
+                {((s.id === "missions" && missionsWaiting(state)) || dots[s.id]) && <i className="dot" />}
               </button>
             ))}
           </div>

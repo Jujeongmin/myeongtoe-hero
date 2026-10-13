@@ -41,6 +41,7 @@ import { offerToShow, type Offer } from "../shared/data/shop";
 import { AttendancePopup, FeatureIntroPopup, OfferPopup, attendanceDue, markIntroSeen, markOfferSeen, seenIntros, seenOffers } from "./ui/Popups";
 import { featureIntroToShow, type FeatureId } from "../shared/data/intros";
 import { idleFor } from "./ui/useTapGuard";
+import { useAlerts } from "./ui/useAlerts";
 import { Toast } from "./ui/Toast";
 
 const SYNC_MS = 1500;
@@ -140,6 +141,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
     setTab("shop");
     setShopTab({ tab: to, at: Date.now() });
   };
+  const dots = useAlerts(state, tab, sheet);
   const welcome = !!state && !welcomed && welcomeNeeded(state, guest);
   // A new game opens on the prologue at once (in the same render the 입사지원서 closes in), so the
   // battle never shows before it; the other episodes wait for a pause (below).
@@ -202,6 +204,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
       <Battle
         state={state}
         store={store}
+        dots={dots.sheets}
         onOpen={setSheet}
         getMore={getMore}
         onGo={(place) => {
@@ -219,7 +222,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
         {tab === "dungeon" && <ParkingPanel state={state} store={store} onStory={(ep, then) => { setReading(ep); setAfter(() => then); }} />}
         {tab === "shop" && <ShopPanel key={shopTab.at} state={state} store={store} initial={shopTab.tab} />}
       </main>
-      <BottomNav state={state} tab={tab} onPick={setTab} onLocked={(text) => store.notify(text)} />
+      <BottomNav state={state} tab={tab} dots={dots.tabs} onPick={setTab} onLocked={(text) => store.notify(text)} />
       {!welcome && <Tutorial state={state} tab={tab} />}
       {sheet === "prestige" && (
         <PrestigePanel

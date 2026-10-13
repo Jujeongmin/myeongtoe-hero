@@ -651,3 +651,8 @@ button.shine { position: relative; }
 /* Something that can be bought or done now is the shared red button in every themed panel too
    (the user's call, 2026-10-12); the panels' tabs keep their own colours. */
 [class*="theme-"] .row button.hot:not(:disabled) { border-image: var(--ui-button-gold-hot) 6 fill / 8px repeat; color: #ffd166; text-shadow: 1px 1px 0 #000; }
+/* Red dots (shared/alerts.ts): on a bottom tab's top right corner and on a menu item's, with the same
+   white rim and slow blink as the MENU button's. */
+.bottom-nav button, .side-icons button { position: relative; }
+.bottom-nav .dot { position: absolute; top: -4px; right: -2px; z-index: 3; width: 12px; height: 12px; background: var(--ui-red-dot) center / 12px 12px no-repeat; image-rendering: pixelated; filter: drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff); animation: dot-blink 1.2s steps(1) infinite; pointer-events: none; }
+.side-icons .dot { z-index: 3; filter: drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff); }
