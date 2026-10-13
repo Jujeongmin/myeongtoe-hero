@@ -60,6 +60,8 @@ interface Sim {
   dying: { monster: MonsterSprite; x: number; since: number; hold: number; scroll: number } | null;
   current: MonsterSprite | null;
   currentX: number;
+  // A parody boss's entrance line, said once it has walked up to Park (not while walking in).
+  announce: string | null;
   // The floor and whether the monster being fought is its boss (to know when a boss falls), and
   // when Park next says something on his own.
   floor: number;
@@ -104,7 +106,7 @@ export function BattleCanvas({ state }: { state: GameState }) {
     let scroll = 0;
     let last = performance.now();
     const sim: Sim = {
-      kill: "", hits: 0, crits: [], flung: [], feverKey: "", feverDone: 0, hurtUntil: 0, dying: null, current: null, currentX: 0, floor: 0, boss: false,
+      kill: "", hits: 0, crits: [], flung: [], feverKey: "", feverDone: 0, hurtUntil: 0, dying: null, current: null, currentX: 0, announce: null, floor: 0, boss: false,
       quipAt: performance.now() + QUIP_MIN_MS * Math.random(), fx: [], shakeUntil: 0, chest: null,
     };
     const loop = (now: number) => {
@@ -361,12 +363,16 @@ function draw(
     const found = monsterFor(department, shownFloor, place, boss) ?? null;
     sim.current = found && boss ? enlarge(found, bossScale) : found;
     if (boss && sim.current) sfx("boss");
-    // A parody boss announces itself as it walks in.
+    // A parody boss announces itself once it has walked up to Park (below).
     const says = found && boss ? BOSS_SAYS[found.id] : undefined;
-    if (says && sim.current) {
-      talk(bossLine(says.appear, shownFloor), contactX + sim.current.size / 2, floorY - sim.current.baseline + 6);
-      sim.quipAt = now + QUIP_MIN_MS;
-    }
+    sim.announce = says ? bossLine(says.appear, shownFloor) : null;
+    if (says) sim.quipAt = now + QUIP_MIN_MS + walkSec * 1000;
+  }
+  if (fever) sim.announce = null;
+  else if (sim.announce && !walking && sim.current) {
+    talk(sim.announce, contactX + sim.current.size / 2, floorY - sim.current.baseline + 6);
+    sim.announce = null;
+    sim.quipAt = now + QUIP_MIN_MS;
   }
 
   // Development: window.__quip = "…" makes Park say it now (to check bubble layout).
