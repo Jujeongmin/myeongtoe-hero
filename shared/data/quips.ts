@@ -57,9 +57,10 @@ export const BOSS_LINES: Record<BossKind, readonly string[]> = {
 // What the office-parody bosses and the CEO say: on arriving, and as they fall (by monster id).
 // With several lines, each visit (counted by floor) says the next one.
 export const BOSS_SAYS: Readonly<Record<string, { appear: readonly string[]; fall: readonly string[] }>> = {
+  // The two lists turn together, so his first visits fall the way they came in (대박나야지! →
+  // 쪽박… 났네…); with 8 and 6 lines they drift apart after the sixth.
   lee_ceo: {
     appear: [
-      "영광인 줄 알아!",
       "대박나야지!",
       "부자되자!",
       "우리 다 같이 부자되자!",
@@ -70,9 +71,11 @@ export const BOSS_SAYS: Readonly<Record<string, { appear: readonly string[]; fal
       "내가 왕년에는 말이야~",
     ],
     fall: [
-      "이 시계가 얼마짜린데…",
-      "내 클러치… 스크래치 나면 안 되는데…",
-      "회식은… 다음에 쏠게…",
+      "쪽박… 났네…",
+      "부자는… 다음 생에…",
+      "다 같이… 망하자…",
+      "올해도… 글렀다…",
+      "떡락이다…",
       "다음 분기엔… 대박날 거야…",
     ],
   },
