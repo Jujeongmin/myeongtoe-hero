@@ -6,6 +6,8 @@ import { isSaturday } from "../../shared/time";
 import type { GameStore } from "../game/store";
 import { t } from "../i18n";
 import { Amount } from "./Amount";
+import { PARKING_EPISODE_ID, findEpisode, type Episode } from "../../shared/data/story";
+import { episodeReady } from "./StoryViewer";
 
 function clock(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -15,12 +17,18 @@ function clock(seconds: number): string {
 
 // 던전 tab: the 지하주차장. Entering starts a 30-second run on the battle screen (the tower waits);
 // the result shows when it ends (see Battle).
-export function ParkingPanel({ state, store }: { state: GameState; store: GameStore }) {
+// The first 입장 plays the 지하주차장 webtoon (`onStory`), and the run starts when it is closed.
+export function ParkingPanel({ state, store, onStory }: { state: GameState; store: GameStore; onStory: (ep: Episode, then: () => void) => void }) {
   const { passes, passCarrySec, best } = state.parking;
   const today = dailyOf(state);
   const saturday = isSaturday(state.lastTick);
   const running = state.parking.runUntil > state.lastTick || !state.parking.claimed;
-  const enter = () => store.do({ k: "enterParking" });
+  const enter = () => {
+    const go = () => store.do({ k: "enterParking" });
+    const ep = state.story.includes(PARKING_EPISODE_ID) ? undefined : findEpisode(PARKING_EPISODE_ID);
+    if (ep && episodeReady(ep)) onStory(ep, go);
+    else go();
+  };
 
   return (
     <>

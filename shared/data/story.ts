@@ -23,10 +23,16 @@ export interface StoryPanel {
 export interface Episode {
   id: string;
   floor: number; // opens when the best floor reaches it (0: from the start)
+  // Never opens by itself: something else shows it (the 지하주차장's first entry), and it can be
+  // read again from the menu once its floor is reached.
+  manual?: boolean;
   allCostumes?: boolean; // also needs every costume (all 36 suit pieces) owned
   title: string;
   panels: readonly StoryPanel[];
 }
+
+// The 지하주차장 episode, shown when its 입장 button is first pressed (ParkingPanel).
+export const PARKING_EPISODE_ID = "parking";
 
 export const EPISODES: readonly Episode[] = [
   {
@@ -72,6 +78,31 @@ export const EPISODES: readonly Episode[] = [
           { who: "아내", text: "여보, 회사는 별일 없지?", at: [118, 14] },
           { who: "박부장", text: "지금 회의 중이야! 바빠! 끊어!", at: [55, 46], w: 100 },
           { text: "명퇴용사 박부장" },
+        ],
+      },
+    ],
+  },
+  {
+    // Opens with the 던전 tab (5층); shown when 입장 is first pressed, before the run starts.
+    id: PARKING_EPISODE_ID,
+    floor: 5,
+    manual: true,
+    title: "지하주차장",
+    panels: [
+      { img: "parking_1", lines: [{ who: "박부장", text: "주차권…? 나 차 팔았는데.", at: [38, 78] }] },
+      {
+        img: "parking_2",
+        lines: [
+          { who: "박부장", text: "30초 안에 나오라고?", at: [30, 72] },
+          { text: "입차 확인. 출차는 30초 뒤입니다." },
+        ],
+      },
+      { img: "parking_3", lines: [{ who: "박부장", text: "20m마다 상자가…!", at: [38, 76], w: 80 }] },
+      {
+        img: "parking_4",
+        lines: [
+          { who: "박부장", text: "…다음엔 더 깊이 간다.", at: [110, 62], flip: true, w: 90 },
+          { text: "주차권은 15분마다 1장, 최대 16장." },
         ],
       },
     ],

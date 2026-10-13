@@ -125,6 +125,8 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
   const [sheet, setSheet] = useState<SheetId | null>(null);
   const [locked, setLocked] = useState(false);
   const [reading, setReading] = useState<Episode | null>(null);
+  // What to do once the webtoon being read is closed (the first 지하주차장 입장 starts its run).
+  const [after, setAfter] = useState<(() => void) | null>(null);
   const [shown, setShown] = useState<string[]>([]);
   const [popup, setPopup] = useState<"attendance" | Offer | { intro: FeatureId } | null>(null);
   const [attendanceAsked, setAttendanceAsked] = useState(false);
@@ -214,7 +216,7 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
         {tab === "gear" && <GearPanel state={state} store={store} onSuits={() => setSheet("suits")} />}
         {tab === "pets" && <PetPanel state={state} store={store} />}
         {tab === "certs" && <CertPanel state={state} store={store} />}
-        {tab === "dungeon" && <ParkingPanel state={state} store={store} />}
+        {tab === "dungeon" && <ParkingPanel state={state} store={store} onStory={(ep, then) => { setReading(ep); setAfter(() => then); }} />}
         {tab === "shop" && <ShopPanel key={shopTab.at} state={state} store={store} initial={shopTab.tab} />}
       </main>
       <BottomNav state={state} tab={tab} onPick={setTab} onLocked={(text) => store.notify(text)} />
@@ -258,6 +260,8 @@ function Game({ store, connection, guest }: { store: GameStore; connection: Conn
             const ep = (reading ?? prologue)!;
             if (!state.story.includes(ep.id)) store.do({ k: "readStory", id: ep.id });
             setReading(null);
+            after?.();
+            setAfter(null);
           }}
         />
       )}

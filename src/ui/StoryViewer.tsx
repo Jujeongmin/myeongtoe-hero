@@ -159,9 +159,9 @@ export function StoryList({ state, onRead }: { state: GameState; onRead: (ep: Ep
   );
 }
 
-// The next episode to open by itself, when its pictures are in.
+// The next episode to open by itself (not a manual one), when its pictures are in.
 export function storyToShow(state: GameState): Episode | undefined {
-  return EPISODES.find((e) => episodeOpen(e, state) && !state.story.includes(e.id) && episodeReady(e));
+  return EPISODES.find((e) => !e.manual && episodeOpen(e, state) && !state.story.includes(e.id) && episodeReady(e));
 }
 
 function OneLine({ text }: { text: string }) {
