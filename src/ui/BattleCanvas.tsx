@@ -29,10 +29,9 @@ const ART_CSS_PX = 2;
 // The office behind them at a set size too: one background pixel is about 6 CSS px (bigger if the
 // scene is taller than the picture).
 const BG_CSS_PX = 6;
-// Bosses are drawn about this much bigger than the other monsters (rounded to whole device pixels).
-const BOSS_SIZE = 1.3;
+// Bosses are drawn at the same pixel size as Park and the other monsters (an enlarged boss's
+// chunkier pixels looked out of place); their bigger frames make them stand out.
 let artScale = 1;
-let bossScale = 1;
 
 const BG_H = 96;
 const BG_FLOOR = 82;
@@ -121,7 +120,6 @@ export function BattleCanvas({ state }: { state: GameState }) {
       // number of device pixels bigger per art pixel and still be crisp.
       const scale = Math.max(1, Math.round(ART_CSS_PX * dpr));
       artScale = scale;
-      bossScale = Math.max(scale + 1, Math.round(scale * BOSS_SIZE)) / scale;
       const dw = Math.round(cw * dpr);
       const dh = Math.round(ch * dpr);
       if (el.width !== dw || el.height !== dh) {
@@ -361,7 +359,7 @@ function draw(
     sim.hits = 0;
     sim.crits = [];
     const found = monsterFor(department, shownFloor, place, boss) ?? null;
-    sim.current = found && boss ? enlarge(found, bossScale) : found;
+    sim.current = found;
     if (boss && sim.current) sfx("boss");
     // A parody boss announces itself once it has walked up to Park (below).
     const says = found && boss ? BOSS_SAYS[found.id] : undefined;
@@ -565,17 +563,10 @@ function drawHpBar(ctx: CanvasRenderingContext2D, m: MonsterSprite, x: number, f
   slice(frame, w);
 }
 
-// A monster drawn `k` times bigger: its measurements grow with it, its frames stay `frame` wide.
-type Drawn = MonsterSprite & { frame?: number };
-function enlarge(m: MonsterSprite, k: number): Drawn {
-  return { ...m, frame: m.size, size: m.size * k, baseline: m.baseline * k, hover: m.hover * k, hpBar: [m.hpBar[0] * k, m.hpBar[1] * k] };
-}
-
-function drawMonster(ctx: CanvasRenderingContext2D, m: Drawn, anim: "idle" | "hurt" | "death", f: number, x: number, floorY: number): void {
+function drawMonster(ctx: CanvasRenderingContext2D, m: MonsterSprite, anim: "idle" | "hurt" | "death", f: number, x: number, floorY: number): void {
   const img = image(m.anims[anim].file);
   if (!img) return;
-  const frame = m.frame ?? m.size;
-  ctx.drawImage(img, f * frame, 0, frame, frame, x, floorY - m.baseline - m.hover, m.size, m.size);
+  ctx.drawImage(img, f * m.size, 0, m.size, m.size, x, floorY - m.baseline - m.hover, m.size, m.size);
 }
 
 // ---- 피버타임 ----
@@ -605,8 +596,7 @@ function drawFever(
     const target = place % MONSTERS_PER_FLOOR;
     const boss = isBoss(target);
     const found = monsterFor(departmentOf(f), f, target, boss);
-    const m = found && boss ? enlarge(found, bossScale) : found;
-    if (m) sim.flung.push({ monster: m, since: now, spin: 6 + Math.random() * 6, rise: (boss ? 1.3 : 0.7) + Math.random() * 0.4 });
+    if (found) sim.flung.push({ monster: found, since: now, spin: 6 + Math.random() * 6, rise: (boss ? 1.3 : 0.7) + Math.random() * 0.4 });
     sim.fx.push({ crit: true, x: contactX + 8, y: floorY - 28, since: now });
     coins(contactX + 16, floorY - 24, boss ? 4 : 1);
     sfx("kill");
@@ -635,7 +625,7 @@ function drawFever(
     ctx.translate(x + f.monster.size / 2, y + f.monster.size / 2);
     ctx.rotate(p * f.spin);
     const img = image(f.monster.anims.hurt.file);
-    const frame = (f.monster as Drawn).frame ?? f.monster.size;
+    const frame = f.monster.size;
     if (img) ctx.drawImage(img, 0, 0, frame, frame, -f.monster.size / 2, -f.monster.size / 2, f.monster.size, f.monster.size);
     ctx.restore();
   }
