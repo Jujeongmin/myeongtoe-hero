@@ -131,9 +131,9 @@ export function BattleCanvas({ state }: { state: GameState }) {
       const bgScale = Math.max(Math.round((BG_CSS_PX * dpr) / scale), Math.ceil(h / BG_H), 1);
       scroll = draw(ctx, w, h, bgScale, snap.current, now, dt, scroll, sim, (text, x, y, crit) => {
         popDamage(layer.current, text, (x * cw) / w, (y * ch) / h, crit);
-      }, (text, x, y, ms, flip) => {
+      }, (text, x, y, ms) => {
         // Park's quips and boss lines, and the monster's name, shown in the player's language.
-        say(talk.current, t(text), (x * cw) / w, (y * ch) / h, ms, flip);
+        say(talk.current, t(text), (x * cw) / w, (y * ch) / h, ms);
       }, (dx, opacity) => {
         // The last word's bubble moving off with the fallen boss and fading with it.
         const el = talk.current;
@@ -188,11 +188,10 @@ let bubbleTimer = 0;
 // The bubble keeps clear of the controls; the monster's name it may cover (it is drawn above it).
 const BUBBLE_AVOID = ".battle-head, .top-left, .side-menu, .boss-btn, .atk-now, .prestige-btn, .mission-card, .currency, .parking-depth";
 
-// A boss's bubble is flipped: it opens to the left of the point, its tail on the right.
-function say(el: HTMLDivElement | null, text: string, x: number, y: number, ms = BUBBLE_MS, flip = false): void {
+// The bubble (it has no tail) sits centred above the point: the speaker's head.
+function say(el: HTMLDivElement | null, text: string, x: number, y: number, ms = BUBBLE_MS): void {
   if (!el) return;
   el.textContent = text;
-  el.classList.toggle("flip", flip);
   el.style.translate = "";
   el.style.opacity = "";
   el.style.left = `${Math.round(x)}px`;
@@ -216,10 +215,9 @@ function fitBubble(el: HTMLDivElement): void {
   const clear = (r: DOMRect) =>
     r.left >= area.left && r.right <= area.right && r.top >= area.top &&
     !others.some((o) => Math.min(r.right, o.right) - Math.max(r.left, o.left) > 1 && Math.min(r.bottom, o.bottom) - Math.max(r.top, o.top) > 1);
-  // Still in the way at the smallest size: slide it away from its tail a step at a time.
+  // Still in the way at the smallest size: slide it a step at a time, left or right.
   const left = parseFloat(el.style.left) || 0;
-  const away = el.classList.contains("flip") ? 1 : -1;
-  for (const dx of [0, 16 * away, 32 * away, 48 * away]) {
+  for (const dx of [0, -16, 16, -32, 32, -48, 48]) {
     el.style.left = `${left + dx}px`;
     for (const px of [10, 9, 8]) {
       for (const width of [140, 110, 90]) {
@@ -284,7 +282,7 @@ function popDamage(layer: HTMLDivElement | null, text: string, x: number, y: num
 
 function draw(
   ctx: CanvasRenderingContext2D, w: number, h: number, bgScale: number, { state, at }: Snapshot, now: number, dt: number, scroll: number,
-  sim: Sim, pop: (text: string, x: number, y: number, crit: boolean) => void, talk: (text: string, x: number, y: number, ms?: number, flip?: boolean) => void,
+  sim: Sim, pop: (text: string, x: number, y: number, crit: boolean) => void, talk: (text: string, x: number, y: number, ms?: number) => void,
   follow: (dx: number, opacity: number) => void,
   tag: (text: string, x: number, y: number) => void, showDepth: (meter: number | null) => void,
   coins: (x: number, y: number, n: number) => void,
@@ -358,7 +356,7 @@ function draw(
       if (says && sim.current && sim.dying) {
         // Said lying down: the bubble sits on the body, which stays until the bubble goes.
         sim.dying.hold = LAST_WORD_MS;
-        talk(bossLine(says.fall, sim.floor), contactX + sim.current.size / 2, floorY - sim.current.size * 0.45, sim.dying.monster.anims.death.ms * sim.dying.monster.anims.death.frames + LAST_WORD_MS, true);
+        talk(bossLine(says.fall, sim.floor), contactX + sim.current.size / 2, floorY - sim.current.size * 0.45, sim.dying.monster.anims.death.ms * sim.dying.monster.anims.death.frames + LAST_WORD_MS);
       }
       else talk(pickLine(BOSS_LINES[bossKind(sim.floor)], Math.random()), ...head);
       sim.quipAt = now + QUIP_MIN_MS;
@@ -378,9 +376,9 @@ function draw(
   }
   if (fever) sim.announce = null;
   else if (sim.announce && !walking && sim.current) {
-    // Over its name, the bubble opening to the left (toward Park) with its tail on the right.
+    // Centred over its head, above its name tag.
     const m = sim.current;
-    talk(sim.announce, contactX + m.hpBar[0], floorY - m.baseline - m.hover + m.hpBar[1] - HP_BAR.h - 9, undefined, true);
+    talk(sim.announce, contactX + m.hpBar[0], floorY - m.baseline - m.hover + m.hpBar[1] - HP_BAR.h - 9);
     sim.announce = null;
     sim.quipAt = now + QUIP_MIN_MS;
   }

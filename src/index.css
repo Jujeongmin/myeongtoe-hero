@@ -261,7 +261,7 @@ b, strong { font-weight: normal; color: #fff3c4; }
 .vx-card button { width: 100%; border-image: var(--ui-button-gold-hot) 6 fill / 12px repeat; color: #ffd166; }
 .vx-img { width: 128px; height: 128px; max-width: 100%; height: auto; image-rendering: pixelated; border: 2px solid #000; }
 /* Park's speech bubble (art/ui/speech_box, 9-slice, no tail), its bottom left corner over his head. */
-.bubble { position: absolute; z-index: 2; transform: translate(-6px, -100%); max-width: 140px; padding: 0 1px 1px; border: 8px solid transparent; color: #1b1a2e; font-size: 10px; line-height: 12px; width: max-content; word-break: keep-all; pointer-events: none; image-rendering: pixelated; }
+.bubble { position: absolute; z-index: 2; transform: translate(-50%, -100%); max-width: 140px; padding: 0 1px 1px; border: 8px solid transparent; color: #1b1a2e; font-size: 10px; line-height: 12px; width: max-content; word-break: keep-all; pointer-events: none; image-rendering: pixelated; }
 /* 스토리: the webtoon over everything, panels down the middle with their lines under them. */
 .story { position: fixed; inset: 0; z-index: 15; display: flex; flex-direction: column; background: #0b0916; }
 .story header { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #0b0916; border-bottom: 2px solid #2b2440; }
@@ -674,8 +674,5 @@ html:not([lang="ko"]) .side-label { font-size: 9px; line-height: 11px; }
 .top-left .buff-bar .buff.on .icon-img { opacity: 1; }
 .top-left .speed-btn { position: relative; }
 .top-left .dot { position: absolute; top: 0; right: -2px; z-index: 3; width: 10px; height: 10px; background: var(--ui-red-dot) center / 10px 10px no-repeat; image-rendering: pixelated; filter: drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff); animation: dot-blink 1.2s steps(1) infinite; pointer-events: none; }
-/* The battle bubble's frame drawn behind its text, so a boss's bubble can be mirrored (tail on the
-   right, opening to the left) without mirroring the words. */
+/* The battle bubble's frame, drawn behind its text. */
 .bubble::before { content: ""; position: absolute; inset: -8px; z-index: -1; border: 8px solid transparent; border-image: var(--ui-speech-box) 6 fill / 8px; image-rendering: pixelated; }
-.bubble.flip { transform: translate(calc(-100% + 6px), -100%); }
-.bubble.flip::before { transform: scaleX(-1); }
