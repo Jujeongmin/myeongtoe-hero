@@ -680,12 +680,12 @@ html:not([lang="ko"]) .side-label { font-size: 9px; line-height: 11px; }
 .atk-now { top: 50px; }
 .boss-btn { top: 112px; }
 /* The mission card and the 연봉협상 button see-through (the user's call, 2026-10-14): their frames
-   are drawn behind them at 70%, the text and icons stay solid. */
+   are drawn behind them at 45%, the text and icons stay solid. */
 .mission-card { --fw: 10px; }
 .prestige-btn { --fw: 8px; }
 @media (max-width: 379px) { .prestige-btn { --fw: 6px; } }
 .mission-card, .prestige-btn, .prestige-btn.ready { border-image: none; isolation: isolate; }
-.mission-card::before, .prestige-btn::before { content: ""; position: absolute; inset: calc(-1 * var(--fw)); z-index: -1; border: var(--fw) solid transparent; opacity: 0.7; pointer-events: none; image-rendering: pixelated; }
+.mission-card::before, .prestige-btn::before { content: ""; position: absolute; inset: calc(-1 * var(--fw)); z-index: -1; border: var(--fw) solid transparent; opacity: 0.45; pointer-events: none; image-rendering: pixelated; }
 .mission-card::before { border-image: var(--ui-mission-panel) 14 fill / var(--fw); }
 .prestige-btn::before { border-image: var(--ui-prestige-button, var(--ui-button-gold)) 8 fill / var(--fw); }
 .prestige-btn.ready::before { border-image: var(--ui-prestige-button-on, var(--ui-button-gold-hot)) 8 fill / var(--fw); }
