@@ -16,6 +16,7 @@ const ERRORS: Record<string, string> = {
   claimed: "이미 받았어요",
   cooldown: "아직 다시 볼 수 없어요",
   bad_nickname: "닉네임은 2~8자, 기호와 띄어쓰기 없이 써 주세요",
+  rude_nickname: "쓸 수 없는 단어가 들어 있어요",
 };
 
 export function errorText(code: string): string {

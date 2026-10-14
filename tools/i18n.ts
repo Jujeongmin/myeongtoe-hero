@@ -16,7 +16,8 @@ function files(dir: string): string[] {
   return readdirSync(dir).flatMap((f) => {
     const p = join(dir, f);
     if (statSync(p).isDirectory()) return files(p);
-    return /\.tsx?$/.test(f) && !/\.test\.tsx?$/.test(f) && !p.includes("i18n") ? [p] : [];
+    // profanity.ts lists words to refuse, not text to show.
+    return /\.tsx?$/.test(f) && !/\.test\.tsx?$/.test(f) && !p.includes("i18n") && f !== "profanity.ts" ? [p] : [];
   });
 }
 

@@ -1,4 +1,4 @@
-import { profileOf, rankRowOf, readNickname, type Board, type PublicProfile, type RankingView } from "../../shared/ranking";
+import { profileOf, rankRowOf, readNickname, nicknameError, type Board, type PublicProfile, type RankingView } from "../../shared/ranking";
 import { fromSave, toSave } from "../../shared/state";
 import { syncSave, type StampedIntent, type SyncResult } from "../../shared/sync";
 
@@ -40,7 +40,7 @@ export class LocalTransport implements Transport {
 
   async setNickname(name: string): Promise<{ nickname: string }> {
     const nickname = readNickname(name);
-    if (!nickname) throw new Error("bad_nickname");
+    if (!nickname) throw new Error(nicknameError(name) ?? "bad_nickname");
     const raw = this.storage.getItem(this.key);
     if (raw) {
       const state = fromSave(JSON.parse(raw));

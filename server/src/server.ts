@@ -1,5 +1,5 @@
 import { applyPurchase, readPurchaseEvent } from "../../shared/purchase";
-import { RANKING_SIZE, profileOf, rankRowOf, readAccount, readBoard, readNickname, type PublicProfile, type RankRow, type RankingView } from "../../shared/ranking";
+import { RANKING_SIZE, profileOf, rankRowOf, readAccount, readBoard, readNickname, nicknameError, type PublicProfile, type RankRow, type RankingView } from "../../shared/ranking";
 import { fromSave, newState, toSave, type SaveData } from "../../shared/state";
 import { syncSave, type SyncResult } from "../../shared/sync";
 
@@ -77,7 +77,7 @@ export class Server {
   // 2~8 Korean/English letters or digits; saved on the save and shown on the boards.
   async setNickname(name: unknown): Promise<{ nickname: string }> {
     const nickname = readNickname(name);
-    if (!nickname) throw new Error("bad_nickname");
+    if (!nickname) throw new Error(nicknameError(name) ?? "bad_nickname");
     const account = $sender.account;
     return $lock(`save:${account}`, async () => {
       const userState = await $global.getUserState(account);

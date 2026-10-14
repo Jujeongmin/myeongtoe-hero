@@ -1,4 +1,5 @@
 import { SUIT_ITEMS, hasCostume } from "./data/costumes";
+import { isRude } from "./profanity";
 import type { GameState, SaveData } from "./state";
 import type { Text } from "./text";
 
@@ -23,18 +24,23 @@ export interface RankingView {
 const NICKNAME = /^[가-힣a-zA-Z0-9ぁ-ゖァ-ヺー一-鿿]{2,8}$/;
 
 export function readNickname(raw: unknown): string | null {
-  if (typeof raw !== "string") return null;
-  const name = raw.trim();
-  return NICKNAME.test(name) ? name : null;
+  return nicknameError(raw) ? null : (raw as string).trim();
+}
+
+// Why a nickname is refused: not 2–8 allowed characters, or a word it may not contain (profanity.ts).
+export function nicknameError(raw: unknown): "bad_nickname" | "rude_nickname" | null {
+  if (typeof raw !== "string" || !NICKNAME.test(raw.trim())) return "bad_nickname";
+  return isRude(raw.trim()) ? "rude_nickname" : null;
 }
 
 export function readBoard(raw: unknown): Board | null {
   return raw === "floor" || raw === "depth" ? raw : null;
 }
 
-// As a pattern for t(): the nickname as it is, or 직원 and the account's last 4.
+// As a pattern for t(): the nickname as it is, or 직원 and the account's last 4 (also for a rude
+// nickname saved before the filter).
 export function displayName(row: RankRow): Text {
-  return row.nickname ? { key: "{name}", vars: { name: row.nickname } } : { key: "직원 {id}", vars: { id: row.account.slice(-4) } };
+  return row.nickname && !isRude(row.nickname) ? { key: "{name}", vars: { name: row.nickname } } : { key: "직원 {id}", vars: { id: row.account.slice(-4) } };
 }
 
 export function rankRowOf(account: string, s: Pick<GameState | SaveData, "nickname" | "bestFloor" | "parking">): RankRow {

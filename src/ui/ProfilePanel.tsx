@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { departmentOf } from "../../shared/data/floors";
-import { readNickname } from "../../shared/ranking";
+import { nicknameError } from "../../shared/ranking";
 import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
 import { t } from "../i18n";
@@ -15,8 +15,9 @@ export function NicknameField({ store, initial, submit, done }: { store: GameSto
   const [busy, setBusy] = useState(false);
 
   const save = async () => {
-    if (!readNickname(name)) {
-      setMessage(errorText("bad_nickname"));
+    const problem = nicknameError(name);
+    if (problem) {
+      setMessage(errorText(problem));
       return;
     }
     setBusy(true);
