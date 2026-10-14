@@ -21,9 +21,9 @@ function aimFor(state: GameState, tab: NavTab): Aim | null {
   if (m.done(state)) return { at: ".mission-card", hint: t("미션 완료! 눌러서 보상을 받자") };
   const inTab = (want: NavTab, at: string, hint: string): Aim => (tab === want ? { at, hint } : { at: NAV(want), hint });
   switch (m.id) {
-    case "s01": return inTab("sideJobs", '[data-tut="job-j00"]', t("부업부터 시작하자. 월급만으론 안 돼…"));
+    case "s01": return inTab("sideJobs", '[data-tut="job-j00"]', t("업무부터 시작하자. 일을 해야 돈이 나오지…"));
     case "s01b": return inTab("sideJobs", '[data-tut="job-j00"]', t("알바 레벨을 올리면 수입이 늘어난다"));
-    case "s02b": return inTab("sideJobs", '[data-tut="job-j01"]', t("부업을 하나 더 뛰자"));
+    case "s02b": return inTab("sideJobs", '[data-tut="job-j01"]', t("업무를 하나 더 맡자"));
     case "s02": return inTab("gear", '[data-tut="gear-up"]', t("볼펜부터 손보자. 장비가 곧 공격력이다"));
     case "s03": return inTab("gear", '[data-tut="gear-buy"], [data-tut="gear-up"]', t("골드가 모이면 다음 장비로 바꾸자"));
     default: return null;

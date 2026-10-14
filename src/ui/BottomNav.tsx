@@ -8,7 +8,7 @@ export type NavTab = "sideJobs" | "gear" | "pets" | "certs" | "shop" | "dungeon"
 
 // The bottom menu. A locked item still shows its name (with a lock); tapping it says where it opens.
 const ITEMS: { id: NavTab; icon: string; label: string; openAt: number }[] = [
-  { id: "sideJobs", icon: "nav_sidejobs", label: "부업", openAt: NAV_OPEN_AT.sideJobs },
+  { id: "sideJobs", icon: "nav_sidejobs", label: "업무", openAt: NAV_OPEN_AT.sideJobs },
   { id: "gear", icon: "nav_gear", label: "장비", openAt: NAV_OPEN_AT.gear },
   { id: "pets", icon: "nav_pets", label: "동료", openAt: NAV_OPEN_AT.pets },
   { id: "certs", icon: "nav_certs", label: "자격증", openAt: NAV_OPEN_AT.certs },

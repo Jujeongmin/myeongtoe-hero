@@ -232,7 +232,7 @@ function paidBySideJobPet(s: GameState, m: Mods, dt: number): Big {
 }
 
 // Gold a second right now, paid the way settle pays it (shown under the attack on the battle
-// screen). The side jobs (투잡관리 and the like raise them) with 박주임's payouts, plus the kills:
+// screen). The side jobs (업무관리 and the like raise them) with 박주임's payouts, plus the kills:
 // each a share of the side jobs' income (수금 and the like raise it), a floor's five kills and their
 // walks averaged with the boss's bigger pay, or the normal monsters over and over while a boss is
 // too strong. 2배속 doubles it; a parking run holds the tower (the kills pay nothing meanwhile).

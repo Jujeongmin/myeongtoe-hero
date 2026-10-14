@@ -1,10 +1,10 @@
 // 자격증: a fixed list, each one picked and taken (level 1) and then levelled. Kept across job
 // changes.
 //
-// - 본업 자격증: five lines (공격력, 치명타 데미지, 부업 수입, 처치 골드, 근성) in five grades,
+// - 본업 자격증: five lines (공격력, 치명타 데미지, 업무 수입, 처치 골드, 근성) in five grades,
 //   기능사 → 산업기사 → 기사 → 기능장 → 기술사. A grade opens once the grade below it is maxed,
 //   and each grade multiplies on top of the ones below. Paid in 응시권.
-// - 필수 자격증: four small ones with low caps (치명타 확률, 공격 속도, 할인, 부업 수입). 응시권.
+// - 필수 자격증: four small ones with low caps (치명타 확률, 공격 속도, 할인, 업무 수입). 응시권.
 // - 이직 자격증: three that raise the 응시권 a job change pays. Paid in 보석.
 //
 // Costs climb by a fixed step per level (근성기능사: 5% a level). Effects are percentages that grow
@@ -29,7 +29,7 @@ export const CERT_GRADES = ["기능사", "산업기사", "기사", "기능장", 
 export const CERT_LINES: readonly { line: CertLine; name: string; text: string }[] = [
   { line: "atk", name: "타격", text: "공격력" },
   { line: "crit", name: "급소공략", text: "치명타 데미지" },
-  { line: "side", name: "투잡관리", text: "부업 수입" },
+  { line: "side", name: "업무관리", text: "업무 수입" },
   { line: "gold", name: "수금", text: "처치 골드" },
   { line: "grit", name: "근성", text: "공격력 추가" },
 ];
@@ -40,7 +40,7 @@ export const GRIT_FIRST_MAX_LEVEL = 200;
 const MAIN_NAMES: Record<CertLine, readonly string[]> = {
   atk: ["타격기능사", "타격산업기사", "타격기사", "타격기능장", "타격기술사"],
   crit: ["급소공략기능사", "급소공략산업기사", "급소공략기사", "급소공략기능장", "급소공략기술사"],
-  side: ["투잡관리기능사", "투잡관리산업기사", "투잡관리기사", "투잡관리기능장", "투잡관리기술사"],
+  side: ["업무관리기능사", "업무관리산업기사", "업무관리기사", "업무관리기능장", "업무관리기술사"],
   gold: ["수금기능사", "수금산업기사", "수금기사", "수금기능장", "수금기술사"],
   grit: ["근성기능사", "근성산업기사", "근성기사", "근성기능장", "근성기술사"],
 };
@@ -73,8 +73,8 @@ const CAREER: CertDef[] = [
 export const CERTS: readonly CertDef[] = [...MAIN, ...BASIC, ...CAREER];
 
 export const CERT_KIND_TEXT: Record<CertKind, string> = {
-  atk: "공격력", crit: "치명타 데미지", side: "부업 수입", gold: "처치 골드", grit: "공격력 추가",
-  critChance: "치명타 확률", aspd: "공격 속도", discount: "장비·부업 비용", sideJob: "부업 수입",
+  atk: "공격력", crit: "치명타 데미지", side: "업무 수입", gold: "처치 골드", grit: "공격력 추가",
+  critChance: "치명타 확률", aspd: "공격 속도", discount: "장비·업무 비용", sideJob: "업무 수입",
   prestige: "연봉협상 응시권", prestigeBoost: "커리어코치 효과", prestigeFloors: "연봉협상 층수",
 };
 

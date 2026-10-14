@@ -174,7 +174,7 @@ export const EPISODES: readonly Episode[] = [
           { who: "박부장", text: "꺼져.", at: [48, 44], flip: true },
         ],
       },
-      { img: "ep2_3", lines: [{ who: "박주임", text: "형님 부업 수입, 제가 20초마다 정산해 드립니다. 수수료는 안 받아요. 형님 인맥만 빌려주세요.", at: [96, 22] }] },
+      { img: "ep2_3", lines: [{ who: "박주임", text: "형님 업무 수입, 제가 20초마다 정산해 드립니다. 수수료는 안 받아요. 형님 인맥만 빌려주세요.", at: [96, 22] }] },
       {
         img: "ep2_4",
         lines: [

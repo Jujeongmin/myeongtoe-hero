@@ -10,7 +10,7 @@ export interface PetDef {
 
 export const PETS: readonly PetDef[] = [
   { id: "p_intern", name: "김인턴", unlockFloor: 100, text: "2.5초마다 공격력 100% 추가 공격" },
-  { id: "p_jumim", name: "박주임", unlockFloor: 300, text: "20초마다 가장 비싼 부업 수입 지급" },
+  { id: "p_jumim", name: "박주임", unlockFloor: 300, text: "20초마다 가장 비싼 업무 수입 지급" },
   { id: "p_daeri", name: "최대리", unlockFloor: 600, text: "몬스터 등장 시 체력 0~30% 깎기" },
   { id: "p_gongju", name: "공주임", unlockFloor: 900, text: "5초마다 2초 랜덤 버프" },
   { id: "p_oh", name: "막내 오사원", unlockFloor: 1100, text: "처치 시 확률로 응시권" },

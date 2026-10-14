@@ -210,12 +210,12 @@ export function costumeEffectText(e: CostumeEffect): Text {
     case "critDmg": return pct("치명타 데미지 +{v}", e.v);
     case "aspd": return pct("공격 속도 +{v}", e.v);
     case "gold": return pct("처치 골드 +{v}", e.v);
-    case "sideJob": return pct("부업 수입 +{v}", e.v);
+    case "sideJob": return pct("업무 수입 +{v}", e.v);
     case "boss": return pct("보스 데미지 +{v}", e.v);
     case "move": return pct("이동 속도 +{v}", e.v);
     case "prestige": return pct("연봉협상 응시권 +{v}", e.v);
     case "critChance": return pct("치명타 확률 +{v}", e.v);
-    case "cost": return pct("장비·부업 비용 -{v}", e.v);
+    case "cost": return pct("장비·업무 비용 -{v}", e.v);
     case "bossTime": return { key: "보스 제한시간 +{v}초", vars: { v: e.v } };
     case "offline": return { key: "오프라인 시간 +{v}시간", vars: { v: e.v / 3600 } };
     case "prestigeFloors": return { key: "연봉협상 시 +{v}층으로 계산", vars: { v: e.v } };

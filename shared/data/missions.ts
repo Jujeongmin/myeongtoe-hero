@@ -26,18 +26,18 @@ const owned = (r: Record<string, unknown>) => Object.keys(r).length;
 const jobsStarted = (s: GameState) => Object.values(s.sideJobs).filter((j) => j.level >= 1).length;
 
 export const STEP_MISSIONS: readonly MissionDef[] = [
-  { id: "s01", text: "부업 [편의점 알바] 시작", done: (s) => (s.sideJobs.j00?.level ?? 0) >= 1, reward: { gems: 20 } },
-  { id: "s01b", text: "부업 [편의점 알바] Lv10", done: (s) => (s.sideJobs.j00?.level ?? 0) >= 10, reward: { gems: 20 } },
-  { id: "s02", text: "업무 장비 [볼펜] Lv5", done: (s) => s.gear.tier > 0 || s.gear.level >= GEAR_MAX_LEVEL, reward: { gems: 20 } },
-  { id: "s02b", text: "부업 [전단지 돌리기] 시작", done: (s) => (s.sideJobs.j01?.level ?? 0) >= 1, reward: { gems: 20 } },
-  { id: "s03", text: "업무 장비 [2. 형광펜] 구매", done: (s) => s.gear.tier >= 1, reward: { gems: 25 } },
-  { id: "s04", text: "업무 장비 [3. 스테이플러] 구매", done: (s) => s.gear.tier >= 2, reward: { gems: 25 } },
+  { id: "s01", text: "업무 [복사하기] 시작", done: (s) => (s.sideJobs.j00?.level ?? 0) >= 1, reward: { gems: 20 } },
+  { id: "s01b", text: "업무 [복사하기] Lv10", done: (s) => (s.sideJobs.j00?.level ?? 0) >= 10, reward: { gems: 20 } },
+  { id: "s02", text: "장비 [볼펜] Lv5", done: (s) => s.gear.tier > 0 || s.gear.level >= GEAR_MAX_LEVEL, reward: { gems: 20 } },
+  { id: "s02b", text: "업무 [커피 타기] 시작", done: (s) => (s.sideJobs.j01?.level ?? 0) >= 1, reward: { gems: 20 } },
+  { id: "s03", text: "장비 [2. 형광펜] 구매", done: (s) => s.gear.tier >= 1, reward: { gems: 25 } },
+  { id: "s04", text: "장비 [3. 스테이플러] 구매", done: (s) => s.gear.tier >= 2, reward: { gems: 25 } },
   { id: "s05", text: "5층 도달", done: (s) => s.bestFloor >= 5, reward: { gems: 30 } },
   { id: "s06", text: "10층 팀장 처치", done: (s) => s.bestFloor >= 11, reward: { gems: 30, tickets: 2 } },
   { id: "s07", text: "자격증 취득", done: (s) => owned(s.certs) >= 1, reward: { gems: 35 } },
   { id: "s08", text: "지하주차장 입장", done: (s) => s.parking.best > 0, reward: { gems: 35, coupons: 30 } },
   { id: "s09", text: "30층 도달", done: (s) => s.bestFloor >= 30, reward: { gems: 40 } },
-  { id: "s10", text: "부업 3개 시작", done: (s) => jobsStarted(s) >= 3, reward: { gems: 40 } },
+  { id: "s10", text: "업무 3개 시작", done: (s) => jobsStarted(s) >= 3, reward: { gems: 40 } },
   { id: "s11", text: "50층 도달", done: (s) => s.bestFloor >= 50, reward: { gems: 50 } },
   { id: "s12", text: "코스튬 1개 구매", done: (s) => s.suits.length >= 1, reward: { gems: 50 } },
   // 연봉협상 opens at 70층: the first one comes before 100층, which the fever after it helps reach.
