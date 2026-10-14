@@ -98,7 +98,7 @@ export function Battle({ state, store, dots, onOpen, onGo, getMore }: {
                 }}
               >
                 <Icon name={s.icon} />
-                {t(s.label)}
+                <b className="side-label">{t(s.label)}</b>
                 {((s.id === "missions" && missionsWaiting(state)) || dots[s.id]) && <i className="dot" />}
               </button>
             ))}
