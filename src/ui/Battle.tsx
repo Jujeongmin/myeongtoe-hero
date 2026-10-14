@@ -11,6 +11,8 @@ import { formatBig, formatCount } from "../../shared/format";
 import type { GameState } from "../../shared/state";
 import { heroAtk, heroPower, jobChangeReward } from "../../shared/stats";
 import { goldPerSec } from "../../shared/settle";
+import { feverActive } from "../../shared/data/fever";
+import { sfx } from "../game/audio";
 import type { GameStore } from "../game/store";
 import { BattleCanvas } from "./BattleCanvas";
 import { Icon } from "./Icon";
@@ -75,6 +77,7 @@ export function Battle({ state, store, dots, onOpen, onGo, getMore }: {
         {!parked && !farming && !boss && <span className="floor-no">{t("보스까지 {n}마리", { n: MONSTERS_PER_FLOOR - 1 - Math.min(target, MONSTERS_PER_FLOOR - 1) })}</span>}
         {!parked && boss && <span className="boss-timer"><Icon name="timer" size={16} /><PixelBar kind="progress" value={bossLeft / power.bossLimitSec} /></span>}
       </header>
+      <FloorUp floor={floor} quiet={parked || feverActive(state, state.lastTick)} />
       <AtkReadout atk={atk} tier={state.gear.tier} perSec={goldPerSec(state).total} />
       <div className="top-left">
         <BuffBar state={state} store={store} />
@@ -138,6 +141,26 @@ export function Battle({ state, store, dots, onOpen, onGo, getMore }: {
   );
 }
 
+// A new floor reached: "N층 도달!" pops up under the floor title for a moment, with a chime. Not
+// during the fever (floors fly by) or in the garage, and not when the floor goes down (연봉협상).
+function FloorUp({ floor, quiet }: { floor: number; quiet: boolean }) {
+  const last = useRef(floor);
+  const [shown, setShown] = useState<{ floor: number; at: number } | null>(null);
+  useEffect(() => {
+    if (floor > last.current && !quiet) {
+      setShown({ floor, at: Date.now() });
+      sfx("levelup");
+    }
+    last.current = floor;
+  }, [floor, quiet]);
+  if (!shown) return null;
+  return (
+    <div key={shown.at} className="floor-up" onAnimationEnd={() => setShown(null)}>
+      {t("{floor}층 도달!", { floor: shown.floor })}
+    </div>
+  );
+}
+
 // 공격력 in a counter with Park's weapon. When it goes up, the counter bumps and the gain floats up
 // out of it ("+N"), so an upgrade is felt on the battle screen too.
 // 공격력, and under it the gold a second right now (side jobs and kills, as settle pays them).
@@ -159,6 +182,7 @@ function AtkReadout({ atk, tier, perSec }: { atk: Big; tier: number; perSec: Big
       {gain && <span key={`gain${gain.at}`} className="atk-gain">{gain.text}</span>}
       <div className="atk-box gps-box">
         <Icon name="gold" size={16} />
+        <span className="atk-label">{t("골드 수입")}</span>
         <b>{formatBig(perSec)} / s</b>
       </div>
     </div>

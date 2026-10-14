@@ -100,6 +100,9 @@ b, strong { font-weight: normal; color: #fff3c4; }
 
 .battle-head { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); min-width: 76px; height: 32px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0; line-height: 14px; white-space: nowrap; text-shadow: 1px 1px 0 #000; pointer-events: none; }
 .battle-head .floor-no { }
+/* A new floor: big gold text under the title, popping in and floating off. */
+.floor-up { position: absolute; z-index: 2; top: 40px; left: 50%; transform: translateX(-50%); font-size: 20px; color: #ffd166; white-space: nowrap; pointer-events: none; text-shadow: 2px 2px 0 #000, -1px 0 0 #000, 0 -1px 0 #000, 1px 0 0 #000, 0 0 6px rgba(255, 209, 102, 0.6); animation: floor-up 1.4s steps(14) forwards; }
+@keyframes floor-up { 0% { transform: translate(-50%, 6px) scale(0.6); opacity: 0; } 15% { transform: translate(-50%, 0) scale(1.15); opacity: 1; } 25% { transform: translate(-50%, 0) scale(1); } 75% { transform: translate(-50%, -4px) scale(1); opacity: 1; } 100% { transform: translate(-50%, -14px) scale(1); opacity: 0; } }
 /* Pixel-art bars (art/ui, 3-slice, drawn at 2 CSS px per art pixel). */
 .pbar { position: relative; display: block; image-rendering: pixelated; }
 .pbar i { position: absolute; inset: 0; border-style: solid; border-color: transparent; }
