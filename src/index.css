@@ -689,3 +689,13 @@ html:not([lang="ko"]) .side-label { font-size: 9px; line-height: 11px; }
 .mission-card::before { border-image: var(--ui-mission-panel) 14 fill / var(--fw); }
 .prestige-btn::before { border-image: var(--ui-prestige-button, var(--ui-button-gold)) 8 fill / var(--fw); }
 .prestige-btn.ready::before { border-image: var(--ui-prestige-button-on, var(--ui-button-gold-hot)) 8 fill / var(--fw); }
+/* A boss not beaten in time: a dark red flash over the scene and "도전 실패!" shaking in, then fading. */
+.boss-failed { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; pointer-events: none; animation: boss-failed-bg 1.8s steps(18) forwards; }
+.boss-failed b { font-size: 24px; color: #ff5a4f; text-shadow: 2px 2px 0 #000, -1px 0 0 #000, 0 -1px 0 #000, 1px 0 0 #000; animation: boss-failed-text 1.8s steps(18) forwards; }
+.boss-failed small { font-size: 11px; color: #fff; text-shadow: 1px 1px 0 #000, -1px 0 0 #000; animation: boss-failed-text 1.8s steps(18) forwards; }
+@keyframes boss-failed-bg { 0% { background: rgba(140, 0, 0, 0.45); } 20% { background: rgba(60, 0, 0, 0.3); } 75% { background: rgba(60, 0, 0, 0.25); } 100% { background: rgba(60, 0, 0, 0); } }
+@keyframes boss-failed-text { 0% { transform: scale(1.6); opacity: 0; } 10% { transform: scale(1) translateX(-4px); opacity: 1; } 14% { transform: translateX(4px); } 18% { transform: translateX(-2px); } 22% { transform: none; } 80% { opacity: 1; } 100% { opacity: 0; } }
+.boss-failed { gap: 0; }
+.boss-failed b, .boss-failed small { align-self: stretch; text-align: center; background: rgba(12, 0, 0, 0.6); }
+.boss-failed b { padding: 2px 0 0; }
+.boss-failed small { padding: 0 0 4px; }

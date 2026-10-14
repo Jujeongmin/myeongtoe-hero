@@ -75,6 +75,8 @@ interface Sim {
   feverDone: number;
   // A parking chest opening where the 20th, 40th… meter's monster fell.
   chest: { x: number; since: number } | null;
+  // A boss Park ran out of time on, walking off the way it came, facing away.
+  escaped: { monster: MonsterSprite; since: number } | null;
 }
 
 const QUIP_MIN_MS = 25_000;
@@ -85,6 +87,10 @@ const BUBBLE_MS = 3_000;
 // A boss lies where it fell while it says its last word, then fades with the bubble.
 const LAST_WORD_MS = 2_000;
 const FADE_MS = 300;
+// A boss Park ran out of time on takes this long to walk off the screen.
+const ESCAPE_MS = 1_400;
+// What Park says when the boss's time runs out.
+const BOSS_LOST_LINES = ["아직 부족하군…", "다음엔 꼭 잡는다", "실력을 더 쌓아야겠어"];
 
 export function BattleCanvas({ state }: { state: GameState }) {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -105,7 +111,7 @@ export function BattleCanvas({ state }: { state: GameState }) {
     let scroll = 0;
     let last = performance.now();
     const sim: Sim = {
-      kill: "", hits: 0, crits: [], flung: [], feverKey: "", feverDone: 0, hurtUntil: 0, dying: null, current: null, currentX: 0, announce: null, floor: 0, boss: false,
+      kill: "", hits: 0, crits: [], flung: [], feverKey: "", feverDone: 0, hurtUntil: 0, dying: null, escaped: null, current: null, currentX: 0, announce: null, floor: 0, boss: false,
       quipAt: performance.now() + QUIP_MIN_MS * Math.random(), fx: [], shakeUntil: 0, chest: null,
     };
     const loop = (now: number) => {
@@ -332,7 +338,14 @@ function draw(
   const head: [number, number] = [parkX + 32, floorY - BASELINE_Y + 4];
   if (fever) sim.kill = ""; // the fight starts fresh once the fever ends
   else if (kill !== sim.kill) {
-    if (sim.current && sim.kill !== "") {
+    // Out of time on the boss: Park farms the floor now. The boss was not beaten: it walks off.
+    const escaped = sim.boss && farming && !parking && shownFloor === sim.floor && sim.kill !== "";
+    if (escaped && sim.current) {
+      if (sim.dying && sim.dying.hold > 0) follow(0, 0);
+      sim.escaped = { monster: sim.current, since: now };
+      talk(pickLine(BOSS_LOST_LINES, Math.random()), ...head);
+      sim.quipAt = now + QUIP_MIN_MS;
+    } else if (sim.current && sim.kill !== "") {
       // A monster always falls where it met Park (by now sim.currentX may already be the next one
       // walking in). A boss still lying there with its last word goes now, and its bubble with it.
       if (sim.dying && sim.dying.hold > 0) follow(0, 0);
@@ -466,6 +479,23 @@ function draw(
     }
     sim.hits = landed;
     sim.hurtUntil = now + HURT_MS;
+  }
+
+  // The boss Park lost to, turned away and walking off to the right, fading.
+  if (sim.escaped) {
+    const age = now - sim.escaped.since;
+    if (age >= ESCAPE_MS) sim.escaped = null;
+    else {
+      const m = sim.escaped.monster;
+      const x = Math.round(contactX + (age / ESCAPE_MS) * (w - contactX + 8));
+      const a = m.anims.idle;
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, (ESCAPE_MS - age) / FADE_MS);
+      ctx.translate(x + m.size, 0);
+      ctx.scale(-1, 1);
+      drawMonster(ctx, m, "idle", Math.floor(now / a.ms) % a.frames, 0, floorY);
+      ctx.restore();
+    }
   }
 
   // The monster from the last kill, going up in smoke where it fell.

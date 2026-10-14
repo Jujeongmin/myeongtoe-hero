@@ -78,6 +78,7 @@ export function Battle({ state, store, dots, onOpen, onGo, getMore }: {
         {!parked && boss && <span className="boss-timer"><Icon name="timer" size={16} /><PixelBar kind="progress" value={bossLeft / power.bossLimitSec} /></span>}
       </header>
       <FloorUp floor={floor} quiet={parked || feverActive(state, state.lastTick)} />
+      <BossFailed floor={floor} farming={farming} />
       <AtkReadout atk={atk} tier={state.gear.tier} perSec={goldPerSec(state).total} />
       <div className="top-left">
         <BuffBar state={state} store={store} />
@@ -157,6 +158,24 @@ function FloorUp({ floor, quiet }: { floor: number; quiet: boolean }) {
   return (
     <div key={shown.at} className="floor-up" onAnimationEnd={() => setShown(null)}>
       {t("{floor}층 도달!", { floor: shown.floor })}
+    </div>
+  );
+}
+
+// The boss's time ran out (the run went from fighting it to farming the same floor): "도전 실패!"
+// in red over the scene with a dark red flash, and how to go on.
+function BossFailed({ floor, farming }: { floor: number; farming: boolean }) {
+  const last = useRef({ floor, farming });
+  const [shown, setShown] = useState<number | null>(null);
+  useEffect(() => {
+    if (farming && !last.current.farming && floor === last.current.floor) setShown(Date.now());
+    last.current = { floor, farming };
+  }, [floor, farming]);
+  if (shown === null) return null;
+  return (
+    <div key={shown} className="boss-failed" onAnimationEnd={(e) => e.target === e.currentTarget && setShown(null)}>
+      <b>{t("도전 실패!")}</b>
+      <small>{t("시간 초과 · 강해져서 다시 도전하세요")}</small>
     </div>
   );
 }
