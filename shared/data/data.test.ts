@@ -15,17 +15,23 @@ describe("floors", () => {
     expect(killGoldMult(100, 3)).toBe(1);
   });
 
-  test("health: 570 on floor 1, ×1.15 a floor, gentle ×1.07 from 50 to 100, then ×1.12 easing to ×1.05", () => {
+  test("health: 570 on floor 1, the growth a floor following a smooth line (no sudden turns)", () => {
     expect(normalHp(1).toNumber()).toBeCloseTo(570, 6);
-    expect(normalHp(2).div(normalHp(1)).toNumber()).toBeCloseTo(1.15, 9);
-    expect(normalHp(51).div(normalHp(50)).toNumber()).toBeCloseTo(1.07, 9);
-    expect(normalHp(101).div(normalHp(100)).toNumber()).toBeCloseTo(1.12, 9);
-    expect(normalHp(201).div(normalHp(200)).toNumber()).toBeCloseTo(1.09, 9);
-    expect(normalHp(401).div(normalHp(400)).toNumber()).toBeCloseTo(1.07, 9);
-    expect(normalHp(501).div(normalHp(500)).toNumber()).toBeCloseTo(1.05, 9);
-    expect(normalHp(1000).div(normalHp(999)).toNumber()).toBeCloseTo(1.05, 9);
-    // The 100th-floor boss: 570 × 1.15^49 × 1.07^50 × 50.
-    expect(targetHp(100, 4).div(Big100()).toNumber()).toBeCloseTo(1, 6);
+    const growth = (f: number) => normalHp(f + 1).div(normalHp(f)).toNumber();
+    expect(growth(1)).toBeCloseTo(1.15, 9);
+    expect(growth(50)).toBeCloseTo(1.11, 9); // halfway down from 1.15 (floor 40) to 1.07 (floor 60)
+    expect(growth(80)).toBeCloseTo(1.07, 9);
+    expect(growth(125)).toBeCloseTo(1.0975, 9); // halfway up to 1.125 at 150
+    expect(growth(150)).toBeCloseTo(1.125, 9);
+    expect(growth(600)).toBeCloseTo(1.05, 9);
+    expect(growth(5000)).toBeCloseTo(1.05, 9);
+    // From one floor to the next the growth changes by at most 0.4 percentage points.
+    for (let f = 1; f < 700; f++) expect(Math.abs(growth(f + 1) - growth(f))).toBeLessThan(0.0041);
+    // From floor 400 on, about what the old fixed steps gave (within 2×).
+    for (const f of [400, 600, 1000]) {
+      const old = 570 * 1.15 ** 99 * 1.1 ** 100 * 1.08 ** 200 * 1.07 ** Math.min(100, f - 400) * 1.05 ** Math.max(0, f - 500);
+      expect(Math.abs(Math.log2(normalHp(f).toNumber() / old))).toBeLessThan(1);
+    }
   });
 
   test("boss rewards: 2 tickets a floor, 5 and 3 gems every 10th, 10 and 20 gems every 100th", () => {
@@ -40,10 +46,6 @@ describe("floors", () => {
     expect(departmentOf(601)).toBe("총무팀");
   });
 });
-
-function Big100() {
-  return normalHp(1).mulN(1.15 ** 49 * 1.07 ** 50 * 50);
-}
 
 describe("gear", () => {
   test("30 tiers with unique ids, the first one free", () => {
