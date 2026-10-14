@@ -667,3 +667,10 @@ button.shine { position: relative; }
 .side-icons button { width: 62px; min-height: 58px; padding: 5px 2px 4px; gap: 3px; justify-content: flex-start; }
 .side-label { font-weight: normal; font-size: 11px; line-height: 12px; text-align: center; overflow-wrap: break-word; }
 html:not([lang="ko"]) .side-label { font-size: 9px; line-height: 11px; }
+/* Red dot on a buff or 2배속 until it is first tapped (src/ui/tapped.ts). The off buff dims its icon
+   only, so the dot stays bright. */
+.top-left .buff-bar .buff { opacity: 1; }
+.top-left .buff-bar .buff .icon-img { opacity: 0.45; }
+.top-left .buff-bar .buff.on .icon-img { opacity: 1; }
+.top-left .speed-btn { position: relative; }
+.top-left .dot { position: absolute; top: 0; right: -2px; z-index: 3; width: 10px; height: 10px; background: var(--ui-red-dot) center / 10px 10px no-repeat; image-rendering: pixelated; filter: drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff); animation: dot-blink 1.2s steps(1) infinite; pointer-events: none; }

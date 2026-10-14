@@ -7,6 +7,7 @@ import { t } from "../i18n";
 import { showAd } from "../net/ads";
 import { AdConfirm } from "./AdConfirm";
 import { Icon } from "./Icon";
+import { useTappedOnce } from "./tapped";
 
 function clock(ms: number): string {
   const sec = Math.max(0, Math.ceil(ms / 1000));
@@ -18,6 +19,7 @@ function clock(ms: number): string {
 export function SpeedButton({ state, store }: { state: GameState; store: GameStore }) {
   const [busy, setBusy] = useState(false);
   const [asking, setAsking] = useState(false);
+  const [tapped, markTapped] = useTappedOnce("speed");
   const on = speedActive(state);
   const premium = state.vx.premium;
   const left = state.speed.until - state.lastTick;
@@ -45,9 +47,10 @@ export function SpeedButton({ state, store }: { state: GameState; store: GameSto
 
   return (
     <>
-      <button className={`speed-btn${on ? " on" : ""}`} disabled={busy} aria-label={t("2배속")} onClick={() => void press()}>
+      <button className={`speed-btn${on ? " on" : ""}`} disabled={busy} aria-label={t("2배속")} onClick={() => { markTapped(); void press(); }}>
         <Icon name="speed" />
         {on && !(premium && state.speed.on) && <small>{clock(left)}</small>}
+        {!tapped && <i className="dot" />}
       </button>
       {asking && (
         <AdConfirm state={state} title={t("2배속")} text={t(findAd("ad_speed")!.text)} onWatch={() => void watch()} onClose={() => setAsking(false)} />

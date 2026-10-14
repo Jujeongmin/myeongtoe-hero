@@ -7,6 +7,7 @@ import { t } from "../i18n";
 import { showAd } from "../net/ads";
 import { AdConfirm } from "./AdConfirm";
 import { Icon } from "./Icon";
+import { useTappedOnce } from "./tapped";
 
 const ICON: Record<BuffKind, string> = { atk: "buff_atk", gold: "buff_gold", move: "buff_move" };
 
@@ -20,6 +21,18 @@ function clock(ms: number): string {
 function shortLeft(ms: number): string {
   const sec = Math.max(0, Math.ceil(ms / 1000));
   return sec >= 60 ? t("{m}분", { m: Math.ceil(sec / 60) }) : t("{s}초", { s: sec });
+}
+
+// One buff: its icon (dim while off), the time left under it, and a red dot until first tapped.
+function BuffButton({ kind, on, busy, left, onPress }: { kind: BuffKind; on: boolean; busy: boolean; left: string | null; onPress: () => void }) {
+  const [tapped, markTapped] = useTappedOnce(`buff_${kind}`);
+  return (
+    <button className={`buff${on ? " on" : ""}`} disabled={busy} aria-label={t(BUFFS[kind].name)} onClick={() => { markTapped(); onPress(); }}>
+      <Icon name={ICON[kind]} />
+      {left && <small>{left}</small>}
+      {!tapped && <i className="dot" />}
+    </button>
+  );
 }
 
 // The three buffs (야근 모드, 성과급, 칼퇴 걸음) top left of the battle screen: lit with the time left
@@ -50,15 +63,9 @@ export function BuffBar({ state, store }: { state: GameState; store: GameStore }
   };
   return (
     <div className="buff-bar">
-      {BUFF_KINDS.map((kind) => {
-        const on = buffActive(state, kind);
-        return (
-          <button key={kind} className={`buff${on ? " on" : ""}`} disabled={busy} aria-label={t(BUFFS[kind].name)} onClick={() => press(kind)}>
-            <Icon name={ICON[kind]} />
-            {on && !premium && <small>{shortLeft(state.buffs[kind] - state.lastTick)}</small>}
-          </button>
-        );
-      })}
+      {BUFF_KINDS.map((kind) => (
+        <BuffButton key={kind} kind={kind} on={buffActive(state, kind)} busy={busy} left={buffActive(state, kind) && !premium ? shortLeft(state.buffs[kind] - state.lastTick) : null} onPress={() => press(kind)} />
+      ))}
       {asking && (
         <AdConfirm
           state={state}
