@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import type { Intent } from "../../shared/actions";
 import type { SyncResult } from "../../shared/sync";
+import { newState, toSave } from "../../shared/state";
 import { LocalTransport, OFFLINE, type Transport } from "../net/transport";
 import { GameStore } from "./store";
 
@@ -88,6 +89,50 @@ describe("GameStore", () => {
     store.setTransport(transport);
     await store.flush();
     expect(store.view()!.sideJobs.j00?.level).toBe(1);
+  });
+
+  test("a queued intent takes effect when it was made, not again at every redraw", async () => {
+    // Farming floor 47; 보스 도전 tapped, then the server is slow to answer.
+    const storage = memory();
+    let now = 1_000_000;
+    const s = newState(now);
+    s.run = { ...s.run, floor: 47, maxFloor: 47, farming: true, target: 0, carrySec: 0 };
+    s.bestFloor = 47;
+    storage.setItem("myeongtoe-hero:save", JSON.stringify(toSave(s)));
+    const store = new GameStore(new LocalTransport(storage, () => now), () => now);
+    await store.flush();
+    store.setTransport(OFFLINE);
+    now += 100;
+    expect(store.do({ k: "challengeBoss" })).toBe(true);
+    now += 500;
+    expect(store.view()!.run.carrySec).toBeCloseTo(0.5, 6); // the boss has been walking in for 0.5 s
+    now += 500;
+    expect(store.view()!.run.carrySec).toBeCloseTo(1, 6);
+  });
+
+  test("the game clock never runs backwards when a sync comes back slower than the last", async () => {
+    let now = 1_000_000;
+    let late = 0;
+    let before = 0;
+    const inner = new LocalTransport(memory(), () => now);
+    const slow: Transport = {
+      ...OFFLINE,
+      sync: async (intents) => {
+        const r = await inner.sync(intents);
+        now += late;
+        before = store.serverNow(); // what the screen shows just before the answer lands
+        return r;
+      },
+    };
+    const store: GameStore = new GameStore(slow, () => now);
+    await store.flush();
+    now += 10_000;
+    late = 600; // this answer took 0.6 s to come back
+    await store.syncNow();
+    expect(store.serverNow()).toBeGreaterThanOrEqual(before);
+    const after = store.serverNow();
+    now += 16;
+    expect(store.serverNow()).toBeGreaterThan(after);
   });
 
   test("knows whether it has heard from the server yet", async () => {

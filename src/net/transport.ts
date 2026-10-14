@@ -1,11 +1,10 @@
-import type { Intent } from "../../shared/actions";
 import { profileOf, rankRowOf, readNickname, type Board, type PublicProfile, type RankingView } from "../../shared/ranking";
 import { fromSave, toSave } from "../../shared/state";
-import { syncSave, type SyncResult } from "../../shared/sync";
+import { syncSave, type StampedIntent, type SyncResult } from "../../shared/sync";
 
 // How the client reaches "the server": the game's sync, the boards and nickname changes.
 export interface Transport {
-  sync(intents: Intent[]): Promise<SyncResult>;
+  sync(intents: StampedIntent[]): Promise<SyncResult>;
   ranking(board: Board): Promise<RankingView>;
   profile(account: string): Promise<PublicProfile>;
   setNickname(name: string): Promise<{ nickname: string }>;
@@ -20,7 +19,7 @@ export class LocalTransport implements Transport {
     private readonly key = "myeongtoe-hero:save",
   ) {}
 
-  async sync(intents: Intent[]): Promise<SyncResult> {
+  async sync(intents: StampedIntent[]): Promise<SyncResult> {
     const raw = this.storage.getItem(this.key);
     const result = syncSave(raw ? JSON.parse(raw) : undefined, intents, this.clock());
     this.storage.setItem(this.key, JSON.stringify(result.save));

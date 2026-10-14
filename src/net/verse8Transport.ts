@@ -1,6 +1,5 @@
-import type { Intent } from "../../shared/actions";
 import type { Board, PublicProfile, RankingView } from "../../shared/ranking";
-import type { SyncResult } from "../../shared/sync";
+import type { StampedIntent, SyncResult } from "../../shared/sync";
 import type { Transport } from "./transport";
 
 // A call the server never answers gives up after this long, so the store can queue and retry.
@@ -36,7 +35,7 @@ function isSyncResult(x: unknown): x is SyncResult {
 export class Verse8Transport implements Transport {
   constructor(private readonly server: RemoteCaller, private readonly timeoutMs = CALL_TIMEOUT_MS) {}
 
-  async sync(intents: Intent[]): Promise<SyncResult> {
+  async sync(intents: StampedIntent[]): Promise<SyncResult> {
     const reply = await withTimeout(this.server.remoteFunction("sync", [intents]), this.timeoutMs);
     if (!isSyncResult(reply)) throw new Error("bad_reply");
     return reply;

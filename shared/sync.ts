@@ -1,4 +1,4 @@
-import { applyIntent, readIntent, RuleError } from "./actions";
+import { applyIntent, readIntent, RuleError, type Intent } from "./actions";
 import { OFFLINE_BONUS_MS } from "./data/ads";
 import { settle } from "./settle";
 import { fromSave, newState, toSave, type GameState, type SaveData } from "./state";
@@ -16,6 +16,9 @@ export interface OfflineReport {
   tickets: number;
   gems: number;
 }
+
+// An intent as sent: with the moment it was tapped, on the server's clock as the client guessed it.
+export type StampedIntent = Intent & { at?: number };
 
 export interface SyncResult {
   save: SaveData;
@@ -44,8 +47,12 @@ function report(before: GameState, after: GameState): OfflineReport | null {
 export function syncSave(raw: unknown, intents: unknown, now: number): SyncResult {
   const fresh = raw === undefined || raw === null;
   const before = fresh ? newState(now) : fromSave(raw);
-  let state = settle(before, now);
-  const offline = fresh ? null : report(before, state);
+  const settled = settle(before, now);
+  const offline = fresh ? null : report(before, settled);
+  // Each intent is applied at the moment it was tapped (its `at`, on the server's clock as the
+  // client guessed it), the way the client already showed it: kept between the last sync and now.
+  // After a long time away, or from a client that sends no times, everything happens now.
+  let state = offline ? settled : before;
   // The welcome-back reward can be had once more by watching an ad, for a little while.
   if (offline) state = { ...state, offlineBonus: { gold: offline.gold, tickets: offline.tickets, until: now + OFFLINE_BONUS_MS } };
   const rejected: SyncResult["rejected"] = [];
@@ -60,6 +67,8 @@ export function syncSave(raw: unknown, intents: unknown, now: number): SyncResul
       rejected.push({ index, code: "bad_intent" });
       return;
     }
+    const at = (rawIntent as { at?: unknown }).at;
+    state = settle(state, typeof at === "number" && at < now ? at : now);
     try {
       state = applyIntent(state, intent);
     } catch (error) {
@@ -67,5 +76,5 @@ export function syncSave(raw: unknown, intents: unknown, now: number): SyncResul
       rejected.push({ index, code: error.code });
     }
   });
-  return { save: toSave(state), now, rejected, offline };
+  return { save: toSave(settle(state, now)), now, rejected, offline };
 }
