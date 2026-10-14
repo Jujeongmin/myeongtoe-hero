@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+import { Big } from "../big";
 import {
   MONSTERS_PER_FLOOR, bossGems, bossMult, bossTickets, departmentOf, isBoss, killGoldMult, normalHp, targetHp,
 } from "./floors";
@@ -15,23 +16,12 @@ describe("floors", () => {
     expect(killGoldMult(100, 3)).toBe(1);
   });
 
-  test("health: 570 on floor 1, the growth a floor following a smooth line (no sudden turns)", () => {
+  test("health: 570 on floor 1, 10% more a floor, 5% from floor 600", () => {
     expect(normalHp(1).toNumber()).toBeCloseTo(570, 6);
     const growth = (f: number) => normalHp(f + 1).div(normalHp(f)).toNumber();
-    expect(growth(1)).toBeCloseTo(1.15, 9);
-    expect(growth(50)).toBeCloseTo(1.11, 9); // halfway down from 1.15 (floor 40) to 1.07 (floor 60)
-    expect(growth(80)).toBeCloseTo(1.07, 9);
-    expect(growth(125)).toBeCloseTo(1.0975, 9); // halfway up to 1.125 at 150
-    expect(growth(150)).toBeCloseTo(1.125, 9);
-    expect(growth(600)).toBeCloseTo(1.05, 9);
-    expect(growth(5000)).toBeCloseTo(1.05, 9);
-    // From one floor to the next the growth changes by at most 0.4 percentage points.
-    for (let f = 1; f < 700; f++) expect(Math.abs(growth(f + 1) - growth(f))).toBeLessThan(0.0041);
-    // From floor 400 on, about what the old fixed steps gave (within 2×).
-    for (const f of [400, 600, 1000]) {
-      const old = 570 * 1.15 ** 99 * 1.1 ** 100 * 1.08 ** 200 * 1.07 ** Math.min(100, f - 400) * 1.05 ** Math.max(0, f - 500);
-      expect(Math.abs(Math.log2(normalHp(f).toNumber() / old))).toBeLessThan(1);
-    }
+    for (const f of [1, 50, 100, 300, 599]) expect(growth(f)).toBeCloseTo(1.1, 9);
+    for (const f of [600, 1000, 5000]) expect(growth(f)).toBeCloseTo(1.05, 9);
+    expect(normalHp(100).div(Big.of(570 * 1.1 ** 99)).toNumber()).toBeCloseTo(1, 6);
   });
 
   test("boss rewards: 2 tickets a floor, 5 and 3 gems every 10th, 10 and 20 gems every 100th", () => {
