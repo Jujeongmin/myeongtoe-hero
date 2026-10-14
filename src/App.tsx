@@ -43,6 +43,7 @@ import { featureIntroToShow, type FeatureId } from "../shared/data/intros";
 import { idleFor } from "./ui/useTapGuard";
 import { useAlerts } from "./ui/useAlerts";
 import { Toast } from "./ui/Toast";
+import { retentionTable, type RetentionRow } from "../shared/retention";
 
 const SYNC_MS = 1500;
 // What opens by itself waits until the player has stopped tapping for this long.
@@ -87,6 +88,18 @@ export function OnlineApp() {
   const [startedAt] = useState(() => Date.now());
   const [fallback, setFallback] = useState(false);
   const connection = connectionOf({ online: true, connected, phase: connectionStatus?.phase });
+
+  // retention() in the browser console: the admin accounts' retention table (shared/retention.ts).
+  useEffect(() => {
+    const w = window as unknown as { retention?: () => Promise<void> };
+    w.retention = async () => {
+      const r = (await server.remoteFunction("retention", [])) as { rows: RetentionRow[] };
+      console.table(retentionTable(r.rows));
+    };
+    return () => {
+      delete w.retention;
+    };
+  }, [server]);
 
   useEffect(() => {
     if (fallback) return;

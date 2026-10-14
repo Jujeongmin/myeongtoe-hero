@@ -2,12 +2,14 @@ import { applyPurchase, readPurchaseEvent } from "../../shared/purchase";
 import { RANKING_SIZE, profileOf, rankRowOf, readAccount, readBoard, readNickname, nicknameError, type PublicProfile, type RankRow, type RankingView } from "../../shared/ranking";
 import { fromSave, newState, toSave, type SaveData } from "../../shared/state";
 import { syncSave, type SyncResult } from "../../shared/sync";
+import { RETENTION_DAYS, VISITS, addDays, isAdmin, retentionDays, visitOf, type RetentionRow } from "../../shared/retention";
 
 // Where the save lives in the account's global user state, and the record last put on the boards.
 const SAVE_KEY = "save";
 const RANKED_KEY = "ranked";
 const RECEIPTS_KEY = "receipts";
 const RANKING = "ranking";
+const SEEN_KEY = "seen";
 
 function stripId(item: Record<string, unknown>): RankRow {
   return { account: String(item.account), nickname: String(item.nickname ?? ""), floor: Number(item.floor) || 0, depth: Number(item.depth) || 0 };
@@ -32,8 +34,12 @@ export class Server {
     const account = $sender.account;
     return $lock(`save:${account}`, async () => {
       const userState = await $global.getUserState(account);
-      const result = syncSave(userState?.[SAVE_KEY], intents, Date.now());
-      await $global.updateUserState(account, { [SAVE_KEY]: result.save });
+      const now = Date.now();
+      const result = syncSave(userState?.[SAVE_KEY], intents, now);
+      // The day's visit for the retention table, once a day.
+      const visit = visitOf(account, userState?.[SEEN_KEY], !userState?.[SAVE_KEY], now);
+      await $global.updateUserState(account, visit ? { [SAVE_KEY]: result.save, [SEEN_KEY]: visit.seen } : { [SAVE_KEY]: result.save });
+      if (visit) await $global.addCollectionItem(VISITS, { ...visit.visit });
       await updateRanking(account, result.save, userState?.[RANKED_KEY]);
       return result;
     });
@@ -72,6 +78,27 @@ export class Server {
     const raw = userState?.[SAVE_KEY];
     if (!raw) throw new Error("not_found");
     return profileOf(id, fromSave(raw));
+  }
+
+  // 리텐션 (admin accounts only): for each day from the start, the new players, everyone who played,
+  // and how many of that day's new players came back 1, 3, 7, 14 and 30 days later.
+  async retention(): Promise<{ days: number[]; rows: RetentionRow[] }> {
+    if (!isAdmin($sender.account)) throw new Error("forbidden");
+    const now = Date.now();
+    const today = retentionDays(now).slice(-1)[0];
+    const count = (filters: { field: string; operator: "=="; value: unknown }[]) => $global.countCollectionItems(VISITS, { filters });
+    const rows = await Promise.all(retentionDays(now).map(async (day) => {
+      const [newUsers, active, ...back] = await Promise.all([
+        count([{ field: "first", operator: "==", value: day }, { field: "day", operator: "==", value: day }]),
+        count([{ field: "day", operator: "==", value: day }]),
+        ...RETENTION_DAYS.map((n) => {
+          const later = addDays(day, n);
+          return later > today ? Promise.resolve(null) : count([{ field: "first", operator: "==", value: day }, { field: "day", operator: "==", value: later }]);
+        }),
+      ]);
+      return { day, newUsers, active, back };
+    }));
+    return { days: [...RETENTION_DAYS], rows };
   }
 
   // 2~8 Korean/English letters or digits; saved on the save and shown on the boards.

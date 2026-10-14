@@ -1,0 +1,41 @@
+import { ADMINS, RETENTION_FROM, VISITS, addDays } from "../../shared/retention";
+import { kstDay } from "../../shared/time";
+import { newState, toSave } from "../../shared/state";
+
+describe("retention", () => {
+  test("a sync writes the day's visit once; a new player starts a cohort, an old one does not", async (server) => {
+    const today = kstDay(Date.now());
+    server.connect({ account: "test-v1" });
+    await server.sync([]);
+    await server.sync([]);
+    server.connect({ account: "test-v2" });
+    await $global.updateUserState("test-v2", { save: toSave(newState(Date.now())) });
+    await server.sync([]);
+    const mine = await $global.getCollectionItems(VISITS, { filters: [{ field: "account", operator: "==", value: "test-v1" }] });
+    expect(mine.length).toBe(1);
+    expect(mine[0].day).toBe(today);
+    expect(mine[0].first).toBe(today);
+    const old = await $global.getCollectionItems(VISITS, { filters: [{ field: "account", operator: "==", value: "test-v2" }] });
+    expect(old[0].first).toBe(null);
+  });
+
+  test("only an admin may read the table; it counts a cohort's returns", async (server) => {
+    server.connect({ account: "test-v3" });
+    let error = "";
+    try {
+      await server.retention();
+    } catch (e: any) {
+      error = String(e?.message ?? e);
+    }
+    expect(error).toContain("forbidden");
+    // Two players who started on the first day; one came back the next day.
+    for (const [account, day] of [["test-c1", RETENTION_FROM], ["test-c2", RETENTION_FROM], ["test-c1", addDays(RETENTION_FROM, 1)]]) {
+      await $global.addCollectionItem(VISITS, { account, day, first: RETENTION_FROM });
+    }
+    server.connect({ account: ADMINS[0] });
+    const r = await server.retention();
+    const first = r.rows.find((row: any) => row.day === RETENTION_FROM);
+    expect(first.newUsers).toBe(2);
+    if (kstDay(Date.now()) > RETENTION_FROM) expect(first.back[0]).toBe(1);
+  });
+});
