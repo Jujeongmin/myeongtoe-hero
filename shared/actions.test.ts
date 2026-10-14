@@ -236,26 +236,26 @@ describe("prestige", () => {
     expect(codeOf({ ...at(120), gems: 999 }, { k: "prestige", mode: "super" })).toBe("not_enough_gems");
   });
 
-  test("tickets grow exponentially: 200 at floor 100, about 600,000 at floor 1000; no gems", () => {
-    expect(prestigeReward(100, 0)).toEqual({ tickets: 200 });
-    expect(prestigeReward(70, 0)).toEqual({ tickets: Math.floor(200 * 1.009 ** -30) });
+  test("tickets grow exponentially: 600 at floor 100, about 1.9 million at floor 1000; no gems", () => {
+    expect(prestigeReward(100, 0)).toEqual({ tickets: 600 });
+    expect(prestigeReward(70, 0)).toEqual({ tickets: Math.floor(600 * 1.009 ** -30) });
     expect(prestigeReward(69, 0).tickets).toBe(0);
-    expect(prestigeReward(1000, 0).tickets).toBeGreaterThan(500_000);
-    expect(prestigeReward(1000, 0).tickets).toBeLessThan(800_000);
-    expect(prestigeReward(300, 0).tickets).toBe(Math.floor(200 * 1.009 ** 200));
-    expect(prestigeReward(200, 0.5).tickets).toBe(Math.floor(200 * 1.009 ** 100 * 1.5));
+    expect(prestigeReward(1000, 0).tickets).toBeGreaterThan(1_500_000);
+    expect(prestigeReward(1000, 0).tickets).toBeLessThan(2_400_000);
+    expect(prestigeReward(300, 0).tickets).toBe(Math.floor(600 * 1.009 ** 200));
+    expect(prestigeReward(200, 0.5).tickets).toBe(Math.floor(600 * 1.009 ** 100 * 1.5));
   });
 
   test("커리어코치, 자소서첨삭사 and 인맥관리사 raise the tickets", () => {
     const s = at(300);
     const plain = jobChangeReward(s).tickets;
     s.certs = { c_coach: 10 };
-    expect(jobChangeReward(s).tickets).toBe(Math.floor(200 * 1.009 ** 200 * 2));
+    expect(jobChangeReward(s).tickets).toBe(Math.floor(600 * 1.009 ** 200 * 2));
     s.certs = { c_coach: 10, c_resume: 20 };
-    expect(jobChangeReward(s).tickets).toBe(Math.floor(200 * 1.009 ** 200 * 3));
+    expect(jobChangeReward(s).tickets).toBe(Math.floor(600 * 1.009 ** 200 * 3));
     s.certs = { c_network: 10 };
-    expect(jobChangeReward(s).tickets).toBe(Math.floor(200 * 1.009 ** 250));
-    expect(plain).toBe(Math.floor(200 * 1.009 ** 200));
+    expect(jobChangeReward(s).tickets).toBe(Math.floor(600 * 1.009 ** 250));
+    expect(plain).toBe(Math.floor(600 * 1.009 ** 200));
   });
 });
 

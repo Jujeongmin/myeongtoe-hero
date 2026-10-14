@@ -1,6 +1,7 @@
 // 이직: from floor 70 (a free player watching the 2× speed ad gets there in about 25 minutes),
-// trade the run for 응시권 by how high it got (no 보석 since 2026-10-12, when the 응시권 doubled).
-// They grow exponentially with the floor: 152 at floor 70, 200 at floor 100, about 600,000 at 1000.
+// trade the run for 응시권 by how high it got (no 보석 since 2026-10-12, when the 응시권 doubled;
+// tripled again 2026-10-14). They grow exponentially with the floor: 458 at floor 70, 600 at floor
+// 100, about 1.9 million at 1000.
 export const PRESTIGE_MIN_FLOOR = 70;
 const PRESTIGE_TICKET_AT = 100; // the floor that gives PRESTIGE_TICKET_BASE
 // 강화이직 and 초강화이직: pay 보석 up front for more 응시권.
@@ -10,7 +11,7 @@ export const PRESTIGE_MODES: Record<PrestigeMode, { gems: number; ticketMult: nu
   boosted: { gems: 500, ticketMult: 3 },
   super: { gems: 1000, ticketMult: 5 },
 };
-export const PRESTIGE_TICKET_BASE = 200;
+export const PRESTIGE_TICKET_BASE = 600;
 // 칼퇴 걸음 switched on for this long right after a 연봉협상.
 export const PRESTIGE_MOVE_MS = 60_000;
 export const PRESTIGE_TICKET_GROWTH = 1.009;
