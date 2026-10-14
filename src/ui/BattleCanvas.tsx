@@ -306,8 +306,10 @@ function draw(
   const walking = t < walkSec || !Number.isFinite(fight);
   // 피버타임: Park charges through the floors the run had reached before the 연봉협상.
   const fever = !parking && feverActive(state, serverNow);
-  bgm(parking ? "parking" : "battle", fever ? 2 : 1);
-  const nextScroll = fever ? scroll + FEVER_SCROLL_PX * dt : walking ? scroll + (WALK_PX_PER_SEC * dt) / walkSec : scroll;
+  // The garage's first meters, beaten in a blink each: Park dashes through them the fever's way.
+  const rush = parking !== null && parking.fight < PARK_RUSH_SEC;
+  bgm(parking ? "parking" : "battle", fever || rush ? 2 : 1);
+  const nextScroll = fever || rush ? scroll + FEVER_SCROLL_PX * dt : walking ? scroll + (WALK_PX_PER_SEC * dt) / walkSec : scroll;
   const floorY = h - (BG_H - BG_FLOOR) * bgScale;
   const placeNow = current + (fighting ? Math.floor(elapsed / perKill) : 0);
   const boss = !parking && !farming && isBoss(placeNow % MONSTERS_PER_FLOOR);
@@ -333,7 +335,12 @@ function draw(
       // A monster always falls where it met Park (by now sim.currentX may already be the next one
       // walking in). A boss still lying there with its last word goes now, and its bubble with it.
       if (sim.dying && sim.dying.hold > 0) follow(0, 0);
-      sim.dying = { monster: sim.current, x: contactX, since: now, hold: 0, scroll };
+      if (rush) {
+        // Dashing: knocked spinning off the screen instead.
+        sim.dying = null;
+        sim.flung.push({ monster: sim.current, since: now, spin: 6 + Math.random() * 6, rise: 0.7 + Math.random() * 0.4 });
+        sim.fx.push({ crit: true, x: contactX + 8, y: floorY - 28, since: now });
+      } else sim.dying = { monster: sim.current, x: contactX, since: now, hold: 0, scroll };
       sfx("kill");
       // Its gold flies into the counter (more coins for a boss); the garage pays in chests instead.
       if (!sim.kill.startsWith("p:")) coins(contactX + sim.current.size / 2, floorY - sim.current.size / 2, sim.boss ? 8 : 3);
@@ -409,6 +416,13 @@ function draw(
   if (parking && parking.meter > 1) {
     ctx.fillStyle = `rgba(4, 6, 16, ${Math.min(0.45, (parking.meter - 1) / 660)})`;
     ctx.fillRect(0, 0, w, h);
+  }
+  if (rush) {
+    tag("", 0, 0);
+    sim.currentX = contactX; // where the chests pop
+    drawDash(ctx, state, sim, now, parkX, contactX, floorY, w);
+    drawChest(ctx, sim, now, floorY);
+    return nextScroll;
   }
 
   // Hits: n of them over the fight, each landing at the impact point of its own swing.
@@ -491,19 +505,25 @@ function draw(
     tag(monster.name, monsterX + monster.hpBar[0], floorY - monster.baseline - monster.hover + monster.hpBar[1] - HP_BAR.h - 1);
     drawHitFx(ctx, sim, now);
   } else tag("", 0, 0);
-  if (sim.chest) {
-    const img = image("parking/chest.png");
-    const f = Math.floor((now - sim.chest.since) / CHEST_MS);
-    if (f >= 6) sim.chest = null;
-    else if (img) ctx.drawImage(img, Math.min(3, f) * 32, 0, 32, 32, Math.round(sim.chest.x), floorY - 32, 32, 32);
-  }
+  drawChest(ctx, sim, now, floorY);
   return nextScroll;
+}
+
+// The chest popping open every 20 m down the garage.
+function drawChest(ctx: CanvasRenderingContext2D, sim: Sim, now: number, floorY: number): void {
+  if (!sim.chest) return;
+  const img = image("parking/chest.png");
+  const f = Math.floor((now - sim.chest.since) / CHEST_MS);
+  if (f >= 6) sim.chest = null;
+  else if (img) ctx.drawImage(img, Math.min(3, f) * 32, 0, 32, 32, Math.round(sim.chest.x), floorY - 32, 32, 32);
 }
 
 // ---- 지하주차장 ----
 
 const PARKING_DEPARTMENT = "지하주차장";
 const CHEST_MS = 160;
+// A garage meter whose fight is shorter than this is dashed through (see draw).
+const PARK_RUSH_SEC = 0.2;
 
 // Where a parking run is now: which meter's monster (1-based), how long it takes to beat, and the
 // time into it, replaying the run's own schedule (runParking: each meter is its fight plus a step).
@@ -601,8 +621,15 @@ function drawFever(
     coins(contactX + 16, floorY - 24, boss ? 4 : 1);
     sfx("kill");
   }
-  // A fire aura streaming back from Park (art/fx/fever_flame.png, 6 frames), and two faint
-  // afterimages in it.
+  drawDash(ctx, state, sim, now, parkX, contactX, floorY, w);
+}
+
+// Park dashing (the fever, the garage's first meters): a fire aura streaming back from him
+// (art/fx/fever_flame.png, 6 frames) with two faint afterimages in it, and the monsters he has
+// knocked away flying off.
+function drawDash(
+  ctx: CanvasRenderingContext2D, state: GameState, sim: Sim, now: number, parkX: number, contactX: number, floorY: number, w: number,
+): void {
   const flame = image(FEVER_FLAME.file);
   if (flame) {
     const f = Math.floor(now / FEVER_FLAME.ms) % FEVER_FLAME.frames;
