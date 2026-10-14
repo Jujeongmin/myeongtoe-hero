@@ -8,12 +8,15 @@ export const WALK_SEC = 0.5;
 export const BOSS_LIMIT_SEC = 30;
 
 // A normal monster on floor 1 has 570 health; each floor up multiplies it by a growth that eases off
-// the higher the tower gets.
+// the higher the tower gets. Floors 50–100 are gentle (2026-10-14: a free player who takes the
+// 연봉협상 at 70 reaches 100 about 40 minutes later; at 15% a floor he stalled at 80 for hours), and
+// 100–400 are steeper to make up for it, so from floor 400 the health is what it was.
 export const HP_BASE = 570;
 export const HP_GROWTH_STEPS: readonly (readonly [upToFloor: number, growth: number])[] = [
-  [100, 1.15],
-  [200, 1.1],
-  [400, 1.08],
+  [50, 1.15],
+  [100, 1.07],
+  [200, 1.12],
+  [400, 1.09],
   [500, 1.07],
   [Number.POSITIVE_INFINITY, 1.05],
 ];

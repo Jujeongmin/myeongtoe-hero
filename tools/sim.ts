@@ -201,11 +201,16 @@ export function simulate(profile: Profile, days: number): Run {
 
 // The first session: a new free player plays FIRST_MIN minutes straight, watching only the 2× speed
 // ad (again whenever it is ready), upgrading every 5 seconds and retrying the boss when farming.
-// Run: FIRST=30 npm run sim
+// With JOB=<minutes> it takes the 연봉협상 once it has gained no floor for that long past floor 70
+// (at most JOBMAX times).
+// Run: FIRST=30 npm run sim  (FIRST=240 JOB=10 npm run sim)
 export function firstSession(minutes: number): string[] {
   let s = attempt(newState(START), { k: "readStory", id: PROLOGUE_ID }) ?? newState(START);
   const out: string[] = [];
   let shown = 0;
+  const stall = process.env.JOB ? Number(process.env.JOB) * MIN : Number.POSITIVE_INFINITY;
+  let best = 0;
+  let bestAt = START;
   for (let now = START; now <= START + minutes * MIN; now += 5_000) {
     s = settle(s, now);
     if (!process.env.NOAD) s = attempt(s, { k: "watchAd", id: "ad_speed" }) ?? s;
@@ -213,6 +218,20 @@ export function firstSession(minutes: number): string[] {
     s = spendGold(s);
     s = spendTickets(s);
     if (s.run.farming) s = attempt(s, { k: "challengeBoss" }) ?? s;
+    if (s.run.maxFloor > best) {
+      best = s.run.maxFloor;
+      bestAt = now;
+    }
+    if (s.run.maxFloor >= PRESTIGE_MIN_FLOOR && now - bestAt > stall && s.prestiges < Number(process.env.JOBMAX ?? Infinity)) {
+      const tickets = jobChangeReward(s).tickets;
+      const next = attempt(s, { k: "prestige", mode: "plain" });
+      if (next) {
+        out.push(`  ${Math.floor((now - START) / MIN)}분: 연봉협상 #${next.prestiges} (${s.run.maxFloor}층, 응시권 +${tickets})`);
+        s = spendTickets(next);
+        best = 0;
+        bestAt = now;
+      }
+    }
     const min = Math.floor((now - START) / MIN);
     if (min >= shown) {
       out.push(`${min}분: ${s.run.maxFloor}층 · 장비 ${s.gear.tier + 1}단계 Lv${s.gear.level} · 골드 ${formatBig(s.gold)}${s.run.farming ? " (보스 막힘)" : ""}`);

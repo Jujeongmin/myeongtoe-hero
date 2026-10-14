@@ -15,15 +15,16 @@ describe("floors", () => {
     expect(killGoldMult(100, 3)).toBe(1);
   });
 
-  test("health: 570 on floor 1, growth easing from ×1.15 to ×1.05", () => {
+  test("health: 570 on floor 1, ×1.15 a floor, gentle ×1.07 from 50 to 100, then ×1.12 easing to ×1.05", () => {
     expect(normalHp(1).toNumber()).toBeCloseTo(570, 6);
     expect(normalHp(2).div(normalHp(1)).toNumber()).toBeCloseTo(1.15, 9);
-    expect(normalHp(101).div(normalHp(100)).toNumber()).toBeCloseTo(1.1, 9);
-    expect(normalHp(201).div(normalHp(200)).toNumber()).toBeCloseTo(1.08, 9);
+    expect(normalHp(51).div(normalHp(50)).toNumber()).toBeCloseTo(1.07, 9);
+    expect(normalHp(101).div(normalHp(100)).toNumber()).toBeCloseTo(1.12, 9);
+    expect(normalHp(201).div(normalHp(200)).toNumber()).toBeCloseTo(1.09, 9);
     expect(normalHp(401).div(normalHp(400)).toNumber()).toBeCloseTo(1.07, 9);
     expect(normalHp(501).div(normalHp(500)).toNumber()).toBeCloseTo(1.05, 9);
     expect(normalHp(1000).div(normalHp(999)).toNumber()).toBeCloseTo(1.05, 9);
-    // The 100th-floor dragon: 570 / 1.15 × 1.15^100 × 50.
+    // The 100th-floor boss: 570 × 1.15^49 × 1.07^50 × 50.
     expect(targetHp(100, 4).div(Big100()).toNumber()).toBeCloseTo(1, 6);
   });
 
@@ -41,7 +42,7 @@ describe("floors", () => {
 });
 
 function Big100() {
-  return normalHp(1).mulN((1.15 ** 99) * 50);
+  return normalHp(1).mulN(1.15 ** 49 * 1.07 ** 50 * 50);
 }
 
 describe("gear", () => {
