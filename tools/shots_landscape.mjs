@@ -1,8 +1,8 @@
-// Landscape store screenshots (16:9, 1280x720, each under 1 MB, named 1.png … 8.png in play order).
+// Landscape store screenshots (16:9, 1280x720, each under 1 MB, named 1.png … 6.png).
 // Drives a headless Chrome over the DevTools protocol against the dev server (npm run dev, then:
 // node tools/shots_landscape.mjs), plays the real UI from a planted mid-game save and takes the phone
-// screen (480x720 at 2x) at each scene; tools/shots_landscape.py then puts it in the middle of a
-// 16:9 frame over a blurred, darkened copy of itself.
+// screen (480x720 at 2x) at each of 8 scenes; tools/store_shots.py then dresses them for the store
+// page (gold-framed phones over the game's office background, a headline and two lines of copy).
 // Output: store/screenshots/landscape/.
 import { spawn, spawnSync } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -129,7 +129,7 @@ async function main() {
     await shot("garage");
     ws.close();
 
-    const r = spawnSync("python", ["tools/shots_landscape.py", raw, OUT], { stdio: "inherit" });
+    const r = spawnSync("python", ["tools/store_shots.py", raw, OUT], { stdio: "inherit" });
     if (r.status !== 0) throw new Error("compose failed");
   } finally {
     chrome.kill();

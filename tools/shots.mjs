@@ -71,7 +71,7 @@ async function main() {
     await send("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 3, mobile: true });
     await send("Page.navigate", { url: URL });
     await sleep(2500);
-    await run(`localStorage.clear(); localStorage.setItem("myeongtoe-hero:locale", "ko"); localStorage.setItem("myeongtoe-hero:save", ${JSON.stringify(JSON.stringify(plantedSave(Date.now())))});`);
+    await run(`localStorage.clear(); localStorage.setItem("myeongtoe-hero:locale", "ko"); localStorage.setItem("myeongtoe-hero:save", ${JSON.stringify(JSON.stringify(plantedSave(Date.now())))}); localStorage.setItem("myeongtoe-hero:offers-seen", JSON.stringify(["pack_rookie", "pack_rookie_last", "pack_promo_100", "pack_promo_200"])); localStorage.setItem("myeongtoe-hero:intros-seen", JSON.stringify(["apartment", "office", "relics"])); localStorage.setItem("myeongtoe-hero:tapped", JSON.stringify(["buff_atk", "buff_gold", "buff_move", "speed"]));`);
     const fresh = async () => {
       await send("Page.navigate", { url: URL });
       await sleep(4000);
