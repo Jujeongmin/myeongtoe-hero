@@ -2,7 +2,7 @@ import { applyPurchase, readPurchaseEvent } from "../../shared/purchase";
 import { RANKING_SIZE, profileOf, rankRowOf, readAccount, readBoard, readNickname, nicknameError, type PublicProfile, type RankRow, type RankingView } from "../../shared/ranking";
 import { fromSave, newState, toSave, type SaveData } from "../../shared/state";
 import { syncSave, type SyncResult } from "../../shared/sync";
-import { RETENTION_DAYS, VISITS, addDays, isAdmin, retentionDays, visitOf, type RetentionRow } from "../../shared/retention";
+import { PLAYERS, RETENTION_DAYS, VISITS, addDays, churnReport, isAdmin, retentionDays, track, type ChurnReport, type PlayerRow, type RetentionRow } from "../../shared/retention";
 
 // Where the save lives in the account's global user state, and the record last put on the boards.
 const SAVE_KEY = "save";
@@ -27,6 +27,38 @@ async function updateRanking(account: string, save: SaveData, ranked: unknown, f
   await $global.updateUserState(account, { [RANKED_KEY]: { floor: row.floor, depth: row.depth } });
 }
 
+// A player's row in "players" (its id is the account): updated if there, added if not.
+async function writePlayer(row: PlayerRow): Promise<void> {
+  try {
+    await $global.updateCollectionItem(PLAYERS, { __id: row.account, ...row });
+  } catch {
+    await $global.addCollectionItem(PLAYERS, { ...row }, { id: row.account });
+  }
+}
+
+// Every player's row, a page at a time (ordered by account).
+async function allPlayers(): Promise<PlayerRow[]> {
+  const out: PlayerRow[] = [];
+  const PAGE = 500;
+  let after: string | undefined;
+  for (let page = 0; page < 100; page++) {
+    const items = await $global.getCollectionItems(PLAYERS, after === undefined
+      ? { orderBy: [{ field: "account", direction: "asc" }], limit: PAGE }
+      : { orderBy: [{ field: "account", direction: "asc" }], startAfter: after, limit: PAGE });
+    const fresh = items.filter((i) => after === undefined || String(i.account) > after);
+    for (const i of fresh) {
+      out.push({
+        account: String(i.account), first: typeof i.first === "string" ? i.first : null, last: String(i.last ?? ""),
+        days: Number(i.days) || 0, floor: Number(i.floor) || 0, step: Number(i.step) || 0,
+        prestiges: Number(i.prestiges) || 0, playMin: Number(i.playMin) || 0,
+      });
+    }
+    if (items.length < PAGE || fresh.length === 0) break;
+    after = String(items[items.length - 1].account);
+  }
+  return out;
+}
+
 export class Server {
   // The game's one call: settle the save up to the server's clock, apply the player's queued intents
   // in order, store it, and send it back. Under the account's lock so two calls never interleave.
@@ -36,10 +68,13 @@ export class Server {
       const userState = await $global.getUserState(account);
       const now = Date.now();
       const result = syncSave(userState?.[SAVE_KEY], intents, now);
-      // The day's visit for the retention table, once a day.
-      const visit = visitOf(account, userState?.[SEEN_KEY], !userState?.[SAVE_KEY], now);
-      await $global.updateUserState(account, visit ? { [SAVE_KEY]: result.save, [SEEN_KEY]: visit.seen } : { [SAVE_KEY]: result.save });
-      if (visit) await $global.addCollectionItem(VISITS, { ...visit.visit });
+      // For the retention table and 이탈 시점: the day's visit (once a day) and where the player is
+      // (on a new day and every few minutes of play).
+      const save = result.save;
+      const seen = track(account, userState?.[SEEN_KEY], !userState?.[SAVE_KEY], { floor: save.bestFloor, step: save.missions.step, prestiges: save.prestiges }, now);
+      await $global.updateUserState(account, seen ? { [SAVE_KEY]: save, [SEEN_KEY]: seen.seen } : { [SAVE_KEY]: save });
+      if (seen?.visit) await $global.addCollectionItem(VISITS, { ...seen.visit });
+      if (seen?.player) await writePlayer(seen.player);
       await updateRanking(account, result.save, userState?.[RANKED_KEY]);
       return result;
     });
@@ -99,6 +134,12 @@ export class Server {
       return { day, newUsers, active, back };
     }));
     return { days: [...RETENTION_DAYS], rows };
+  }
+
+  // 이탈 시점 (admin accounts only): where the new players are and how many in each place have left.
+  async churn(): Promise<ChurnReport> {
+    if (!isAdmin($sender.account)) throw new Error("forbidden");
+    return churnReport(await allPlayers(), Date.now());
   }
 
   // 2~8 Korean/English letters or digits; saved on the save and shown on the boards.

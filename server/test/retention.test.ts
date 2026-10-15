@@ -1,4 +1,4 @@
-import { ADMINS, RETENTION_FROM, VISITS, addDays } from "../../shared/retention";
+import { ADMINS, PLAYERS, RETENTION_FROM, VISITS, addDays } from "../../shared/retention";
 import { kstDay } from "../../shared/time";
 import { newState, toSave } from "../../shared/state";
 
@@ -37,5 +37,26 @@ describe("retention", () => {
     const first = r.rows.find((row: any) => row.day === RETENTION_FROM);
     expect(first.newUsers).toBe(2);
     if (kstDay(Date.now()) > RETENTION_FROM) expect(first.back[0]).toBe(1);
+  });
+
+  test("a sync keeps the player's row; 이탈 counts the new players who have not played for 2 days", async (server) => {
+    server.connect({ account: "test-ch1" });
+    await server.sync([]);
+    const row = await $global.getCollectionItem(PLAYERS, "test-ch1");
+    expect(row.floor).toBe(1);
+    expect(row.first).toBe(kstDay(Date.now()));
+    // One who started on the first day and was last seen then (if that is 2+ days ago, they left).
+    await $global.addCollectionItem(PLAYERS, { account: "test-ch0", first: RETENTION_FROM, last: RETENTION_FROM, days: 1, floor: 7, step: 2, prestiges: 0, playMin: 4 }, { id: "test-ch0" });
+    let error = "";
+    try {
+      await server.churn();
+    } catch (e: any) {
+      error = String(e?.message ?? e);
+    }
+    expect(error).toContain("forbidden");
+    server.connect({ account: ADMINS[0] });
+    const r = await server.churn();
+    expect(r.newPlayers).toBeGreaterThan(1);
+    expect(r.byFloor[0].all).toBeGreaterThan(1);
   });
 });

@@ -43,7 +43,7 @@ import { featureIntroToShow, type FeatureId } from "../shared/data/intros";
 import { idleFor } from "./ui/useTapGuard";
 import { useAlerts } from "./ui/useAlerts";
 import { Toast } from "./ui/Toast";
-import { retentionTable, type RetentionRow } from "../shared/retention";
+import { CHURN_DAYS, churnTable, retentionTable, type ChurnReport, type RetentionRow } from "../shared/retention";
 
 const SYNC_MS = 1500;
 // What opens by itself waits until the player has stopped tapping for this long.
@@ -89,15 +89,29 @@ export function OnlineApp() {
   const [fallback, setFallback] = useState(false);
   const connection = connectionOf({ online: true, connected, phase: connectionStatus?.phase });
 
-  // retention() in the browser console: the admin accounts' retention table (shared/retention.ts).
+  // In the browser console, for the admin accounts (shared/retention.ts): retention() prints the
+  // retention table, churn() where the new players stop (이탈 시점).
   useEffect(() => {
-    const w = window as unknown as { retention?: () => Promise<void> };
+    const w = window as unknown as { retention?: () => Promise<void>; churn?: () => Promise<void> };
     w.retention = async () => {
       const r = (await server.remoteFunction("retention", [])) as { rows: RetentionRow[] };
       console.table(retentionTable(r.rows));
     };
+    w.churn = async () => {
+      const r = (await server.remoteFunction("churn", [])) as ChurnReport;
+      console.log(`신규 ${r.newPlayers}명 중 이탈 ${r.churned}명 (${CHURN_DAYS}일 이상 미접속)`);
+      console.log("최고 층별");
+      console.table(churnTable(r.byFloor, "층"));
+      console.log("미션 단계별 (지금 하던 미션)");
+      console.table(churnTable(r.byStep, "단계"));
+      console.log("총 플레이 시간별");
+      console.table(churnTable(r.byPlay, "플레이 시간"));
+      console.log("접속 일수별");
+      console.table(churnTable(r.byDays, "접속 일수"));
+    };
     return () => {
       delete w.retention;
+      delete w.churn;
     };
   }, [server]);
 
