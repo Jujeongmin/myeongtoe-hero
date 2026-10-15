@@ -89,29 +89,26 @@ export function OnlineApp() {
   const [fallback, setFallback] = useState(false);
   const connection = connectionOf({ online: true, connected, phase: connectionStatus?.phase });
 
-  // In the browser console, for the admin accounts (shared/retention.ts): retention() prints the
-  // retention table, churn() where the new players stop (이탈 시점).
+  // retention() in the browser console, for the admin accounts (shared/retention.ts): the retention
+  // table, then where the new players stop (이탈 시점).
   useEffect(() => {
-    const w = window as unknown as { retention?: () => Promise<void>; churn?: () => Promise<void> };
+    const w = window as unknown as { retention?: () => Promise<void> };
     w.retention = async () => {
-      const r = (await server.remoteFunction("retention", [])) as { rows: RetentionRow[] };
+      const [r, c] = (await Promise.all([server.remoteFunction("retention", []), server.remoteFunction("churn", [])])) as [{ rows: RetentionRow[] }, ChurnReport];
+      console.log("리텐션 (날짜별 신규 유저가 며칠 뒤 다시 왔는지)");
       console.table(retentionTable(r.rows));
-    };
-    w.churn = async () => {
-      const r = (await server.remoteFunction("churn", [])) as ChurnReport;
-      console.log(`신규 ${r.newPlayers}명 중 이탈 ${r.churned}명 (${CHURN_DAYS}일 이상 미접속)`);
+      console.log(`이탈 시점: 신규 ${c.newPlayers}명 중 이탈 ${c.churned}명 (${CHURN_DAYS}일 이상 미접속)`);
       console.log("최고 층별");
-      console.table(churnTable(r.byFloor, "층"));
+      console.table(churnTable(c.byFloor, "층"));
       console.log("미션 단계별 (지금 하던 미션)");
-      console.table(churnTable(r.byStep, "단계"));
+      console.table(churnTable(c.byStep, "단계"));
       console.log("총 플레이 시간별");
-      console.table(churnTable(r.byPlay, "플레이 시간"));
+      console.table(churnTable(c.byPlay, "플레이 시간"));
       console.log("접속 일수별");
-      console.table(churnTable(r.byDays, "접속 일수"));
+      console.table(churnTable(c.byDays, "접속 일수"));
     };
     return () => {
       delete w.retention;
-      delete w.churn;
     };
   }, [server]);
 
