@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import type { Intent } from "../../shared/actions";
 import type { SyncResult } from "../../shared/sync";
+import { Big } from "../../shared/big";
 import { newState, toSave } from "../../shared/state";
 import { LocalTransport, OFFLINE, type Transport } from "../net/transport";
 import { GameStore } from "./store";
@@ -133,6 +134,27 @@ describe("GameStore", () => {
     const after = store.serverNow();
     now += 16;
     expect(store.serverNow()).toBeGreaterThan(after);
+  });
+
+  test("after a long time offline, the queued taps go out 50 a sync and none are lost", async () => {
+    const storage = memory();
+    let now = 1_000_000;
+    const s = newState(now);
+    s.story = ["prologue2"];
+    s.gold = Big.of(1, 40);
+    storage.setItem("myeongtoe-hero:save", JSON.stringify(toSave(s)));
+    const transport = new LocalTransport(storage, () => now);
+    const store = new GameStore(transport, () => now);
+    await store.flush();
+    store.setTransport(OFFLINE);
+    for (let i = 0; i < 120; i++) store.do({ k: "levelSideJob", id: "j00" });
+    await expect(store.flush()).rejects.toThrow("offline");
+    store.setTransport(transport);
+    await store.flush();
+    await store.flush();
+    await store.flush();
+    expect(store.view()!.sideJobs.j00?.level).toBe(120);
+    expect(JSON.parse(storage.getItem("myeongtoe-hero:save")!).sideJobs.j00.level).toBe(120);
   });
 
   test("knows whether it has heard from the server yet", async () => {

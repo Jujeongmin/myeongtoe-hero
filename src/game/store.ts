@@ -3,7 +3,7 @@ import { applyIntent, RuleError, type Intent } from "../../shared/actions";
 import type { Board, PublicProfile, RankingView } from "../../shared/ranking";
 import { settle } from "../../shared/settle";
 import { fromSave, type GameState } from "../../shared/state";
-import type { OfflineReport } from "../../shared/sync";
+import { MAX_INTENTS_PER_SYNC, type OfflineReport } from "../../shared/sync";
 import type { Transport } from "../net/transport";
 
 // The client's copy of the game: the last state the server confirmed, plus what the player has done
@@ -93,8 +93,10 @@ export class GameStore {
     if (this.busy) return;
     if (this.pending.length === 0 && this.clock() - this.lastSyncAt < GameStore.HEARTBEAT_MS) return;
     this.busy = true;
-    this.inFlight = this.pending;
-    this.pending = [];
+    // The server takes at most MAX_INTENTS_PER_SYNC a sync (more are turned down): the rest wait for
+    // the next one (a long time offline can queue many).
+    this.inFlight = this.pending.slice(0, MAX_INTENTS_PER_SYNC);
+    this.pending = this.pending.slice(MAX_INTENTS_PER_SYNC);
     try {
       const sent = this.clock();
       const result = await this.transport.sync(this.inFlight.map(({ intent, at }) => ({ ...intent, at })));
