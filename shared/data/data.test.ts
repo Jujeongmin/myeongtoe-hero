@@ -16,6 +16,17 @@ describe("floors", () => {
     expect(killGoldMult(100, 3)).toBe(1);
   });
 
+  test("floors 1-3 are a warm-up: a new player's 공격력 (50) kills a monster in 2-3 hits, easing into the usual health by floor 6", () => {
+    const hits = (f: number) => Math.ceil(targetHp(f, 0).toNumber() / gearAtk(0, 0).toNumber());
+    expect([1, 2, 3].map(hits).every((n) => n >= 2 && n <= 3)).toBe(true);
+    for (const f of [6, 10, 100]) expect(targetHp(f, 0).div(normalHp(f)).toNumber()).toBeCloseTo(1, 9);
+    // Each floor still harder than the one before.
+    for (let f = 1; f < 8; f++) expect(targetHp(f + 1, 0).cmp(targetHp(f, 0))).toBe(1);
+    // Their bosses: ×2 on floors 1-3 (a few seconds each), the usual ×5 from floor 4.
+    expect(targetHp(1, 4).div(targetHp(1, 0)).toNumber()).toBeCloseTo(2, 9);
+    expect(targetHp(4, 4).div(targetHp(4, 0)).toNumber()).toBeCloseTo(5, 9);
+  });
+
   test("health: 570 on floor 1, 10% more a floor, 5% from floor 600", () => {
     expect(normalHp(1).toNumber()).toBeCloseTo(570, 6);
     const growth = (f: number) => normalHp(f + 1).div(normalHp(f)).toNumber();

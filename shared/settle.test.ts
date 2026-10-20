@@ -23,8 +23,8 @@ describe("heroDps", () => {
 
 describe("settleBattle", () => {
   test("kills a monster when enough time has passed, keeping the rest", () => {
-    const dps = Big.of(570);
-    const tpk = fightSec(1, 0, dps) + WALK_SEC; // 570 hp / 570 dps + 0.5 s walk = 1.5 s
+    const dps = targetHp(1, 0); // a floor-1 monster's health a second
+    const tpk = fightSec(1, 0, dps) + WALK_SEC; // 1 s of fighting + 0.5 s walk = 1.5 s
     expect(tpk).toBeCloseTo(1.5, 9);
     const { run, gold } = settleBattle(fresh(), P(dps), 3.5);
     expect(run.target).toBe(2);

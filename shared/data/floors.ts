@@ -43,9 +43,18 @@ export function normalHp(floor: number): Big {
 }
 
 // The health of the `target`-th monster (0-based) on this floor.
+// The first floors are a warm-up (2026-10-20, most new players left before their first upgrade):
+// a new player's 공격력 (50) kills a monster on floors 1-3 in 2-3 hits, and floors 4-5 ease into
+// the usual health. Their share of the usual health, by floor; their bosses have ×2, not ×5, so
+// none takes more than a few seconds.
+export const WARM_UP: Readonly<Record<number, number>> = { 1: 0.175, 2: 0.225, 3: 0.215, 4: 0.5, 5: 0.75 };
+export const WARM_UP_BOSS_FLOORS = 3;
+export const WARM_UP_BOSS_MULT = 2;
+
 export function targetHp(floor: number, target: number): Big {
-  const hp = normalHp(floor);
-  return isBoss(target) ? hp.mulN(bossMult(floor)) : hp;
+  const hp = normalHp(floor).mulN(WARM_UP[floor] ?? 1);
+  if (!isBoss(target)) return hp;
+  return hp.mulN(floor <= WARM_UP_BOSS_FLOORS ? WARM_UP_BOSS_MULT : bossMult(floor));
 }
 
 // How many normal kills' gold the `target`-th monster pays.
