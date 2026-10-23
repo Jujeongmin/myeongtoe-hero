@@ -22,6 +22,7 @@ const URLS = import.meta.glob(
     "../../art/story/*.png",
     "../../art/fx/*.png",
     "../../art/parking/*.png",
+    "../../art/pets/p_*.png",
     "../../art/story/src/ref_headhunter_cat.png",
   ],
   { eager: true, query: "?url", import: "default" },
@@ -154,7 +155,7 @@ export function image(path: string): HTMLImageElement | null {
 // Everything the battle screen can draw (Park and his costumes and weapons, monsters, backgrounds,
 // hit effects, the parking garage), loaded and decoded a few at a time while the game is idle, so
 // a new monster, boss or costume never appears mid-fight with a hitch while its image decodes.
-const BATTLE_ART = /^(park\/|parts\/suits\/strips\/|parts\/gear\/|backgrounds\/|monsters\/|fx\/|parking\/)/;
+const BATTLE_ART = /^(park\/|parts\/suits\/strips\/|parts\/gear\/|backgrounds\/|monsters\/|fx\/|parking\/|pets\/p_)/;
 let preloading = false;
 export function preloadBattleArt(): void {
   if (preloading || typeof window === "undefined") return;

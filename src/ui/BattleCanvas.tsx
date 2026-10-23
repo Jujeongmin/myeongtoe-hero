@@ -11,6 +11,7 @@ import { coinLanded, coinLaunched } from "../game/coins";
 import { PARK_CHEST_EVERY, PARK_RUN_SEC, PARK_STEP_SEC, parkHp, parkMeterSec } from "../../shared/data/parking";
 import { ANIMS, ATTACK_IMPACT_FRAME, BASELINE_Y, HP_BAR, backgroundFile, image, imageUrl, monsterFor, preloadBattleArt, type Anim, type MonsterSprite } from "../game/sprites";
 import { drawPark, visibleWear } from "../game/drawPark";
+import { petsUnlocked } from "../../shared/data/pets";
 import { t } from "../i18n";
 
 // The battle scene in the screen's real (device) pixels, every picture drawn at a whole number of
@@ -77,6 +78,9 @@ interface Sim {
   chest: { x: number; since: number } | null;
   // A boss Park ran out of time on, walking off the way it came, facing away.
   escaped: { monster: MonsterSprite; since: number } | null;
+  // The colleagues following Park: when each last did its thing and is hopping until, and when the
+  // last kill and the last monster's arrival happened (some act on those).
+  crew: { acted: Record<string, number>; hopUntil: Record<string, number>; killAt: number; arriveAt: number; walking: boolean };
 }
 
 const QUIP_MIN_MS = 25_000;
@@ -111,7 +115,7 @@ export function BattleCanvas({ state }: { state: GameState }) {
     let scroll = 0;
     let last = performance.now();
     const sim: Sim = {
-      kill: "", hits: 0, crits: [], flung: [], feverKey: "", feverDone: 0, hurtUntil: 0, dying: null, escaped: null, current: null, currentX: 0, announce: null, floor: 0, boss: false,
+      kill: "", hits: 0, crits: [], flung: [], feverKey: "", feverDone: 0, hurtUntil: 0, dying: null, escaped: null, crew: { acted: {}, hopUntil: {}, killAt: 0, arriveAt: 0, walking: true }, current: null, currentX: 0, announce: null, floor: 0, boss: false,
       quipAt: performance.now() + QUIP_MIN_MS * Math.random(), fx: [], shakeUntil: 0, chest: null,
     };
     const loop = (now: number) => {
@@ -355,6 +359,7 @@ function draw(
         sim.flung.push({ monster: sim.current, since: now, spin: 6 + Math.random() * 6, rise: 0.7 + Math.random() * 0.4 });
         sim.fx.push({ crit: true, x: contactX + 8, y: floorY - 28, since: now });
       } else sim.dying = { monster: sim.current, x: contactX, since: now, hold: 0, scroll };
+      sim.crew.killAt = now;
       sfx("kill");
       // Its gold flies into the counter (more coins for a boss); the garage pays in chests instead.
       if (!sim.kill.startsWith("p:")) coins(contactX + sim.current.size / 2, floorY - sim.current.size / 2, sim.boss ? 8 : 3);
@@ -525,6 +530,9 @@ function draw(
     const phase = (into % interval) / interval;
     fi = Math.min(ANIMS.attack.frames.length - 1, Math.floor(phase * ANIMS.attack.frames.length));
   }
+  if (sim.crew.walking && !walking) sim.crew.arriveAt = now;
+  sim.crew.walking = walking;
+  drawCrew(ctx, state, sim, now, parkX, floorY, walking ? "walk" : monster ? "fight" : "stand", monsterX + (monster?.size ?? 0) * 0.35, coins);
   drawPark(ctx, visibleWear(state), state.gear.tier, anim, fi, parkX, floorY - BASELINE_Y, now);
 
   if (monster) {
@@ -663,6 +671,7 @@ function drawFever(
 function drawDash(
   ctx: CanvasRenderingContext2D, state: GameState, sim: Sim, now: number, parkX: number, contactX: number, floorY: number, w: number,
 ): void {
+  drawCrew(ctx, state, sim, now, parkX, floorY, "dash", contactX, () => undefined);
   const flame = image(FEVER_FLAME.file);
   if (flame) {
     const f = Math.floor(now / FEVER_FLAME.ms) % FEVER_FLAME.frames;
@@ -690,4 +699,54 @@ function drawDash(
     ctx.restore();
   }
   drawHitFx(ctx, sim, now);
+}
+
+// ---- 동료 ----
+
+// The colleagues who have joined follow Park in two rows, small (art/pets, 30 px tall in 32 px
+// frames): the first three in front, the rest a step behind and higher. They bob as they walk, and
+// each does its thing now and then with a hop and a burst where it lands (the numbers are the
+// rules' own; this only shows them at work).
+const CREW_FRONT = 3;
+const CREW_GAP = 15;
+const HOP_MS = 220;
+// How often each acts (ms), or on what: a kill, or a new monster walking up.
+const CREW_ACT: Record<string, number | "kill" | "arrive"> = {
+  p_intern: 2_500, p_jumim: 20_000, p_daeri: "arrive", p_gongju: 5_000, p_oh: "kill", p_hong: 2_000, p_minam: "arrive",
+};
+
+function drawCrew(
+  ctx: CanvasRenderingContext2D, state: GameState, sim: Sim, now: number, parkX: number, floorY: number,
+  mode: "walk" | "fight" | "stand" | "dash", targetX: number, coins: (x: number, y: number, n: number) => void,
+): void {
+  const crew = petsUnlocked(state.bestFloor);
+  if (crew.length === 0) return;
+  const front = parkX + 29;
+  const slots = crew.map((pet, i) => {
+    const back = i >= CREW_FRONT;
+    const k = back ? i - CREW_FRONT + 1 : i + 1;
+    return { pet, back, k, cx: front - CREW_GAP * k + (back ? 7 : 0), feet: floorY - (back ? 5 : 0) };
+  });
+  // The back row first, so the front row stands over it.
+  for (const s of [...slots.filter((x) => x.back), ...slots.filter((x) => !x.back)]) {
+    const img = image(`pets/${s.pet.id}.png`);
+    if (!img) continue;
+    const id = s.pet.id;
+    if (mode === "fight") {
+      const act = CREW_ACT[id];
+      const due = typeof act === "number"
+        ? now - (sim.crew.acted[id] ?? 0) >= act
+        : (act === "kill" ? sim.crew.killAt : sim.crew.arriveAt) > (sim.crew.acted[id] ?? 0);
+      if (due) {
+        sim.crew.acted[id] = now;
+        sim.crew.hopUntil[id] = now + HOP_MS;
+        if (id === "p_jumim") coins(s.cx, s.feet - 18, 2);
+        else if (id === "p_gongju" || id === "p_oh") sim.fx.push({ crit: false, x: s.cx, y: s.feet - 30, since: now });
+        else sim.fx.push({ crit: id === "p_minam", x: targetX, y: floorY - 20, since: now });
+      }
+    }
+    const hop = (sim.crew.hopUntil[id] ?? 0) > now ? Math.round(3 * Math.sin(((sim.crew.hopUntil[id] - now) / HOP_MS) * Math.PI)) : 0;
+    const step = mode === "walk" || mode === "dash" ? Math.floor(now / (mode === "dash" ? 70 : 140) + s.k) % 2 : 0;
+    ctx.drawImage(img, Math.round(s.cx - 16), Math.round(s.feet - 31 - step - hop));
+  }
 }
