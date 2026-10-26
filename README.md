@@ -18,8 +18,7 @@
 25년 다닌 회사에서 명예퇴직을 당한 박부장은 대출금과 학원비를 갚으려고 용사로 이직한다.
 무대는 마왕그룹 본사 빌딩. 층은 끝이 없고, 볼펜 한 자루로 몬스터를 잡아 돈을 번다.
 
-돈을 벌어 강해지고, 벽에 막히면 이직해서 더 높이 오르는 루프를 직장인 개그로 풀었다.
-전투 조작은 없다. 켜 두기만 하면 된다.
+돈을 벌어 강해지고, 벽에 막히면 연봉협상해서 더 높이 오르는 루프이다.
 
 ## 게임 화면
 
@@ -35,7 +34,7 @@
 
 ## 플레이
 
-Verse8에서 바로 할 수 있다: **https://verse8.io/h3t6S8h**
+Verse8 플랫폼에서 바로 플레이 가능: **https://verse8.io/h3t6S8h**
 
 ## 개발
 
@@ -54,5 +53,3 @@ npm run server:test
 - 배포 규칙: [docs/VERSE8.md](docs/VERSE8.md)
 - 설계: [docs/superpowers/specs/2026-10-06-myeongtoe-hero-design.md](docs/superpowers/specs/2026-10-06-myeongtoe-hero-design.md)
 - 아트: [art/README.md](art/README.md)
-
-효과음·배경음 파일(`art/audio/*.mp3`)은 라이선스 때문에 이 저장소에 없다.
