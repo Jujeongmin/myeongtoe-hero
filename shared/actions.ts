@@ -21,7 +21,7 @@ import { PET_BOX_COUPONS, findPet, petLevelCost, petsUnlocked } from "./data/pet
 import { PRESTIGE_MIN_FLOOR, PRESTIGE_MODES, PRESTIGE_MOVE_MS, type PrestigeMode } from "./data/prestige";
 import { findRelic, relicLevelCost } from "./data/relics";
 import { SIDE_JOB_MAX_LEVEL, findSideJob } from "./data/sideJobs";
-import { parkPassMax, petLevel, relicLevel } from "./mods";
+import { parkPassMax, petLevel, petMaxLevel, relicLevel } from "./mods";
 import { vipPerks } from "./vip";
 import { nextRandom } from "./rng";
 import { gearLevelCostFor, gearPriceFor, sideJobCostFor } from "./prices";
@@ -61,6 +61,7 @@ export type Intent =
   | { k: "readStory"; id: string }
   | { k: "challengeBoss" }
   | { k: "claimParking" }
+  | { k: "skipParking" }
   | { k: "upgradeOffice"; part: OfficePart }
   | { k: "enterParking" }
   | { k: "feedParking" }
@@ -106,6 +107,7 @@ export function readIntent(raw: unknown): Intent | null {
     case "toggleSpeed":
     case "challengeBoss":
     case "claimParking":
+    case "skipParking":
       return { k: r.k };
     case "levelPet":
     case "levelRelic":
@@ -236,13 +238,16 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
       if (!pet) throw new RuleError("unknown");
       if (s.bestFloor < pet.unlockFloor) throw new RuleError("locked");
       const level = petLevel(s, pet.id);
+      if (level >= petMaxLevel(s, pet.id)) throw new RuleError("max");
       spendGems(s, petLevelCost(level));
       s.pets[pet.id] = level + 1;
       return s;
     }
     case "petBox": {
-      const pool = petsUnlocked(s.bestFloor);
-      if (pool.length === 0) throw new RuleError("locked");
+      // Among the joined colleagues not at their max level.
+      if (petsUnlocked(s.bestFloor).length === 0) throw new RuleError("locked");
+      const pool = petsUnlocked(s.bestFloor).filter((p) => petLevel(s, p.id) < petMaxLevel(s, p.id));
+      if (pool.length === 0) throw new RuleError("max");
       spendCoupons(s, PET_BOX_COUPONS);
       const draw = nextRandom(s.rngSeed);
       s.rngSeed = draw.seed;
@@ -392,6 +397,12 @@ export function applyIntent(state: GameState, intent: Intent): GameState {
     case "toggleSpeed": {
       if (!s.vx.premium) throw new RuleError("locked");
       s.speed = { ...s.speed, on: !s.speed.on };
+      return s;
+    }
+    case "skipParking": {
+      // 스킵: the run's result was settled when it began; end it now and show it.
+      if (s.parking.runUntil <= s.lastTick) throw new RuleError("not_running");
+      s.parking = { ...s.parking, runUntil: s.lastTick };
       return s;
     }
     case "claimParking": {

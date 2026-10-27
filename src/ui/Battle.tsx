@@ -119,6 +119,7 @@ export function Battle({ state, store, dots, onOpen, onGo, getMore }: {
         </span>
         {ready && <i className="dot" />}
       </button>
+      {parked && <button className="park-skip" onClick={() => store.do({ k: "skipParking" })}>{t("스킵")} ▶▶</button>}
       {farming && !parked && (
         <button className="boss-btn" onClick={() => store.do({ k: "challengeBoss" })}>
           <span className="boss-face">{bossSprite && <SpriteThumb path={bossSprite.anims.idle.file} frame={bossSprite.size} res={20} size={20} head />}</span>

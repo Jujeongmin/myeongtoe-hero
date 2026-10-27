@@ -99,3 +99,23 @@ describe("동료 levels show what they give", () => {
     expect(mods(low).extraHitPerSec / before).toBeCloseTo(1.2, 6);
   });
 });
+
+describe("동료 max levels", () => {
+  test("a colleague whose effect has stopped growing can't be levelled further (no gems for nothing)", async () => {
+    const { petEffect, petMaxLevel } = await import("./mods");
+    const { applyIntent } = await import("./actions");
+    const s = newState(0);
+    s.bestFloor = 1000;
+    s.gems = 1e9;
+    for (const pet of PETS.filter((p) => p.unlockFloor <= 1000)) {
+      const max = petMaxLevel(s, pet.id);
+      if (max === Infinity) continue;
+      // Up to the max each level still changes the number; past it nothing would.
+      expect(petEffect(s, pet.id, max).value, pet.id).not.toBe(petEffect(s, pet.id, max - 1).value);
+      expect(petEffect(s, pet.id, max + 1).value, pet.id).toBe(petEffect(s, pet.id, max).value);
+      s.pets[pet.id] = max;
+      expect(() => applyIntent(s, { k: "levelPet", id: pet.id }), pet.id).toThrow("max");
+    }
+    expect(petMaxLevel(s, "p_intern")).toBe(Infinity);
+  });
+});

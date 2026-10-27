@@ -19,7 +19,7 @@ NAME = "명퇴용사 박부장"
 # (phone screens by raw number, background, headline, two lines of copy, phones on the left?)
 SLIDES = [
     ([1], "bg_sales", "명퇴당한 박부장, 다시 출근!", "볼펜 하나로 마왕그룹 몬스터를 처치\n쉬는 동안에도 자동 전투로 쑥쑥", True),
-    ([3], "bg_general_affairs", "업무를 키워 골드 벌기", "복사하기부터 회장님 보고까지\n25가지 업무로 수입 UP", False),
+    ([3], "bg_general_affairs", "업무를 키워 골드 벌기", "복사하기부터 회장님 보고까지\n35가지 업무로 수입 UP", False),
     ([4], "bg_dev", "코스튬으로 박부장 꾸미기", "입기만 해도 능력치 UP\n세트와 오라까지 모아 보자", True),
     ([5], "bg_legal", "층을 오르면 열리는 웹툰", "52세 박부장의\n눈물겨운 재취업 이야기", False),
     ([6, 7], "bg_executive", "연봉협상으로 더 강하게", "응시권으로 자격증을 따고\n피버타임으로 단숨에 질주", True),

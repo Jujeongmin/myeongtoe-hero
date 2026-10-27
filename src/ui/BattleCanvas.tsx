@@ -314,7 +314,12 @@ function draw(
   const fighting = Number.isFinite(perKill) && perKill > 0;
   const kills = parking ? 0 : fighting ? Math.floor(elapsed / perKill) : 0;
   const t = parking ? parking.t : fighting ? elapsed - kills * perKill : 0;
-  const walking = t < walkSec || !Number.isFinite(fight);
+  // On screen a swing never lasts less than MIN_SWING_SEC: a fight quicker than that (most of them
+  // once Park is strong) takes its time from the walk before it, so the attack is always seen. The
+  // kill still lands when the rules say (perKill is unchanged).
+  const shownFight = Number.isFinite(fight) ? Math.min(perKill, Math.max(fight, MIN_SWING_SEC)) : fight;
+  const shownWalk = Number.isFinite(fight) ? perKill - shownFight : walkSec;
+  const walking = t < shownWalk || !Number.isFinite(fight);
   // 피버타임: Park charges through the floors the run had reached before the 연봉협상.
   const fever = !parking && feverActive(state, serverNow);
   // The garage's first meters, beaten in a blink each: Park dashes through them the fever's way.
@@ -447,13 +452,13 @@ function draw(
   }
 
   // Hits: n of them over the fight, each landing at the impact point of its own swing.
-  const n = Number.isFinite(fight) ? Math.max(1, Math.round(fight / Math.max(MIN_SWING_SEC, power.hitSec))) : 1;
-  const interval = Number.isFinite(fight) && n > 0 ? fight / n : 1;
-  const into = walking ? 0 : t - walkSec;
+  const n = Number.isFinite(fight) ? Math.max(1, Math.round(shownFight / Math.max(MIN_SWING_SEC, power.hitSec))) : 1;
+  const interval = Number.isFinite(fight) && n > 0 ? shownFight / n : 1;
+  const into = walking ? 0 : t - shownWalk;
   const landed = walking ? 0 : Math.min(n, Math.floor(into / interval + (1 - IMPACT_AT)));
   const monster = sim.current;
   const monsterX = walking
-    ? Math.round(w + 8 + (contactX - (w + 8)) * Math.min(1, t / Math.max(0.001, walkSec * 0.9)))
+    ? Math.round(w + 8 + (contactX - (w + 8)) * Math.min(1, t / Math.max(0.001, shownWalk * 0.9)))
     : contactX;
   sim.currentX = monsterX;
 

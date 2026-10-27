@@ -58,7 +58,7 @@ describe("state", () => {
     const s = fromSave(save);
     expect(s.run).toEqual({ floor: 1, target: 0, carrySec: 0, farming: false, maxFloor: 1, gearBoost: 0 });
     expect(Object.keys(s.sideJobs)).toEqual(["j00"]);
-    expect(s.gear).toEqual({ tier: 29, level: 3, confirmed: 0 });
+    expect(s.gear).toEqual({ tier: 39, level: 3, confirmed: 0 });
   });
 
   test("a clone shares nothing mutable with the original", () => {

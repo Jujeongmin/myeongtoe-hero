@@ -47,14 +47,19 @@ function attempt(s: GameState, intent: Intent): GameState | null {
 // that is no dearer (gear first while a boss blocks the run), until nothing fits.
 function spendGold(s: GameState): GameState {
   for (let i = 0; i < 2000; i++) {
+    // The best income per gold among the levels it can pay for now (a player does not save up for
+    // a job far out of reach); with none affordable, the cheapest next one.
     let job: { id: string; cost: Big; ratio: number } | null = null;
+    let cheapest: { id: string; cost: Big; ratio: number } | null = null;
     for (const j of SIDE_JOBS) {
       const lv = s.sideJobs[j.id]?.level ?? 0;
       const cost = sideJobCostFor(s, j, lv);
       const gain = sideJobIncome(j, lv + 1).sub(sideJobIncome(j, lv)).mulN(1 / sideJobCycle(j, lv + 1));
       const ratio = gain.div(cost).toNumber();
-      if (!job || ratio > job.ratio) job = { id: j.id, cost, ratio };
+      if (!cheapest || cost.cmp(cheapest.cost) < 0) cheapest = { id: j.id, cost, ratio };
+      if (cost.cmp(s.gold) <= 0 && (!job || ratio > job.ratio)) job = { id: j.id, cost, ratio };
     }
+    job = job ?? cheapest;
     const gearIntent: Intent | null = s.gear.level < GEAR_MAX_LEVEL ? { k: "levelGear" } : s.gear.tier + 1 < GEAR_TIERS.length ? { k: "buyGear" } : null;
     const gearCost = s.gear.level < GEAR_MAX_LEVEL ? gearLevelCostFor(s, s.gear.tier, s.gear.level) : gearPriceFor(s, Math.min(s.gear.tier + 1, GEAR_TIERS.length - 1));
     const gearFirst = gearIntent && (s.run.farming || !job || gearCost.cmp(job.cost) <= 0);

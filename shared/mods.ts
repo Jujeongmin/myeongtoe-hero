@@ -214,6 +214,24 @@ export function petEffect(s: GameState, id: string, lv: number): { text: string;
   return { text, value };
 }
 
+// The level past which a colleague's effect stops growing (박주임, 최대리 and 공주임 at 31, 꽃미남
+// 실장 sooner the more awakened): levelling further would spend 보석 for nothing, so the rules stop
+// there. Infinity for the ones that grow forever. Effects only grow and then level off, so the
+// first level whose next adds nothing is found by halving.
+const PET_LEVEL_SEARCH = 5000;
+export function petMaxLevel(s: GameState, id: string): number {
+  const flat = (lv: number) => petNumbers(s, id, lv + 1).value === petNumbers(s, id, lv).value;
+  if (!flat(PET_LEVEL_SEARCH)) return Infinity;
+  let lo = 1;
+  let hi = PET_LEVEL_SEARCH;
+  while (lo < hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (flat(mid)) hi = mid;
+    else lo = mid + 1;
+  }
+  return lo;
+}
+
 function applyPets(s: GameState, m: Mods): void {
   for (const pet of petsUnlocked(s.bestFloor)) {
     const n = petNumbers(s, pet.id, petLevel(s, pet.id));

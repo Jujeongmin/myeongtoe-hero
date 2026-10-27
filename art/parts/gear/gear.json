@@ -688,6 +688,202 @@
     7,
     9
    ]
+  },
+  {
+   "id": 30,
+   "file": "g30.png",
+   "name": "황금 명패",
+   "size": [
+    24,
+    12
+   ],
+   "grip": [
+    6,
+    10
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g30.png",
+   "scaledSize": [
+    13,
+    6
+   ],
+   "scaledGrip": [
+    6,
+    4
+   ]
+  },
+  {
+   "id": 31,
+   "file": "g31.png",
+   "name": "회장실 열쇠",
+   "size": [
+    12,
+    24
+   ],
+   "grip": [
+    8,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 1
+  },
+  {
+   "id": 32,
+   "file": "g32.png",
+   "name": "인수 계약서",
+   "size": [
+    15,
+    24
+   ],
+   "grip": [
+    6,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g32.png",
+   "scaledSize": [
+    8,
+    13
+   ],
+   "scaledGrip": [
+    3,
+    11
+   ]
+  },
+  {
+   "id": 33,
+   "file": "g33.png",
+   "name": "그룹 깃발",
+   "size": [
+    20,
+    24
+   ],
+   "grip": [
+    1,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 1
+  },
+  {
+   "id": 34,
+   "file": "g34.png",
+   "name": "황금 지휘봉",
+   "size": [
+    12,
+    24
+   ],
+   "grip": [
+    5,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 1
+  },
+  {
+   "id": 35,
+   "file": "g35.png",
+   "name": "회장님 지팡이",
+   "size": [
+    10,
+    24
+   ],
+   "grip": [
+    3,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 1
+  },
+  {
+   "id": 36,
+   "file": "g36.png",
+   "name": "황금 확성기",
+   "size": [
+    24,
+    24
+   ],
+   "grip": [
+    8,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.542,
+   "scaledFile": "scaled/g36.png",
+   "scaledSize": [
+    13,
+    13
+   ],
+   "scaledGrip": [
+    4,
+    11
+   ]
+  },
+  {
+   "id": 37,
+   "file": "g37.png",
+   "name": "황금 우산",
+   "size": [
+    7,
+    24
+   ],
+   "grip": [
+    5,
+    22
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 1
+  },
+  {
+   "id": 38,
+   "file": "g38.png",
+   "name": "빛나는 명함",
+   "size": [
+    23,
+    18
+   ],
+   "grip": [
+    13,
+    16
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 0.565,
+   "scaledFile": "scaled/g38.png",
+   "scaledSize": [
+    13,
+    10
+   ],
+   "scaledGrip": [
+    5,
+    8
+   ]
+  },
+  {
+   "id": 39,
+   "file": "g39.png",
+   "name": "마왕의 홀",
+   "size": [
+    10,
+    23
+   ],
+   "grip": [
+    5,
+    21
+   ],
+   "angle": -90,
+   "hang": false,
+   "scale": 1
   }
  ],
  "scaleNote": "scale = draw size multiplier so bulky items stay within ~30% of Park's 44px body height (max 13px). A pre-scaled pixel-clean copy is in scaledFile with scaledGrip; prefer it over scaling at runtime. Long, thin items keep scale 1."

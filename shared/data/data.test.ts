@@ -49,9 +49,10 @@ describe("floors", () => {
 });
 
 describe("gear", () => {
-  test("30 tiers with unique ids, the first one free", () => {
-    expect(GEAR_TIERS).toHaveLength(30);
-    expect(new Set(GEAR_TIERS.map((g) => g.id)).size).toBe(30);
+  test("40 tiers with unique ids and names, the first one free", () => {
+    expect(GEAR_TIERS).toHaveLength(40);
+    expect(new Set(GEAR_TIERS.map((g) => g.id)).size).toBe(40);
+    expect(new Set(GEAR_TIERS.map((g) => g.name)).size).toBe(40);
     expect(gearPrice(0).isZero()).toBe(true);
   });
 
@@ -72,9 +73,17 @@ describe("gear", () => {
 });
 
 describe("side jobs", () => {
-  test("25 jobs, unique ids, all open from the start", () => {
-    expect(SIDE_JOBS).toHaveLength(25);
-    expect(new Set(SIDE_JOBS.map((j) => j.id)).size).toBe(25);
+  test("35 jobs, unique ids and names, all open from the start, each a minute or less", () => {
+    expect(SIDE_JOBS).toHaveLength(35);
+    expect(new Set(SIDE_JOBS.map((j) => j.id)).size).toBe(35);
+    expect(new Set(SIDE_JOBS.map((j) => j.name)).size).toBe(35);
+    expect(SIDE_JOBS.every((j) => j.baseCycleSec <= 60)).toBe(true);
+    // Each next job costs more and earns more a second than the one before.
+    for (let i = 1; i < SIDE_JOBS.length; i++) {
+      const [a, b] = [SIDE_JOBS[i - 1], SIDE_JOBS[i]];
+      expect(b.baseCost.cmp(a.baseCost)).toBe(1);
+      expect(b.baseIncome.mulN(1 / b.baseCycleSec).cmp(a.baseIncome.mulN(1 / a.baseCycleSec))).toBe(1);
+    }
     expect(SIDE_JOBS.every((j) => j.unlockFloor === 1)).toBe(true);
     expect(findSideJob(SIDE_JOBS[3].id)).toBe(SIDE_JOBS[3]);
     expect(findSideJob("nope")).toBeUndefined();

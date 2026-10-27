@@ -170,3 +170,19 @@ describe("지하주차장 각성", () => {
     expect(after.parking.last?.warped).toBe(runParking(heroPower(fed), true).warped);
   });
 });
+
+describe("skipping a parking run", () => {
+  test("ends the run at once with the result it was always going to have; nothing to skip otherwise", () => {
+    const s = played(0);
+    s.parking = { ...s.parking, passes: 3 };
+    const entered = applyIntent(settle(s, 1000), { k: "enterParking" });
+    const result = entered.parking.last;
+    const skipped = applyIntent(settle(entered, 5000), { k: "skipParking" });
+    expect(skipped.parking.runUntil).toBe(5000);
+    expect(skipped.parking.last).toEqual(result);
+    expect(skipped.parking.claimed).toBe(false); // the result screen shows, to be claimed
+    const claimed = applyIntent(skipped, { k: "claimParking" });
+    expect(claimed.tickets - skipped.tickets).toBe(result!.tickets);
+    expect(() => applyIntent(claimed, { k: "skipParking" })).toThrow("not_running");
+  });
+});
