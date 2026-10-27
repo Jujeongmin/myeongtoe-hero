@@ -75,3 +75,27 @@ describe("pet effects", () => {
     expect(settleBattle(newState(0).run, heroPower(at(1)), 10).kills).toBeGreaterThan(0);
   });
 });
+
+describe("동료 levels show what they give", () => {
+  test("each level raises the effect, and the panel's text is the rules' own numbers", async () => {
+    const { petEffect } = await import("./mods");
+    const s = newState(0);
+    s.bestFloor = 1500;
+    for (const pet of PETS.filter((p) => p.unlockFloor <= 1500)) {
+      const one = petEffect(s, pet.id, 1);
+      const ten = petEffect(s, pet.id, 10);
+      expect(ten.value, pet.id).not.toBe(one.value);
+      expect(one.text, pet.id).toContain("{v}");
+    }
+    // 김인턴: Lv1 hits for 100% every 2.5 s, +10% a level (awakening doubles it from floor 1200).
+    const low = newState(0);
+    low.bestFloor = 150;
+    expect(petEffect(low, "p_intern", 1).value).toBeCloseTo(100, 6);
+    expect(petEffect(low, "p_intern", 3).value).toBeCloseTo(120, 6);
+    // A level up changes the hero's power the same way.
+    low.pets = { p_intern: 1 };
+    const before = mods(low).extraHitPerSec;
+    low.pets = { p_intern: 3 };
+    expect(mods(low).extraHitPerSec / before).toBeCloseTo(1.2, 6);
+  });
+});

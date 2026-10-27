@@ -217,7 +217,7 @@ function settleSpan(start: GameState, to: number): GameState {
   return next;
 }
 
-// 박주임: the dearest owned side job's income, once every sideJobPaySec seconds (counted
+// 박주임: the dearest owned side job's income (bonusSec of it), once every sideJobPaySec seconds (counted
 // continuously, so splitting the time changes nothing).
 function paidBySideJobPet(s: GameState, m: Mods, dt: number): Big {
   if (m.sideJobPaySec <= 0) return Big.ZERO;
@@ -225,7 +225,8 @@ function paidBySideJobPet(s: GameState, m: Mods, dt: number): Big {
   for (const [id, own] of Object.entries(s.sideJobs)) {
     const job = findSideJob(id);
     if (!job || own.level === 0) continue;
-    const income = sideJobIncome(job, own.level);
+    // A job's bonusSec of its income: one pay of the (longer) cycle it used to have.
+    const income = sideJobIncome(job, own.level).mulN(job.bonusSec / sideJobCycle(job, own.level));
     if (income.cmp(best) > 0) best = income;
   }
   return best.mulN((dt / m.sideJobPaySec) * m.sideJobPayMult * m.sideJobMult);

@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { applyIntent, RuleError } from "./actions";
 import { Big } from "./big";
 import { BOSS_LIMIT_SEC } from "./data/floors";
-import { PARK_AWAKEN, PARK_CHEST_EVERY, PARK_PASS_MAX, PARK_RECHARGE_SEC, PARK_WARP_MAX, chestTickets, runParking } from "./data/parking";
+import { PARK_AWAKEN, PARK_CHEST_EVERY, PARK_PASS_MAX, PARK_RECHARGE_SEC, PARK_RUN_SEC, PARK_WARP_MAX, chestTickets, parkHp, runParking } from "./data/parking";
 import { dailyOf } from "./daily";
 import { settle } from "./settle";
 import { newState, type GameState } from "./state";
@@ -25,9 +25,25 @@ function code(s: GameState): string {
 }
 
 describe("a parking run", () => {
-  test("30 seconds deep; a chest every 20 m with exponentially more tickets", () => {
+  test("past 149 m: a strong player goes on deeper, as deep as their damage carries them", () => {
+    // Every meter used to cost a fixed 0.2 s step, so no 30 s run could pass 149 m.
+    const strong = runParking(P(parkHp(400).mulN(10)));
+    expect(strong.depth).toBeGreaterThan(300);
+    // Deeper monsters take real fights (×1.1 health a meter): ten times the damage is only ~25 m more.
+    const stronger = runParking(P(parkHp(400).mulN(100)));
+    expect(stronger.depth - strong.depth).toBeGreaterThan(10);
+    expect(stronger.depth - strong.depth).toBeLessThan(60);
+    // However strong, the steps alone keep a run finite.
+    expect(runParking(P(Big.of(1, 300))).depth).toBeLessThanOrEqual(PARK_RUN_SEC / 0.02);
+  });
+
+  test("chest tickets: ×1.25 a chest up to the 7th (150 m, as before), then ×1.08", () => {
+    expect([1, 2, 7].map(chestTickets)).toEqual([1, 1, Math.floor(1.25 ** 6)]);
+    expect(chestTickets(20)).toBe(Math.floor(1.25 ** 6 * 1.08 ** 13));
+  });
+
+  test("30 seconds deep; a chest every 20 m with more tickets the deeper", () => {
     expect(chestTickets(1)).toBe(1);
-    expect(chestTickets(10)).toBe(Math.floor(1.25 ** 9));
     const weak = runParking(P(Big.of(100)));
     expect(weak.depth).toBeGreaterThan(0);
     const strong = runParking(P(Big.of(1, 6)));

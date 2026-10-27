@@ -1,10 +1,16 @@
 import { t } from "../i18n";
 import { PETS, PET_BOX_COUPONS, awakenStage, petBoxChance, petLevelCost } from "../../shared/data/pets";
-import { petLevel } from "../../shared/mods";
+import { petEffect, petLevel } from "../../shared/mods";
 import type { GameState } from "../../shared/state";
 import type { GameStore } from "../game/store";
 import { Amount } from "./Amount";
 import { Icon } from "./Icon";
+
+// What a colleague does at a level, in its own words with the rules' number (shared/mods petEffect).
+function effectLine(state: GameState, id: string, level: number): string {
+  const { text, value } = petEffect(state, id, level);
+  return t(text, { v: String(Math.round(value * 100) / 100) });
+}
 
 export function PetPanel({ state, store }: { state: GameState; store: GameStore }) {
   const stage = awakenStage(state.bestFloor);
@@ -36,7 +42,8 @@ export function PetPanel({ state, store }: { state: GameState; store: GameStore 
           <div key={pet.id} className="row">
             <div className="grow">
               <b>{t(pet.name)}</b> Lv{level}
-              <div className="sub">{t(pet.text)}</div>
+              <div className="sub">{effectLine(state, pet.id, level)}</div>
+              <div className="sub pet-next">{t("다음 Lv")}: {effectLine(state, pet.id, level + 1)}</div>
             </div>
             <button className={state.gems < cost ? "" : "hot"} disabled={state.gems < cost} onClick={() => store.do({ k: "levelPet", id: pet.id })}>
               {t("레벨업")}<br /><Amount icon="gem" value={cost} />

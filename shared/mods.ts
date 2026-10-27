@@ -166,44 +166,83 @@ function applyRelics(s: GameState, m: Mods): void {
   m.dmgMult *= 1 + 0.4 * relicLevel(s, "r_cards");
 }
 
-function applyPets(s: GameState, m: Mods): void {
+// What a colleague at level `lv` does, as one number (`value`, in the unit `text` puts it in) and
+// the numbers its effect on the mods is made of. Levels raise every one of them; awakening (every
+// 2000 floors) boosts them further. The 동료 panel shows `text` with `value`, now and at the next level.
+function petNumbers(s: GameState, id: string, lv: number) {
   const stage = awakenStage(s.bestFloor);
   const awake = stage >= 1;
   const boost = 1 + 0.1 * stage;
+  switch (id) {
+    case "p_intern": {
+      const hit = (1 + 0.1 * (lv - 1)) * boost * (awake ? 2 : 1) * (1 + 0.01 * relicLevel(s, "r_stamp"));
+      return { text: "2.5초마다 공격력 {v}% 추가 공격", value: 100 * hit, hit };
+    }
+    case "p_jumim": {
+      const paySec = Math.max(5, 20 - 0.5 * (lv - 1));
+      return { text: "{v}초마다 가장 비싼 업무 수입 지급", value: paySec, paySec, payMult: boost * (awake ? 2 : 1) };
+    }
+    case "p_daeri": {
+      const max = Math.min(0.6, 0.3 + 0.01 * (lv - 1));
+      const cut = Math.min(0.9, (((awake ? 0.01 : 0) + max) / 2) * boost);
+      return { text: "몬스터 등장 시 체력 평균 {v}% 압류", value: 100 * cut, cut };
+    }
+    case "p_gongju": {
+      const buffSec = Math.min(5, 2 + 0.1 * (lv - 1));
+      const per = 1 + ((2 * boost * (1 + 0.3 * relicLevel(s, "r_pin")) - 1) * (buffSec / 5)) / 3;
+      return { text: "5초마다 {v}초 랜덤 버프", value: buffSec, per, awake };
+    }
+    case "p_oh": {
+      const chance = (0.005 + 0.0005 * (lv - 1)) * boost * (awake ? 1.1 : 1);
+      return { text: "처치 시 {v}% 확률로 응시권", value: 100 * chance, chance };
+    }
+    case "p_hong": {
+      const drain = (0.01 + 0.0005 * (lv - 1)) * boost * (awake ? 2 : 1);
+      return { text: "2초마다 적 최대 체력 {v}% 감소", value: 100 * drain, drain };
+    }
+    case "p_minam": {
+      const cut = Math.min(0.5, (0.04 + 0.002 * (lv - 1)) * boost);
+      return { text: "몬스터 등장 시 체력 {v}% 감소", value: 100 * cut, cut, awake };
+    }
+    default:
+      return { text: "", value: 0 };
+  }
+}
+
+export function petEffect(s: GameState, id: string, lv: number): { text: string; value: number } {
+  const { text, value } = petNumbers(s, id, lv);
+  return { text, value };
+}
+
+function applyPets(s: GameState, m: Mods): void {
   for (const pet of petsUnlocked(s.bestFloor)) {
-    const lv = petLevel(s, pet.id);
+    const n = petNumbers(s, pet.id, petLevel(s, pet.id));
     switch (pet.id) {
       case "p_intern":
-        m.extraHitPerSec += (1 / 2.5) * (1 + 0.1 * (lv - 1)) * boost * (awake ? 2 : 1) * (1 + 0.01 * relicLevel(s, "r_stamp"));
+        m.extraHitPerSec += (n.hit ?? 0) / 2.5;
         break;
       case "p_jumim":
-        m.sideJobPaySec = Math.max(5, 20 - 0.5 * (lv - 1));
-        m.sideJobPayMult = boost * (awake ? 2 : 1);
+        m.sideJobPaySec = n.paySec ?? 0;
+        m.sideJobPayMult = n.payMult ?? 1;
         break;
-      case "p_daeri": {
-        const max = Math.min(0.6, 0.3 + 0.01 * (lv - 1));
-        const min = awake ? 0.01 : 0;
-        m.hpMult *= 1 - Math.min(0.9, ((min + max) / 2) * boost);
+      case "p_daeri":
+        m.hpMult *= 1 - (n.cut ?? 0);
         break;
-      }
-      case "p_gongju": {
-        const uptime = Math.min(5, 2 + 0.1 * (lv - 1)) / 5;
-        const per = 1 + ((2 * boost * (1 + 0.3 * relicLevel(s, "r_pin")) - 1) * uptime) / 3;
-        m.dmgMult *= per;
-        m.aspdMult *= per;
-        m.goldMult *= per;
-        if (awake) m.prestigeFloorMult *= 1.1;
+      case "p_gongju":
+        m.dmgMult *= n.per ?? 1;
+        m.aspdMult *= n.per ?? 1;
+        m.goldMult *= n.per ?? 1;
+        if (n.awake) m.prestigeFloorMult *= 1.1;
         break;
-      }
       case "p_oh":
-        m.ticketPerKill += (0.005 + 0.0005 * (lv - 1)) * boost * (awake ? 1.1 : 1);
+        m.ticketPerKill += n.chance ?? 0;
         break;
       case "p_hong":
-        m.drainPerSec += ((0.01 + 0.0005 * (lv - 1)) / 2) * boost * (awake ? 2 : 1);
+        m.drainPerSec += (n.drain ?? 0) / 2;
         break;
       case "p_minam":
-        m.hpMult *= 1 - Math.min(0.5, (0.04 + 0.002 * (lv - 1)) * boost);
-        if (awake) m.dmgMult *= 2;
+        m.hpMult *= 1 - (n.cut ?? 0);
+        if (n.awake) m.dmgMult *= 2;
         break;
     }
   }

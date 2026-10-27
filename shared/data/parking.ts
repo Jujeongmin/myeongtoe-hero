@@ -15,7 +15,15 @@ export const PARK_AUTO_CLAIM_MS = 5 * 60_000;
 export function parkingHolds(parking: GameState["parking"], at: number): boolean {
   return at < parking.runUntil || (!parking.claimed && at < parking.runUntil + PARK_AUTO_CLAIM_MS);
 }
+// The step from one meter to the next: 0.2 s after a real fight, but a monster beaten in a blink
+// costs only as long as the blink (down to PARK_MIN_STEP_SEC). With a fixed 0.2 s no 30 s run
+// could pass 149 m however strong Park was; now his damage decides (health ×1.1 a meter).
 export const PARK_STEP_SEC = 0.2;
+export const PARK_MIN_STEP_SEC = 0.02;
+
+export function parkStepSec(fightSec: number): number {
+  return Math.min(PARK_STEP_SEC, Math.max(PARK_MIN_STEP_SEC, fightSec));
+}
 export const PARK_CHEST_EVERY = 20;
 export const PARK_HP_BASE = 100;
 export const PARK_HP_GROWTH = 1.1;
@@ -25,9 +33,10 @@ export function parkHp(meter: number): Big {
   return Big.pow(PARK_HP_GROWTH, meter - 1).mulN(PARK_HP_BASE);
 }
 
-// The k-th chest (at 20k m).
+// The k-th chest (at 20k m): ×1.25 a chest up to the 7th (150 m, as runs could go before), then
+// ×1.08, so deep runs pay well without dwarfing the 연봉협상.
 export function chestTickets(k: number): number {
-  return Math.floor(1.25 ** (k - 1));
+  return Math.floor(1.25 ** Math.min(k - 1, 6) * 1.08 ** Math.max(0, k - 7));
 }
 
 export interface ParkingRun {
@@ -42,11 +51,17 @@ export interface ParkingRun {
 export const PARK_AWAKEN = 1500;
 export const PARK_WARP_MAX = 7000;
 
-// The seconds meter `meter` takes: its fight plus the step to the next one.
-export function parkMeterSec(power: Power, meter: number): number {
+// The seconds meter `meter`'s fight takes.
+export function parkFightSec(power: Power, meter: number): number {
   const hp = parkHp(meter).mulN(power.hpMult);
   const rate = (hp.isZero() ? 0 : power.dps.div(hp).toNumber()) + power.drainPerSec;
-  return (rate > 0 ? 1 / rate : Number.POSITIVE_INFINITY) + PARK_STEP_SEC;
+  return rate > 0 ? 1 / rate : Number.POSITIVE_INFINITY;
+}
+
+// The seconds meter `meter` takes: its fight plus the step to the next one.
+export function parkMeterSec(power: Power, meter: number): number {
+  const fight = parkFightSec(power, meter);
+  return fight + parkStepSec(fight);
 }
 
 // Whether meter `meter` is warped through in an awakened run.

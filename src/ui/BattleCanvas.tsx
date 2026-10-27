@@ -8,7 +8,7 @@ import type { GameState } from "../../shared/state";
 import { heroCrit, heroPower } from "../../shared/stats";
 import { FEVER_KILL_SEC, feverActive } from "../../shared/data/fever";
 import { coinLanded, coinLaunched } from "../game/coins";
-import { PARK_CHEST_EVERY, PARK_RUN_SEC, PARK_STEP_SEC, parkHp, parkMeterSec } from "../../shared/data/parking";
+import { PARK_CHEST_EVERY, PARK_RUN_SEC, parkFightSec, parkHp, parkStepSec } from "../../shared/data/parking";
 import { ANIMS, ATTACK_IMPACT_FRAME, BASELINE_Y, HP_BAR, backgroundFile, image, imageUrl, monsterFor, preloadBattleArt, type Anim, type MonsterSprite } from "../game/sprites";
 import { drawPark, visibleWear } from "../game/drawPark";
 import { petsUnlocked } from "../../shared/data/pets";
@@ -307,7 +307,7 @@ function draw(
   const parking = parkingShown ? parkingView(state, power, Math.min(serverNow, state.parking.runUntil - 1)) : null;
   // The monster being fought: farming repeats the floor's normal ones.
   const current = farming ? 0 : Math.min(target, MONSTERS_PER_FLOOR - 1);
-  const walkSec = parking ? PARK_STEP_SEC : power.walkSec;
+  const walkSec = parking ? parkStepSec(parking.fight) : power.walkSec;
   const fight = parking ? parking.fight : targetSec(floor, current, power);
   const perKill = fight + walkSec;
   const elapsed = carrySec + (now - at) / 1000;
@@ -576,8 +576,8 @@ function parkingView(state: GameState, power: ReturnType<typeof heroPower>, serv
   const depth = state.parking.last?.depth ?? 0;
   // An awakened run starts past the meters it warped through.
   for (let meter = (state.parking.last?.warped ?? 0) + 1; ; meter++) {
-    const sec = parkMeterSec(power, meter);
-    const fight = sec - PARK_STEP_SEC;
+    const fight = parkFightSec(power, meter);
+    const sec = fight + parkStepSec(fight);
     // The last monster (the one the time runs out on) stays until the run ends.
     if (left < sec || meter > depth) return { start, meter, fight, t: left };
     left -= sec;

@@ -11,6 +11,8 @@ export interface SideJob {
   baseCost: Big;
   baseIncome: Big;
   baseCycleSec: number;
+  // How many seconds of this job's income 박주임 pays at a time.
+  bonusSec: number;
 }
 
 export const SIDE_JOB_MAX_LEVEL = 999;
@@ -21,44 +23,47 @@ export const SIDE_JOB_PAY_MULT = 1.2;
 const MIN = 60;
 const HOUR = 3600;
 
-// Name, starting cost, seconds per cycle, and the pay level 1 would have without the level-10
-// milestone: the first levels pay half of it, so from level 10 on the pay is what it was before
-// that milestone was added.
-const TABLE: readonly (readonly [string, number, number, number])[] = [
-  ["복사하기", 10, 1, 10],
-  ["커피 타기", 130, 2, 120],
-  ["엑셀 정리", 1.8e3, 5, 2.1e3],
-  ["회의록 쓰기", 2.73e4, 10, 3.36e4],
-  ["거래처 전화", 4.368e5, 30, 9.072e5],
-  ["보고서 쓰기", 7.4e6, MIN, 1.81e7],
-  ["PPT 만들기", 1.336e8, 2 * MIN, 3.991e8],
-  ["출장 가기", 2.5e9, 5 * MIN, 1.19e10],
-  ["발표하기", 5.07e10, 10 * MIN, 3.113e11],
-  ["예산 짜기", 1e12, 30 * MIN, 1.3e13],
-  ["신입 가르치기", 2.34e13, HOUR, 3.923e14],
-  ["거래처 접대", 5.397e14, 3 * MIN, 1.8e15],
-  ["프로젝트 맡기", 1.29e16, 30 * MIN, 5.33e16],
-  ["해외 출장", 3.238e17, 2 * HOUR, 3.8e18],
-  ["새 사업 기획", 8.4e18, 2 * MIN, 2.2e18],
-  ["팀 이끌기", 2.273e20, MIN, 6.6e18],
-  ["투자 받아오기", 6.3e21, 10 * MIN, 2.5e21],
-  ["큰 계약 따내기", 1.845e23, HOUR, 3.372e23],
-  ["해외 지사 세우기", 5.5e24, 3 * HOUR, 2.32e25],
-  ["회사 인수하기", 1.716e26, 5 * MIN, 4.65e25],
-  ["이사회 보고", 4.65e28, HOUR, 8.6e27],
-  ["사장님 보고", 8e30, 10 * MIN, 7.5e28],
-  ["그룹 회의 열기", 1.7e33, 10 * MIN, 3.6e30],
-  ["회장님 보고", 4.889e35, 10 * MIN, 3.431e32],
-  ["회장님과 점심", 1.1e38, 10 * MIN, 1.458e35],
+// Name, starting cost, seconds per cycle, the pay level 1 would have without the level-10
+// milestone (the first levels pay half of it, so from level 10 on the pay is what it was before
+// that milestone was added), and the cycle that pay was for. Every cycle is a minute or less since
+// 2026-10-27 (some were up to 3 hours): the pay is cut to match, so the gold a second is the same,
+// it just comes in steadily. 박주임 still pays a job's old cycle's worth (bonusSec).
+const TABLE: readonly (readonly [string, number, number, number, number])[] = [
+  ["복사하기", 10, 1, 10, 1],
+  ["커피 타기", 130, 2, 120, 2],
+  ["엑셀 정리", 1.8e3, 5, 2.1e3, 5],
+  ["회의록 쓰기", 2.73e4, 10, 3.36e4, 10],
+  ["거래처 전화", 4.368e5, 30, 9.072e5, 30],
+  ["보고서 쓰기", 7.4e6, 60, 1.81e7, MIN],
+  ["PPT 만들기", 1.336e8, 20, 3.991e8, 2 * MIN],
+  ["출장 가기", 2.5e9, 40, 1.19e10, 5 * MIN],
+  ["발표하기", 5.07e10, 25, 3.113e11, 10 * MIN],
+  ["예산 짜기", 1e12, 45, 1.3e13, 30 * MIN],
+  ["신입 가르치기", 2.34e13, 60, 3.923e14, HOUR],
+  ["거래처 접대", 5.397e14, 12, 1.8e15, 3 * MIN],
+  ["프로젝트 맡기", 1.29e16, 50, 5.33e16, 30 * MIN],
+  ["해외 출장", 3.238e17, 60, 3.8e18, 2 * HOUR],
+  ["새 사업 기획", 8.4e18, 15, 2.2e18, 2 * MIN],
+  ["팀 이끌기", 2.273e20, 8, 6.6e18, MIN],
+  ["투자 받아오기", 6.3e21, 30, 2.5e21, 10 * MIN],
+  ["큰 계약 따내기", 1.845e23, 55, 3.372e23, HOUR],
+  ["해외 지사 세우기", 5.5e24, 60, 2.32e25, 3 * HOUR],
+  ["회사 인수하기", 1.716e26, 20, 4.65e25, 5 * MIN],
+  ["이사회 보고", 4.65e28, 45, 8.6e27, HOUR],
+  ["사장님 보고", 8e30, 30, 7.5e28, 10 * MIN],
+  ["그룹 회의 열기", 1.7e33, 35, 3.6e30, 10 * MIN],
+  ["회장님 보고", 4.889e35, 40, 3.431e32, 10 * MIN],
+  ["회장님과 점심", 1.1e38, 50, 1.458e35, 10 * MIN],
 ];
 
-export const SIDE_JOBS: readonly SideJob[] = TABLE.map(([name, cost, cycle, pay], i) => ({
+export const SIDE_JOBS: readonly SideJob[] = TABLE.map(([name, cost, cycle, pay, payCycle], i) => ({
   id: `j${String(i).padStart(2, "0")}`,
   name,
   unlockFloor: 1,
   baseCost: Big.of(cost),
-  baseIncome: Big.of(pay / 2),
+  baseIncome: Big.of(((pay / 2) * cycle) / payCycle),
   baseCycleSec: cycle,
+  bonusSec: payCycle,
 }));
 
 const BY_ID = new Map(SIDE_JOBS.map((job) => [job.id, job]));
