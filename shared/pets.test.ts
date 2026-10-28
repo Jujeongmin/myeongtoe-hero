@@ -12,9 +12,9 @@ const at = (bestFloor: number) => ({ ...newState(0), bestFloor });
 
 describe("pet table", () => {
   test("7 pets unlocked by best floor, in order", () => {
-    expect(PETS.map((p) => p.unlockFloor)).toEqual([100, 300, 600, 900, 1100, 4500, 6500]);
-    expect(petsUnlocked(99)).toEqual([]);
-    expect(petsUnlocked(600).map((p) => p.id)).toEqual(["p_intern", "p_jumim", "p_daeri"]);
+    expect(PETS.map((p) => p.unlockFloor)).toEqual([50, 120, 200, 300, 400, 1500, 2500]);
+    expect(petsUnlocked(49)).toEqual([]);
+    expect(petsUnlocked(200).map((p) => p.id)).toEqual(["p_intern", "p_jumim", "p_daeri"]);
     expect(petLevelCost(2)).toBeGreaterThan(petLevelCost(1));
   });
 

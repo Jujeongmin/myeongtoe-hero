@@ -130,19 +130,8 @@ export const EPISODES: readonly Episode[] = [
     ],
   },
   {
-    id: "hunter",
-    floor: 70,
-    title: "헤드헌터",
-    panels: [
-      { img: "hunter_1", lines: [{ who: "헤드헌터 냥", text: "박부장님, 연봉은 올려 드리죠. 대신 1층부터 다시 시작입니다.", at: [96, 36] }] },
-      { img: "hunter_2", lines: [{ who: "박부장", text: "1층부터? 내가 여기까지 어떻게 왔는데!", at: [110, 10] }] },
-      { img: "hunter_3", lines: [{ who: "헤드헌터 냥", text: "연봉협상 때마다 응시권 드려요.\n자격증 따면 여기까지 금방이에요.", at: [112, 30] }] },
-      { img: "hunter_4", lines: [{ who: "박부장", text: "…중장비 자격증도 있나?", at: [92, 18] }, { text: "70층부터 연봉협상할 수 있어요." }] },
-    ],
-  },
-  {
     id: "ep1",
-    floor: 100,
+    floor: 50,
     title: "1화 — 상무님은 부재중",
     panels: [
       { img: "ep1_1", lines: [{ who: "???", text: "명퇴 대상자여… 감히 여기까지…", at: [92, 12] }] },
@@ -162,8 +151,19 @@ export const EPISODES: readonly Episode[] = [
     ],
   },
   {
+    id: "hunter",
+    floor: 70,
+    title: "헤드헌터",
+    panels: [
+      { img: "hunter_1", lines: [{ who: "헤드헌터 냥", text: "박부장님, 연봉은 올려 드리죠. 대신 1층부터 다시 시작입니다.", at: [96, 36] }] },
+      { img: "hunter_2", lines: [{ who: "박부장", text: "1층부터? 내가 여기까지 어떻게 왔는데!", at: [110, 10] }] },
+      { img: "hunter_3", lines: [{ who: "헤드헌터 냥", text: "연봉협상 때마다 응시권 드려요.\n자격증 따면 여기까지 금방이에요.", at: [112, 30] }] },
+      { img: "hunter_4", lines: [{ who: "박부장", text: "…중장비 자격증도 있나?", at: [92, 18] }, { text: "70층부터 연봉협상할 수 있어요." }] },
+    ],
+  },
+  {
     id: "ep2",
-    floor: 300,
+    floor: 120,
     title: "2화 — 네트워크 마케팅 아닙니다",
     panels: [
       { img: "ep2_1", lines: [{ who: "박부장", text: "스테이플러가… 이 가격이라고?", at: [64, 56] }] },
@@ -187,7 +187,7 @@ export const EPISODES: readonly Episode[] = [
   },
   {
     id: "ep3",
-    floor: 600,
+    floor: 200,
     title: "3화 — 내용증명",
     panels: [
       { img: "ep3_1", lines: [{ who: "법무 상무 리치", text: "요즘 것들은 끈기가 없어. 라떼는…", at: [92, 10] }] },
@@ -205,7 +205,7 @@ export const EPISODES: readonly Episode[] = [
   },
   {
     id: "ep4",
-    floor: 900,
+    floor: 300,
     title: "4화 — 구독과 좋아요",
     panels: [
       { img: "ep4_1", lines: [{ who: "공주임", text: "안녕하세요 여러분~ 공주임 채널입니다!", at: [100, 18] }] },
@@ -223,9 +223,32 @@ export const EPISODES: readonly Episode[] = [
     ],
   },
   {
+    id: "ep6",
+    floor: 400,
+    title: "5화 — 3일 차 신입",
+    panels: [
+      { img: "ep6_1", lines: [{ who: "오사원", text: "입사 3일 차인데요, 이거 퇴사각이에요.", at: [95, 48] }] },
+      { img: "ep6_2", lines: [{ who: "박부장", text: "사직서는 두괄식으로. 사유는 한 줄로.", at: [47, 32] }] },
+      {
+        img: "ep6_3",
+        lines: [
+          { who: "오사원", text: "부장님 팀은 6시 칼퇴예요?", at: [129, 59] },
+          { who: "박부장", text: "…용사는 출퇴근 자유다.", at: [54, 63] },
+        ],
+      },
+      {
+        img: "ep6_4",
+        lines: [
+          { who: "오사원", text: "그럼 일단 다녀볼게요. 저 자격증 모으는 게 취미라서 응시권 떨어지면 드릴게요.", at: [112, 27] },
+          { text: "막내 오사원이 동료가 되었다." },
+        ],
+      },
+    ],
+  },
+  {
     id: "ep5",
     floor: 1000,
-    title: "5화 — 김팀장",
+    title: "6화 — 김팀장",
     panels: [
       { img: "ep5_1", lines: [{ text: "1000층. 결재 서류가 산더미처럼 쌓인 보스방." }] },
       {
@@ -253,24 +276,19 @@ export const EPISODES: readonly Episode[] = [
     ],
   },
   {
-    id: "ep6",
-    floor: 1100,
-    title: "6화 — 3일 차 신입",
+    id: "ep10",
+    floor: 1500,
+    title: "7화 — 동기",
     panels: [
-      { img: "ep6_1", lines: [{ who: "오사원", text: "입사 3일 차인데요, 이거 퇴사각이에요.", at: [95, 48] }] },
-      { img: "ep6_2", lines: [{ who: "박부장", text: "사직서는 두괄식으로. 사유는 한 줄로.", at: [47, 32] }] },
+      { img: "ep10_1", lines: [{ who: "홍과장", text: "박! 넌 아직도 넥타이를 그렇게 매냐!", at: [108, 39] }] },
+      { img: "ep10_2", lines: [{ who: "홍과장", text: "우리 둘 중 하나는 꼭 임원 달자.", at: [124, 31] }] },
+      { img: "ep10_3", lines: [{ who: "홍과장", text: "작년에 명퇴 명단에 우리 둘이 올라왔어. 내가 먼저 나가면 넌 남을 줄 알았지.", at: [112, 46] }] },
       {
-        img: "ep6_3",
+        img: "ep10_4",
         lines: [
-          { who: "오사원", text: "부장님 팀은 6시 칼퇴예요?", at: [129, 59] },
-          { who: "박부장", text: "…용사는 출퇴근 자유다.", at: [54, 63] },
-        ],
-      },
-      {
-        img: "ep6_4",
-        lines: [
-          { who: "오사원", text: "그럼 일단 다녀볼게요. 저 자격증 모으는 게 취미라서 응시권 떨어지면 드릴게요.", at: [112, 27] },
-          { text: "막내 오사원이 동료가 되었다." },
+          { who: "박부장", text: "같이 올라가자. 잔소리는 몬스터한테 해.", at: [67, 42], flip: true },
+          { who: "홍과장", text: "그건 자신 있지.", at: [106, 45] },
+          { text: "홍과장이 동료가 되었다." },
         ],
       },
     ],
@@ -278,7 +296,7 @@ export const EPISODES: readonly Episode[] = [
   {
     id: "ep7",
     floor: 2000,
-    title: "7화 — 올해의 영업왕",
+    title: "8화 — 올해의 영업왕",
     panels: [
       { img: "ep7_1", lines: [{ text: "2000층. 영업팀 보스를 쓰러뜨리자, 보스방 벽에 액자들이 보였다." }] },
       { img: "ep7_2", lines: [{ text: "'2009 올해의 영업왕'. 박부장 자신의 공로패였다." }, { who: "박부장", text: "이게 왜 여기 있어?", at: [29, 48] }] },
@@ -299,9 +317,25 @@ export const EPISODES: readonly Episode[] = [
     ],
   },
   {
+    id: "ep13",
+    floor: 2500,
+    title: "9화 — 비서실장",
+    panels: [
+      { img: "ep13_1", lines: [{ who: "실장", text: "회장님께서 기다리고 계십니다. 다만… 저는 사표를 내고 왔습니다.", at: [107, 58] }] },
+      { img: "ep13_2", lines: [{ who: "최대리", text: "회장 측 사람이잖아요.", at: [68, 44] }] },
+      {
+        img: "ep13_3",
+        lines: [
+          { who: "실장", text: "회장님 책상에 늘 있던 사진입니다. 회장님은 당신을 아십니다.", at: [120, 13], flip: true },
+          { text: "꽃미남 실장이 동료가 되었다." },
+        ],
+      },
+    ],
+  },
+  {
     id: "ep8",
     floor: 3000,
-    title: "8화 — 늦지 마",
+    title: "10화 — 늦지 마",
     panels: [
       { img: "ep8_1", lines: [{ text: "3000층 재무팀 금고. 그 안에 낡은 손목시계가 있었다." }] },
       { img: "ep8_2", lines: [{ text: "시계 뒷면의 각인: '늦지 마. — 여보가'" }] },
@@ -318,7 +352,7 @@ export const EPISODES: readonly Episode[] = [
   {
     id: "ep9",
     floor: 4000,
-    title: "9화 — 박부장들",
+    title: "11화 — 박부장들",
     panels: [
       { img: "ep9_1", lines: [{ text: "4000층. 몬스터에 둘러싸인 박부장의 주머니에서 명함 뭉치가 떨어졌다." }] },
       { img: "ep9_2", lines: [{ who: "박대리", text: "선배님, 아니 저님, 도와드리겠습니다!", at: [60, 37] }] },
@@ -333,27 +367,9 @@ export const EPISODES: readonly Episode[] = [
     ],
   },
   {
-    id: "ep10",
-    floor: 4500,
-    title: "10화 — 동기",
-    panels: [
-      { img: "ep10_1", lines: [{ who: "홍과장", text: "박! 넌 아직도 넥타이를 그렇게 매냐!", at: [108, 39] }] },
-      { img: "ep10_2", lines: [{ who: "홍과장", text: "우리 둘 중 하나는 꼭 임원 달자.", at: [124, 31] }] },
-      { img: "ep10_3", lines: [{ who: "홍과장", text: "작년에 명퇴 명단에 우리 둘이 올라왔어. 내가 먼저 나가면 넌 남을 줄 알았지.", at: [112, 46] }] },
-      {
-        img: "ep10_4",
-        lines: [
-          { who: "박부장", text: "같이 올라가자. 잔소리는 몬스터한테 해.", at: [67, 42], flip: true },
-          { who: "홍과장", text: "그건 자신 있지.", at: [106, 45] },
-          { text: "홍과장이 동료가 되었다." },
-        ],
-      },
-    ],
-  },
-  {
     id: "ep11",
     floor: 5000,
-    title: "11화 — 구독자 100만",
+    title: "12화 — 구독자 100만",
     panels: [
       { img: "ep11_1", lines: [{ text: "공주임 채널, 구독자 100만 돌파!" }] },
       { img: "ep11_2", lines: [{ who: "홍보팀", text: "부장님 영상 덕분에 저희 채용 지원자가 300% 늘었습니다. 감사패 대신…", at: [118, 40] }] },
@@ -371,7 +387,7 @@ export const EPISODES: readonly Episode[] = [
   {
     id: "ep12",
     floor: 6000,
-    title: "12화 — 정규직",
+    title: "13화 — 정규직",
     panels: [
       { img: "ep12_1", lines: [{ text: "6000층 인사팀. 거대한 결재 도장이 놓여 있다." }] },
       { img: "ep12_2", lines: [{ text: "3개월 전, 김인턴은 정규직 약속을 받았었다." }] },
@@ -383,22 +399,6 @@ export const EPISODES: readonly Episode[] = [
         ],
       },
       { img: "ep12_4", lines: [{ text: "기념품 '대형 결재 도장'을 얻었다." }] },
-    ],
-  },
-  {
-    id: "ep13",
-    floor: 6500,
-    title: "13화 — 비서실장",
-    panels: [
-      { img: "ep13_1", lines: [{ who: "실장", text: "회장님께서 기다리고 계십니다. 다만… 저는 사표를 내고 왔습니다.", at: [107, 58] }] },
-      { img: "ep13_2", lines: [{ who: "최대리", text: "회장 측 사람이잖아요.", at: [68, 44] }] },
-      {
-        img: "ep13_3",
-        lines: [
-          { who: "실장", text: "회장님 책상에 늘 있던 사진입니다. 회장님은 당신을 아십니다.", at: [120, 13], flip: true },
-          { text: "꽃미남 실장이 동료가 되었다." },
-        ],
-      },
     ],
   },
   {

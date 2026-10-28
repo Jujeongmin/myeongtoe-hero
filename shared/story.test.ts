@@ -29,3 +29,16 @@ describe("스토리", () => {
     expect(fromSave({ ...save, story: ["prologue2", "nope", "prologue2"] }).story).toEqual(["prologue2"]);
   });
 });
+
+describe("동료 episodes come with the colleague", () => {
+  test("each colleague's joining episode opens on the floor it joins; the list runs in floor order", async () => {
+    const { PETS } = await import("./data/pets");
+    for (const pet of PETS) {
+      const ep = EPISODES.find((e) => e.panels.some((p) => p.lines.some((l) => l.text === `${pet.name}이 동료가 되었다.` || l.text === `${pet.name}가 동료가 되었다.`)));
+      expect(ep?.floor, pet.name).toBe(pet.unlockFloor);
+    }
+    const main = EPISODES.filter((e) => /^\d+화/.test(e.title));
+    main.forEach((e, i) => expect(e.title.startsWith(`${i + 1}화`), e.title).toBe(true));
+    for (let i = 1; i < main.length; i++) expect(main[i].floor).toBeGreaterThan(main[i - 1].floor);
+  });
+});

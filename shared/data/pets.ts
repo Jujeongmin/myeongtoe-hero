@@ -9,13 +9,13 @@ export interface PetDef {
 }
 
 export const PETS: readonly PetDef[] = [
-  { id: "p_intern", name: "김인턴", unlockFloor: 100, text: "2.5초마다 공격력 100% 추가 공격" },
-  { id: "p_jumim", name: "박주임", unlockFloor: 300, text: "20초마다 가장 비싼 업무 수입 지급" },
-  { id: "p_daeri", name: "최대리", unlockFloor: 600, text: "몬스터 등장 시 체력 0~30% 깎기" },
-  { id: "p_gongju", name: "공주임", unlockFloor: 900, text: "5초마다 2초 랜덤 버프" },
-  { id: "p_oh", name: "막내 오사원", unlockFloor: 1100, text: "처치 시 확률로 응시권" },
-  { id: "p_hong", name: "홍과장", unlockFloor: 4500, text: "2초마다 적 최대 체력 1% 감소" },
-  { id: "p_minam", name: "꽃미남 실장", unlockFloor: 6500, text: "몬스터 등장 시 체력 4% 감소" },
+  { id: "p_intern", name: "김인턴", unlockFloor: 50, text: "2.5초마다 공격력 100% 추가 공격" },
+  { id: "p_jumim", name: "박주임", unlockFloor: 120, text: "20초마다 가장 비싼 업무 수입 지급" },
+  { id: "p_daeri", name: "최대리", unlockFloor: 200, text: "몬스터 등장 시 체력 0~30% 깎기" },
+  { id: "p_gongju", name: "공주임", unlockFloor: 300, text: "5초마다 2초 랜덤 버프" },
+  { id: "p_oh", name: "막내 오사원", unlockFloor: 400, text: "처치 시 확률로 응시권" },
+  { id: "p_hong", name: "홍과장", unlockFloor: 1500, text: "2초마다 적 최대 체력 1% 감소" },
+  { id: "p_minam", name: "꽃미남 실장", unlockFloor: 2500, text: "몬스터 등장 시 체력 4% 감소" },
 ];
 
 export const PET_BOX_COUPONS = 70;

@@ -17,7 +17,7 @@ export type AlertKey = "shop:ad" | "shop:daily" | "dungeon:enter" | "dungeon:que
 export const ALERT_KEYS: readonly AlertKey[] = ["shop:ad", "shop:daily", "dungeon:enter", "dungeon:quest"];
 
 // The floor each bottom tab opens at (BottomNav shows it locked before).
-export const NAV_OPEN_AT = { sideJobs: 1, gear: 1, pets: 100, certs: 11, shop: 1, dungeon: 5 } as const;
+export const NAV_OPEN_AT = { sideJobs: 1, gear: 1, pets: 50, certs: 11, shop: 1, dungeon: 5 } as const;
 
 // Where each dot is cleared: a bottom tab. Opening that screen counts as looking.
 export const alertScreens: Record<AlertKey, string> = {
