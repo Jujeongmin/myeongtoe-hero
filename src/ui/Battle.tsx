@@ -127,7 +127,8 @@ export function Battle({ state, store, dots, onOpen, onGo, getMore }: {
         </button>
       )}
       {runResult && (
-        <div className="modal-back">
+        // A tap outside the panel takes the reward too.
+        <div className="modal-back" onClick={(e) => e.target === e.currentTarget && store.do({ k: "claimParking" })}>
           <div className="modal">
             <h3>{t("주차장 탐사 끝")}</h3>
             <p>{wentDown[0]}<b>B{runResult.depth}m</b>{wentDown[1]}</p>

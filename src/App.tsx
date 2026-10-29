@@ -44,6 +44,7 @@ import { idleFor } from "./ui/useTapGuard";
 import { useAlerts } from "./ui/useAlerts";
 import { Toast } from "./ui/Toast";
 import { CHURN_DAYS, churnTable, retentionTable, type ChurnReport, type RetentionRow } from "../shared/retention";
+import type { RankingView } from "../shared/ranking";
 
 const SYNC_MS = 1500;
 // What opens by itself waits until the player has stopped tapping for this long.
@@ -92,7 +93,21 @@ export function OnlineApp() {
   // retention() in the browser console, for the admin accounts (shared/retention.ts): the retention
   // table, then where the new players stop (이탈 시점).
   useEffect(() => {
-    const w = window as unknown as { retention?: () => Promise<void> };
+    const w = window as unknown as {
+      retention?: () => Promise<void>;
+      top?: (board?: string) => Promise<void>;
+      grant?: (account: string, gift: { gems?: number; coupons?: number; tickets?: number }) => Promise<void>;
+    };
+    // top(): the board's top players with their accounts (for grant). top("depth") for the garage.
+    w.top = async (board = "floor") => {
+      const r = (await server.remoteFunction("ranking", [board])) as RankingView;
+      console.table(r.rows.slice(0, 10).map((row, i) => ({ 순위: i + 1, 닉네임: row.nickname, 층: row.floor, 주차장: row.depth, 계정: row.account })));
+    };
+    // grant("계정", { gems: 1000, coupons: 300, tickets: 0 }): 운영자 지급 (admin accounts only).
+    w.grant = async (account, gift) => {
+      const r = await server.remoteFunction("grant", [account, gift]);
+      console.log("지급 완료", r);
+    };
     w.retention = async () => {
       const [r, c] = (await Promise.all([server.remoteFunction("retention", []), server.remoteFunction("churn", [])])) as [{ rows: RetentionRow[] }, ChurnReport];
       console.log("리텐션 (날짜별 신규 유저가 며칠 뒤 다시 왔는지)");
@@ -109,6 +124,8 @@ export function OnlineApp() {
     };
     return () => {
       delete w.retention;
+      delete w.top;
+      delete w.grant;
     };
   }, [server]);
 

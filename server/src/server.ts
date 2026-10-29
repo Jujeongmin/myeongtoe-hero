@@ -2,6 +2,7 @@ import { applyPurchase, readPurchaseEvent } from "../../shared/purchase";
 import { RANKING_SIZE, profileOf, rankRowOf, readAccount, readBoard, readNickname, nicknameError, type PublicProfile, type RankRow, type RankingView } from "../../shared/ranking";
 import { fromSave, newState, toSave, type SaveData } from "../../shared/state";
 import { syncSave, type SyncResult } from "../../shared/sync";
+import { GRANTS, applyGrant, readGrant, type Grant } from "../../shared/grant";
 import { PLAYERS, RETENTION_DAYS, VISITS, addDays, churnReport, isAdmin, retentionDays, track, type ChurnReport, type PlayerRow, type RetentionRow } from "../../shared/retention";
 
 // Where the save lives in the account's global user state, and the record last put on the boards.
@@ -134,6 +135,25 @@ export class Server {
       return { day, newUsers, active, back };
     }));
     return { days: [...RETENTION_DAYS], rows };
+  }
+
+  // 운영자 지급 (admin accounts only): 보석, 상품권 or 응시권 into a player's save, under that
+  // player's lock like a sync; each grant is also logged in "grants".
+  async grant(account: unknown, gift: unknown): Promise<{ account: string; given: Grant; gems: number; coupons: number; tickets: number }> {
+    if (!isAdmin($sender.account)) throw new Error("forbidden");
+    const id = readAccount(account);
+    const given = readGrant(gift);
+    if (!id) throw new Error("bad_account");
+    if (!given) throw new Error("bad_grant");
+    return $lock(`save:${id}`, async () => {
+      const userState = await $global.getUserState(id);
+      const raw = userState?.[SAVE_KEY];
+      if (!raw) throw new Error("not_found");
+      const state = applyGrant(fromSave(raw), given);
+      await $global.updateUserState(id, { [SAVE_KEY]: toSave(state) });
+      await $global.addCollectionItem(GRANTS, { account: id, by: $sender.account, at: Date.now(), ...given });
+      return { account: id, given, gems: state.gems, coupons: state.coupons, tickets: state.tickets };
+    });
   }
 
   // 이탈 시점 (admin accounts only): where the new players are and how many in each place have left.

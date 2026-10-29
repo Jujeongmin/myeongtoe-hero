@@ -60,3 +60,32 @@ describe("retention", () => {
     expect(r.byFloor[0].all).toBeGreaterThan(1);
   });
 });
+
+describe("운영자 지급", () => {
+  test("only an admin gives; it lands in the player's save and the next sync keeps it", async (server) => {
+    server.connect({ account: "test-gift" });
+    await server.sync([]);
+    let error = "";
+    try {
+      await server.grant("test-gift", { gems: 100 });
+    } catch (e: any) {
+      error = String(e?.message ?? e);
+    }
+    expect(error).toContain("forbidden");
+    server.connect({ account: ADMINS[0] });
+    const r = await server.grant("test-gift", { gems: 1000, coupons: 300 });
+    expect(r.given).toEqual({ gems: 1000, coupons: 300, tickets: 0 });
+    server.connect({ account: "test-gift" });
+    const after = await server.sync([]);
+    expect(after.save.gems).toBe(r.gems);
+    expect(after.save.coupons).toBe(r.coupons);
+    server.connect({ account: ADMINS[0] });
+    let bad = "";
+    try {
+      await server.grant("test-gift", { gems: -5 });
+    } catch (e: any) {
+      bad = String(e?.message ?? e);
+    }
+    expect(bad).toContain("bad_grant");
+  });
+});
