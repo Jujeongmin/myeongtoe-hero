@@ -95,11 +95,12 @@ export function OnlineApp() {
   useEffect(() => {
     const w = window as unknown as {
       retention?: () => Promise<void>;
-      top?: (board?: string) => Promise<void>;
+      ranks?: (board?: string) => Promise<void>;
       grant?: (account: string, gift: { gems?: number; coupons?: number; tickets?: number }) => Promise<void>;
     };
-    // top(): the board's top players with their accounts (for grant). top("depth") for the garage.
-    w.top = async (board = "floor") => {
+    // ranks(): the board's top players with their accounts (for grant). ranks("depth") for the garage.
+    // (Not top(): window.top is the browser's own, read-only, and assigning it throws.)
+    w.ranks = async (board = "floor") => {
       const r = (await server.remoteFunction("ranking", [board])) as RankingView;
       console.table(r.rows.slice(0, 10).map((row, i) => ({ 순위: i + 1, 닉네임: row.nickname, 층: row.floor, 주차장: row.depth, 계정: row.account })));
     };
@@ -124,7 +125,7 @@ export function OnlineApp() {
     };
     return () => {
       delete w.retention;
-      delete w.top;
+      delete w.ranks;
       delete w.grant;
     };
   }, [server]);
